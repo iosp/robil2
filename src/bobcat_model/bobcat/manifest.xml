@@ -1,0 +1,7 @@
+<package>
+  <description brief="bobcat">bobcat</description>
+  <depend package="gazebo" />
+<depend package="chain_pagebo_plugin" />
+  <author>me</author>
+  <license>BSD</license>
+</package>
