@@ -31,7 +31,7 @@
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 #include <cmath>
-
+#include <sstream>
 
 #define PI 			3.14159
 #define TOPIC_NAME 		"LMS511"
@@ -45,7 +45,7 @@
 
 #define SENSOR_NOISE		0.1
 
- 
+
 using namespace gazebo;
 using namespace std;
 
@@ -57,15 +57,36 @@ namespace gazebo
   {
 
   public:
-    void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
+    void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     {
+
+    this->name_ = "";
+    if (!_sdf->HasElement("name")) {
+      ROS_INFO("SICK Plugin missing <name>, defaults to \"%s\"", 
+          this->name_.c_str());
+    } else {
+    this->name_ = 
+        _sdf->GetElement("name")->Get<std::string>();
+    }
+
+    if (!_sdf->HasElement("linkName")) {
+      ROS_INFO("SICK Plugin missing <linkName>");
+      exit(1);
+    } else {
+    this->_link = 
+        _parent->GetLink(_sdf->GetElement("linkName")->Get<std::string>());
+    }
+
       // Store the pointer to the model
       this->_model = _parent;
 
       // Listen to the update event. This event is broadcast every
       // simulation iteration.
       this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&SICK::OnUpdate, this, _1));
-      _publisher = _nodeHandle.advertise<sensor_msgs::LaserScan>(TOPIC_NAME, 10);
+
+      stringstream ss;
+	ss << "/" << this->name_ << "/scan";
+      _publisher = _nodeHandle.advertise<sensor_msgs::LaserScan>(ss.str().c_str(), 10);
       
       gazebo::physics::PhysicsEnginePtr engine =  _model->GetWorld()->GetPhysicsEngine();
       //engine->InitForThread();
@@ -110,7 +131,7 @@ namespace gazebo
     
     void RayTraceAtAngle(double alpha, double& dist, std::string& entityName)
     {
-      math::Pose pose=_model->GetWorldPose();
+      math::Pose pose=_link->GetWorldPose();
       gazebo::math::Vector3 pos = pose.pos;
  
       math::Vector3 front, right, top;
@@ -141,7 +162,7 @@ namespace gazebo
       //populate the LaserScan message
       sensor_msgs::LaserScan scan;
       scan.header.stamp = scan_time;
-      scan.header.frame_id = "laser_frame";
+      scan.header.frame_id = this->name_.c_str();
       scan.angle_min = DegreesToRad(-SENSOR_ANGLE/2);
       scan.angle_max = DegreesToRad(SENSOR_ANGLE/2);
       scan.angle_increment = 3.14 / SENSOR_SAMPLES;
@@ -166,16 +187,10 @@ namespace gazebo
 	{
 	  static tf::TransformBroadcaster br;  
 	  tf::Transform transform;
-	  math::Pose pose=_model->GetWorldPose();
-	  gazebo::math::Vector3 pos = pose.pos;
-	  gazebo::math::Quaternion rot = pose.rot;
-	  double R = rot.GetRoll ( );
-	  double P = rot.GetPitch ( );
-	  double Y = rot.GetYaw ( );
-	  
-	  transform.setOrigin( tf::Vector3(pos.x, pos.y, pos.z) );
-	  transform.setRotation( tf::Quaternion(Y,P,R) );
-	  br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "laser_frame"));
+	  math::Pose pose=_link->GetWorldPose();
+	  transform.setOrigin( tf::Vector3(pose.pos.x, pose.pos.y, pose.pos.z) );
+	  transform.setRotation( tf::Quaternion(pose.rot.x,pose.rot.y,pose.rot.z,pose.rot.w) );
+	  br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", this->name_.c_str()));
 	}
 
   protected:
@@ -184,12 +199,13 @@ namespace gazebo
 
   private:
     physics::ModelPtr 			_model; // Pointer to the model
+    physics::LinkPtr 			_link; // Pointer to the link
     event::ConnectionPtr 		_updateConnection; // Pointer to the update event connection
     gazebo::physics::RayShapePtr	_ray;
     
     ros::NodeHandle		_nodeHandle;
     ros::Publisher 		_publisher;
-    
+    string name_;
     int 			_sample;
     double 			_ranges[SENSOR_SAMPLES];
     
