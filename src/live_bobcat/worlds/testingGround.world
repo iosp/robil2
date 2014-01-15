@@ -7,7 +7,7 @@
         <collision name="collision">
           <geometry>
             <heightmap>
-              <uri>file://media/materials/textures/mapP.png</uri>
+              <uri>file://media/materials/textures/mapL.png</uri>
               <size>112.667 112.667 6.698</size>
               <pos>0 0 0</pos>
             </heightmap>
@@ -40,7 +40,7 @@
                 <min_height>0.03</min_height>
                 <fade_dist>5</fade_dist>
               </blend>
-          	 <uri>file://media/materials/textures/mapP.png</uri>
+          	 <uri>file://media/materials/textures/mapL.png</uri>
               <size>112.667 112.667 6.698</size>
               <pos>0 0 0</pos>
             </heightmap>
