@@ -1,0 +1,31 @@
+LMS511-20100 one plane Sick sensor
+----------------------------------
+
+Version
+-------
+1.1.0
+
+Include
+-------
+This package includes a Sick model for Gazebo.
+The model Includes a ROS topic named \LMS511. The Topic is a ROS sensor_msgs\Laser_scan.
+
+You can subscibe to the topic by: $ rostopic echo \LMS511
+
+Installation
+------------
+Download this package into your catkin workspace.
+Install and make your workspace by: catkin_make
+
+Run Gazebo
+----------
+$ roslaunch gazebo_sick sick.launch
+
+
+
+TODO
+----
+- Improve the laser to add each ray a diameter.
+- Fix tf tilt.
+- Add better noise input.
+- Add actual sick interface.

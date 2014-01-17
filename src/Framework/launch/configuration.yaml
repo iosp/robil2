@@ -1,0 +1,84 @@
+OCU:
+ - compsub_PosAttVel: 'LOC'
+ - compsub_Teleoperation: 'LLI'
+ - compsub_StatusData: 'SSM'
+ - compsub_MissionStatus: 'SMME'
+ - compsub_Map: 'MAP'
+ - compsub_LocalPlanPath: 'PP'
+ - compsub_IEDDetectionEvent: 'IED'
+ - compsub_IEDLocation: 'IED'
+ - pub_PositionUpdate: '/OCU/PositionUpdate'
+ - pub_MissionPlan: '/OCU/MissionPlan'
+ - pub_Teleoperation: '/OCU/Teleoperation'
+ - pub_IEDDetectionEvent: '/OCU/IEDDetectionEvent'
+ - pub_IEDLocation: '/OCU/IEDLocation'
+
+IED:
+ - compsub_IEDDetectionEvent: 'OCU'
+ - compsub_IEDLocation: 'OCU'
+ - pub_IEDDetectionEvent: '/IED/IEDDetectionEvent'
+ - pub_IEDLocation: '/IED/IEDDetectionEvent'
+
+SMME:
+ - compsub_IEDDetectionEvent: 'IED'
+ - compsub_IEDLocation: 'IED'
+ - compsub_MissionPlan: 'OCU'
+ - compsub_StatusData: 'SSM'
+ - pub_MissionStatus: '/SMME/MissionStatus'
+ - pub_MissionGlobalPath: '/SMME/MissionGlobalPath'
+ - pub_IEDPosAtt: '/SMME/IEDPosAtt'
+ - pub_ExecuteWorkSequenceCommand: '/SMME/ExecuteWorkSequenceCommand'
+
+SSM:
+ - compsub_MissionStatus: 'SMME'
+ - pub_StatusData: '/SSM/StatusData'
+
+WSM:
+ - compsub_ExecuteWorkSequenceCommand: 'SMME'
+ - compsub_PosAttVel: 'LOC'
+ - compsub_WiresLengths: 'TF'
+ - pub_BladePosition: '/WSM/BladePosition'
+ - pub_TrottleEffort: '/WSM/TrottleEffort'
+ - pub_SteeringEffort: '/WSM/SteeringEffort'
+ - pub_JointsEffort: '/WSM/JointsEffort'
+
+LLI:
+ - compsub_TrottleEffort: 'WSM'
+ - compsub_SteeringEffort: 'WSM'
+ - compsub_JointsEffort: 'WSM'
+ - compsub_Teleoperation: 'OCU'
+ - pub_Teleoperation: '/LLI/Teleoperation'
+ - pub_TrottleEffort: '/LLI/TrottleEffort'
+ - pub_SteeringEffort: '/LLI/SteeringEffort'
+ - pub_JointsEffort: '/LLI/JointsEffort'
+
+PL_R2U:
+ - compsub_TrottleEffort: 'LLI'
+ - compsub_SteeringEffort: 'LLI'
+ - compsub_JointsEffort: 'LLI'
+
+MAP:
+ - compsub_BladePosition: 'WSM'
+ - compsub_PosAttVel: 'LOC'
+ - compsub_BladePosition: 'WSM'
+ - compsub_Laser: 'PER'
+ - compsub_Camera: 'PER'
+ - pub_Map: '/MAP/Map'
+ - pub_MiniMap: '/MAP/MiniMap'
+
+LOC:
+ - compsub_PosAttVel: 'VO'
+ - compsub_PositionUpdate: 'OCU'
+ - pub_PosAttVel: '/LOC/PosAttVel'
+
+VO:
+ - compsub_Camera: 'PER'
+ - compsub_INS: 'PER'
+ - compsub_TF: 'PER'
+ - pub_PosAttVel: '/VO/PosAttVel'
+
+PER:
+ - compsub_Camera: 'PL_R2U'
+ - compsub_INS: 'SE_R2RS'
+ - compsub_TF: 'PER'
+

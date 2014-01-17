@@ -1,0 +1,13 @@
+<?xml version="1.0"?> 
+<sdf version="1.4">
+  <model name="SICK">
+    <include>
+      <uri>model://sick_stripped</uri>
+      <name>sickBody<name>
+    </include>
+    <plugin name="SICK" filename="libsick.so">
+	<name>sick</name>
+	<linkName>sickBody::link</linkName>
+    </plugin>
+  </model>        
+</sdf>
