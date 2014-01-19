@@ -72,6 +72,13 @@ LOC:
  - pub_PosAttVel: '/LOC/PosAttVel'
 
 VO:
+ - compsub_Camera: 'PER'
+ - compsub_INS: 'PER'
+ - compsub_TF: 'PER'
  - pub_PosAttVel: '/VO/PosAttVel'
 
+PER:
+ - compsub_Camera: 'PL_R2U'
+ - compsub_INS: 'SE_R2RS'
+ - compsub_TF: 'PER'
 

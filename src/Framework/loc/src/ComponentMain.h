@@ -18,11 +18,10 @@ public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 
-	void handleIEDDetectionEvent(robil2_msgs::String msg);
-	void handleIEDLocation(robil2_msgs::String msg);
+	void handlePosAttVel(robil2_msgs::String msg);
+	void handlePositionUpdate(robil2_msgs::String msg);
 
-	void publishIEDDetectionEvent(robil2_msgs::String &msg);
-	void publishIEDLocation(robil2_msgs::String &msg);
+	void publishPosAttVel(robil2_msgs::String &msg);
 };
 
 #endif /* COMPONENTMAIN_H_ */

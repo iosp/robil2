@@ -13,7 +13,6 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-
 class ComponentMain;
 
 class RosComm {
@@ -21,11 +20,10 @@ class RosComm {
 
   ros::NodeHandle * _nh;
 
-  ros::Subscriber * _sub_IEDDetectionEvent;
-  ros::Subscriber * _sub_IEDLocation;
+  ros::Subscriber * _sub_PosAttVel;
+  ros::Subscriber * _sub_PositionUpdate;
 
-  ros::Publisher  * _pub_IEDDetectionEvent;
-  ros::Publisher  * _pub_IEDLocation;
+  ros::Publisher  * _pub_PosAttVel;
 
 public:
 	RosComm(ComponentMain* comp,int argc,char** argv);
@@ -33,11 +31,10 @@ public:
 	std::string fetchParam(std::string compName,std::string neededTopic,std::string type);
 
 
-	void IEDDetectionEventCallback(const robil2_msgs::String::ConstPtr &msg);
-	void IEDLocationCallback(const robil2_msgs::String::ConstPtr &msg);
+	void PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg);
+	void PositionUpdateCallback(const robil2_msgs::String::ConstPtr &msg);
 
-	void publishIEDDetectionEvent(robil2_msgs::String &msg);
-        void publishIEDLocation(robil2_msgs::String &msg);
+	void publishPosAttVel(robil2_msgs::String &msg);
 };
 
 

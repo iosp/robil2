@@ -5,14 +5,35 @@
  *      Author: yuval
  */
 
-#include "/home/yuval/catkin_ws/src/Framework/iedsim/src/ComponentMain.h"
+#include "ComponentMain.h"
+#include "RosComm.h"
 
-ComponentMain::ComponentMain() {
-	// TODO Auto-generated constructor stub
-
+ComponentMain::ComponentMain(int argc,char** argv)
+{
+	_roscomm=new RosComm(this,argc, argv);
 }
 
-ComponentMain::~ComponentMain() {
+ComponentMain::~ComponentMain()
+{
 	// TODO Auto-generated destructor stub
 }
 
+void ComponentMain::handleIEDDetectionEvent(robil2_msgs::String msg)
+{
+
+}
+
+void ComponentMain::handleIEDLocation(robil2_msgs::String msg)
+{
+
+}
+
+void ComponentMain::publishIEDDetectionEvent(robil2_msgs::String &msg)
+{
+  _roscomm->publishIEDDetectionEvent(msg);
+}
+
+void ComponentMain::publishIEDLocation(robil2_msgs::String &msg)
+{
+  _roscomm->publishIEDLocation(msg);
+}

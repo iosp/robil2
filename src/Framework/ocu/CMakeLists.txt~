@@ -20,17 +20,23 @@ include_directories(
 
 ## Declare a cpp library
 
-
-
-add_library(ocu_rosComm
+add_library(rosComm STATIC
   src/RosComm.cpp
 )
-add_library(ocu_compMain
+add_library(compMain STATIC
   src/ComponentMain.cpp
 )
 
-add_executable(ocu_node src/main.cpp)
-
-target_link_libraries(ocu_node ocu_compMain ocu_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(rosComm
+   ${catkin_LIBRARIES} compMain ${Boost_LIBRARIES}
 )
+
+target_link_libraries(compMain
+ ${catkin_LIBRARIES} rosComm ${Boost_LIBRARIES}
+)
+
+#add_executable(ocu_node src/main.cpp)
+
+#target_link_libraries(ocu_node compMain  ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+#)
 

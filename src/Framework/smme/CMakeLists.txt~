@@ -20,16 +20,23 @@ include_directories(
 
 ## Declare a cpp library
 
-add_library(smme_rosComm
+add_library(rosComm STATIC
   src/RosComm.cpp
 )
-add_library(smme_compMain
+add_library(compMain STATIC
   src/ComponentMain.cpp
 )
 
-
-add_executable(smme_node src/main.cpp)
-
-target_link_libraries(smme_node smme_compMain smme_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(rosComm
+   ${catkin_LIBRARIES} compMain ${Boost_LIBRARIES}
 )
+
+target_link_libraries(compMain
+ ${catkin_LIBRARIES} rosComm ${Boost_LIBRARIES}
+)
+
+#add_executable(smme_node src/main.cpp)
+
+#target_link_libraries(smme_node compMain  ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+#)
 

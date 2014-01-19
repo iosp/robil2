@@ -8,26 +8,21 @@
 #include <robil2_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
-
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
 
 RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 {
-  ros::init(argc,argv,"IEDSIM_node");
+  ros::init(argc,argv,"SSM_node");
   _nh=new ros::NodeHandle;
   _comp=comp;
 
-   _sub_IEDDetectionEvent=
-       new ros::Subscriber(_nh->subscribe(fetchParam("IEDSIM","IEDDetectionEvent","sub"), 1, &RosComm::IEDDetectionEventCallback,this));
-  _sub_IEDLocation=
-      new ros::Subscriber(_nh->subscribe(fetchParam("IEDSIM","IEDLocation","sub"), 1, &RosComm::IEDLocationCallback,this));
+  ros::Subscriber * _sub_MissionStatus=
+      new ros::Subscriber(_nh->subscribe(fetchParam("SSM","MissionStatus","sub"), 1, &RosComm::MissionStatusCallback,this));
 
-  _pub_IEDDetectionEvent=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("IEDSIM","IEDDetectionEvent","pub"),1));
-  _pub_IEDLocation=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("IEDSIM","IEDLocation","pub"),1));
+  ros::Publisher  * _pub_StatusData=
+      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SSM","StatusData","pub"),1));
 
 }
 
@@ -36,26 +31,15 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::IEDDetectionEventCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::MissionStatusCallback(const robil2_msgs::String::ConstPtr &msg)
 {
-  _comp->handleIEDDetectionEvent(*msg);
+  _comp->handleMissionStatus(*msg);
 }
 
-void RosComm::IEDLocationCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::publishStatusData(robil2_msgs::String &msg)
 {
-  _comp->handleIEDLocation(*msg);
+  _pub_StatusData->publish(msg);
 }
-
-void RosComm::publishIEDDetectionEvent(robil2_msgs::String &msg)
-{
-  _pub_IEDDetectionEvent->publish(msg);
-}
-
-void RosComm::publishIEDLocation(robil2_msgs::String &msg)
-{
-  _pub_IEDLocation->publish(msg);
-}
-
 
 std::string RosComm::fetchParam(std::string compName,std::string neededTopic,std::string type)
 {

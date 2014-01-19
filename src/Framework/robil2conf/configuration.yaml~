@@ -1,0 +1,83 @@
+#OCU:
+OCU_sub_PosAttVel: 'LOC'
+OCU_sub_Teleoperation: 'LLI'
+OCU_sub_StatusData: 'SSM'
+OCU_sub_MissionStatus: 'SMME'
+OCU_sub_Map: 'MAP'
+OCU_sub_LocalPathPlan: 'PP'
+OCU_sub_IEDDetectionEvent: 'IED'
+OCU_sub_IEDLocation: 'IED'
+OCU_pub_PositionUpdate: '/OCU/PositionUpdate'
+OCU_pub_MissionPlan: '/OCU/MissionPlan'
+OCU_pub_Teleoperation: '/OCU/Teleoperation'
+OCU_pub_IEDDetectionEvent: '/OCU/IEDDetectionEvent'
+OCU_pub_IEDLocation: '/OCU/IEDLocation'
+
+#IED:
+IEDSIM_sub_IEDDetectionEvent: 'OCU'
+IEDSIM_sub_IEDLocation: 'OCU'
+IEDSIM_pub_IEDDetectionEvent: '/IED/IEDDetectionEvent'
+IEDSIM_pub_IEDLocation: '/IED/IEDLocation'
+
+#SMME:
+SMME_sub_IEDDetectionEvent: 'IED'
+SMME_sub_IEDLocation: 'IED'
+SMME_sub_MissionPlan: 'OCU'
+SMME_sub_StatusData: 'SSM'
+SMME_pub_MissionStatus: '/SMME/MissionStatus'
+SMME_pub_MissionGlobalPath: '/SMME/MissionGlobalPath'
+SMME_pub_IEDPosAtt: '/SMME/IEDPosAtt'
+SMME_pub_ExecuteWorkSequenceCommand: '/SMME/ExecuteWorkSequenceCommand'
+
+#SSM:
+SSM_sub_MissionStatus: 'SMME'
+SSM_pub_StatusData: '/SSM/StatusData'
+
+#WSM:
+WSM_sub_ExecuteWorkSequenceCommand: 'SMME'
+WSM_sub_PosAttVel: 'LOC'
+WSM_sub_WiresLengths: 'TF'
+WSM_pub_BladePosition: '/WSM/BladePosition'
+WSM_pub_TrottleEffort: '/WSM/TrottleEffort'
+WSM_pub_SteeringEffort: '/WSM/SteeringEffort'
+WSM_pub_JointsEffort: '/WSM/JointsEffort'
+
+#LLI:
+LLI_sub_TrottleEffort: 'WSM'
+LLI_sub_SteeringEffort: 'WSM'
+LLI_sub_JointsEffort: 'WSM'
+LLI_sub_Teleoperation: 'OCU'
+LLI_pub_Teleoperation: '/LLI/Teleoperation'
+LLI_pub_TrottleEffort: '/LLI/TrottleEffort'
+LLI_pub_SteeringEffort: '/LLI/SteeringEffort'
+LLI_pub_JointsEffort: '/LLI/JointsEffort'
+
+#PL_R2U:
+PL_R2U_sub_TrottleEffort: 'LLI'
+PL_R2U_sub_SteeringEffort: 'LLI'
+PL_R2U_sub_JointsEffort: 'LLI'
+
+#MAP:
+MAP_sub_BladePosition: 'WSM'
+MAP_sub_PosAttVel: 'LOC'
+MAP_sub_Laser: 'PER'
+MAP_sub_Camera: 'PER'
+MAP_pub_Map: '/MAP/Map'
+MAP_pub_MiniMap: '/MAP/MiniMap'
+
+#LOC:
+LOC_sub_PosAttVel: 'VO'
+LOC_sub_PositionUpdate: 'OCU'
+LOC_pub_PosAttVel: '/LOC/PosAttVel'
+
+#VO:
+VO_sub_Camera: 'PER'
+VO_sub_INS: 'PER'
+VO_sub_TF: 'PER'
+VO_pub_PosAttVel: '/VO/PosAttVel'
+
+#PER:
+PER_sub_Camera: 'PL_R2U'
+PER_sub_INS: 'SE_R2RS'
+PER_pub_TF: 'PER/TF'
+

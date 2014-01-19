@@ -1,0 +1,4 @@
+<launch>
+<rosparam command="load" file="$(find robil2conf)/configuration.yaml" />
+<node name="iedsim_node" type="iedsim_node" pkg="iedsim"/>
+</launch>

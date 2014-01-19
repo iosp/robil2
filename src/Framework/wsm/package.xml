@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
-  <name>ssm</name>
+  <name>wsm</name>
   <version>0.0.0</version>
-  <description>The ssm package</description>
- 
+  <description>The wsm package</description>
+
   <maintainer email="yuval@todo.todo">yuval</maintainer>
 
   <license>TODO</license>

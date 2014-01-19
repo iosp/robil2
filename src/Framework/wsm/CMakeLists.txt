@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(lli)
+project(wsm)
 
 find_package(catkin REQUIRED COMPONENTS
   robil2_msgs roscpp
@@ -20,16 +20,16 @@ include_directories(
 
 ## Declare a cpp library
 
-add_library(lli_rosComm
+add_library(wsm_rosComm
   src/RosComm.cpp
 )
-add_library(lli_compMain
+add_library(wsm_compMain
   src/ComponentMain.cpp
 )
 
 
-add_executable(lli_node src/main.cpp)
+add_executable(wsm_node src/main.cpp)
 
-target_link_libraries(lli_node lli_compMain lli_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(wsm_node wsm_compMain wsm_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
 

@@ -8,26 +8,23 @@
 #include <robil2_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
-
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
 
 RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 {
-  ros::init(argc,argv,"IEDSIM_node");
+  ros::init(argc,argv,"LOC_node");
   _nh=new ros::NodeHandle;
   _comp=comp;
 
-   _sub_IEDDetectionEvent=
-       new ros::Subscriber(_nh->subscribe(fetchParam("IEDSIM","IEDDetectionEvent","sub"), 1, &RosComm::IEDDetectionEventCallback,this));
-  _sub_IEDLocation=
-      new ros::Subscriber(_nh->subscribe(fetchParam("IEDSIM","IEDLocation","sub"), 1, &RosComm::IEDLocationCallback,this));
+   _sub_PosAttVel=
+       new ros::Subscriber(_nh->subscribe(fetchParam("LOC","PosAttVel","sub"), 1, &RosComm::PosAttVelCallback,this));
+  _sub_PositionUpdate=
+      new ros::Subscriber(_nh->subscribe(fetchParam("LOC","PositionUpdate","sub"), 1, &RosComm::PositionUpdateCallback,this));
 
-  _pub_IEDDetectionEvent=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("IEDSIM","IEDDetectionEvent","pub"),1));
-  _pub_IEDLocation=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("IEDSIM","IEDLocation","pub"),1));
+  _pub_PosAttVel=
+      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("LOC","PosAttVel","pub"),1));
 
 }
 
@@ -36,24 +33,19 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::IEDDetectionEventCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg)
 {
-  _comp->handleIEDDetectionEvent(*msg);
+  _comp->handlePosAttVel(*msg);
 }
 
-void RosComm::IEDLocationCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::PositionUpdateCallback(const robil2_msgs::String::ConstPtr &msg)
 {
-  _comp->handleIEDLocation(*msg);
+  _comp->handlePositionUpdate(*msg);
 }
 
-void RosComm::publishIEDDetectionEvent(robil2_msgs::String &msg)
+void RosComm::publishPosAttVel(robil2_msgs::String &msg)
 {
-  _pub_IEDDetectionEvent->publish(msg);
-}
-
-void RosComm::publishIEDLocation(robil2_msgs::String &msg)
-{
-  _pub_IEDLocation->publish(msg);
+  _pub_PosAttVel->publish(msg);
 }
 
 
