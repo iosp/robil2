@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 2.8.3)
 project(wpd)
 
 find_package(catkin REQUIRED COMPONENTS
-  robil2_msgs roscpp
+  std_msgs roscpp
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
 
 
 catkin_package(
-
+	CATKIN_DEPENDS std_msgs
 )
 
 ###########

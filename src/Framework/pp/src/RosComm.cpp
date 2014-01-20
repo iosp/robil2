@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -35,7 +35,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
       new ros::Subscriber(_nh->subscribe(fetchParam("PP","RPPPath","sub"), 1, &RosComm::RPPPathCallback,this));
 
   _pub_LocalPathPlan=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("PP","LocalPathPlan","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("PP","LocalPathPlan","pub"),1));
 
 }
 
@@ -45,28 +45,28 @@ RosComm::~RosComm()
 }
 
 
-void RosComm::MapCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::MapCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleMap(*msg);
 }
-void RosComm::MissionGlobalPathCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::MissionGlobalPathCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleMissionGlobalPath(*msg);
 }
-void RosComm::IEDPosAttCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::IEDPosAttCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleIEDPosAtt(*msg);
 }
-void RosComm::PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::PosAttVelCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handlePosAttVel(*msg);
 }
-void RosComm::RPPPathCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::RPPPathCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleRPPPath(*msg);
 }
 
-void RosComm::publishLocalPathPlan(robil2_msgs::String &msg)
+void RosComm::publishLocalPathPlan(std_msgs::String &msg)
 {
   _pub_LocalPathPlan->publish(msg);
 }

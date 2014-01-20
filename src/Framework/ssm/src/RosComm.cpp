@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -22,7 +22,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
       new ros::Subscriber(_nh->subscribe(fetchParam("SSM","MissionStatus","sub"), 1, &RosComm::MissionStatusCallback,this));
 
   ros::Publisher  * _pub_StatusData=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SSM","StatusData","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SSM","StatusData","pub"),1));
 
 }
 
@@ -31,12 +31,12 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::MissionStatusCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::MissionStatusCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleMissionStatus(*msg);
 }
 
-void RosComm::publishStatusData(robil2_msgs::String &msg)
+void RosComm::publishStatusData(std_msgs::String &msg)
 {
   _pub_StatusData->publish(msg);
 }

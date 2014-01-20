@@ -8,7 +8,7 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 
 class RosComm;
 
@@ -18,10 +18,10 @@ public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 
-	void handlePosAttVel(robil2_msgs::String msg);
-	void handlePositionUpdate(robil2_msgs::String msg);
+	void handlePosAttVel(std_msgs::String msg);
+	void handlePositionUpdate(std_msgs::String msg);
 
-	void publishPosAttVel(robil2_msgs::String &msg);
+	void publishPosAttVel(std_msgs::String &msg);
 };
 
 #endif /* COMPONENTMAIN_H_ */

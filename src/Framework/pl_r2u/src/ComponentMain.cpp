@@ -16,17 +16,17 @@ ComponentMain::~ComponentMain() {
 	// TODO Auto-generated destructor stub
 }
 
-void ComponentMain::handleTrottleEffort(robil2_msgs::String msg)
+void ComponentMain::handleTrottleEffort(std_msgs::String msg)
 {
-
+  std::cout<< "PLR2U say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handleStreeringEffort(robil2_msgs::String msg)
+void ComponentMain::handleStreeringEffort(std_msgs::String msg)
 {
-
+  std::cout<< "PLR2U say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handleJointsEffort(robil2_msgs::String msg)
+void ComponentMain::handleJointsEffort(std_msgs::String msg)
 {
 
 }

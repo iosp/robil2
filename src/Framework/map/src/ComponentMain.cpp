@@ -16,32 +16,32 @@ ComponentMain::~ComponentMain() {
 	// TODO Auto-generated destructor stub
 }
 
-void ComponentMain::handleBladePosition(robil2_msgs::String msg)
+void ComponentMain::handleBladePosition(std_msgs::String msg)
 {
-
+  std::cout<< "MAP say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handlePosAttVel(robil2_msgs::String msg)
+void ComponentMain::handlePosAttVel(std_msgs::String msg)
 {
-
+  std::cout<< "MAP say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handleLaser(robil2_msgs::String msg)
+void ComponentMain::handleLaser(std_msgs::String msg)
 {
-
+  std::cout<< "MAP say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handleCamera(robil2_msgs::String msg)
+void ComponentMain::handleCamera(std_msgs::String msg)
 {
-
+  std::cout<< "MAP say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishMap(robil2_msgs::String &msg)
+void ComponentMain::publishMap(std_msgs::String &msg)
 {
   _roscomm->publishMap(msg);
 }
 
-void ComponentMain::publishMiniMap(robil2_msgs::String &msg)
+void ComponentMain::publishMiniMap(std_msgs::String &msg)
 {
   _roscomm->publishMiniMap(msg);
 }

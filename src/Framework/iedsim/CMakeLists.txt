@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 2.8.3)
 project(iedsim)
 
 find_package(catkin REQUIRED COMPONENTS
-  robil2_msgs roscpp
+ roscpp rospy std_msgs genmsg
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_package(
-
+	CATKIN_DEPENDS std_msgs
 )
 
 ###########
@@ -33,4 +33,5 @@ add_executable(iedsim_node src/main.cpp)
 
 target_link_libraries(iedsim_node iedsim_compMain iedsim_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
+
 

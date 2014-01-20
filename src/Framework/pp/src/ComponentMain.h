@@ -8,7 +8,7 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 
 class RosComm;
 
@@ -18,13 +18,13 @@ public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 
-        void handleMap(robil2_msgs::String msg);
-        void handleMissionGlobalPath(robil2_msgs::String msg);
-        void handleIEDPosAtt(robil2_msgs::String msg);
-        void handlePosAttVel(robil2_msgs::String msg);
-        void handleRPPPath(robil2_msgs::String msg);
+        void handleMap(std_msgs::String msg);
+        void handleMissionGlobalPath(std_msgs::String msg);
+        void handleIEDPosAtt(std_msgs::String msg);
+        void handlePosAttVel(std_msgs::String msg);
+        void handleRPPPath(std_msgs::String msg);
 
-        void publishLocalPathPlan(robil2_msgs::String &msg);
+        void publishLocalPathPlan(std_msgs::String &msg);
 };
 
 #endif /* COMPONENTMAIN_H_ */

@@ -9,7 +9,7 @@
 #define ROSCOMM_H_
 
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
@@ -34,13 +34,13 @@ public:
 	virtual ~RosComm();
 	std::string fetchParam(std::string compName,std::string neededTopic,std::string type);
 
-        void MapCallback(const robil2_msgs::String::ConstPtr &msg);
-        void MissionGlobalPathCallback(const robil2_msgs::String::ConstPtr &msg);
-        void IEDPosAttCallback(const robil2_msgs::String::ConstPtr &msg);
-        void PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg);
-        void RPPPathCallback(const robil2_msgs::String::ConstPtr &msg);
+        void MapCallback(const std_msgs::String::ConstPtr &msg);
+        void MissionGlobalPathCallback(const std_msgs::String::ConstPtr &msg);
+        void IEDPosAttCallback(const std_msgs::String::ConstPtr &msg);
+        void PosAttVelCallback(const std_msgs::String::ConstPtr &msg);
+        void RPPPathCallback(const std_msgs::String::ConstPtr &msg);
 
-        void publishLocalPathPlan(robil2_msgs::String &msg);
+        void publishLocalPathPlan(std_msgs::String &msg);
 };
 
 

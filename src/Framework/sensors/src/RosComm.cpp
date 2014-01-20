@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -19,22 +19,22 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
   _comp=comp;
 
   _pub_Sensor_SICK=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SENSORS","Sensor_SICK","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SENSORS","Sensor_SICK","pub"),1));
 
   _pub_Sensor_IBEO=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SENSORS","Sensor_IBEO","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SENSORS","Sensor_IBEO","pub"),1));
 
   _pub_Sensor_CAM_R=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SENSORS","Sensor_CAM_R","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SENSORS","Sensor_CAM_R","pub"),1));
 
   _pub_Sensor_CAM_L=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SENSORS","Sensor_CAM_L","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SENSORS","Sensor_CAM_L","pub"),1));
 
   _pub_Sensor_WIRE=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SENSORS","Sensor_WIRE","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SENSORS","Sensor_WIRE","pub"),1));
 
   _pub_Sensor_INSGPS=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SENSORS","Sensor_INSGPS","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SENSORS","Sensor_INSGPS","pub"),1));
 
 }
 
@@ -44,27 +44,27 @@ RosComm::~RosComm()
 }
 
 
-void RosComm::publishSensor_SICK(robil2_msgs::String &msg)
+void RosComm::publishSensor_SICK(std_msgs::String &msg)
 {
   _pub_Sensor_SICK->publish(msg);
 }
-void RosComm::publishSensor_IBEO(robil2_msgs::String &msg)
+void RosComm::publishSensor_IBEO(std_msgs::String &msg)
 {
   _pub_Sensor_IBEO->publish(msg);
 }
-void RosComm::publishSensor_CAM_R(robil2_msgs::String &msg)
+void RosComm::publishSensor_CAM_R(std_msgs::String &msg)
 {
   _pub_Sensor_CAM_R->publish(msg);
 }
-void RosComm::publishSensor_CAM_L(robil2_msgs::String &msg)
+void RosComm::publishSensor_CAM_L(std_msgs::String &msg)
 {
   _pub_Sensor_CAM_L->publish(msg);
 }
-void RosComm::publishSensor_WIRE(robil2_msgs::String &msg)
+void RosComm::publishSensor_WIRE(std_msgs::String &msg)
 {
   _pub_Sensor_WIRE->publish(msg);
 }
-void RosComm::publishSensor_INSGPS(robil2_msgs::String &msg)
+void RosComm::publishSensor_INSGPS(std_msgs::String &msg)
 {
   _pub_Sensor_INSGPS->publish(msg);
 }

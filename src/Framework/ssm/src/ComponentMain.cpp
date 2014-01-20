@@ -17,12 +17,12 @@ ComponentMain::~ComponentMain() {
 }
 
 
-void ComponentMain::handleMissionStatus(robil2_msgs::String msg)
+void ComponentMain::handleMissionStatus(std_msgs::String msg)
 {
-
+  std::cout<< "SSM say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishStatusData(robil2_msgs::String &msg)
+void ComponentMain::publishStatusData(std_msgs::String &msg)
 {
   _roscomm->publishStatusData(msg);
 }

@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -29,7 +29,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 
 
   _pub_RPPPath=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("RPP","RPPPath","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("RPP","RPPPath","pub"),1));
 
 }
 
@@ -39,20 +39,20 @@ RosComm::~RosComm()
 }
 
 
-void RosComm::LocalPathPlanCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::LocalPathPlanCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleLocalPathPlan(*msg);
 }
-void RosComm::MiniMapCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::MiniMapCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleMiniMap(*msg);
 }
-void RosComm::PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::PosAttVelCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handlePosAttVel(*msg);
 }
 
-void RosComm::publishRPPPath(robil2_msgs::String &msg)
+void RosComm::publishRPPPath(std_msgs::String &msg)
 {
   _pub_RPPPath->publish(msg);
 }

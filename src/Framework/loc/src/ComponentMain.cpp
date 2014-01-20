@@ -16,17 +16,17 @@ ComponentMain::~ComponentMain() {
 	// TODO Auto-generated destructor stub
 }
 
-void ComponentMain::handlePositionUpdate(robil2_msgs::String msg)
+void ComponentMain::handlePositionUpdate(std_msgs::String msg)
 {
-
+  std::cout<< "LOC say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handlePosAttVel(robil2_msgs::String msg)
+void ComponentMain::handlePosAttVel(std_msgs::String msg)
 {
-
+  std::cout<< "LOC say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishPosAttVel(robil2_msgs::String &msg)
+void ComponentMain::publishPosAttVel(std_msgs::String &msg)
 {
   _roscomm->publishPosAttVel(msg);
 }

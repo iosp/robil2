@@ -16,56 +16,56 @@ ComponentMain::~ComponentMain() {
 	// TODO Auto-generated destructor stub
 }
 
-void ComponentMain::handlePosAttVel( robil2_msgs::String msg)
+void ComponentMain::handlePosAttVel( std_msgs::String msg)
 {
-
+  std::cout<< "OCU say:" << msg.data << std::endl;
 }
-void ComponentMain::handleTeleoperation( robil2_msgs::String msg)
+void ComponentMain::handleTeleoperation( std_msgs::String msg)
 {
-
+  std::cout<< "OCU say:" << msg.data << std::endl;
 }
-void ComponentMain::handleStatusData( robil2_msgs::String msg)
+void ComponentMain::handleStatusData( std_msgs::String msg)
 {
-
+  std::cout<< "OCU say:" << msg.data << std::endl;
 }
-void ComponentMain::handleMissionStatus( robil2_msgs::String msg)
+void ComponentMain::handleMissionStatus( std_msgs::String msg)
 {
-
+  std::cout<< "OCU say:" << msg.data << std::endl;
 }
-void ComponentMain::handleMap( robil2_msgs::String msg)
+void ComponentMain::handleMap( std_msgs::String msg)
 {
-
+  std::cout<< "OCU say:" << msg.data << std::endl;
 }
-void ComponentMain::handleLocalPathPlan( robil2_msgs::String msg)
+void ComponentMain::handleLocalPathPlan( std_msgs::String msg)
 {
-
+  std::cout<< "OCU say:" << msg.data << std::endl;
 }
-void ComponentMain::handleIEDDetectionEvent( robil2_msgs::String msg)
+void ComponentMain::handleIEDDetectionEvent( std_msgs::String msg)
 {
-
+  std::cout<< "OCU say:" << msg.data << std::endl;
 }
-void ComponentMain::handleIEDLocation( robil2_msgs::String msg)
+void ComponentMain::handleIEDLocation( std_msgs::String msg)
 {
-
+  std::cout<< "OCU say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishPositionUpdate(robil2_msgs::String &msg)
+void ComponentMain::publishPositionUpdate(std_msgs::String &msg)
 {
   _roscomm->publishPositionUpdate(msg);
 }
-void ComponentMain::publishMissionPlan(robil2_msgs::String &msg)
+void ComponentMain::publishMissionPlan(std_msgs::String &msg)
 {
   _roscomm->publishMissionPlan(msg);
 }
-void ComponentMain::publishTeleoperation(robil2_msgs::String &msg)
+void ComponentMain::publishTeleoperation(std_msgs::String &msg)
 {
   _roscomm->publishTeleoperation(msg);
 }
-void ComponentMain::publishIEDDetectionEvent(robil2_msgs::String &msg)
+void ComponentMain::publishIEDDetectionEvent(std_msgs::String &msg)
 {
   _roscomm->publishIEDDetectionEvent(msg);
 }
-void ComponentMain::publishIEDLocation(robil2_msgs::String &msg)
+void ComponentMain::publishIEDLocation(std_msgs::String &msg)
 {
   _roscomm->publishIEDLocation(msg);
 }

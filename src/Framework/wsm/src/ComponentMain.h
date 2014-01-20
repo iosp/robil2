@@ -8,7 +8,7 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 
 class RosComm;
 
@@ -18,14 +18,14 @@ public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 
-        void handleExecuteWorkSequenceCommand( robil2_msgs::String msg);
-        void handlePosAttVel( robil2_msgs::String msg);
-        void handleWiresLengths( robil2_msgs::String msg);
+        void handleExecuteWorkSequenceCommand( std_msgs::String msg);
+        void handlePosAttVel( std_msgs::String msg);
+        void handleWiresLengths( std_msgs::String msg);
 
-        void publishBladePosition(robil2_msgs::String &msg);
-        void publishTrottleEffort(robil2_msgs::String &msg);
-        void publishSteeringEffort(robil2_msgs::String &msg);
-        void publishJointsEffort(robil2_msgs::String &msg);
+        void publishBladePosition(std_msgs::String &msg);
+        void publishTrottleEffort(std_msgs::String &msg);
+        void publishSteeringEffort(std_msgs::String &msg);
+        void publishJointsEffort(std_msgs::String &msg);
 
 
 };

@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -29,7 +29,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
       new ros::Subscriber(_nh->subscribe(fetchParam("VO","TF","sub"), 1, &RosComm::TFCallback,this));
 
   _pub_PosAttVel=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("VO","PosAttVel","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("VO","PosAttVel","pub"),1));
 
 }
 
@@ -39,22 +39,22 @@ RosComm::~RosComm()
 }
 
 
-void RosComm::CameraCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::CameraCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleCamera(*msg);
 }
 
-void RosComm::INSCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::INSCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleINS(*msg);
 }
 
-void RosComm::TFCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::TFCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleTF(*msg);
 }
 
-void RosComm::publishPosAttVel(robil2_msgs::String &msg)
+void RosComm::publishPosAttVel(std_msgs::String &msg)
 {
   _pub_PosAttVel->publish(msg);
 }

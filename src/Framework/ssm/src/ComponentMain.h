@@ -8,7 +8,7 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 
 class RosComm;
 
@@ -19,9 +19,9 @@ public:
 	virtual ~ComponentMain();
 
 
-        void handleMissionStatus(robil2_msgs::String msg);
+        void handleMissionStatus(std_msgs::String msg);
 
-        void publishStatusData(robil2_msgs::String &msg);
+        void publishStatusData(std_msgs::String &msg);
 };
 
 #endif /* COMPONENTMAIN_H_ */

@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -37,21 +37,21 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
   _sub_TrottleEffort=
       new ros::Subscriber(_nh->subscribe(fetchParam("OCU","IEDDetectionEvent","sub"), 1, &RosComm::TrottleEffortCallback,this));
 
-  _sub_StreeringEffort=
+  _sub_SteeringEffort=
       new ros::Subscriber(_nh->subscribe(fetchParam("OCU","IEDLocation","sub"), 1, &RosComm::IEDLocationCallback,this));
 
 
   _pub_PositionUpdate=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("OCU","PositionUpdate","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("OCU","PositionUpdate","pub"),1));
 
   _pub_MissionPlan=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("OCU","MissionPlan","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("OCU","MissionPlan","pub"),1));
   _pub_Teleoperation=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("OCU","Teleoperation","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("OCU","Teleoperation","pub"),1));
   _pub_IEDDetectionEvent=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("OCU","IEDDetectionEvent","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("OCU","IEDDetectionEvent","pub"),1));
   _pub_IEDLocation=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("OCU","IEDLocation","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("OCU","IEDLocation","pub"),1));
 
 
 }
@@ -63,57 +63,57 @@ RosComm::~RosComm()
 
 
 
-void RosComm::PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::PosAttVelCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handlePosAttVel(*msg);
 }
 
-void RosComm::TeleoperationCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::TeleoperationCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleTeleoperation(*msg);
 }
-void RosComm::StatusDataCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::StatusDataCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleStatusData(*msg);
 }
-void RosComm::MissionStatusCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::MissionStatusCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleMissionStatus(*msg);
 }
-void RosComm::MapCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::MapCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleMap(*msg);
 }
-void RosComm::LocalPathPlanCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::LocalPathPlanCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleLocalPathPlan(*msg);
 }
-void RosComm::TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::TrottleEffortCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleIEDDetectionEvent(*msg);
 }
-void RosComm::IEDLocationCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::IEDLocationCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleIEDLocation(*msg);
 }
 
-void RosComm::publishPositionUpdate(robil2_msgs::String &msg)
+void RosComm::publishPositionUpdate(std_msgs::String &msg)
 {
   _pub_PositionUpdate->publish(msg);
 }
-void RosComm::publishMissionPlan(robil2_msgs::String &msg)
+void RosComm::publishMissionPlan(std_msgs::String &msg)
 {
   _pub_MissionPlan->publish(msg);
 }
-void RosComm::publishTeleoperation(robil2_msgs::String &msg)
+void RosComm::publishTeleoperation(std_msgs::String &msg)
 {
   _pub_Teleoperation->publish(msg);
 }
-void RosComm::publishIEDDetectionEvent(robil2_msgs::String &msg)
+void RosComm::publishIEDDetectionEvent(std_msgs::String &msg)
 {
   _pub_IEDDetectionEvent->publish(msg);
 }
-void RosComm::publishIEDLocation(robil2_msgs::String &msg)
+void RosComm::publishIEDLocation(std_msgs::String &msg)
 {
   _pub_IEDLocation->publish(msg);
 }

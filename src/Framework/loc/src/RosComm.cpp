@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -24,7 +24,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
       new ros::Subscriber(_nh->subscribe(fetchParam("LOC","PositionUpdate","sub"), 1, &RosComm::PositionUpdateCallback,this));
 
   _pub_PosAttVel=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("LOC","PosAttVel","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("LOC","PosAttVel","pub"),1));
 
 }
 
@@ -33,17 +33,17 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::PosAttVelCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handlePosAttVel(*msg);
 }
 
-void RosComm::PositionUpdateCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::PositionUpdateCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handlePositionUpdate(*msg);
 }
 
-void RosComm::publishPosAttVel(robil2_msgs::String &msg)
+void RosComm::publishPosAttVel(std_msgs::String &msg)
 {
   _pub_PosAttVel->publish(msg);
 }

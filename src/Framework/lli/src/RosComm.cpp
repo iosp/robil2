@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -33,16 +33,16 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 
 
   _pub_TrottleEffort=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("LLI","TrottleEffort","pub"),  1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("LLI","TrottleEffort","pub"),  1));
 
   _pub_SteeringEffort=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("LLI","SteeringEffort","pub"), 1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("LLI","SteeringEffort","pub"), 1));
 
   _pub_JointsEffort=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("LLI","JointsEffort","pub"),   1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("LLI","JointsEffort","pub"),   1));
 
   _pub_Teleoperation=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("LLI","Teleoperation","pub"),  1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("LLI","Teleoperation","pub"),  1));
 
 
 
@@ -53,40 +53,40 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::TrottleEffortCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleTrottleEffort(*msg);
 }
 
-void RosComm::SteeringEffortCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::SteeringEffortCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSteeringEffort(*msg);
 }
-void RosComm::JointsEffortCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::JointsEffortCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleJointsEffort(*msg);
 }
-void RosComm::TeleoperationCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::TeleoperationCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleTeleoperation(*msg);
 }
 
-void RosComm::publishTrottleEffort(robil2_msgs::String &msg)
+void RosComm::publishTrottleEffort(std_msgs::String &msg)
 {
   _pub_TrottleEffort->publish(msg);
 }
 
-void RosComm::publishSteeringEffort(robil2_msgs::String &msg)
+void RosComm::publishSteeringEffort(std_msgs::String &msg)
 {
  _pub_SteeringEffort->publish(msg);
 }
 
-void RosComm::publishJointsEffort(robil2_msgs::String &msg)
+void RosComm::publishJointsEffort(std_msgs::String &msg)
 {
  _pub_JointsEffort->publish(msg);
 }
 
-void RosComm::publishTeleoperation(robil2_msgs::String &msg)
+void RosComm::publishTeleoperation(std_msgs::String &msg)
 {
   _pub_Teleoperation->publish(msg);
 }

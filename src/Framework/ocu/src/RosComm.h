@@ -9,7 +9,7 @@
 #define ROSCOMM_H_
 
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
@@ -27,7 +27,7 @@ class RosComm {
   ros::Subscriber * _sub_Map;
   ros::Subscriber * _sub_LocalPathPlan;
   ros::Subscriber * _sub_TrottleEffort;
-  ros::Subscriber * _sub_StreeringEffort;
+  ros::Subscriber * _sub_SteeringEffort;
 
 
   ros::Publisher  * _pub_PositionUpdate;
@@ -43,20 +43,20 @@ public:
 	std::string fetchParam(std::string compName,std::string neededTopic,std::string type);
 
 
-	void PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg);
-	void TeleoperationCallback(const robil2_msgs::String::ConstPtr &msg);
-	void StatusDataCallback(const robil2_msgs::String::ConstPtr &msg);
-	void MissionStatusCallback(const robil2_msgs::String::ConstPtr &msg);
-	void MapCallback(const robil2_msgs::String::ConstPtr &msg);
-	void LocalPathPlanCallback(const robil2_msgs::String::ConstPtr &msg);
-	void TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg);
-	void IEDLocationCallback(const robil2_msgs::String::ConstPtr &msg);
+	void PosAttVelCallback(const std_msgs::String::ConstPtr &msg);
+	void TeleoperationCallback(const std_msgs::String::ConstPtr &msg);
+	void StatusDataCallback(const std_msgs::String::ConstPtr &msg);
+	void MissionStatusCallback(const std_msgs::String::ConstPtr &msg);
+	void MapCallback(const std_msgs::String::ConstPtr &msg);
+	void LocalPathPlanCallback(const std_msgs::String::ConstPtr &msg);
+	void TrottleEffortCallback(const std_msgs::String::ConstPtr &msg);
+	void IEDLocationCallback(const std_msgs::String::ConstPtr &msg);
 
-	void publishPositionUpdate(robil2_msgs::String &msg);
-	void publishMissionPlan(robil2_msgs::String &msg);
-	void publishTeleoperation(robil2_msgs::String &msg);
-	void publishIEDDetectionEvent(robil2_msgs::String &msg);
-	void publishIEDLocation(robil2_msgs::String &msg);
+	void publishPositionUpdate(std_msgs::String &msg);
+	void publishMissionPlan(std_msgs::String &msg);
+	void publishTeleoperation(std_msgs::String &msg);
+	void publishIEDDetectionEvent(std_msgs::String &msg);
+	void publishIEDLocation(std_msgs::String &msg);
 };
 
 

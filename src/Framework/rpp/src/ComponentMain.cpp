@@ -16,20 +16,20 @@ ComponentMain::~ComponentMain() {
 	// TODO Auto-generated destructor stub
 }
 
-void ComponentMain::handleLocalPathPlan(robil2_msgs::String msg)
+void ComponentMain::handleLocalPathPlan(std_msgs::String msg)
 {
-
+  std::cout<< "RPP say:" << msg.data << std::endl;
 }
-void ComponentMain::handleMiniMap(robil2_msgs::String msg)
+void ComponentMain::handleMiniMap(std_msgs::String msg)
 {
-
+  std::cout<< "RPP say:" << msg.data << std::endl;
 }
-void ComponentMain::handlePosAttVel(robil2_msgs::String msg)
+void ComponentMain::handlePosAttVel(std_msgs::String msg)
 {
-
+  std::cout<< "RPP say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishRPPPath(robil2_msgs::String &msg)
+void ComponentMain::publishRPPPath(std_msgs::String &msg)
 {
   _roscomm->publishRPPPath(msg);
 }

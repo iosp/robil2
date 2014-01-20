@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -28,16 +28,16 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
       new ros::Subscriber(_nh->subscribe(fetchParam("WSM","WiresLengths","sub"), 1, &RosComm::WiresLengthsCallback,this));
 
   _pub_BladePosition=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("WSM","BladePosition","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("WSM","BladePosition","pub"),1));
 
   _pub_TrottleEffort=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("WSM","TrottleEffort","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("WSM","TrottleEffort","pub"),1));
 
   _pub_SteeringEffort=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("WSM","SteeringEffort","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("WSM","SteeringEffort","pub"),1));
 
   _pub_JointsEffort=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("WSM","JointsEffort","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("WSM","JointsEffort","pub"),1));
 
 }
 
@@ -46,37 +46,37 @@ RosComm::~RosComm()
   // TODO Auto-generated destructor stub
 }
 
-void RosComm::ExecuteWorkSequenceCommandCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::ExecuteWorkSequenceCommandCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleExecuteWorkSequenceCommand(*msg);
 }
 
-void RosComm::PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::PosAttVelCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handlePosAttVel(*msg);
 }
 
-void RosComm::WiresLengthsCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::WiresLengthsCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleWiresLengths(*msg);
 }
 
-void RosComm::publishBladePosition(robil2_msgs::String &msg)
+void RosComm::publishBladePosition(std_msgs::String &msg)
 {
   _pub_BladePosition->publish(msg);
 }
 
-void RosComm::publishTrottleEffort(robil2_msgs::String &msg)
+void RosComm::publishTrottleEffort(std_msgs::String &msg)
 {
   _pub_TrottleEffort->publish(msg);
 }
 
-void RosComm::publishSteeringEffort(robil2_msgs::String &msg)
+void RosComm::publishSteeringEffort(std_msgs::String &msg)
 {
   _pub_SteeringEffort->publish(msg);
 }
 
-void RosComm::publishJointsEffort(robil2_msgs::String &msg)
+void RosComm::publishJointsEffort(std_msgs::String &msg)
 {
   _pub_JointsEffort->publish(msg);
 }

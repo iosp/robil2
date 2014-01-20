@@ -17,36 +17,36 @@ ComponentMain::~ComponentMain() {
 }
 
 
-void ComponentMain::handleExecuteWorkSequenceCommand( robil2_msgs::String msg)
+void ComponentMain::handleExecuteWorkSequenceCommand( std_msgs::String msg)
 {
-
+  std::cout<< "WSM say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handlePosAttVel( robil2_msgs::String msg)
+void ComponentMain::handlePosAttVel( std_msgs::String msg)
 {
-
+  std::cout<< "WSM say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handleWiresLengths( robil2_msgs::String msg)
+void ComponentMain::handleWiresLengths( std_msgs::String msg)
 {
-
+  std::cout<< "WSM say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishBladePosition(robil2_msgs::String &msg)
+void ComponentMain::publishBladePosition(std_msgs::String &msg)
 {
   _roscomm->publishBladePosition(msg);
 }
 
-void ComponentMain::publishTrottleEffort(robil2_msgs::String &msg)
+void ComponentMain::publishTrottleEffort(std_msgs::String &msg)
 {
   _roscomm->publishTrottleEffort(msg);
 }
-void ComponentMain::publishSteeringEffort(robil2_msgs::String &msg)
+void ComponentMain::publishSteeringEffort(std_msgs::String &msg)
 {
   _roscomm->publishSteeringEffort(msg);
 }
 
-void ComponentMain::publishJointsEffort(robil2_msgs::String &msg)
+void ComponentMain::publishJointsEffort(std_msgs::String &msg)
 {
   _roscomm->publishJointsEffort(msg);
 }

@@ -9,7 +9,7 @@
 #define ROSCOMM_H_
 
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
@@ -21,7 +21,7 @@ class RosComm {
   ros::NodeHandle * _nh;
 
   ros::Subscriber * _sub_TrottleEffort;
-  ros::Subscriber * _sub_StreeringEffort;
+  ros::Subscriber * _sub_SteeringEffort;
   ros::Subscriber * _sub_JointsEffort;
 
 public:
@@ -30,9 +30,9 @@ public:
 	std::string fetchParam(std::string compName,std::string neededTopic,std::string type);
 
 
-	void TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg);
-	void StreeringEffortCallback(const robil2_msgs::String::ConstPtr &msg);
-	void JointsEffortCallback(const robil2_msgs::String::ConstPtr &msg);
+	void TrottleEffortCallback(const std_msgs::String::ConstPtr &msg);
+	void StreeringEffortCallback(const std_msgs::String::ConstPtr &msg);
+	void JointsEffortCallback(const std_msgs::String::ConstPtr &msg);
 
 };
 

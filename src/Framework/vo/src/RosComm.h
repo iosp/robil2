@@ -9,7 +9,7 @@
 #define ROSCOMM_H_
 
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
@@ -34,11 +34,11 @@ public:
 	std::string fetchParam(std::string compName,std::string neededTopic,std::string type);
 
 
-	void CameraCallback(const robil2_msgs::String::ConstPtr &msg);
-	void INSCallback(const robil2_msgs::String::ConstPtr &msg);
-        void TFCallback(const robil2_msgs::String::ConstPtr &msg);
+	void CameraCallback(const std_msgs::String::ConstPtr &msg);
+	void INSCallback(const std_msgs::String::ConstPtr &msg);
+        void TFCallback(const std_msgs::String::ConstPtr &msg);
 
-	void publishPosAttVel(robil2_msgs::String &msg);
+	void publishPosAttVel(std_msgs::String &msg);
 
 };
 

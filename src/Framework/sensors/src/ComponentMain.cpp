@@ -17,27 +17,27 @@ ComponentMain::~ComponentMain() {
 }
 
 
-void ComponentMain::publishSensor_SICK(robil2_msgs::String &msg)
+void ComponentMain::publishSensor_SICK(std_msgs::String &msg)
 {
   _roscomm->publishSensor_SICK(msg);
 }
-void ComponentMain::publishSensor_IBEO(robil2_msgs::String &msg)
+void ComponentMain::publishSensor_IBEO(std_msgs::String &msg)
 {
   _roscomm->publishSensor_IBEO(msg);
 }
-void ComponentMain::publishSensor_CAM_R(robil2_msgs::String &msg)
+void ComponentMain::publishSensor_CAM_R(std_msgs::String &msg)
 {
   _roscomm->publishSensor_CAM_R(msg);
 }
-void ComponentMain::publishSensor_CAM_L(robil2_msgs::String &msg)
+void ComponentMain::publishSensor_CAM_L(std_msgs::String &msg)
 {
   _roscomm->publishSensor_CAM_L(msg);
 }
-void ComponentMain::publishSensor_WIRE(robil2_msgs::String &msg)
+void ComponentMain::publishSensor_WIRE(std_msgs::String &msg)
 {
   _roscomm->publishSensor_WIRE(msg);
 }
-void ComponentMain::publishSensor_INSGPS(robil2_msgs::String &msg)
+void ComponentMain::publishSensor_INSGPS(std_msgs::String &msg)
 {
   _roscomm->publishSensor_INSGPS(msg);
 }

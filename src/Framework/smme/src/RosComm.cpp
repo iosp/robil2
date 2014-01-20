@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -23,7 +23,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
   _sub_TrottleEffort=
       new ros::Subscriber(_nh->subscribe(fetchParam("SMME","IEDDetectionEvent","sub"), 1, &RosComm::TrottleEffortCallback,this));
 
-  _sub_StreeringEffort=
+  _sub_SteeringEffort=
       new ros::Subscriber(_nh->subscribe(fetchParam("SMME","IEDLocation","sub"), 1, &RosComm::IEDLocationCallback,this));
 
   _sub_MissionPlan=
@@ -34,15 +34,15 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 
 
   _pub_MissionStatus=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SMME","MissionStatus","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SMME","MissionStatus","pub"),1));
   _pub_MissionGlobalPath=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SMME","MissionGlobalPath","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SMME","MissionGlobalPath","pub"),1));
 
   _pub_IEDPosAtt=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SMME","IEDPosAtt","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SMME","IEDPosAtt","pub"),1));
 
   _pub_ExecuteWorkSequenceCommand=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("SMME","ExecuteWorkSequenceCommand","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("SMME","ExecuteWorkSequenceCommand","pub"),1));
 
 
 }
@@ -52,36 +52,36 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::TrottleEffortCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleIEDDetectionEvent(*msg);
 }
-void RosComm::IEDLocationCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::IEDLocationCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleIEDLocation(*msg);
 }
-void RosComm::MissionPlanCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::MissionPlanCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleMissionPlan(*msg);
 }
-void RosComm::StatusDataCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::StatusDataCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleStatusData(*msg);
 }
 
-void RosComm::publishMissionStatus(robil2_msgs::String &msg)
+void RosComm::publishMissionStatus(std_msgs::String &msg)
 {
   _pub_MissionStatus->publish(msg);
 }
-void RosComm::publishMissionGlobalPath(robil2_msgs::String &msg)
+void RosComm::publishMissionGlobalPath(std_msgs::String &msg)
 {
   _pub_MissionGlobalPath->publish(msg);
 }
-void RosComm::publishIEDPosAtt(robil2_msgs::String &msg)
+void RosComm::publishIEDPosAtt(std_msgs::String &msg)
 {
   _pub_IEDPosAtt->publish(msg);
 }
-void RosComm::publishExecuteWorkSequenceCommand(robil2_msgs::String &msg)
+void RosComm::publishExecuteWorkSequenceCommand(std_msgs::String &msg)
 {
   _pub_ExecuteWorkSequenceCommand->publish(msg);
 }

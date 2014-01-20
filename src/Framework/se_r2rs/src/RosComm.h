@@ -9,7 +9,7 @@
 #define ROSCOMM_H_
 
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
@@ -32,10 +32,10 @@ public:
 	std::string fetchParam(std::string compName,std::string neededTopic,std::string type);
 
 
-	void Sensor_SICKCallback(const robil2_msgs::String::ConstPtr &msg);
-	void Sensor_IBEOCallback(const robil2_msgs::String::ConstPtr &msg);
-        void Sensor_CAM_RCallback(const robil2_msgs::String::ConstPtr &msg);
-        void Sensor_CAM_LCallback(const robil2_msgs::String::ConstPtr &msg);
+	void Sensor_SICKCallback(const std_msgs::String::ConstPtr &msg);
+	void Sensor_IBEOCallback(const std_msgs::String::ConstPtr &msg);
+        void Sensor_CAM_RCallback(const std_msgs::String::ConstPtr &msg);
+        void Sensor_CAM_LCallback(const std_msgs::String::ConstPtr &msg);
 };
 
 

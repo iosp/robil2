@@ -8,7 +8,7 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 
 class RosComm;
 
@@ -18,8 +18,8 @@ public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 
-        void handleSensor_WIRE(robil2_msgs::String msg);
-        void handleSensor_INSGPS(robil2_msgs::String msg);
+        void handleSensor_WIRE(std_msgs::String msg);
+        void handleSensor_INSGPS(std_msgs::String msg);
 };
 
 #endif /* COMPONENTMAIN_H_ */

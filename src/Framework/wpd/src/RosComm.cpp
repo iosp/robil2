@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -24,9 +24,9 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
       new ros::Subscriber(_nh->subscribe(fetchParam("WPD","PosAttVel","sub"), 1, &RosComm::PosAttVelCallback,this));
 
   _pub_TrottleEffort=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("WPD","TrottleEffort","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("WPD","TrottleEffort","pub"),1));
   _pub_SteeringEffort=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("WPD","SteeringEffort","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("WPD","SteeringEffort","pub"),1));
 }
 
 RosComm::~RosComm()
@@ -34,20 +34,20 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::RPPPathCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::RPPPathCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleRPPPath(*msg);
 }
-void RosComm::PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::PosAttVelCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handlePosAttVel(*msg);
 }
 
-void RosComm::publishTrottleEffort(robil2_msgs::String &msg)
+void RosComm::publishTrottleEffort(std_msgs::String &msg)
 {
   _pub_TrottleEffort->publish(msg);
 }
-void RosComm::publishSteeringEffort(robil2_msgs::String &msg)
+void RosComm::publishSteeringEffort(std_msgs::String &msg)
 {
   _pub_SteeringEffort->publish(msg);
 }

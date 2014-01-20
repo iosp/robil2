@@ -16,22 +16,22 @@ ComponentMain::~ComponentMain() {
 	// TODO Auto-generated destructor stub
 }
 
-void ComponentMain::handleRPPPath(robil2_msgs::String msg)
+void ComponentMain::handleRPPPath(std_msgs::String msg)
 {
-
+  std::cout<< "WPD say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handlePosAttVel(robil2_msgs::String msg)
+void ComponentMain::handlePosAttVel(std_msgs::String msg)
 {
-
+  std::cout<< "WPD say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishTrottleEffort(robil2_msgs::String &msg)
+void ComponentMain::publishTrottleEffort(std_msgs::String &msg)
 {
   _roscomm->publishTrottleEffort(msg);
 }
 
-void ComponentMain::publishSteeringEffort(robil2_msgs::String &msg)
+void ComponentMain::publishSteeringEffort(std_msgs::String &msg)
 {
   _roscomm->publishSteeringEffort(msg);
 }

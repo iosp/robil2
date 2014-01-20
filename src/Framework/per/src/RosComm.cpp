@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -37,22 +37,22 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
   new ros::Subscriber(_nh->subscribe(fetchParam("PER","Sensor_INSGPS","sub"), 1, &RosComm::Sensor_INSGPSCallback,this));
 
   _pub_WiresLengths=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("PER","WiresLengths","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("PER","WiresLengths","pub"),1));
 
   _pub_Camera=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("PER","Camera","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("PER","Camera","pub"),1));
 
   _pub_Laser=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("PER","Laser","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("PER","Laser","pub"),1));
 
   _pub_INS=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("PER","INS","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("PER","INS","pub"),1));
 
   _pub_GPS=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("PER","GPS","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("PER","GPS","pub"),1));
 
   _pub_TF=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("PER","TF","pub"),1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("PER","TF","pub"),1));
 
 
 }
@@ -63,53 +63,53 @@ RosComm::~RosComm()
 }
 
 
-void RosComm::Sensor_SICKCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_SICKCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_SICK(*msg);
 }
-void RosComm::Sensor_IBEOCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_IBEOCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_IBEO(*msg);
 }
-void RosComm::Sensor_CAM_RCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_CAM_RCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_CAM_R(*msg);
 }
-void RosComm::Sensor_CAM_LCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_CAM_LCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_CAM_L(*msg);
 }
-void RosComm::Sensor_WIRECallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_WIRECallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_WIRE(*msg);
 }
-void RosComm::Sensor_INSGPSCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_INSGPSCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_INSGPS(*msg);
 }
 
-void RosComm::publishWiresLengths(robil2_msgs::String &msg)
+void RosComm::publishWiresLengths(std_msgs::String &msg)
 {
   _pub_WiresLengths->publish(msg);
 }
-void RosComm::publishCamera(robil2_msgs::String &msg)
+void RosComm::publishCamera(std_msgs::String &msg)
 {
   _pub_Camera->publish(msg);
 }
-void RosComm::publishLaser(robil2_msgs::String &msg)
+void RosComm::publishLaser(std_msgs::String &msg)
 {
   _pub_Laser->publish(msg);
 }
-void RosComm::publishINS(robil2_msgs::String &msg)
+void RosComm::publishINS(std_msgs::String &msg)
 {
   _pub_INS->publish(msg);
 }
-void RosComm::publishGPS(robil2_msgs::String &msg)
+void RosComm::publishGPS(std_msgs::String &msg)
 {
   _pub_GPS->publish(msg);
 }
 
-void RosComm::publishTF(robil2_msgs::String &msg)
+void RosComm::publishTF(std_msgs::String &msg)
 {
   _pub_TF->publish(msg);
 }

@@ -16,12 +16,12 @@ ComponentMain::~ComponentMain() {
 	// TODO Auto-generated destructor stub
 }
 
-void ComponentMain::handleSensor_WIRE(robil2_msgs::String msg)
+void ComponentMain::handleSensor_WIRE(std_msgs::String msg)
 {
-
+  std::cout<< "SE_R2U say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handleSensor_INSGPS(robil2_msgs::String msg)
+void ComponentMain::handleSensor_INSGPS(std_msgs::String msg)
 {
-
+  std::cout<< "SE_R2U say:" << msg.data << std::endl;
 }

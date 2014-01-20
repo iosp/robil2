@@ -7,6 +7,7 @@
 
 #include "ComponentMain.h"
 #include "RosComm.h"
+#include <stdio.h>
 
 ComponentMain::ComponentMain(int argc,char** argv)
 {
@@ -18,22 +19,22 @@ ComponentMain::~ComponentMain()
 	// TODO Auto-generated destructor stub
 }
 
-void ComponentMain::handleIEDDetectionEvent(robil2_msgs::String msg)
+void ComponentMain::handleIEDDetectionEvent(std_msgs::String msg)
 {
-
+  std::cout<< "IEDSIM say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handleIEDLocation(robil2_msgs::String msg)
+void ComponentMain::handleIEDLocation(std_msgs::String msg)
 {
-
+  std::cout<< "IEDSIM say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishIEDDetectionEvent(robil2_msgs::String &msg)
+void ComponentMain::publishIEDDetectionEvent(std_msgs::String &msg)
 {
   _roscomm->publishIEDDetectionEvent(msg);
 }
 
-void ComponentMain::publishIEDLocation(robil2_msgs::String &msg)
+void ComponentMain::publishIEDLocation(std_msgs::String &msg)
 {
   _roscomm->publishIEDLocation(msg);
 }

@@ -16,19 +16,19 @@ ComponentMain::~ComponentMain() {
 	// TODO Auto-generated destructor stub
 }
 
-void ComponentMain::handleSensor_SICK(robil2_msgs::String msg)
+void ComponentMain::handleSensor_SICK(std_msgs::String msg)
 {
-
+  std::cout<< "SE_R2RS say:" << msg.data << std::endl;
 }
-void ComponentMain::handleSensor_IBEO(robil2_msgs::String msg)
+void ComponentMain::handleSensor_IBEO(std_msgs::String msg)
 {
-
+  std::cout<< "SE_R2RS say:" << msg.data << std::endl;
 }
-void ComponentMain::handleSensor_CAM_R(robil2_msgs::String msg)
+void ComponentMain::handleSensor_CAM_R(std_msgs::String msg)
 {
-
+  std::cout<< "SE_R2RS say:" << msg.data << std::endl;
 }
-void ComponentMain::handleSensor_CAM_L(robil2_msgs::String msg)
+void ComponentMain::handleSensor_CAM_L(std_msgs::String msg)
 {
-
+  std::cout<< "SE_R2RS say:" << msg.data << std::endl;
 }

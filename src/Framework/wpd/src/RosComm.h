@@ -9,7 +9,7 @@
 #define ROSCOMM_H_
 
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
@@ -32,11 +32,11 @@ public:
 	std::string fetchParam(std::string compName,std::string neededTopic,std::string type);
 
 
-	void RPPPathCallback(const robil2_msgs::String::ConstPtr &msg);
-	void PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg);
+	void RPPPathCallback(const std_msgs::String::ConstPtr &msg);
+	void PosAttVelCallback(const std_msgs::String::ConstPtr &msg);
 
-	void publishTrottleEffort(robil2_msgs::String &msg);
-        void publishSteeringEffort(robil2_msgs::String &msg);
+	void publishTrottleEffort(std_msgs::String &msg);
+        void publishSteeringEffort(std_msgs::String &msg);
 };
 
 

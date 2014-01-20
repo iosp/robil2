@@ -17,52 +17,52 @@ ComponentMain::~ComponentMain() {
 }
 
 
-void ComponentMain::handleSensor_SICK(robil2_msgs::String msg)
+void ComponentMain::handleSensor_SICK(std_msgs::String msg)
 {
-
+  std::cout<< "PER say:" << msg.data << std::endl;
 }
-void ComponentMain::handleSensor_IBEO(robil2_msgs::String msg)
+void ComponentMain::handleSensor_IBEO(std_msgs::String msg)
 {
-
+  std::cout<< "PER say:" << msg.data << std::endl;
 }
-void ComponentMain::handleSensor_CAM_R(robil2_msgs::String msg)
+void ComponentMain::handleSensor_CAM_R(std_msgs::String msg)
 {
-
+  std::cout<< "PER say:" << msg.data << std::endl;
 }
-void ComponentMain::handleSensor_CAM_L(robil2_msgs::String msg)
+void ComponentMain::handleSensor_CAM_L(std_msgs::String msg)
 {
-
+  std::cout<< "PER say:" << msg.data << std::endl;
 }
-void ComponentMain::handleSensor_WIRE(robil2_msgs::String msg)
+void ComponentMain::handleSensor_WIRE(std_msgs::String msg)
 {
-
+  std::cout<< "PER say:" << msg.data << std::endl;
 }
-void ComponentMain::handleSensor_INSGPS(robil2_msgs::String msg)
+void ComponentMain::handleSensor_INSGPS(std_msgs::String msg)
 {
-
+  std::cout<< "PER say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishWiresLengths(robil2_msgs::String &msg)
+void ComponentMain::publishWiresLengths(std_msgs::String &msg)
 {
   _roscomm->publishWiresLengths(msg);
 }
-void ComponentMain::publishCamera(robil2_msgs::String &msg)
+void ComponentMain::publishCamera(std_msgs::String &msg)
 {
   _roscomm->publishCamera(msg);
 }
-void ComponentMain::publishLaser(robil2_msgs::String &msg)
+void ComponentMain::publishLaser(std_msgs::String &msg)
 {
   _roscomm->publishLaser(msg);
 }
-void ComponentMain::publishINS(robil2_msgs::String &msg)
+void ComponentMain::publishINS(std_msgs::String &msg)
 {
   _roscomm->publishINS(msg);
 }
-void ComponentMain::publishGPS(robil2_msgs::String &msg)
+void ComponentMain::publishGPS(std_msgs::String &msg)
 {
   _roscomm->publishGPS(msg);
 }
-void ComponentMain::publishTF(robil2_msgs::String &msg)
+void ComponentMain::publishTF(std_msgs::String &msg)
 {
   _roscomm->publishTF(msg);
 }

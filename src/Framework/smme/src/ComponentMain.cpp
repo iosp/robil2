@@ -16,40 +16,40 @@ ComponentMain::~ComponentMain() {
 	// TODO Auto-generated destructor stub
 }
 
-void ComponentMain::handleIEDDetectionEvent(robil2_msgs::String msg)
+void ComponentMain::handleIEDDetectionEvent(std_msgs::String msg)
 {
-
+  std::cout<< "SMME say:" << msg.data << std::endl;
 }
-void ComponentMain::handleIEDLocation( robil2_msgs::String msg)
+void ComponentMain::handleIEDLocation( std_msgs::String msg)
 {
-
+  std::cout<< "SMME say:" << msg.data << std::endl;
 }
-void ComponentMain::handleMissionPlan( robil2_msgs::String msg)
+void ComponentMain::handleMissionPlan( std_msgs::String msg)
 {
-
-}
-
-void ComponentMain::handleStatusData( robil2_msgs::String msg)
-{
-
+  std::cout<< "SMME say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishMissionStatus(robil2_msgs::String &msg)
+void ComponentMain::handleStatusData( std_msgs::String msg)
+{
+  std::cout<< "SMME say:" << msg.data << std::endl;
+}
+
+void ComponentMain::publishMissionStatus(std_msgs::String &msg)
 {
   _roscomm->publishMissionStatus(msg);
 }
 
-void ComponentMain::publishMissionGlobalPath(robil2_msgs::String &msg)
+void ComponentMain::publishMissionGlobalPath(std_msgs::String &msg)
 {
   _roscomm->publishMissionGlobalPath(msg);
 }
 
-void ComponentMain::publishIEDPosAtt(robil2_msgs::String &msg)
+void ComponentMain::publishIEDPosAtt(std_msgs::String &msg)
 {
   _roscomm->publishIEDPosAtt(msg);
 }
 
-void ComponentMain::publishExecuteWorkSequenceCommand(robil2_msgs::String &msg)
+void ComponentMain::publishExecuteWorkSequenceCommand(std_msgs::String &msg)
 {
   _roscomm->publishExecuteWorkSequenceCommand(msg);
 }

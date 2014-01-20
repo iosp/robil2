@@ -17,22 +17,22 @@ ComponentMain::~ComponentMain() {
 }
 
 
-void ComponentMain::handleCamera(robil2_msgs::String msg)
+void ComponentMain::handleCamera(std_msgs::String msg)
 {
-
+  std::cout<< "VO say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handleINS(robil2_msgs::String msg)
+void ComponentMain::handleINS(std_msgs::String msg)
 {
-
+  std::cout<< "VO say:" << msg.data << std::endl;
 }
 
-void ComponentMain::handleTF(robil2_msgs::String msg)
+void ComponentMain::handleTF(std_msgs::String msg)
 {
-
+  std::cout<< "VO say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishPosAttVel(robil2_msgs::String &msg)
+void ComponentMain::publishPosAttVel(std_msgs::String &msg)
 {
   _roscomm->publishPosAttVel(msg);
 }

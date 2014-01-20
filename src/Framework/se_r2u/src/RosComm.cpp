@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -30,12 +30,12 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::Sensor_WIRECallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_WIRECallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_WIRE(*msg);
 }
 
-void RosComm::Sensor_INSGPSCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_INSGPSCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_INSGPS(*msg);
 }

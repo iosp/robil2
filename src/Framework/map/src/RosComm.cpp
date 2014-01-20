@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -32,10 +32,10 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
       new ros::Subscriber(_nh->subscribe(fetchParam("MAP","Camera","sub"),  1, &RosComm::CameraCallback,this));
 
   _pub_Map=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("MAP","Laser","pub"),   1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("MAP","Map","pub"),   1));
 
   _pub_MiniMap=
-      new ros::Publisher(_nh->advertise<robil2_msgs::String>(fetchParam("MAP","Camera","pub"),  1));
+      new ros::Publisher(_nh->advertise<std_msgs::String>(fetchParam("MAP","MiniMap","pub"),  1));
 
 
 
@@ -46,31 +46,31 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::BladePositionCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::BladePositionCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleBladePosition(*msg);
 }
 
-void RosComm::PosAttVelCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::PosAttVelCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handlePosAttVel(*msg);
 }
-void RosComm::LaserCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::LaserCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleLaser(*msg);
 }
-void RosComm::CameraCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::CameraCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleCamera(*msg);
 }
 
 
-void RosComm::publishMap(robil2_msgs::String &msg)
+void RosComm::publishMap(std_msgs::String &msg)
 {
  _pub_Map->publish(msg);
 }
 
-void RosComm::publishMiniMap(robil2_msgs::String &msg)
+void RosComm::publishMiniMap(std_msgs::String &msg)
 {
   _pub_MiniMap->publish(msg);
 }

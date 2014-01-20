@@ -9,7 +9,7 @@
 #define ROSCOMM_H_
 
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
@@ -41,19 +41,19 @@ public:
 	std::string fetchParam(std::string compName,std::string neededTopic,std::string type);
 
 
-        void Sensor_SICKCallback(const robil2_msgs::String::ConstPtr &msg);
-        void Sensor_IBEOCallback(const robil2_msgs::String::ConstPtr &msg);
-        void Sensor_CAM_RCallback(const robil2_msgs::String::ConstPtr &msg);
-        void Sensor_CAM_LCallback(const robil2_msgs::String::ConstPtr &msg);
-        void Sensor_WIRECallback(const robil2_msgs::String::ConstPtr &msg);
-        void Sensor_INSGPSCallback(const robil2_msgs::String::ConstPtr &msg);
+        void Sensor_SICKCallback(const std_msgs::String::ConstPtr &msg);
+        void Sensor_IBEOCallback(const std_msgs::String::ConstPtr &msg);
+        void Sensor_CAM_RCallback(const std_msgs::String::ConstPtr &msg);
+        void Sensor_CAM_LCallback(const std_msgs::String::ConstPtr &msg);
+        void Sensor_WIRECallback(const std_msgs::String::ConstPtr &msg);
+        void Sensor_INSGPSCallback(const std_msgs::String::ConstPtr &msg);
 
-        void publishWiresLengths(robil2_msgs::String &msg);
-        void publishCamera(robil2_msgs::String &msg);
-        void publishLaser(robil2_msgs::String &msg);
-        void publishINS(robil2_msgs::String &msg);
-        void publishGPS(robil2_msgs::String &msg);
-        void publishTF(robil2_msgs::String &msg);
+        void publishWiresLengths(std_msgs::String &msg);
+        void publishCamera(std_msgs::String &msg);
+        void publishLaser(std_msgs::String &msg);
+        void publishINS(std_msgs::String &msg);
+        void publishGPS(std_msgs::String &msg);
+        void publishTF(std_msgs::String &msg);
 
 };
 

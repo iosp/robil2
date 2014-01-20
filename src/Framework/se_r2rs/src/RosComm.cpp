@@ -5,7 +5,7 @@
  *      Author: yuval
  */
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include "RosComm.h"
 #include "ComponentMain.h"
 #include <string>       // std::string
@@ -38,22 +38,22 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::Sensor_SICKCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_SICKCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_SICK(*msg);
 }
 
-void RosComm::Sensor_IBEOCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_IBEOCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_IBEO(*msg);
 }
 
-void RosComm::Sensor_CAM_RCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_CAM_RCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_CAM_R(*msg);
 }
 
-void RosComm::Sensor_CAM_LCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::Sensor_CAM_LCallback(const std_msgs::String::ConstPtr &msg)
 {
   _comp->handleSensor_CAM_L(*msg);
 }

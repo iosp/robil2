@@ -8,7 +8,7 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 
 class RosComm;
 
@@ -18,12 +18,12 @@ public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 
-        void publishSensor_SICK(robil2_msgs::String &msg);
-        void publishSensor_IBEO(robil2_msgs::String &msg);
-        void publishSensor_CAM_R(robil2_msgs::String &msg);
-        void publishSensor_CAM_L(robil2_msgs::String &msg);
-        void publishSensor_WIRE(robil2_msgs::String &msg);
-        void publishSensor_INSGPS(robil2_msgs::String &msg);
+        void publishSensor_SICK(std_msgs::String &msg);
+        void publishSensor_IBEO(std_msgs::String &msg);
+        void publishSensor_CAM_R(std_msgs::String &msg);
+        void publishSensor_CAM_L(std_msgs::String &msg);
+        void publishSensor_WIRE(std_msgs::String &msg);
+        void publishSensor_INSGPS(std_msgs::String &msg);
 };
 
 #endif /* COMPONENTMAIN_H_ */

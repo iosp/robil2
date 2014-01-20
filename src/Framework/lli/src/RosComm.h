@@ -9,7 +9,7 @@
 #define ROSCOMM_H_
 
 #include <ros/ros.h>
-#include <robil2_msgs/String.h>
+#include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
@@ -36,15 +36,15 @@ public:
 	std::string fetchParam(std::string compName,std::string neededTopic,std::string type);
 
 
-	void TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg);
-	void SteeringEffortCallback(const robil2_msgs::String::ConstPtr &msg);
-	void JointsEffortCallback(const robil2_msgs::String::ConstPtr &msg);
-	void TeleoperationCallback(const robil2_msgs::String::ConstPtr &msg);
+	void TrottleEffortCallback(const std_msgs::String::ConstPtr &msg);
+	void SteeringEffortCallback(const std_msgs::String::ConstPtr &msg);
+	void JointsEffortCallback(const std_msgs::String::ConstPtr &msg);
+	void TeleoperationCallback(const std_msgs::String::ConstPtr &msg);
 
-	void publishTrottleEffort(robil2_msgs::String &msg);
-        void publishSteeringEffort(robil2_msgs::String &msg);
-        void publishJointsEffort(robil2_msgs::String &msg);
-        void publishTeleoperation(robil2_msgs::String &msg);
+	void publishTrottleEffort(std_msgs::String &msg);
+        void publishSteeringEffort(std_msgs::String &msg);
+        void publishJointsEffort(std_msgs::String &msg);
+        void publishTeleoperation(std_msgs::String &msg);
 };
 
 
