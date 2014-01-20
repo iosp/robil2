@@ -26,8 +26,8 @@ class RosComm {
   ros::Subscriber * _sub_MissionStatus;
   ros::Subscriber * _sub_Map;
   ros::Subscriber * _sub_LocalPathPlan;
-  ros::Subscriber * _sub_IEDDetectionEvent;
-  ros::Subscriber * _sub_IEDLocation;
+  ros::Subscriber * _sub_TrottleEffort;
+  ros::Subscriber * _sub_StreeringEffort;
 
 
   ros::Publisher  * _pub_PositionUpdate;
@@ -49,7 +49,7 @@ public:
 	void MissionStatusCallback(const robil2_msgs::String::ConstPtr &msg);
 	void MapCallback(const robil2_msgs::String::ConstPtr &msg);
 	void LocalPathPlanCallback(const robil2_msgs::String::ConstPtr &msg);
-	void IEDDetectionEventCallback(const robil2_msgs::String::ConstPtr &msg);
+	void TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg);
 	void IEDLocationCallback(const robil2_msgs::String::ConstPtr &msg);
 
 	void publishPositionUpdate(robil2_msgs::String &msg);

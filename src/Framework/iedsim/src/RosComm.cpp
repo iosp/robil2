@@ -19,9 +19,9 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
   _nh=new ros::NodeHandle;
   _comp=comp;
 
-   _sub_IEDDetectionEvent=
-       new ros::Subscriber(_nh->subscribe(fetchParam("IEDSIM","IEDDetectionEvent","sub"), 1, &RosComm::IEDDetectionEventCallback,this));
-  _sub_IEDLocation=
+   _sub_TrottleEffort=
+       new ros::Subscriber(_nh->subscribe(fetchParam("IEDSIM","IEDDetectionEvent","sub"), 1, &RosComm::TrottleEffortCallback,this));
+  _sub_StreeringEffort=
       new ros::Subscriber(_nh->subscribe(fetchParam("IEDSIM","IEDLocation","sub"), 1, &RosComm::IEDLocationCallback,this));
 
   _pub_IEDDetectionEvent=
@@ -36,7 +36,7 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::IEDDetectionEventCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg)
 {
   _comp->handleIEDDetectionEvent(*msg);
 }

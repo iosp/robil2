@@ -20,10 +20,10 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 
 
 
-  _sub_IEDDetectionEvent=
-      new ros::Subscriber(_nh->subscribe(fetchParam("SMME","IEDDetectionEvent","sub"), 1, &RosComm::IEDDetectionEventCallback,this));
+  _sub_TrottleEffort=
+      new ros::Subscriber(_nh->subscribe(fetchParam("SMME","IEDDetectionEvent","sub"), 1, &RosComm::TrottleEffortCallback,this));
 
-  _sub_IEDLocation=
+  _sub_StreeringEffort=
       new ros::Subscriber(_nh->subscribe(fetchParam("SMME","IEDLocation","sub"), 1, &RosComm::IEDLocationCallback,this));
 
   _sub_MissionPlan=
@@ -52,7 +52,7 @@ RosComm::~RosComm()
 	// TODO Auto-generated destructor stub
 }
 
-void RosComm::IEDDetectionEventCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg)
 {
   _comp->handleIEDDetectionEvent(*msg);
 }

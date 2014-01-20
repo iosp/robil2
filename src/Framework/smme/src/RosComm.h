@@ -20,8 +20,8 @@ class RosComm {
 
   ros::NodeHandle * _nh;
 
-  ros::Subscriber * _sub_IEDDetectionEvent;
-  ros::Subscriber * _sub_IEDLocation;
+  ros::Subscriber * _sub_TrottleEffort;
+  ros::Subscriber * _sub_StreeringEffort;
   ros::Subscriber * _sub_MissionPlan;
   ros::Subscriber * _sub_StatusData;
 
@@ -36,7 +36,7 @@ public:
 	std::string fetchParam(std::string compName,std::string neededTopic,std::string type);
 
 
-	void IEDDetectionEventCallback(const robil2_msgs::String::ConstPtr &msg);
+	void TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg);
 	void IEDLocationCallback(const robil2_msgs::String::ConstPtr &msg);
         void MissionPlanCallback(const robil2_msgs::String::ConstPtr &msg);
         void StatusDataCallback(const robil2_msgs::String::ConstPtr &msg);

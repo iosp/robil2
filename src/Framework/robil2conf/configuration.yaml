@@ -36,7 +36,7 @@ SSM_pub_StatusData: '/SSM/StatusData'
 #WSM:
 WSM_sub_ExecuteWorkSequenceCommand: 'SMME'
 WSM_sub_PosAttVel: 'LOC'
-WSM_sub_WiresLengths: 'TF'
+WSM_sub_WiresLengths: 'PER'
 WSM_pub_BladePosition: '/WSM/BladePosition'
 WSM_pub_TrottleEffort: '/WSM/TrottleEffort'
 WSM_pub_SteeringEffort: '/WSM/SteeringEffort'
@@ -77,7 +77,54 @@ VO_sub_TF: 'PER'
 VO_pub_PosAttVel: '/VO/PosAttVel'
 
 #PER:
-PER_sub_Camera: 'PL_R2U'
-PER_sub_INS: 'SE_R2RS'
-PER_pub_TF: 'PER/TF'
+PER_sub_Sensor_SICK: 'SENSORS'
+PER_sub_Sensor_IBEO: 'SENSORS'
+PER_sub_Sensor_CAM_R: 'SENSORS'
+PER_sub_Sensor_CAM_L: 'SENSORS'
+PER_sub_Sensor_WIRE: 'SENSORS'
+PER_sub_Sensor_INSGPS: 'SENSORS'
+PER_pub_WiresLengths: '/PER/WiresLengths'
+PER_pub_Camera: '/PER/Camera'
+PER_pub_Laser: '/PER/Laser'
+PER_pub_INS: '/PER/INS'
+PER_pub_GPS: '/PER/GPS'
+PER_pub_TF: '/PER/TF'
+
+#SENSORS
+SENSORS_pub_Sensor_SICK: '/SENSORS/SICK'
+SENSORS_pub_Sensor_IBEO: '/SENSORS/IBEO'
+SENSORS_pub_Sensor_CAM_R: '/SENSORS/CAM_R'
+SENSORS_pub_Sensor_CAM_L: '/SENSORS/CAM_L'
+SENSORS_pub_Sensor_WIRE: '/SENSORS/WIRE'
+SENSORS_pub_Sensor_INSGPS: '/SENSORS/INSGPS'
+
+#SE_R2U
+SE_R2U_sub_Sensor_WIRE: 'SENSORS'
+SE_R2U_sub_Sensor_INSGPS: 'SENSORS'
+
+#SE_R2RS
+SE_R2RS_sub_Sensor_SICK: 'SENSORS'
+SE_R2RS_sub_Sensor_IBEO: 'SENSORS'
+SE_R2RS_sub_Sensor_CAM_R: 'SENSORS'
+SE_R2RS_sub_Sensor_CAM_L: 'SENSORS'
+
+#PP
+PP_sub_Map: 'MAP'
+PP_sub_MissionGlobalPath: 'SMME'
+PP_sub_IEDPosAtt: 'SMME'
+PP_sub_PosAttVel: 'LOC'
+PP_sub_RPPPath: 'RPP'
+PP_pub_LocalPathPlan: '/PP/LocalPathPlan'
+
+#RPP
+RPP_sub_LocalPathPlan: 'PP'
+RPP_sub_MiniMap: 'MAP'
+RPP_sub_PosAttVel: 'LOC'
+RPP_pub_RPPPath: '/RPP/RPPPath'
+
+#WPD
+WPD_sub_RPPPath: 'RPP'
+WPD_sub_PosAttVel: 'LOC'
+WPD_pub_TrottleEffort: '/WPD/TrottleEffort'
+WPD_pub_SteeringEffort: '/WPD/SteeringEffort'
 

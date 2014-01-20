@@ -8,6 +8,9 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Boost REQUIRED COMPONENTS system)
 
 
+catkin_package(
+
+)
 
 ###########
 ## Build ##

@@ -1,0 +1,35 @@
+cmake_minimum_required(VERSION 2.8.3)
+project(per)
+
+find_package(catkin REQUIRED COMPONENTS
+  robil2_msgs roscpp
+)
+
+find_package(Boost REQUIRED COMPONENTS system)
+
+
+
+###########
+## Build ##
+###########
+
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+)
+
+## Declare a cpp library
+
+add_library(per_rosComm STATIC
+  src/RosComm.cpp
+)
+add_library(per_compMain STATIC
+  src/ComponentMain.cpp
+)
+
+
+add_executable(per_node src/main.cpp)
+
+target_link_libraries(per_node per_compMain per_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+)
+

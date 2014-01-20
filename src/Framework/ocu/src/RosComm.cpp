@@ -34,10 +34,10 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
   _sub_LocalPathPlan=
       new ros::Subscriber(_nh->subscribe(fetchParam("OCU","LocalPathPlan","sub"), 1, &RosComm::LocalPathPlanCallback,this));
 
-  _sub_IEDDetectionEvent=
-      new ros::Subscriber(_nh->subscribe(fetchParam("OCU","IEDDetectionEvent","sub"), 1, &RosComm::IEDDetectionEventCallback,this));
+  _sub_TrottleEffort=
+      new ros::Subscriber(_nh->subscribe(fetchParam("OCU","IEDDetectionEvent","sub"), 1, &RosComm::TrottleEffortCallback,this));
 
-  _sub_IEDLocation=
+  _sub_StreeringEffort=
       new ros::Subscriber(_nh->subscribe(fetchParam("OCU","IEDLocation","sub"), 1, &RosComm::IEDLocationCallback,this));
 
 
@@ -88,7 +88,7 @@ void RosComm::LocalPathPlanCallback(const robil2_msgs::String::ConstPtr &msg)
 {
   _comp->handleLocalPathPlan(*msg);
 }
-void RosComm::IEDDetectionEventCallback(const robil2_msgs::String::ConstPtr &msg)
+void RosComm::TrottleEffortCallback(const robil2_msgs::String::ConstPtr &msg)
 {
   _comp->handleIEDDetectionEvent(*msg);
 }
