@@ -4,7 +4,7 @@ project(robil2conf)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS roscpp)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -76,8 +76,8 @@ find_package(catkin REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES robil2conf
+  INCLUDE_DIRS include
+  LIBRARIES robil2conf
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
@@ -91,9 +91,9 @@ catkin_package(
 # include_directories(include)
 
 ## Declare a cpp library
-# add_library(robil2conf
-#   src/${PROJECT_NAME}/robil2conf.cpp
-# )
+add_library(robil2conf
+   src/ParameterHandler.cpp
+ )
 
 ## Declare a cpp executable
 # add_executable(robil2conf_node src/robil2conf_node.cpp)
@@ -103,9 +103,9 @@ catkin_package(
 # add_dependencies(robil2conf_node robil2conf_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(robil2conf_node
-#   ${catkin_LIBRARIES}
-# )
+ target_link_libraries(robil2conf
+   ${catkin_LIBRARIES}
+ )
 
 #############
 ## Install ##

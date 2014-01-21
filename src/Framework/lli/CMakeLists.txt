@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 2.8.3)
 project(lli)
 
 find_package(catkin REQUIRED COMPONENTS
- roscpp std_msgs
+ roscpp rospy std_msgs robil2conf
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_package(
-	CATKIN_DEPENDS std_msgs
+	CATKIN_DEPENDS std_msgs robil2conf
 )
 
 ###########
@@ -23,10 +23,10 @@ include_directories(
 ## Declare a cpp library
 
 add_library(lli_rosComm
-  src/RosComm.cpp
+  src/roscomm/RosComm.cpp
 )
 add_library(lli_compMain
-  src/ComponentMain.cpp
+  src/component/ComponentMain.cpp
 )
 
 
