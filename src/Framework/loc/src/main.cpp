@@ -1,6 +1,6 @@
 
 #include <ros/ros.h>
-#include "ComponentMain.h"
+#include "component/ComponentMain.h"
 #include <ros/spinner.h>
 #include <boost/thread/thread.hpp>
 int main(int argc,char** argv)

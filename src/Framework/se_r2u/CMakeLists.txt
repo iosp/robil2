@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 2.8.3)
 project(se_r2u)
 
 find_package(catkin REQUIRED COMPONENTS
-  std_msgs roscpp
+ roscpp rospy std_msgs robil2conf
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_package(
-	CATKIN_DEPENDS std_msgs
+	CATKIN_DEPENDS std_msgs robil2conf
 )
 
 ###########
@@ -23,10 +23,10 @@ include_directories(
 ## Declare a cpp library
 
 add_library(se_r2u_rosComm
-  src/RosComm.cpp
+  src/roscomm/RosComm.cpp
 )
 add_library(se_r2u_compMain
-  src/ComponentMain.cpp
+  src/component/ComponentMain.cpp
 )
 
 add_executable(se_r2u_node src/main.cpp)
