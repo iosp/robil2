@@ -1,0 +1,130 @@
+#OCU:
+OCU_sub_PosAttVel: 'LOC'
+OCU_sub_Teleoperation: 'LLI'
+OCU_sub_StatusData: 'SSM'
+OCU_sub_MissionStatus: 'SMME'
+OCU_sub_Map: 'MAP'
+OCU_sub_LocalPathPlan: 'PP'
+OCU_sub_IEDDetectionEvent: 'IEDSIM'
+OCU_sub_IEDLocation: 'IEDSIM'
+OCU_pub_PositionUpdate: '/OCU/PositionUpdate'
+OCU_pub_MissionPlan: '/OCU/MissionPlan'
+OCU_pub_Teleoperation: '/OCU/Teleoperation'
+OCU_pub_IEDDetectionEvent: '/OCU/IEDDetectionEvent'
+OCU_pub_IEDLocation: '/OCU/IEDLocation'
+
+#IEDSIM:
+IEDSIM_sub_IEDDetectionEvent: 'OCU'
+IEDSIM_sub_IEDLocation: 'OCU'
+IEDSIM_pub_IEDDetectionEvent: '/IED/IEDDetectionEvent'
+IEDSIM_pub_IEDLocation: '/IED/IEDLocation'
+
+#SMME:
+SMME_sub_IEDDetectionEvent: 'IEDSIM'
+SMME_sub_IEDLocation: 'IEDSIM'
+SMME_sub_MissionPlan: 'OCU'
+SMME_sub_StatusData: 'SSM'
+SMME_pub_MissionStatus: '/SMME/MissionStatus'
+SMME_pub_MissionGlobalPath: '/SMME/MissionGlobalPath'
+SMME_pub_IEDPosAtt: '/SMME/IEDPosAtt'
+SMME_pub_ExecuteWorkSequenceCommand: '/SMME/ExecuteWorkSequenceCommand'
+
+#SSM:
+SSM_sub_MissionStatus: 'SMME'
+SSM_pub_StatusData: '/SSM/StatusData'
+
+#WSM:
+WSM_sub_ExecuteWorkSequenceCommand: 'SMME'
+WSM_sub_PosAttVel: 'LOC'
+WSM_sub_WiresLengths: 'PER'
+WSM_pub_BladePosition: '/WSM/BladePosition'
+WSM_pub_TrottleEffort: '/WSM/TrottleEffort'
+WSM_pub_SteeringEffort: '/WSM/SteeringEffort'
+WSM_pub_JointsEffort: '/WSM/JointsEffort'
+
+#LLI:
+LLI_sub_TrottleEffort: 'WSM'
+LLI_sub_SteeringEffort: 'WSM'
+LLI_sub_JointsEffort: 'WSM'
+LLI_sub_Teleoperation: 'OCU'
+LLI_pub_Teleoperation: '/LLI/Teleoperation'
+LLI_pub_TrottleEffort: '/LLI/TrottleEffort'
+LLI_pub_SteeringEffort: '/LLI/SteeringEffort'
+LLI_pub_JointsEffort: '/LLI/JointsEffort'
+
+#PL_R2U:
+PL_R2U_sub_TrottleEffort: 'LLI'
+PL_R2U_sub_SteeringEffort: 'LLI'
+PL_R2U_sub_JointsEffort: 'LLI'
+
+#MAP:
+MAP_sub_BladePosition: 'WSM'
+MAP_sub_PosAttVel: 'LOC'
+MAP_sub_Laser: 'PER'
+MAP_sub_Camera: 'PER'
+MAP_pub_Map: '/MAP/Map'
+MAP_pub_MiniMap: '/MAP/MiniMap'
+
+#LOC:
+LOC_sub_PosAttVel: 'VO'
+LOC_sub_PositionUpdate: 'OCU'
+LOC_pub_PosAttVel: '/LOC/PosAttVel'
+
+#VO:
+VO_sub_Camera: 'PER'
+VO_sub_INS: 'PER'
+VO_sub_TF: 'PER'
+VO_pub_PosAttVel: '/VO/PosAttVel'
+
+#PER:
+PER_sub_Sensor_SICK: 'SENSORS'
+PER_sub_Sensor_IBEO: 'SENSORS'
+PER_sub_Sensor_CAM_R: 'SENSORS'
+PER_sub_Sensor_CAM_L: 'SENSORS'
+PER_sub_Sensor_WIRE: 'SENSORS'
+PER_sub_Sensor_INSGPS: 'SENSORS'
+PER_pub_WiresLengths: '/PER/WiresLengths'
+PER_pub_Camera: '/PER/Camera'
+PER_pub_Laser: '/PER/Laser'
+PER_pub_INS: '/PER/INS'
+PER_pub_GPS: '/PER/GPS'
+PER_pub_TF: '/PER/TF'
+
+#SENSORS
+SENSORS_pub_Sensor_SICK: '/SENSORS/SICK'
+SENSORS_pub_Sensor_IBEO: '/SENSORS/IBEO'
+SENSORS_pub_Sensor_CAM_R: '/SENSORS/CAM_R'
+SENSORS_pub_Sensor_CAM_L: '/SENSORS/CAM_L'
+SENSORS_pub_Sensor_WIRE: '/SENSORS/WIRE'
+SENSORS_pub_Sensor_INSGPS: '/SENSORS/INSGPS'
+
+#SE_R2U
+SE_R2U_sub_Sensor_WIRE: 'SENSORS'
+SE_R2U_sub_Sensor_INSGPS: 'SENSORS'
+
+#SE_R2RS
+SE_R2RS_sub_Sensor_SICK: 'SENSORS'
+SE_R2RS_sub_Sensor_IBEO: 'SENSORS'
+SE_R2RS_sub_Sensor_CAM_R: 'SENSORS'
+SE_R2RS_sub_Sensor_CAM_L: 'SENSORS'
+
+#PP
+PP_sub_Map: 'MAP'
+PP_sub_MissionGlobalPath: 'SMME'
+PP_sub_IEDPosAtt: 'SMME'
+PP_sub_PosAttVel: 'LOC'
+PP_sub_RPPPath: 'RPP'
+PP_pub_LocalPathPlan: '/PP/LocalPathPlan'
+
+#RPP
+RPP_sub_LocalPathPlan: 'PP'
+RPP_sub_MiniMap: 'MAP'
+RPP_sub_PosAttVel: 'LOC'
+RPP_pub_RPPPath: '/RPP/RPPPath'
+
+#WPD
+WPD_sub_RPPPath: 'RPP'
+WPD_sub_PosAttVel: 'LOC'
+WPD_pub_TrottleEffort: '/WPD/TrottleEffort'
+WPD_pub_SteeringEffort: '/WPD/SteeringEffort'
+
