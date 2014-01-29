@@ -13,33 +13,34 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
+#include <ParameterTypes.h>
 class ComponentMain;
 
 class RosComm {
   ComponentMain   * _comp;
 
-  ros::NodeHandle * _nh;
+  ros::NodeHandle _nh;
 
-  ros::Subscriber *_sub_Map;
-  ros::Subscriber *_sub_MissionGlobalPath;
-  ros::Subscriber *_sub_IEDPosAtt;
-  ros::Subscriber *_sub_PosAttVel;
-  ros::Subscriber *_sub_RPPPath;
+  ros::Subscriber _sub_Map;
+  ros::Subscriber _sub_MissionGlobalPath;
+  ros::Subscriber _sub_IEDPosAtt;
+  ros::Subscriber _sub_PosAttVel;
+  ros::Subscriber _sub_RPPPath;
 
-  ros::Publisher  *_pub_LocalPathPlan;
+  ros::Publisher  _pub_LocalPathPlan;
 
 
 public:
 	RosComm(ComponentMain* comp,int argc,char** argv);
 	virtual ~RosComm();
 
-        void MapCallback(const std_msgs::String::ConstPtr &msg);
-        void MissionGlobalPathCallback(const std_msgs::String::ConstPtr &msg);
-        void IEDPosAttCallback(const std_msgs::String::ConstPtr &msg);
-        void PosAttVelCallback(const std_msgs::String::ConstPtr &msg);
-        void RPPPathCallback(const std_msgs::String::ConstPtr &msg);
+        void MapCallback(const config::PP::sub::Map::ConstPtr &msg);
+        void MissionGlobalPathCallback(const config::PP::sub::MissionGlobalPath::ConstPtr &msg);
+        void IEDPosAttCallback(const config::PP::sub::IEDPosAtt::ConstPtr &msg);
+        void PosAttVelCallback(const config::PP::sub::PosAttVel::ConstPtr &msg);
+        void RPPPathCallback(const config::PP::sub::RPPPath::ConstPtr &msg);
 
-        void publishLocalPathPlan(std_msgs::String &msg);
+        void publishLocalPathPlan( config::PP::pub::LocalPathPlan &msg);
 };
 
 

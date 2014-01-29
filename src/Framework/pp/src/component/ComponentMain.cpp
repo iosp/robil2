@@ -8,36 +8,37 @@
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
 
-ComponentMain::ComponentMain(int argc,char** argv) {
-	_roscomm=new RosComm(this,argc, argv);
+ComponentMain::ComponentMain(int argc,char** argv)
+{
+	_roscomm = new RosComm(this,argc, argv);
 }
 
 ComponentMain::~ComponentMain() {
-	// TODO Auto-generated destructor stub
+	if(_roscomm) delete _roscomm;
 }
 
-void ComponentMain::handleMap(std_msgs::String msg)
+void ComponentMain::handleMap(const config::PP::sub::Map& msg)
 {
   std::cout<< "PP say:" << msg.data << std::endl;
 }
-void ComponentMain::handleMissionGlobalPath(std_msgs::String msg)
+void ComponentMain::handleMissionGlobalPath(const config::PP::sub::MissionGlobalPath& msg)
 {
   std::cout<< "PP say:" << msg.data << std::endl;
 }
-void ComponentMain::handleIEDPosAtt(std_msgs::String msg)
+void ComponentMain::handleIEDPosAtt(const config::PP::sub::IEDPosAtt& msg)
 {
   std::cout<< "PP say:" << msg.data << std::endl;
 }
-void ComponentMain::handlePosAttVel(std_msgs::String msg)
+void ComponentMain::handlePosAttVel(const config::PP::sub::PosAttVel& msg)
 {
   std::cout<< "PP say:" << msg.data << std::endl;
 }
-void ComponentMain::handleRPPPath(std_msgs::String msg)
+void ComponentMain::handleRPPPath(const config::PP::sub::RPPPath& msg)
 {
   std::cout<< "PP say:" << msg.data << std::endl;
 }
 
-void ComponentMain::publishLocalPathPlan(std_msgs::String &msg)
+void ComponentMain::publishLocalPathPlan(config::PP::pub::LocalPathPlan& msg)
 {
   _roscomm->publishLocalPathPlan(msg);
 }
