@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rpp)
+project(llc)
 
 find_package(catkin REQUIRED COMPONENTS
  roscpp rospy std_msgs robil2conf
@@ -22,16 +22,16 @@ include_directories(
 
 ## Declare a cpp library
 
-add_library(rpp_rosComm
+add_library(llc_rosComm
   src/roscomm/RosComm.cpp
 )
-add_library(rpp_compMain
+add_library(llc_compMain
   src/component/ComponentMain.cpp
 )
 
 
-add_executable(rpp_node src/main.cpp)
+add_executable(llc_node src/main.cpp)
 
-target_link_libraries(rpp_node rpp_compMain rpp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(llc_node llc_compMain llc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
 

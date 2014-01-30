@@ -1,14 +1,13 @@
 <launch>
 <include file="$(find robil2conf)/parametersLoad.launch" />
 	<node name="iedsim_node" type="iedsim_node" pkg="iedsim" output="screen"/>
-	<node name="lli_node" type="lli_node" pkg="lli" output="screen"/>
+	<node name="llc_node" type="llc_node" pkg="llc" output="screen"/>
 	<node name="loc_node" type="loc_node" pkg="loc" output="screen"/>
 	<node name="map_node" type="map_node" pkg="map" output="screen"/>
 	<node name="ocu_node" type="ocu_node" pkg="ocu" output="screen"/>
 	<node name="per_node" type="per_node" pkg="per" output="screen"/>
 	<node name="pl_r2u_node" type="pl_r2u_node" pkg="pl_r2u" output="screen"/>
 	<node name="pp_node" type="pp_node" pkg="pp" output="screen"/>
-	<node name="rpp_node" type="rpp_node" pkg="rpp" output="screen"/>
 	<node name="sensors_node" type="sensors_node" pkg="sensors" output="screen"/>
 	<node name="se_r2rs_node" type="se_r2rs_node" pkg="se_r2rs" output="screen"/>
 	<node name="se_r2u_node" type="se_r2u_node" pkg="se_r2u" output="screen"/>

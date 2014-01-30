@@ -149,7 +149,7 @@ def get_component_source_subscribe_fun( comp, name ):
 	"""
 void ComponentMain::handle"""+name+"""(const config::"""+comp+"""::sub::"""+name+"""& msg)
 {
-	std::cout<< \""""+comp+""" say:" << msg.data << std::endl;
+	std::cout<< \""""+comp+""" say:" << msg << std::endl;
 }
 	"""
 	return code
