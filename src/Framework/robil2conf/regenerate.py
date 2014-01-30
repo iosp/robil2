@@ -6,6 +6,7 @@ import os
 def gen_roscomm_header( subscribers, publishers, func_subscribers, func_publisher ):
 	code = \
 """
+/*
  * RosComm.h
  *
  *  Created on: """+datetime.now().strftime("%A, %d. %B %Y %I:%M%p")+"""
@@ -131,7 +132,7 @@ def get_component_header_subscribe_function( comp, name ):
 
 
 def gen_roscomm_source_subscriber( comp, name ):
-	return "\t_sub_Map=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,\""+comp+"\",\""+name+"\",\"sub\"), 10, &RosComm::"+name+"Callback,this));"
+	return "\t_sub_"+name+"=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,\""+comp+"\",\""+name+"\",\"sub\"), 10, &RosComm::"+name+"Callback,this));"
 
 def get_roscomm_source_subscribe_function( comp, name ):
 	code=\
@@ -146,7 +147,7 @@ void RosComm::"""+name+"""Callback(const config::"""+comp+"""::sub::"""+name+"""
 def get_component_source_subscribe_fun( comp, name ):
 	code=\
 	"""
-void ComponentMain::handle"""+name+"""(config::"""+comp+"""::sub::"""+name+"""& msg)
+void ComponentMain::handle"""+name+"""(const config::"""+comp+"""::sub::"""+name+"""& msg)
 {
 	std::cout<< \""""+comp+""" say:" << msg.data << std::endl;
 }

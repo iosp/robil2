@@ -17,61 +17,63 @@
 #define DEF_SUB( COMP, TOPIC, COMP_SOURCE )\
 	namespace config{ namespace COMP{ namespace sub{ typedef config::COMP_SOURCE::pub::TOPIC TOPIC; } } }
 
+typedef std_msgs::String TEMP_TYPE;
+
 //----  PUB -----------------------
 
-DEF_PUB( OCU, PositionUpdate, std_msgs::String )
-DEF_PUB( OCU, MissionPlan, std_msgs::String )
-DEF_PUB( OCU, Teleoperation, std_msgs::String )
-DEF_PUB( OCU, IEDDetectionEvent, std_msgs::String )
-DEF_PUB( OCU, IEDLocation, std_msgs::String )
+DEF_PUB( OCU, PositionUpdate, TEMP_TYPE )
+DEF_PUB( OCU, MissionPlan, TEMP_TYPE )
+DEF_PUB( OCU, Teleoperation, TEMP_TYPE )
+DEF_PUB( OCU, IEDDetectionEvent, TEMP_TYPE )
+DEF_PUB( OCU, IEDLocation, TEMP_TYPE )
 
-DEF_PUB( IEDSIM, IEDDetectionEvent, std_msgs::String )
-DEF_PUB( IEDSIM, IEDLocation, std_msgs::String )
+DEF_PUB( IEDSIM, IEDDetectionEvent, TEMP_TYPE )
+DEF_PUB( IEDSIM, IEDLocation, TEMP_TYPE )
 
-DEF_PUB( SMME, MissionStatus, std_msgs::String )
-DEF_PUB( SMME, MissionGlobalPath, std_msgs::String )
-DEF_PUB( SMME, IEDPosAtt, std_msgs::String )
-DEF_PUB( SMME, ExecuteWorkSequenceCommand, std_msgs::String )
+DEF_PUB( SMME, MissionStatus, TEMP_TYPE )
+DEF_PUB( SMME, MissionGlobalPath, TEMP_TYPE )
+DEF_PUB( SMME, IEDPosAtt, TEMP_TYPE )
+DEF_PUB( SMME, ExecuteWorkSequenceCommand, TEMP_TYPE )
 
-DEF_PUB( SSM, StatusData, std_msgs::String )
+DEF_PUB( SSM, StatusData, TEMP_TYPE )
 
-DEF_PUB( WSM, BladePosition, std_msgs::String )
-DEF_PUB( WSM, TrottleEffort, std_msgs::String )
-DEF_PUB( WSM, SteeringEffort, std_msgs::String )
-DEF_PUB( WSM, JointsEffort, std_msgs::String )
+DEF_PUB( WSM, BladePosition, TEMP_TYPE )
+DEF_PUB( WSM, TrottleEffort, TEMP_TYPE )
+DEF_PUB( WSM, SteeringEffort, TEMP_TYPE )
+DEF_PUB( WSM, JointsEffort, TEMP_TYPE )
 
-DEF_PUB( LLI, Teleoperation, std_msgs::String )
-DEF_PUB( LLI, TrottleEffort, std_msgs::String )
-DEF_PUB( LLI, SteeringEffort, std_msgs::String )
-DEF_PUB( LLI, JointsEffort, std_msgs::String )
+DEF_PUB( LLI, Teleoperation, TEMP_TYPE )
+DEF_PUB( LLI, TrottleEffort, TEMP_TYPE )
+DEF_PUB( LLI, SteeringEffort, TEMP_TYPE )
+DEF_PUB( LLI, JointsEffort, TEMP_TYPE )
 
-DEF_PUB( MAP, Map, std_msgs::String )
-DEF_PUB( MAP, MiniMap, std_msgs::String )
+DEF_PUB( MAP, Map, TEMP_TYPE )
+DEF_PUB( MAP, MiniMap, TEMP_TYPE )
 
-DEF_PUB( LOC, PosAttVel, std_msgs::String )
+DEF_PUB( LOC, PosAttVel, TEMP_TYPE )
 
-DEF_PUB( PER, WiresLengths, std_msgs::String )
-DEF_PUB( PER, Camera, std_msgs::String )
-DEF_PUB( PER, Laser, std_msgs::String )
-DEF_PUB( PER, INS, std_msgs::String )
-DEF_PUB( PER, GPS, std_msgs::String )
-DEF_PUB( PER, TF, std_msgs::String )
+DEF_PUB( PER, WiresLengths, TEMP_TYPE )
+DEF_PUB( PER, Camera, TEMP_TYPE )
+DEF_PUB( PER, Laser, TEMP_TYPE )
+DEF_PUB( PER, INS, TEMP_TYPE )
+DEF_PUB( PER, GPS, TEMP_TYPE )
+DEF_PUB( PER, TF, TEMP_TYPE )
 
-DEF_PUB( SENSORS, Sensor_SICK, std_msgs::String )
-DEF_PUB( SENSORS, Sensor_IBEO, std_msgs::String )
-DEF_PUB( SENSORS, Sensor_CAM_R, std_msgs::String )
-DEF_PUB( SENSORS, Sensor_CAM_L, std_msgs::String )
-DEF_PUB( SENSORS, Sensor_WIRE, std_msgs::String )
-DEF_PUB( SENSORS, Sensor_INSGPS, std_msgs::String )
+DEF_PUB( SENSORS, Sensor_SICK, TEMP_TYPE )
+DEF_PUB( SENSORS, Sensor_IBEO, TEMP_TYPE )
+DEF_PUB( SENSORS, Sensor_CAM_R, TEMP_TYPE )
+DEF_PUB( SENSORS, Sensor_CAM_L, TEMP_TYPE )
+DEF_PUB( SENSORS, Sensor_WIRE, TEMP_TYPE )
+DEF_PUB( SENSORS, Sensor_INSGPS, TEMP_TYPE )
 
-DEF_PUB( PP, LocalPathPlan, std_msgs::String )
+DEF_PUB( PP, LocalPathPlan, TEMP_TYPE )
 
-DEF_PUB( RPP, RPPPath, std_msgs::String )
+DEF_PUB( RPP, RPPPath, TEMP_TYPE )
 
-DEF_PUB( WPD, TrottleEffort, std_msgs::String )
-DEF_PUB( WPD, SteeringEffort, std_msgs::String )
+DEF_PUB( WPD, TrottleEffort, TEMP_TYPE )
+DEF_PUB( WPD, SteeringEffort, TEMP_TYPE )
 
-DEF_PUB( VO, PosAttVel, std_msgs::String )
+DEF_PUB( VO, PosAttVel, TEMP_TYPE )
 
 //----  SUB -----------------------
 
@@ -150,4 +152,6 @@ DEF_SUB( WPD, RPPPath, RPP )
 DEF_SUB( WPD, PosAttVel, LOC )
 
 
+#undef DEF_PUB
+#undef DEF_SUB
 #endif /* PARAMETERTYPES_H_ */
