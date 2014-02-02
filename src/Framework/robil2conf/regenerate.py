@@ -93,6 +93,7 @@ RosComm::~RosComm()
 }
 bool RosComm::init(int argc,char** argv){
 	ros::init(argc,argv,\""""+comp+"""_node\");
+	return true;
 }
 
 """ + fun_subs +"\n"+ fun_pubs +\
