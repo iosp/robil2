@@ -4,7 +4,14 @@ project(robil2conf)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp)
+find_package(catkin REQUIRED COMPONENTS 
+    roscpp 
+    tf
+    std_msgs
+    geometry_msgs
+    nav_msgs
+    sensor_msgs
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -78,7 +85,13 @@ find_package(catkin REQUIRED COMPONENTS roscpp)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES robil2conf
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS     
+    roscpp 
+    tf
+    std_msgs
+    geometry_msgs
+    nav_msgs
+    sensor_msgs 
 #  DEPENDS system_lib
 )
 
