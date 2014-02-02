@@ -57,14 +57,14 @@ print "Components relationship:\n\n"
 for node in nodes:
 	if not(target=='all' or target==node): continue
 	print node_name_toupper(node)
-	print '   Publishing:'
-	for topic in pub[node]:
-		name = extract_topic_name(topic)
-		print '      '+topic+' >> '+', '.join([node_name_toupper(x) for x in sub_rev[name]])
 	print '   Subscriptions:'
 	for topic in sub[node]:
 		name = extract_topic_name(topic)
 		print '      '+topic+' << '+', '.join([node_name_toupper(x) for x in pub_rev[name]])
+	print '   Publishing:'
+	for topic in pub[node]:
+		name = extract_topic_name(topic)
+		print '      '+topic+' >> '+', '.join([node_name_toupper(x) for x in sub_rev[name]])
 
 print "\n\nTypes descriptions:\n\n"
 for t in types:
