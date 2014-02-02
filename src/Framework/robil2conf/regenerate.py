@@ -22,10 +22,12 @@ def gen_roscomm_header( subscribers, publishers, func_subscribers, func_publishe
 #include <ParameterTypes.h>
 class ComponentMain;
 class RosComm {
+  bool _inited;
   ComponentMain   * _comp;
   ros::NodeHandle _nh;
 """ + subscribers +"\n"+ publishers +"\n"+\
 """
+  bool init(int argc,char** argv);
 public:
 	RosComm(ComponentMain* comp,int argc,char** argv);
 	virtual ~RosComm();
@@ -63,7 +65,7 @@ public:
 """
 	return code
 
-def gen_roscomm_source(subs, pubs, fun_subs, fun_pubs):
+def gen_roscomm_source(comp, subs, pubs, fun_subs, fun_pubs):
 	code = \
 """
 /*
@@ -81,15 +83,18 @@ def gen_roscomm_source(subs, pubs, fun_subs, fun_pubs):
 #include <sstream>
 #include "ParameterHandler.h"
 RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
+	: _inited(init(argc, argv)), _comp(comp)
 {
-  ros::init(argc,argv,"PP_node");
-  _comp=comp;
 """ + subs +"\n"+ pubs +\
 """
 }
 RosComm::~RosComm()
 {
 }
+bool RosComm::init(int argc,char** argv){
+	ros::init(argc,argv,\""""+comp+"""_node\");
+}
+
 """ + fun_subs +"\n"+ fun_pubs +\
 """
 """
@@ -190,7 +195,8 @@ void ComponentMain::publish"""+name+"""(config::"""+comp+"""::pub::"""+name+"""&
 
 
 class CodeGen:
-	def __init__(self):
+	def __init__(self, comp):
+		self.component = comp
 		self.all_roscomm_header_subscribers = []
 		self.all_roscomm_header_publishers = []
 		self.all_roscomm_header_subscribe_functions = []
@@ -203,20 +209,20 @@ class CodeGen:
 		self.all_roscomm_source_publish_functions = []
 		self.all_component_source_subscribe_functions = []
 		self.all_component_source_publish_functions = []
-	def addSub( self, comp, name ):
-		self.all_roscomm_header_subscribers.append( gen_roscomm_header_subscriber(comp,name) )
-		self.all_roscomm_header_subscribe_functions.append( get_roscomm_header_subscribe_function(comp,name) )
-		self.all_component_header_subscribe_functions.append( get_component_header_subscribe_function(comp,name) )
-		self.all_roscomm_source_subscribers.append( gen_roscomm_source_subscriber(comp,name) )
-		self.all_roscomm_source_subscribe_functions.append( get_roscomm_source_subscribe_function(comp,name) )
-		self.all_component_source_subscribe_functions.append( get_component_source_subscribe_fun(comp,name) )
-	def addPub( self, comp, name ):
-		self.all_roscomm_header_publishers.append( gen_roscomm_header_publisher(comp,name) )
-		self.all_roscomm_header_publish_functions.append( get_roscomm_header_publish_function(comp,name) )
-		self.all_component_header_publish_function.append( get_component_header_publish_function(comp,name) )
-		self.all_roscomm_source_publishers.append( gen_roscomm_source_publisher(comp,name) )
-		self.all_roscomm_source_publish_functions.append( get_roscomm_source_publish_function(comp,name) )
-		self.all_component_source_publish_functions.append( get_component_source_publish_function(comp,name) )
+	def addSub( self, name ):
+		self.all_roscomm_header_subscribers.append( gen_roscomm_header_subscriber(self.component,name) )
+		self.all_roscomm_header_subscribe_functions.append( get_roscomm_header_subscribe_function(self.component,name) )
+		self.all_component_header_subscribe_functions.append( get_component_header_subscribe_function(self.component,name) )
+		self.all_roscomm_source_subscribers.append( gen_roscomm_source_subscriber(self.component,name) )
+		self.all_roscomm_source_subscribe_functions.append( get_roscomm_source_subscribe_function(self.component,name) )
+		self.all_component_source_subscribe_functions.append( get_component_source_subscribe_fun(self.component,name) )
+	def addPub( self, name ):
+		self.all_roscomm_header_publishers.append( gen_roscomm_header_publisher(self.component,name) )
+		self.all_roscomm_header_publish_functions.append( get_roscomm_header_publish_function(self.component,name) )
+		self.all_component_header_publish_function.append( get_component_header_publish_function(self.component,name) )
+		self.all_roscomm_source_publishers.append( gen_roscomm_source_publisher(self.component,name) )
+		self.all_roscomm_source_publish_functions.append( get_roscomm_source_publish_function(self.component,name) )
+		self.all_component_source_publish_functions.append( get_component_source_publish_function(self.component,name) )
 
 	def get_roscomm_header(self):
 		return gen_roscomm_header(
@@ -227,7 +233,7 @@ class CodeGen:
 		return get_component_header("\n".join(self.all_component_header_subscribe_functions),"\n".join(self.all_component_header_publish_function))
 
 	def get_roscomm_source(self):
-		return gen_roscomm_source(
+		return gen_roscomm_source( self.component,
 			"\n".join(self.all_roscomm_source_subscribers),"\n".join(self.all_roscomm_source_publishers),
 			"\n".join(self.all_roscomm_source_subscribe_functions),"\n".join(self.all_roscomm_source_publish_functions)
 			)
@@ -258,10 +264,10 @@ if not is_project():
 	import sys
 	sys.exit(1)
 
-code = CodeGen()
-
 comp = component_name() 
 print "Component name : "+comp
+
+code = CodeGen(comp)
 
 conf_path = path_to_configuration()
 conf = open(conf_path ,'r').readlines()
@@ -272,11 +278,11 @@ comp_pub_conf = [ line[4:] for line in comp_conf if line.startswith('pub') ]
 print "output topics:"
 for e in comp_sub_conf:
 	print "\t",e
-	code.addSub(comp, e)
+	code.addSub(e)
 print "input topics:"
 for e in comp_pub_conf:
 	print "\t",e
-	code.addPub(comp, e)
+	code.addPub(e)
 	
 path_to_component_header = 'src/component/ComponentMain.h'
 path_to_component_source = 'src/component/ComponentMain.cpp'
