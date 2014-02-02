@@ -28,6 +28,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/Int8.h>
 
 #define DEF_PUB( COMP, TOPIC, TYPE )\
 	namespace config{ namespace COMP{ namespace pub{ typedef TYPE TOPIC; } } }
@@ -53,15 +54,21 @@ namespace types{
 	typedef std_msgs::Float64 WireLength;
 	typedef geometry_msgs::TwistStamped Speed;
 	typedef std_msgs::Int32 Effort;
+	typedef Point IEDLocation; //this is a special type?
+	typedef std_msgs::Int8 IEDDetection; // or if IEDLocation is a special type then IEDDetection=IEDLocation
+	typedef std_msgs::Int32 Mode;
 }
 
 //----  PUB -----------------------
 
-DEF_PUB( OCU, PositionUpdate, types::Pose )
+DEF_PUB( OCU, PositionUpdate, types::Pose ) //OK
 DEF_PUB( OCU, MissionPlan, TEMP_TYPE )
-DEF_PUB( OCU, Teleoperation, TEMP_TYPE )
-DEF_PUB( OCU, IEDDetectionEvent, TEMP_TYPE )
-DEF_PUB( OCU, IEDLocation, types::Point )
+DEF_PUB( OCU, TeleoperationMode, TEMP_TYPE )
+DEF_PUB( OCU, TeleoperationThrottle, types::Effort )
+DEF_PUB( OCU, TeleoperationSteering, types::Effort )
+DEF_PUB( OCU, TeleoperationJoints, types::Effort )
+DEF_PUB( OCU, IEDDetectionEvent, types::IEDDetection )
+DEF_PUB( OCU, IEDLocation, types::IEDLocation )
 
 DEF_PUB( IEDSIM, IEDDetectionEvent, TEMP_TYPE )
 DEF_PUB( IEDSIM, IEDLocation, types::Point )
