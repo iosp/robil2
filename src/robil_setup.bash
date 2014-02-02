@@ -58,10 +58,10 @@ function robil_all_nodes_info(){
 	pushd . @>/dev/null
 	roscd 'robil2conf'
 	f=$(find . -name 'all_nodes_info.py')
-	if test $f; then $f;else
+	if test $f; then $f $@;else
 		echo "found"
 		f=$(find ../../.. -name 'all_nodes_info.py')
-		if test $f; then $f;else
+		if test $f; then $f $@;else
 			echo 'all_nodes_info.py not found'
 		fi
 	fi

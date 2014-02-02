@@ -15,7 +15,8 @@ def node_name_toupper(node): return node[1:-len(node)+node.find('_node')].upper(
 def extract_topic_name(line): return line[line.find('/'):-len(line)+line.find(' [')]
 def extract_topic_type(line): return line[line.find('[')+1:-1]
 
-
+target = "all"
+if len(sys.argv)>1: target = "/"+sys.argv[1].lower()+'_node';
 nodes = exe_lines('rosnode list')
 types = []
 types_rec = {}
@@ -38,10 +39,11 @@ for node in nodes:
 				curr = None
 			elif '/rosout' not in line:
 				curr[node].append( line[2:] )
-				typ = extract_topic_type(line)#line[line.find('[')+1:-1]
-				if typ not in types :
-					types.append( typ )
-					types_rec[typ] = exe_text('rosmsg show '+typ)
+				if target=='all' or target==node:
+					typ = extract_topic_type(line)#line[line.find('[')+1:-1]
+					if typ not in types :
+						types.append( typ )
+						types_rec[typ] = exe_text('rosmsg show '+typ)
 				name = extract_topic_name(line)#line[2:-len(line)+line.find(' [')]
 				if name not in pub_rev :
 					pub_rev[name] = []
@@ -53,6 +55,7 @@ for node in nodes:
 
 print "Components relationship:\n\n"
 for node in nodes:
+	if not(target=='all' or target==node): continue
 	print node_name_toupper(node)
 	print '   Publishing:'
 	for topic in pub[node]:
