@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>rpp</name>
+  <name>llc</name>
   <version>0.0.0</version>
-  <description>The rpp package</description>
+  <description>The llc package</description>
 
   <maintainer email="yuval@todo.todo">yuval</maintainer>
 

@@ -9,6 +9,7 @@
 #define PARAMETERHANDLER_H_
 #include <ros/ros.h>
 #include <string>
+#include "ParameterTypes.h"
 
 std::string fetchParam(ros::NodeHandle * nh,std::string compName,std::string neededTopic,std::string type);
 

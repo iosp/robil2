@@ -5,7 +5,7 @@
 #include <boost/thread/thread.hpp>
 int main(int argc,char** argv)
 {
-  ComponentMain *comp=new ComponentMain(argc,argv);
+  ComponentMain comp(argc,argv);
   ros::AsyncSpinner spinner(4); // Use 4 threads
   spinner.start();
   ros::waitForShutdown();
