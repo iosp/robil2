@@ -6,7 +6,7 @@ project(robil2conf)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS 
     roscpp 
-    messages
+    robil_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -83,7 +83,7 @@ catkin_package(
   LIBRARIES robil2conf
   CATKIN_DEPENDS     
     roscpp 
-    messages 
+    robil_msgs 
 #  DEPENDS system_lib
 )
 
@@ -105,7 +105,7 @@ add_library(robil2conf
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(robil2conf_node robil2conf_generate_messages_cpp)
+add_dependencies(robil2conf robil_msgs_gencpp)
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(robil2conf
