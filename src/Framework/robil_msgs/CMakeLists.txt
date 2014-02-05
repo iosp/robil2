@@ -5,11 +5,12 @@ project(robil_msgs)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  message_generation
+  roscpp
+  std_msgs
   geometry_msgs
   nav_msgs
-  roscpp
   sensor_msgs
-  std_msgs
   tf
 )
 
@@ -48,11 +49,16 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 add_message_files(
+   DIRECTORY msg
    FILES
-   Path.msg
-   IEDLocation.msg
-   CommandsList.msg
-   Map.msg
+     Path.msg
+     IEDLocation.msg
+     CommandsList.msg
+     MapCell.msg
+     Map.msg
+     ControlConfirm.msg
+     ControlRequest.msg
+     WPDDecision.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -72,7 +78,10 @@ add_message_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  geometry_msgs   nav_msgs   sensor_msgs   std_msgs
+	std_msgs
+	geometry_msgs
+	nav_msgs
+	sensor_msgs
 )
 
 ###################################
@@ -85,9 +94,9 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
+#  INCLUDE_DIRS include
 #  LIBRARIES robil_msgs
-  CATKIN_DEPENDS geometry_msgs nav_msgs roscpp sensor_msgs std_msgs tf
+  CATKIN_DEPENDS message_runtime geometry_msgs nav_msgs roscpp sensor_msgs std_msgs tf
 #  DEPENDS system_lib
 )
 
@@ -98,9 +107,9 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
+#include_directories(
+#  ${catkin_INCLUDE_DIRS}
+#)
 
 ## Declare a cpp library
 # add_library(robil_msgs

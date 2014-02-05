@@ -35,6 +35,9 @@
 #include <robil_msgs/IEDLocation.h>
 #include <robil_msgs/CommandsList.h>
 #include <robil_msgs/Map.h>
+#include <robil_msgs/WPDDecision.h>
+#include <robil_msgs/ControlConfirm.h>
+#include <robil_msgs/ControlRequest.h>
 
 #define DEF_PUB( COMP, TOPIC, TYPE )\
 	namespace config{ namespace COMP{ namespace pub{ typedef TYPE TOPIC; } } }
@@ -67,6 +70,7 @@ namespace types{
 	typedef diagnostic_msgs::DiagnosticStatus Diagnostic;
 	typedef robil_msgs::CommandsList CommandsList;
 	typedef std_msgs::String WSMData; // need custom message
+	typedef robil_msgs::WPDDecision WPDDecision; // need custom message
 }
 
 //----  PUBLICATIONS -----------------------
@@ -152,7 +156,7 @@ DEF_PUB( PP, PPExecutionState, types::Diagnostic )
 DEF_PUB( PP, PPComponentState, types::Diagnostic )
 
 DEF_PUB( WPD, WPDSpeed, types::Speed )
-DEF_PUB( WPD, WPDDecisions, types::Events )
+DEF_PUB( WPD, WPDDecisions, types::WPDDecision )
 DEF_PUB( WPD, WPDState, types::Diagnostic )
 DEF_PUB( WPD, WPDComponentState, types::Diagnostic )
 

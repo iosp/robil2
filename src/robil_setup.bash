@@ -68,3 +68,17 @@ function robil_all_nodes_info(){
 	popd @>/dev/null
 }
 
+function robil_init_cmake {
+	../robil2conf/init_cmake.py
+}
+function robil_init_cmake_all {
+	find . -name "CMakeLists.txt" -type f |
+		while read file; do
+			pushd .
+			cd $( dirname $file )
+			robil_init_cmake
+			popd
+		done
+}
+
+

@@ -1,1 +1,4 @@
-geometry_msgs/Point location
+int8 controlled_id
+int8 controller_id
+int8 autority_code
+bool is_request
