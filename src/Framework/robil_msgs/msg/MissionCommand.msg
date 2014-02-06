@@ -1,0 +1,10 @@
+int32 mission_id
+int32 task_id
+int8 command
+int8 command_reserver=0
+int8 command_start=1
+int8 command_pause=2
+int8 command_abort=3
+int8 command_resume=4
+int8 command_complete=5
+int8 command_delete=6

@@ -1,0 +1,1 @@
+AssignManipulatorTask[] tasks

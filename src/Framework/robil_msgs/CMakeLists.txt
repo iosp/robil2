@@ -49,16 +49,24 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 add_message_files(
-   DIRECTORY msg
-   FILES
-     Path.msg
-     IEDLocation.msg
-     CommandsList.msg
-     MapCell.msg
-     Map.msg
-     ControlConfirm.msg
-     ControlRequest.msg
-     WPDDecision.msg
+    DIRECTORY msg
+    FILES
+        Path.msg
+        IEDLocation.msg
+        CommandsList.msg
+        MapCell.msg
+        Map.msg
+        ControlConfirm.msg
+        ControlRequest.msg
+        WPDDecision.msg
+        AssignManipulatorTask.msg
+        AssignManipulatorTaskList.msg
+        AssignManipulatorTaskStep.msg
+        AssignMission.msg
+        AssignMissionTask.msg
+        AssignNavTask.msg
+        AssignNavTaskList.msg
+        MissionCommand.msg
 )
 
 ## Generate services in the 'srv' folder

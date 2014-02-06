@@ -62,7 +62,7 @@ namespace types{
 	typedef geometry_msgs::TwistStamped Speed;
 	typedef std_msgs::Int32 Effort;
 	typedef robil_msgs::IEDLocation IEDLocation;
-	typedef std_msgs::Bool IEDDetection; // or if IEDLocation is a special type then IEDDetection=IEDLocation
+	//typedef std_msgs::Bool IEDDetection; // or if IEDLocation is a special type then IEDDetection=IEDLocation
 	typedef std_msgs::Int32 Mode;
 	typedef std_msgs::String Events;
 	typedef std_msgs::String Command;
@@ -71,25 +71,24 @@ namespace types{
 	typedef robil_msgs::CommandsList CommandsList;
 	typedef std_msgs::String WSMData; // need custom message
 	typedef robil_msgs::WPDDecision WPDDecision; // need custom message
+	typedef std_msgs::Bool EmergencyStop;
 }
 
 //----  PUBLICATIONS -----------------------
 
 DEF_PUB( OCU, PositionUpdate, types::Pose )
-DEF_PUB( OCU, SMMECommand, types::Command )
+DEF_PUB( OCU, LLCControlMode, types::Mode )
 DEF_PUB( OCU, SMMEControlMode, types::Mode )
+DEF_PUB( OCU, SMMECommand, types::Command )
 DEF_PUB( OCU, NavigationTask, types::Task )
 DEF_PUB( OCU, ManipulationTask, types::Task )
 DEF_PUB( OCU, MissionTask, types::Task )
 DEF_PUB( OCU, CustomPath, types::Path )
-DEF_PUB( OCU, TeleoperationControlMode, types::Mode )
 DEF_PUB( OCU, TeleoperationThrottle, types::Effort )
 DEF_PUB( OCU, TeleoperationSteering, types::Effort )
 DEF_PUB( OCU, TeleoperationJoints, types::Effort )
-DEF_PUB( OCU, IEDDetectionEvent, types::IEDDetection )
 DEF_PUB( OCU, IEDLocation, types::IEDLocation )
 
-DEF_PUB( IEDSIM, IEDDetectionEvent, types::IEDDetection )
 DEF_PUB( IEDSIM, IEDLocation, types::IEDLocation )
 DEF_PUB( IEDSIM, IEDSIMState, types::Diagnostic )
 DEF_PUB( IEDSIM, IEDSIMComponentState, types::Diagnostic )
@@ -108,6 +107,7 @@ DEF_PUB( SMME, WSMCommand, types::Command )
 DEF_PUB( SMME, LLCCommand, types::Command )
 DEF_PUB( SMME, LOCCommand, types::Command )
 DEF_PUB( SMME, PERCommand, types::Command )
+DEF_PUB( SMME, EmergencyStop, types::EmergencyStop )
 
 DEF_PUB( SSM, PlatformState, types::Diagnostic )
 DEF_PUB( SSM, SoftwareState, types::Diagnostic )
@@ -156,7 +156,7 @@ DEF_PUB( PP, PPExecutionState, types::Diagnostic )
 DEF_PUB( PP, PPComponentState, types::Diagnostic )
 
 DEF_PUB( WPD, WPDSpeed, types::Speed )
-DEF_PUB( WPD, WPDDecisions, types::WPDDecision )
+DEF_PUB( WPD, WPDDecisions, types::Diagnostic )
 DEF_PUB( WPD, WPDState, types::Diagnostic )
 DEF_PUB( WPD, WPDComponentState, types::Diagnostic )
 
@@ -167,7 +167,6 @@ DEF_SUB( OCU, BladPosition, PER )
 DEF_SUB( OCU, Map, PER )
 DEF_SUB( OCU, WPDDecisions, WPD )
 DEF_SUB( OCU, LocalPath, PP )
-DEF_SUB( OCU, IEDDetectionEvent, IEDSIM )
 DEF_SUB( OCU, PlatformState, SSM )
 DEF_SUB( OCU, SoftwareState, SSM )
 DEF_SUB( OCU, SensorsState, SSM )
@@ -175,7 +174,6 @@ DEF_SUB( OCU, SMMEMissionState, SMME )
 DEF_SUB( OCU, MissionAcceptance, SMME )
 
 DEF_SUB( IEDSIM, Odometry, LOC )
-DEF_SUB( IEDSIM, IEDDetectionEvent, OCU )
 DEF_SUB( IEDSIM, IEDLocation, OCU )
 DEF_SUB( IEDSIM, IEDSIMCommand, SMME )
 
@@ -183,7 +181,6 @@ DEF_SUB( SMME, Odometry, LOC )
 DEF_SUB( SMME, BladPosition, PER )
 DEF_SUB( SMME, PPExecutionState, PP )
 DEF_SUB( SMME, WSMExecutionState, WSM )
-DEF_SUB( SMME, IEDDetectionEvent, IEDSIM )
 DEF_SUB( SMME, IEDLocation, IEDSIM )
 DEF_SUB( SMME, PlatformState, SSM )
 DEF_SUB( SMME, SoftwareState, SSM )
@@ -221,7 +218,6 @@ DEF_SUB( LLC, BladePositionCommand, WSM )
 DEF_SUB( LLC, WPDSpeed, WPD )
 DEF_SUB( LLC, Odometry, LOC )
 DEF_SUB( LLC, LLCCommand, SMME )
-DEF_SUB( LLC, TeleoperationControlMode, OCU )
 DEF_SUB( LLC, TeleoperationThrottle, OCU )
 DEF_SUB( LLC, TeleoperationSteering, OCU )
 DEF_SUB( LLC, TeleoperationJoints, OCU )

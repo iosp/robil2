@@ -1,4 +1,2 @@
-int8 controlled_id
-int8 controller_id
-int8 autority_code
-bool is_request
+bool is_detected
+geometry_msgs/Point location
