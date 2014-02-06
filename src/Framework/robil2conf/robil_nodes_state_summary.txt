@@ -1,0 +1,436 @@
+Components relationship:
+
+
+IEDSIM
+   Subscriptions:
+      /LOC/Odometry [nav_msgs/Odometry] << LOC
+      /OCU/IED/Location [robil_msgs/IEDLocation] << OCU
+      /SMME/IEDSIM/Command [std_msgs/String] << SMME
+   Publishing:
+      /IED/ComponentState [diagnostic_msgs/DiagnosticStatus] >> SSM
+      /IED/Location [robil_msgs/IEDLocation] >> SMME
+LLC
+   Subscriptions:
+      /OCU/Teleoperation/Steering [std_msgs/Int32] << OCU
+      /WSM/Speed [geometry_msgs/TwistStamped] << WSM
+      /OCU/Teleoperation/Throttle [std_msgs/Int32] << OCU
+      /LOC/Odometry [nav_msgs/Odometry] << LOC
+      /OCU/Teleoperation/Joints [std_msgs/Int32] << OCU
+      /SMME/LLC/Command [std_msgs/String] << SMME
+      /WPD/Speed [geometry_msgs/TwistStamped] << WPD
+      /WSM/BladePosition [geometry_msgs/PoseStamped] << WSM
+   Publishing:
+      /LLC/ComponentState [diagnostic_msgs/DiagnosticStatus] >> SSM
+      /LLC/PlatformState [diagnostic_msgs/DiagnosticStatus] >> SSM
+      /LLC/SteeringEffort [std_msgs/Int32] >> PER
+      /LLC/TrottleEffort [std_msgs/Int32] >> PER
+      /LLC/JointsEffort [std_msgs/Int32] >> PER
+LOC
+   Subscriptions:
+      /SMME/LOC/Command [std_msgs/String] << SMME
+      /PER/VO/Odometry [nav_msgs/Odometry] << PER
+      /PER/GPS [sensor_msgs/NavSatFix] << PER
+      /OCU/PositionUpdate [geometry_msgs/PoseStamped] << OCU
+      /PER/INS [sensor_msgs/Imu] << PER
+   Publishing:
+      /LOC/ComponentState [diagnostic_msgs/DiagnosticStatus] >> SSM
+      /LOC/Odometry [nav_msgs/Odometry] >> IEDSIM, LLC, OCU, PER, PP, SMME, SSM, WPD, WSM
+      /LOC/LOCState [diagnostic_msgs/DiagnosticStatus] >> 
+OCU
+   Subscriptions:
+      /SSM/State/Software [diagnostic_msgs/DiagnosticStatus] << SSM
+      /SSM/State/Platform [diagnostic_msgs/DiagnosticStatus] << SSM
+      /PP/Path [robil_msgs/Path] << PP
+      /WPD/Decisions [diagnostic_msgs/DiagnosticStatus] << WPD
+      /LOC/Odometry [nav_msgs/Odometry] << LOC
+      /SSM/State/Sensors [diagnostic_msgs/DiagnosticStatus] << SSM
+      /SMME/MissionState [diagnostic_msgs/DiagnosticStatus] << SMME
+      /PER/PER_pub_BladPosition [geometry_msgs/PoseStamped] << PER
+      /SMME/MissionAcceptance [std_msgs/String] << SMME
+      /PER/Map [robil_msgs/Map] << PER
+   Publishing:
+      /OCU/Teleoperation/Steering [std_msgs/Int32] >> LLC
+      /OCU/NavigationTask [std_msgs/String] >> SMME
+      /OCU/ManipulationTask [std_msgs/String] >> SMME
+      /OCU/Teleoperation/Throttle [std_msgs/Int32] >> LLC
+      /OCU/ControlMode [std_msgs/Int32] >> SMME
+      /OCU/PositionUpdate [geometry_msgs/PoseStamped] >> LOC
+      /OCU/IED/Location [robil_msgs/IEDLocation] >> IEDSIM
+      /OCU/Path [robil_msgs/Path] >> 
+      /OCU/MissionPlan [std_msgs/String] >> SMME
+      /OCU/MissionExecutionCommands [std_msgs/String] >> SMME
+      /OCU/Teleoperation/Joints [std_msgs/Int32] >> LLC
+PER
+   Subscriptions:
+      /SENSORS/INS [sensor_msgs/Imu] << SENSORS
+      /SENSORS/SICK/1 [sensor_msgs/LaserScan] << SENSORS
+      /SENSORS/GPS [sensor_msgs/NavSatFix] << SENSORS
+      /SENSORS/CAM/R [sensor_msgs/Image] << SENSORS
+      /LOC/Odometry [nav_msgs/Odometry] << LOC
+      /SENSORS/CAM/L [sensor_msgs/Image] << SENSORS
+      /LLC/SteeringEffort [std_msgs/Int32] << LLC
+      /SENSORS/WIRE [std_msgs/Float64] << SENSORS
+      /SMME/PER/Command [std_msgs/String] << SMME
+      /SENSORS/IBEO/1 [sensor_msgs/LaserScan] << SENSORS
+      /SENSORS/IBEO/2 [sensor_msgs/LaserScan] << SENSORS
+      /SENSORS/IBEO/3 [sensor_msgs/LaserScan] << SENSORS
+      /LLC/TrottleEffort [std_msgs/Int32] << LLC
+      /SENSORS/IBEO/4 [sensor_msgs/LaserScan] << SENSORS
+      /LLC/JointsEffort [std_msgs/Int32] << LLC
+   Publishing:
+      /PER/ComponentState [diagnostic_msgs/DiagnosticStatus] >> SSM
+      /PER/SensorsCommand [std_msgs/String] >> 
+      /PER/SensorsState [diagnostic_msgs/DiagnosticStatus] >> SSM
+      /PER/MiniMap [robil_msgs/Map] >> WPD
+      /PER/VO/Odometry [nav_msgs/Odometry] >> LOC
+      /PER/PER_pub_BladPosition [geometry_msgs/PoseStamped] >> OCU, SMME, SSM, WSM
+      /PER/INS [sensor_msgs/Imu] >> LOC
+      /PER/GPS [sensor_msgs/NavSatFix] >> LOC
+      /PER/Map [robil_msgs/Map] >> OCU, PP
+PP
+   Subscriptions:
+      /SMME/PP/Command [std_msgs/String] << SMME
+      /SMME/GlobalPath [robil_msgs/Path] << SMME
+      /LOC/Odometry [nav_msgs/Odometry] << LOC
+      /SMME/MaxSpeed [geometry_msgs/TwistStamped] << SMME
+      /PER/Map [robil_msgs/Map] << PER
+   Publishing:
+      /PP/Path [robil_msgs/Path] >> OCU, WPD
+      /PP/ExecutionState [diagnostic_msgs/DiagnosticStatus] >> SMME
+      /PP/ComponentState [diagnostic_msgs/DiagnosticStatus] >> SSM
+
+SENSORS
+   Subscriptions:
+   Publishing:
+      /SENSORS/IBEO/2 [sensor_msgs/LaserScan] >> PER
+      /SENSORS/INS [sensor_msgs/Imu] >> PER
+      /SENSORS/GPS [sensor_msgs/NavSatFix] >> PER
+      /SENSORS/CAM/R [sensor_msgs/Image] >> PER
+      /SENSORS/CAM/L [sensor_msgs/Image] >> PER
+      /SENSORS/WIRE [std_msgs/Float64] >> PER
+      /SENSORS/IBEO/4 [sensor_msgs/LaserScan] >> PER
+      /SENSORS/IBEO/1 [sensor_msgs/LaserScan] >> PER
+      /SENSORS/SICK/1 [sensor_msgs/LaserScan] >> PER
+      /SENSORS/IBEO/3 [sensor_msgs/LaserScan] >> PER
+SMME
+   Subscriptions:
+      /SSM/State/Software [diagnostic_msgs/DiagnosticStatus] << SSM
+      /SSM/State/Platform [diagnostic_msgs/DiagnosticStatus] << SSM
+      /OCU/NavigationTask [std_msgs/String] << OCU
+      /OCU/ManipulationTask [std_msgs/String] << OCU
+      /LOC/Odometry [nav_msgs/Odometry] << LOC
+      /SSM/State/Sensors [diagnostic_msgs/DiagnosticStatus] << SSM
+      /OCU/MissionPlan [std_msgs/String] << OCU
+      /OCU/ControlMode [std_msgs/Int32] << OCU
+      /OCU/MissionExecutionCommands [std_msgs/String] << OCU
+      /IED/Location [robil_msgs/IEDLocation] << IEDSIM
+      /PP/ExecutionState [diagnostic_msgs/DiagnosticStatus] << PP
+      /PER/PER_pub_BladPosition [geometry_msgs/PoseStamped] << PER
+      /WSM/ExecutionState [diagnostic_msgs/DiagnosticStatus] << WSM
+   Publishing:
+      /SMME/GlobalPath [robil_msgs/Path] >> PP
+      /SMME/LOC/Command [std_msgs/String] >> LOC
+      /SMME/PP/Command [std_msgs/String] >> PP
+      /SMME/SSM/Command [std_msgs/String] >> SSM
+      /SMME/WSM/Command [std_msgs/String] >> WSM
+      /SMME/MaxSpeed [geometry_msgs/TwistStamped] >> PP, WPD
+      /SMME/PER/Command [std_msgs/String] >> PER
+      /SMME/ComponentState [diagnostic_msgs/DiagnosticStatus] >> SSM
+      /SMME/LLC/Command [std_msgs/String] >> LLC
+      /SMME/MissionState [diagnostic_msgs/DiagnosticStatus] >> OCU, SSM
+      /SMME/WPD/Command [std_msgs/String] >> WPD
+      /SMME/MissionAcceptance [std_msgs/String] >> OCU
+      /SMME/IEDSIM/Command [std_msgs/String] >> IEDSIM
+      /SMME/WSM/Data [std_msgs/String] >> WSM
+SSM
+   Subscriptions:
+      /PER/ComponentState [diagnostic_msgs/DiagnosticStatus] << PER
+      /IED/ComponentState [diagnostic_msgs/DiagnosticStatus] << IEDSIM
+      /PER/SensorsState [diagnostic_msgs/DiagnosticStatus] << PER
+      /WPD/ComponentState [diagnostic_msgs/DiagnosticStatus] << WPD
+      /LOC/ComponentState [diagnostic_msgs/DiagnosticStatus] << LOC
+      /LLC/ComponentState [diagnostic_msgs/DiagnosticStatus] << LLC
+      /WPD/Decisions [diagnostic_msgs/DiagnosticStatus] << WPD
+      /SMME/SSM/Command [std_msgs/String] << SMME
+      /LOC/Odometry [nav_msgs/Odometry] << LOC
+      /SSM/ComponentState [diagnostic_msgs/DiagnosticStatus] << SSM
+      /SMME/ComponentState [diagnostic_msgs/DiagnosticStatus] << SMME
+      /LLC/PlatformState [diagnostic_msgs/DiagnosticStatus] << LLC
+      /SMME/MissionState [diagnostic_msgs/DiagnosticStatus] << SMME
+      /PER/PER_pub_BladPosition [geometry_msgs/PoseStamped] << PER
+      /PP/ComponentState [diagnostic_msgs/DiagnosticStatus] << PP
+      /WSM/ExecutionState [diagnostic_msgs/DiagnosticStatus] << WSM
+   Publishing:
+      /SSM/State/Software [diagnostic_msgs/DiagnosticStatus] >> OCU, SMME
+      /SSM/State/Platform [diagnostic_msgs/DiagnosticStatus] >> OCU, SMME
+      /SSM/ComponentState [diagnostic_msgs/DiagnosticStatus] >> SSM
+      /SSM/State/Sensors [diagnostic_msgs/DiagnosticStatus] >> OCU, SMME
+WPD
+   Subscriptions:
+      /PP/Path [robil_msgs/Path] << PP
+      /LOC/Odometry [nav_msgs/Odometry] << LOC
+      /SMME/MaxSpeed [geometry_msgs/TwistStamped] << SMME
+      /SMME/WPD/Command [std_msgs/String] << SMME
+      /PER/MiniMap [robil_msgs/Map] << PER
+   Publishing:
+      /WPD/Decisions [diagnostic_msgs/DiagnosticStatus] >> OCU, SSM
+      /WPD/ComponentState [diagnostic_msgs/DiagnosticStatus] >> SSM
+      /WPD/Speed [geometry_msgs/TwistStamped] >> LLC
+      /WPD/State [diagnostic_msgs/DiagnosticStatus] >> 
+WSM
+   Subscriptions:
+      /SMME/WSM/Data [std_msgs/String] << SMME
+      /LOC/Odometry [nav_msgs/Odometry] << LOC
+      /SMME/WSM/Command [std_msgs/String] << SMME
+      /PER/PER_pub_BladPosition [geometry_msgs/PoseStamped] << PER
+   Publishing:
+      /WSM/Speed [geometry_msgs/TwistStamped] >> LLC
+      /WSM/ComponentState [diagnostic_msgs/DiagnosticStatus] >> 
+      /WSM/BladePosition [geometry_msgs/PoseStamped] >> LLC
+      /WSM/ExecutionState [diagnostic_msgs/DiagnosticStatus] >> SMME, SSM
+
+
+Types descriptions:
+
+
+diagnostic_msgs/DiagnosticStatus
+   byte OK=0
+   byte WARN=1
+   byte ERROR=2
+   byte level
+   string name
+   string message
+   string hardware_id
+   diagnostic_msgs/KeyValue[] values
+     string key
+     string value
+   
+   
+robil_msgs/IEDLocation
+   bool is_detected
+   geometry_msgs/Point location
+     float64 x
+     float64 y
+     float64 z
+   
+   
+nav_msgs/Odometry
+   std_msgs/Header header
+     uint32 seq
+     time stamp
+     string frame_id
+   string child_frame_id
+   geometry_msgs/PoseWithCovariance pose
+     geometry_msgs/Pose pose
+       geometry_msgs/Point position
+         float64 x
+         float64 y
+         float64 z
+       geometry_msgs/Quaternion orientation
+         float64 x
+         float64 y
+         float64 z
+         float64 w
+     float64[36] covariance
+   geometry_msgs/TwistWithCovariance twist
+     geometry_msgs/Twist twist
+       geometry_msgs/Vector3 linear
+         float64 x
+         float64 y
+         float64 z
+       geometry_msgs/Vector3 angular
+         float64 x
+         float64 y
+         float64 z
+     float64[36] covariance
+   
+   
+std_msgs/String
+   string data
+   
+   
+std_msgs/Int32
+   int32 data
+   
+   
+geometry_msgs/TwistStamped
+   std_msgs/Header header
+     uint32 seq
+     time stamp
+     string frame_id
+   geometry_msgs/Twist twist
+     geometry_msgs/Vector3 linear
+       float64 x
+       float64 y
+       float64 z
+     geometry_msgs/Vector3 angular
+       float64 x
+       float64 y
+       float64 z
+   
+   
+geometry_msgs/PoseStamped
+   std_msgs/Header header
+     uint32 seq
+     time stamp
+     string frame_id
+   geometry_msgs/Pose pose
+     geometry_msgs/Point position
+       float64 x
+       float64 y
+       float64 z
+     geometry_msgs/Quaternion orientation
+       float64 x
+       float64 y
+       float64 z
+       float64 w
+   
+   
+sensor_msgs/NavSatFix
+   uint8 COVARIANCE_TYPE_UNKNOWN=0
+   uint8 COVARIANCE_TYPE_APPROXIMATED=1
+   uint8 COVARIANCE_TYPE_DIAGONAL_KNOWN=2
+   uint8 COVARIANCE_TYPE_KNOWN=3
+   std_msgs/Header header
+     uint32 seq
+     time stamp
+     string frame_id
+   sensor_msgs/NavSatStatus status
+     int8 STATUS_NO_FIX=-1
+     int8 STATUS_FIX=0
+     int8 STATUS_SBAS_FIX=1
+     int8 STATUS_GBAS_FIX=2
+     uint16 SERVICE_GPS=1
+     uint16 SERVICE_GLONASS=2
+     uint16 SERVICE_COMPASS=4
+     uint16 SERVICE_GALILEO=8
+     int8 status
+     uint16 service
+   float64 latitude
+   float64 longitude
+   float64 altitude
+   float64[9] position_covariance
+   uint8 position_covariance_type
+   
+   
+sensor_msgs/Imu
+   std_msgs/Header header
+     uint32 seq
+     time stamp
+     string frame_id
+   geometry_msgs/Quaternion orientation
+     float64 x
+     float64 y
+     float64 z
+     float64 w
+   float64[9] orientation_covariance
+   geometry_msgs/Vector3 angular_velocity
+     float64 x
+     float64 y
+     float64 z
+   float64[9] angular_velocity_covariance
+   geometry_msgs/Vector3 linear_acceleration
+     float64 x
+     float64 y
+     float64 z
+   float64[9] linear_acceleration_covariance
+   
+   
+robil_msgs/Path
+   nav_msgs/Path waypoints
+     std_msgs/Header header
+       uint32 seq
+       time stamp
+       string frame_id
+     geometry_msgs/PoseStamped[] poses
+       std_msgs/Header header
+         uint32 seq
+         time stamp
+         string frame_id
+       geometry_msgs/Pose pose
+         geometry_msgs/Point position
+           float64 x
+           float64 y
+           float64 z
+         geometry_msgs/Quaternion orientation
+           float64 x
+           float64 y
+           float64 z
+           float64 w
+   bool is_ip_defined
+   geometry_msgs/Point ip
+     float64 x
+     float64 y
+     float64 z
+   bool is_heading_defined
+   geometry_msgs/Point heading
+     float64 x
+     float64 y
+     float64 z
+   
+   
+robil_msgs/Map
+   std_msgs/Header header
+     uint32 seq
+     time stamp
+     string frame_id
+   nav_msgs/MapMetaData info
+     time map_load_time
+     float32 resolution
+     uint32 width
+     uint32 height
+     geometry_msgs/Pose origin
+       geometry_msgs/Point position
+         float64 x
+         float64 y
+         float64 z
+       geometry_msgs/Quaternion orientation
+         float64 x
+         float64 y
+         float64 z
+         float64 w
+   robil_msgs/MapCell[] data
+     int8 type_unscanned=0
+     int8 type_clear=1
+     int8 type_obstacle=2
+     int32 feature_unknown=0
+     int32 feature_road=1
+     int32 feature_object=2
+     float32 height
+     int8 type
+     int32 feature
+   
+   
+sensor_msgs/LaserScan
+   std_msgs/Header header
+     uint32 seq
+     time stamp
+     string frame_id
+   float32 angle_min
+   float32 angle_max
+   float32 angle_increment
+   float32 time_increment
+   float32 scan_time
+   float32 range_min
+   float32 range_max
+   float32[] ranges
+   float32[] intensities
+   
+   
+sensor_msgs/Image
+   std_msgs/Header header
+     uint32 seq
+     time stamp
+     string frame_id
+   uint32 height
+   uint32 width
+   string encoding
+   uint8 is_bigendian
+   uint32 step
+   uint8[] data
+   
+   
+std_msgs/Float64
+   float64 data
+   
+   
