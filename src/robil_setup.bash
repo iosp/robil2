@@ -37,6 +37,7 @@ function robil_fix_all {
 }
 
 function robil_clean_builds { 
+	rm -rf catkin  catkin_generated  CMakeCache.txt  CMakeFiles  cmake_install.cmake CTestTestfile.cmake  devel  Makefile  test_results
 	rm -rf devel/ build/ install/
 }
 
