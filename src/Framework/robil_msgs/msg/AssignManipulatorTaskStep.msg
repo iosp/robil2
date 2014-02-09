@@ -1,0 +1,13 @@
+int32 id
+int8 type
+int8 type_blade_height=0
+int8 type_blade_angle=1
+int8 type_clamp=2
+int8 type_advance=3
+int8 type_turn=4
+int8 type_reserved=5
+int8 type_reserved=6
+int32 value
+int32 throttle
+int64 success_timeout
+int64 duration_at_end

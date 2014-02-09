@@ -1,0 +1,7 @@
+/src/robil_msgs
+/.cproject
+/.project
+/CMakeCache.txt
+/CTestTestfile.cmake
+/Makefile
+/cmake_install.cmake

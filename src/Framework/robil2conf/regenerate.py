@@ -20,6 +20,7 @@ def gen_roscomm_header( subscribers, publishers, func_subscribers, func_publishe
 #include <iostream>     // std::cout
 #include <sstream>
 #include <ParameterTypes.h>
+#include <tf/tf.h>
 class ComponentMain;
 class RosComm {
   bool _inited;
@@ -33,6 +34,8 @@ public:
 	virtual ~RosComm();
 """ + func_subscribers +"\n"+ func_publisher +"\n"+ \
 """
+  void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
+  tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 };
 #endif /* ROSCOMM_H_ */
 """
@@ -52,6 +55,7 @@ def get_component_header(func_subscribers, func_publisher):
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
+#include <tf/tf.h>
 class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;
@@ -60,6 +64,8 @@ public:
 	virtual ~ComponentMain();
 """ + func_subscribers +"\n"+ func_publisher  +\
 """
+  void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
+  tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 };
 #endif /* COMPONENTMAIN_H_ */
 """
@@ -82,6 +88,8 @@ def gen_roscomm_source(comp, subs, pubs, fun_subs, fun_pubs):
 #include <iostream>     // std::cout
 #include <sstream>
 #include "ParameterHandler.h"
+#include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
 RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	: _inited(init(argc, argv)), _comp(comp)
 {
@@ -98,6 +106,21 @@ bool RosComm::init(int argc,char** argv){
 
 """ + fun_subs +"\n"+ fun_pubs +\
 """
+void RosComm::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
+	static tf::TransformBroadcaster br;
+	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));
+}
+tf::StampedTransform RosComm::getLastTrasform(std::string srcFrame, std::string distFrame){
+	tf::StampedTransform _tf;
+	static tf::TransformListener listener;
+	try {
+	    listener.waitForTransform(distFrame, srcFrame, ros::Time(0), ros::Duration(10.0) );
+	    listener.lookupTransform(distFrame, srcFrame, ros::Time(0), _tf);
+	} catch (tf::TransformException& ex) {
+	    ROS_ERROR("%s",ex.what());
+	}
+	return _tf;
+}
 """
 	return code
 
@@ -122,6 +145,12 @@ ComponentMain::~ComponentMain() {
 }
 """ + fun_subs +"\n"+ fun_pubs +\
 """
+void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
+	_roscomm->publishTransform(_tf, srcFrame, distFrame);
+}
+tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::string distFrame){
+	return _roscomm->getLastTrasform(srcFrame, distFrame);;
+}
 """
 	return code
 

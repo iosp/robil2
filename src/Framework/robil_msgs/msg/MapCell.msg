@@ -1,0 +1,9 @@
+float32 height
+int8 type
+int8 type_unscanned=0
+int8 type_clear=1
+int8 type_obstacle=2
+int32 feature
+int32 feature_unknown=0
+int32 feature_road=1
+int32 feature_object=2

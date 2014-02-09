@@ -1,0 +1,3 @@
+int32 mission_id
+string mission_description
+AssignMissionTask[] tasks
