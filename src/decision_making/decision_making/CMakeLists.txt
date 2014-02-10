@@ -1,13 +1,19 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robil2conf)
+project(decision_making)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS 
-    roscpp 
-    robil_msgs
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  robot_task
+  decision_making_parser
+  diagnostic_updater
+  std_msgs
 )
+
+#find_package(robot_task REQUIRED)
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -66,7 +72,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs  robil_msgs
+#   std_msgs  # Or other packages containing msgs
 # )
 
 ###################################
@@ -80,10 +86,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES robil2conf
-  CATKIN_DEPENDS     
-    roscpp 
-    robil_msgs 
+  LIBRARIES decision_making_ros
+  CATKIN_DEPENDS roscpp robot_task diagnostic_updater std_msgs
 #  DEPENDS system_lib
 )
 
@@ -93,30 +97,72 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+# include_directories(include)
 include_directories(
-    include
-    ${catkin_INCLUDE_DIRS}
+  include/decision_making
+  ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
-add_library(robil2conf
-   src/ParameterHandler.cpp
- )
+# add_library(decision_making
+#   src/${PROJECT_NAME}/decision_making.cpp
+# )
 
 ## Declare a cpp executable
-# add_executable(robil2conf_node src/robil2conf_node.cpp)
+
+add_executable(bt_example src/BTExample.cpp)
+target_link_libraries(bt_example  ${catkin_LIBRARIES} )
+
+
+add_executable(tao_example src/TAOExample.cpp)
+target_link_libraries(tao_example ${catkin_LIBRARIES} )
+
+
+#add_executable(mult_hyb_example src/multifiles/HybridExample.cpp)
+#target_link_libraries(mult_hyb_example ${catkin_LIBRARIES} )
+
+
+#===================== ROS =============================================
+
+add_library(decision_making_ros src/ROSTask.cpp)
+add_dependencies(decision_making_ros robot_task_gencpp)
+target_link_libraries(decision_making_ros ${catkin_LIBRARIES} )
+
+add_executable(ros_example src/RosExample.cpp)
+target_link_libraries(ros_example ${catkin_LIBRARIES} decision_making_ros)
+
+#=======================================================================
+
+#add_executable(fsm_example src/FSMExample.cpp)
+#target_link_libraries(fsm_example ${catkin_LIBRARIES} )
+
+
+#add_executable(task_test src/ROSTask.cpp)
+#target_link_libraries(task_test ${catkin_LIBRARIES} )
+
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(robil2conf
-    robil_msgs_gencpp
-)
+# add_dependencies(decision_making_node decision_making_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(robil2conf
-   ${catkin_LIBRARIES}
- )
 
+#==================== PARSER ===========================================
+
+#add_executable(parse_code src/test_parser.cpp)
+#message("do decision_making_parsing")
+
+
+decision_making_parsing(
+	src/RosExample.cpp
+	src/BTExample.cpp
+	src/ROSTask.cpp
+	src/FSMExample.cpp
+	src/HybridExample.cpp
+)  
+
+    
+#=======================================================================
 #############
 ## Install ##
 #############
@@ -132,7 +178,7 @@ add_dependencies(robil2conf
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS robil2conf robil2conf_node
+# install(TARGETS decision_making decision_making_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -157,7 +203,7 @@ add_dependencies(robil2conf
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_robil2conf.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_decision_making.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

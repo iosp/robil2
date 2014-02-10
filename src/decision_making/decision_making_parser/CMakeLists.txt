@@ -1,27 +1,26 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robil2conf)
-
+project(decision_making_parser)
+ 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS 
-    roscpp 
-    robil_msgs
-)
-
+find_package(catkin REQUIRED COMPONENTS
+  roscpp   
+)       
+      
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-
-
+      
+ 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
 # catkin_python_setup()
-
-################################################
+   
+################################################ 
 ## Declare ROS messages, services and actions ##
-################################################
-
+################################################  
+ 
 ## To declare and build messages, services or actions from within this
 ## package, follow these steps:
 ## * Let MSG_DEP_SET be the set of packages whose message types you use in
@@ -41,14 +40,14 @@ find_package(catkin REQUIRED COMPONENTS
 ##     and list every .msg/.srv/.action file to be processed
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
-
+ 
 ## Generate messages in the 'msg' folder
-# add_message_files(
+# add_message_files( 
 #   FILES
 #   Message1.msg
 #   Message2.msg
 # )
-
+         
 ## Generate services in the 'srv' folder
 # add_service_files(
 #   FILES
@@ -66,7 +65,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs  robil_msgs
+#   std_msgs  # Or other packages containing msgs
 # )
 
 ###################################
@@ -79,48 +78,82 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES robil2conf
-  CATKIN_DEPENDS     
-    roscpp 
-    robil_msgs 
+#  INCLUDE_DIRS include
+#  LIBRARIES decision_making_parser
+	CATKIN_DEPENDS roscpp
 #  DEPENDS system_lib
-)
+	CFG_EXTRAS decision_making_parser-extras.cmake 
+)  
 
 ###########
 ## Build ##
-###########
+########### 
 
+ 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+# include_directories(include)
 include_directories(
-    include
-    ${catkin_INCLUDE_DIRS}
-)
+  ${catkin_INCLUDE_DIRS}
+) 
 
 ## Declare a cpp library
-add_library(robil2conf
-   src/ParameterHandler.cpp
- )
+# add_library(decision_making_parser
+#   src/${PROJECT_NAME}/decision_making_parser.cpp
+# )
 
 ## Declare a cpp executable
-# add_executable(robil2conf_node src/robil2conf_node.cpp)
 
+
+add_executable(decision_making_parser
+    src/TAOConstructor.cpp 
+    src/Parsers_TAO.cpp  
+	src/BTConstructor.cpp
+	src/Constructors.cpp
+	src/decision_making_parser.cpp
+	src/FSMConstructor.cpp
+	src/Parsers_BT.cpp
+	src/Parsers_FSM.cpp
+	src/BTConstructor_for_Dot.cpp
+	src/FSMConstructor_for_Dot.cpp
+)
+ 
+add_executable(tao_parser_test
+    src/TAOParserTest.cpp
+    src/TAOConstructor.cpp
+    src/Parsers_TAO.cpp 
+	src/BTConstructor.cpp
+	src/Constructors.cpp
+	src/FSMConstructor.cpp
+	src/Parsers_BT.cpp
+	src/Parsers_FSM.cpp
+	src/BTConstructor_for_Dot.cpp
+	src/FSMConstructor_for_Dot.cpp
+)
+   
+              
+set(SRC_XML_PARSER "${CMAKE_CURRENT_SOURCE_DIR}/src/xml_parser.py")
+message("  -- Source of Xml Parser location is ${SRC_XML_PARSER}")
+
+set( XMLPARSER "${CATKIN_DEVEL_PREFIX}/lib/${PROJECT_NAME}/decision_making_xml_parser.py" ) 
+message("  -- Xml Parser location is ${XMLPARSER}")
+  
+FILE(READ "${SRC_XML_PARSER}" SRC_XML_PARSER_TEXT )
+FILE(WRITE "${XMLPARSER}" "${SRC_XML_PARSER_TEXT}" )
+ 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(robil2conf
-    robil_msgs_gencpp
-)
+# add_dependencies(decision_making_parser_node decision_making_parser_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(robil2conf
-   ${catkin_LIBRARIES}
- )
+# target_link_libraries(decision_making_parser_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##
 #############
-
+   
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
@@ -132,7 +165,7 @@ add_dependencies(robil2conf
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS robil2conf robil2conf_node
+# install(TARGETS decision_making_parser decision_making_parser_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -157,7 +190,7 @@ add_dependencies(robil2conf
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_robil2conf.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_decision_making_parser.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
