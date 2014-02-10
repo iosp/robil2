@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
     ros::AsyncSpinner spinner(1);
     spinner.start();
 
-    LocalTasks::registrate("testTask", testTask);
+    LocalTasks::registration("testTask", testTask);
 
     eventQueue.async_spin();
     ROS_INFO("Starting tao example...");

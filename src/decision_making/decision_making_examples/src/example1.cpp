@@ -115,8 +115,8 @@ int main(int a, char** aa){
 	MMM mmm;
 	LocalTasks::Function f = boost::bind(&MMM::tst_mytask, &mmm, _1, _2, _3, 15);
 	LocalTasks::Function f_onexit = boost::bind(&MMM::tst_onexit, &mmm, _1, _2, _3, 15);
-	LocalTasks::registrate("MYTASK", f);
-	LocalTasks::registrate("ONEXIT", f_onexit);
+	LocalTasks::registration("MYTASK", f);
+	LocalTasks::registration("ONEXIT", f_onexit);
 
 	threads.add_thread(new boost::thread(boost::bind(&run_fsm)));
 	threads.add_thread(new boost::thread(boost::bind(&EVENTS_GENERATOR)));

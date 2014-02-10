@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
     ros::AsyncSpinner spinner(1);
     spinner.start();
 
-    LocalTasks::registrate("testTask", dummyTask);
+    LocalTasks::registration("testTask", dummyTask);
 
     eventQueue.async_spin();
     CallContext call_ctx;

@@ -258,7 +258,7 @@ TaskResult callTask(std::string task_address, const CallContext& gl_call_ctx, Ev
 	else{ task_name=task_address.substr(0,i); task_params=task_address.substr(i+1,task_address.size()-1); }
 	string full_task_name = task_name;
 
-	if(LocalTasks::registrated(task_name)){
+	if(LocalTasks::registered(task_name)){
 		TaskResult res = LocalTasks::call(task_name, task_address, call_ctx, events);
 		RosDiagnostic::get().publish(call_ctx.str(), "TASK", "stopped", str(res));
 		Event new_event ( Event(""+ MapResultEvent::map(task_name, res.error()), call_ctx) );
@@ -359,7 +359,8 @@ TaskResult callTask(std::string task_address, const CallContext& gl_call_ctx, Ev
 
 RosEventQueue::RosEventQueue():decision_making::EventQueue(), do_not_publish_spin(true){
 	std::string node_name = ros::this_node::getName();
-	std::string topic_name = "/decision_making/"+node_name+"/events";
+	//std::string topic_name = "/decision_making/"+node_name+"/events";
+	std::string topic_name = "/decision_making/events";
 	publisher = ros::NodeHandle().advertise<std_msgs::String>(topic_name, 100);
 	{boost::this_thread::sleep(boost::posix_time::seconds(1.0));}
 	subscriber= ros::NodeHandle().subscribe<std_msgs::String>(topic_name, 100, &RosEventQueue::onNewEvent, this);

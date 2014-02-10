@@ -17,6 +17,10 @@
 
 namespace decision_making{
 
+#define BOOST_PAUSE(MILLSEC) boost::this_thread::sleep(boost::posix_time::millisec(MILLSEC));
+#define PAUSE(MILLSEC) { int msI=(MILLSEC/100),msR=(MILLSEC%100); for(int si=0;si<msI and not events.isTerminated();si++)BOOST_PAUSE(100); if(msR>0 and not events.isTerminated()) BOOST_PAUSE(msR); }
+
+
 struct TaskResult{
 private:
 	int error_;
