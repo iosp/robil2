@@ -2,11 +2,15 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(llc)
 find_package(catkin REQUIRED COMPONENTS
- roscpp rospy robil2conf
+    roscpp rospy
+    robil2conf
+    decision_making decision_making_parser
 )
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
-	CATKIN_DEPENDS robil2conf
+	CATKIN_DEPENDS
+	    robil2conf
+	    decision_making decision_making_parser
 )
 ###########
 ## Build ##
@@ -21,6 +25,7 @@ add_library(llc_rosComm
 )
 add_library(llc_compMain
   src/component/ComponentMain.cpp
+  src/component/ComponentStates.cpp
 )
 add_executable(llc_node src/main.cpp)
 target_link_libraries(llc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})

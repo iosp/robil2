@@ -317,8 +317,8 @@ int main(int a, char** aa){
 	boost::thread_group threads;
 
 	MapResultEvent::map("MYTASK", 0, "success");
-	LocalTasks::registrate("MYTASK", tst_mytask);
-	LocalTasks::registrate("MYTASK1", tst_mytask);
+	LocalTasks::registration("MYTASK", tst_mytask);
+	LocalTasks::registration("MYTASK1", tst_mytask);
 
 	//threads.add_thread(new boost::thread(boost::bind(&run_fsm1)));
 	threads.add_thread(new boost::thread(boost::bind(&run_fsm2)));

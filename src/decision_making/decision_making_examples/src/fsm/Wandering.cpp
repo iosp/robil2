@@ -186,9 +186,9 @@ int main(int argc, char **argv) {
     /**
      * Tasks registration
      */
-    LocalTasks::registrate("Drive", driveTask);
-    LocalTasks::registrate("Turn", turnTask);
-    LocalTasks::registrate("Pause", pauseTask);
+    LocalTasks::registration("Drive", driveTask);
+    LocalTasks::registration("Turn", turnTask);
+    LocalTasks::registration("Pause", pauseTask);
 
     /**
      * Subscription for the laser topic and velocity publisher creation

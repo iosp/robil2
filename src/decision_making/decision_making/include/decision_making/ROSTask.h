@@ -30,16 +30,16 @@ class LocalTasks{
 	static callbacks_fun& get_fun(){ static callbacks_fun t; return t; }
 public:
 	typedef callTask_fun Function;
-	static void registrate(std::string task_name, callTask cb){
+	static void registration(std::string task_name, callTask cb){
 		get()[task_name]=cb;
 	}
-	static void registrate(std::string task_name, Function cb){
+	static void registration(std::string task_name, Function cb){
 		get_fun()[task_name]=cb;
 	}
-	static bool registrated(std::string task_name){
+	static bool registered(std::string task_name){
 		return get().find(task_name)!=get().end() or get_fun().find(task_name)!=get_fun().end();
 	}
-	static void unregistrated(std::string task_name){
+	static void unregistration(std::string task_name){
 		if( get().find(task_name)!=get().end() )
 			get().erase(get().find(task_name));
 		if( get_fun().find(task_name)!=get_fun().end() )
@@ -55,7 +55,7 @@ public:
 			return get()[task_name](task_address, call_ctx, events);
 		if(get_fun().find(task_name)!=get_fun().end())
 			return get_fun()[task_name](task_address, call_ctx, events);
-		return decision_making::TaskResult::FAIL(1000,"Task Not Registrated As Local Task");
+		return decision_making::TaskResult::FAIL(1000,"Task Not Registerated As Local Task");
 	}
 };
 
