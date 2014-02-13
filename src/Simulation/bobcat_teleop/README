@@ -1,0 +1,35 @@
+bobcat teleoperation
+
+Currently only wheels operation is supported
+
+Joystick:
+
+1) connect a usb joystick
+
+2) load the bobcat in the simulation
+
+3) run:
+
+roslaunch bobcat_teleop joystick_teleop.launch
+
+4) enjoy
+
+
+Keyboard:
+
+1) load the bobcat in the simulation
+
+2) run (in a diffrent terminal):
+
+rosrun bobcat_teleop keyboard_teleop.launch
+
+movment keys are:
+	q (quit)      (up)
+			i
+	
+	(left)	j	k	l (right)
+		      (down)
+
+
+3) enjoy
+
