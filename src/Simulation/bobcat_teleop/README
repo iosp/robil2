@@ -21,7 +21,7 @@ Keyboard:
 
 2) run (in a diffrent terminal):
 
-rosrun bobcat_teleop keyboard_teleop.launch
+rosrun bobcat_teleop bobcat_keyboard_teleop_node
 
 movment keys are:
 	q (quit)      (up)
