@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+    <asset>
+        <contributor>
+            <author>VCGLab</author>
+            <authoring_tool>VCGLib | MeshLab</authoring_tool>
+        </contributor>
+        <up_axis>Y_UP</up_axis>
+        <created>Sun Feb 16 13:01:23 2014</created>
+        <modified>Sun Feb 16 13:01:23 2014</modified>
+    </asset>
+    <library_images>
+        <image id="texture0" name="texture0">
+            <init_from>../images/texture0.jpg</init_from>
+        </image>
+        <image id="texture1" name="texture1">
+            <init_from>../images/texture1.jpg</init_from>
+        </image>
+        <image id="texture2" name="texture2">
+            <init_from>../images/texture3.jpg</init_from>
+        </image>
+    </library_images>
+    <library_materials>
+        <material id="material0" name="material0">
+            <instance_effect url="#material0-fx"/>
+        </material>
+        <material id="material1" name="material1">
+            <instance_effect url="#material1-fx"/>
+        </material>
+        <material id="material2" name="material2">
+            <instance_effect url="#material2-fx"/>
+        </material>
+        <material id="material3" name="material3">
+            <instance_effect url="#material3-fx"/>
+        </material>
+    </library_materials>
+    <library_effects>
+        <effect id="material0-fx">
+            <profile_COMMON>
+                <newparam sid="texture0-surface">
+                    <surface type="2D">
+                        <init_from>texture0</init_from>
+                        <format>R8G8B8</format>
+                    </surface>
+                </newparam>
+                <newparam sid="texture0-sampler">
+                    <sampler2D>
+                        <source>texture0-surface</source>
+                        <minfilter>LINEAR</minfilter>
+                        <magfilter>LINEAR</magfilter>
+                    </sampler2D>
+                </newparam>
+                <technique sid="common">
+                    <blinn>
+                        <emission>
+                            <color>0 0 0 1</color>
+                        </emission>
+                        <ambient>
+                            <color>0 0 0 1</color>
+                        </ambient>
+                        <diffuse>
+                            <texture texture="texture0" texcoord="UVSET0"/>
+                        </diffuse>
+                        <specular>
+                            <color>0 0 0 1</color>
+                        </specular>
+                        <shininess>
+                            <float>0.3</float>
+                        </shininess>
+                        <reflective>
+                            <color>0 0 0 1</color>
+                        </reflective>
+                        <reflectivity>
+                            <float>0.5</float>
+                        </reflectivity>
+                        <transparent>
+                            <color>0 0 0 1</color>
+                        </transparent>
+                        <transparency>
+                            <float>0</float>
+                        </transparency>
+                        <index_of_refraction>
+                            <float>0</float>
+                        </index_of_refraction>
+                    </blinn>
+                </technique>
+            </profile_COMMON>
+        </effect>
+        <effect id="material1-fx">
+            <profile_COMMON>
+                <newparam sid="texture1-surface">
+                    <surface type="2D">
+                        <init_from>texture1</init_from>
+                        <format>R8G8B8</format>
+                    </surface>
+                </newparam>
+                <newparam sid="texture1-sampler">
+                    <sampler2D>
+                        <source>texture1-surface</source>
+                        <minfilter>LINEAR</minfilter>
+                        <magfilter>LINEAR</magfilter>
+                    </sampler2D>
+                </newparam>
+                <technique sid="common">
+                    <blinn>
+                        <emission>
+                            <color>0 0 0 1</color>
+                        </emission>
+                        <ambient>
+                            <color>0 0 0 1</color>
+                        </ambient>
+                        <diffuse>
+                            <texture texture="texture1" texcoord="UVSET0"/>
+                        </diffuse>
+                        <specular>
+                            <color>0 0 0 1</color>
+                        </specular>
+                        <shininess>
+                            <float>0.3</float>
+                        </shininess>
+                        <reflective>
+                            <color>0 0 0 1</color>
+                        </reflective>
+                        <reflectivity>
+                            <float>0.5</float>
+                        </reflectivity>
+                        <transparent>
+                            <color>0 0 0 1</color>
+                        </transparent>
+                        <transparency>
+                            <float>0</float>
+                        </transparency>
+                        <index_of_refraction>
+                            <float>0</float>
+                        </index_of_refraction>
+                    </blinn>
+                </technique>
+            </profile_COMMON>
+        </effect>
+        <effect id="material2-fx">
+            <profile_COMMON>
+                <newparam sid="texture2-surface">
+                    <surface type="2D">
+                        <init_from>texture2</init_from>
+                        <format>R8G8B8</format>
+                    </surface>
+                </newparam>
+                <newparam sid="texture2-sampler">
+                    <sampler2D>
+                        <source>texture2-surface</source>
+                        <minfilter>LINEAR</minfilter>
+                        <magfilter>LINEAR</magfilter>
+                    </sampler2D>
+                </newparam>
+                <technique sid="common">
+                    <blinn>
+                        <emission>
+                            <color>0 0 0 1</color>
+                        </emission>
+                        <ambient>
+                            <color>0 0 0 1</color>
+                        </ambient>
+                        <diffuse>
+                            <texture texture="texture2" texcoord="UVSET0"/>
+                        </diffuse>
+                        <specular>
+                            <color>0 0 0 1</color>
+                        </specular>
+                        <shininess>
+                            <float>0.3</float>
+                        </shininess>
+                        <reflective>
+                            <color>0 0 0 1</color>
+                        </reflective>
+                        <reflectivity>
+                            <float>0.5</float>
+                        </reflectivity>
+                        <transparent>
+                            <color>0 0 0 1</color>
+                        </transparent>
+                        <transparency>
+                            <float>0</float>
+                        </transparency>
+                        <index_of_refraction>
+                            <float>0</float>
+                        </index_of_refraction>
+                    </blinn>
+                </technique>
+            </profile_COMMON>
+        </effect>
+        <effect id="material3-fx">
+            <profile_COMMON>
+                <newparam sid="texture3-surface">
+                    <surface type="2D">
+                        <init_from>texture3</init_from>
+                        <format>R8G8B8</format>
+                    </surface>
+                </newparam>
+                <newparam sid="texture3-sampler">
+                    <sampler2D>
+                        <source>texture3-surface</source>
+                        <minfilter>LINEAR</minfilter>
+                        <magfilter>LINEAR</magfilter>
+                    </sampler2D>
+                </newparam>
+                <technique sid="common">
+                    <blinn>
+                        <emission>
+                            <color>0 0 0 1</color>
+                        </emission>
+                        <ambient>
+                            <color>0 0 0 1</color>
+                        </ambient>
+                        <diffuse>
+                            <texture texture="texture3" texcoord="UVSET0"/>
+                        </diffuse>
+                        <specular>
+                            <color>0 0 0 1</color>
+                        </specular>
+                        <shininess>
+                            <float>0.3</float>
+                        </shininess>
+                        <reflective>
+                            <color>0 0 0 1</color>
+                        </reflective>
+                        <reflectivity>
+                            <float>0.5</float>
+                        </reflectivity>
+                        <transparent>
+                            <color>0 0 0 1</color>
+                        </transparent>
+                        <transparency>
+                            <float>0</float>
+                        </transparency>
+                        <index_of_refraction>
+                            <float>0</float>
+                        </index_of_refraction>
+                    </blinn>
+                </technique>
+            </profile_COMMON>
+        </effect>
+    </library_effects>
+    <library_geometries>
+        <geometry id="shape0-lib" name="shape0">
+            <mesh>
+                <source id="shape0-lib-positions" name="position">
+                    <float_array id="shape0-lib-positions-array" count="132">259.857 -41.2369 4.90262 10.5951 -41.2369 -5.56656 259.857 -41.2369 -5.56656 10.5951 -41.2369 4.90262 10.5951 -15.3224 4.90262 259.857 -15.3224 4.90262 10.5951 -13.1616 4.32366 259.857 -13.1616 4.32366 10.5951 -11.5799 2.7419 259.857 -11.5799 2.7419 259.857 -11.0009 0.581191 10.5951 -11.0009 0.581191 259.857 -11.0009 0 10.5951 -11.0009 0 10.5951 80.1466 0 259.857 80.1466 0 259.857 -10.3244 0 259.857 -8.92061 0 259.857 -7.5744 0 259.857 -6.17061 0 10.5951 82.6976 0 259.857 82.6976 0 10.5951 87.3005 0 259.857 87.3005 0 10.5951 89.8515 0 259.857 89.8515 0 10.5951 180.999 0 259.857 178.919 0 259.857 177.573 0 259.857 176.169 0 259.857 180.999 0 259.857 180.323 0 259.857 180.999 0.581191 10.5951 180.999 0.581191 259.857 181.578 2.7419 10.5951 181.578 2.7419 10.5951 183.16 4.32366 259.857 183.16 4.32366 259.857 185.32 4.90262 10.5951 185.32 4.90262 10.5951 211.235 4.90262 259.857 211.235 4.90262 259.857 211.235 -5.56656 10.5951 211.235 -5.56656</float_array>
+                    <technique_common>
+                        <accessor count="44" source="#shape0-lib-positions-array" stride="3">
+                            <param name="X" type="float"/>
+                            <param name="Y" type="float"/>
+                            <param name="Z" type="float"/>
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="shape0-lib-normals" name="normal">
+                    <float_array id="shape0-lib-normals-array" count="138">0 -1 0 0 -1 0 0 0 1 0 0 1 0 0.258819 0.965926 0 0.258819 0.965926 0 0.707107 0.707107 0 0.707107 0.707107 0 0.965926 0.258819 0 0.965926 0.258819 0 1 0 0 1 0 0 -1 0 0 -1 0 0 -0.965926 0.25882 0 -0.965926 0.25882 0 -0.707106 0.707108 0 -0.707106 0.707108 0 -0.25882 0.965926 0 -0.25882 0.965926 0 0 1 0 0 1 0 1 0 0 1 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 1 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 -1 0 0 1 0 0 -1</float_array>
+                    <technique_common>
+                        <accessor count="46" source="#shape0-lib-normals-array" stride="3">
+                            <param name="X" type="float"/>
+                            <param name="Y" type="float"/>
+                            <param name="Z" type="float"/>
+                        </accessor>
+                    </technique_common>
+                </source>
+                <source id="shape0-lib-map" name="map">
+                    <float_array id="shape0-lib-map-array" count="276">2.07718 0.087243 0 0 2.07718 0 0 0 2.07718 0.087243 0 0.087243 2.07718 0 0 0.215954 0 0 0 0.215954 2.07718 0 2.07718 0.215954 -2.07718 -0.186016 0 -0.204657 0 -0.186016 0 -0.204657 -2.07718 -0.186016 -2.07718 -0.204657 -2.07718 -0.107156 0 -0.125797 0 -0.107156 0 -0.125797 -2.07718 -0.107156 -2.07718 -0.125797 -2.07718 -0.015728 0 0.002913 -2.07718 0.002913 0 0.002913 -2.07718 -0.015728 0 -0.015728 -2.07718 0.046388 0 0.051231 -2.07718 0.051231 0 0.051231 -2.07718 0.046388 0 0.046388 2.07718 0.051231 0 0.046388 2.07718 0.046388 0 0.046388 2.07718 0.051231 0 0.051231 2.07718 0.547451 0 0.52881 2.07718 0.52881 0 0.52881 2.07718 0.547451 0 0.547451 2.07718 1.36191 0 1.38055 0 1.36191 0 1.38055 2.07718 1.36191 2.07718 1.38055 2.07718 1.84623 0 1.82759 2.07718 1.82759 0 1.82759 2.07718 1.84623 0 1.84623 2.07718 1.88798 0 2.10393 0 1.88798 0 2.10393 2.07718 1.88798 2.07718 2.10393 -2.07718 0 0 0.087243 -2.07718 0.087243 0 0.087243 -2.07718 0 0 0 20.7718 2.51966 0 10.1153 0 2.51966 0 10.1153 20.7718 2.51966 20.7718 10.1153 20.7718 10.1153 20.7718 2.51966 20.7718 2.57604 20.7718 10.1153 20.7718 2.57604 20.7718 2.69302 20.7718 10.1153 20.7718 2.69302 20.7718 2.80521 20.7718 10.1153 20.7718 2.80521 20.7718 2.92219 20.7718 10.3279 0 10.7114 0 10.3279 0 10.7114 20.7718 10.3279 20.7718 10.7114 20.7718 10.924 0 18.5197 0 10.924 0 18.5197 20.7718 10.924 20.7718 18.3463 20.7718 18.3463 20.7718 10.924 20.7718 18.2341 20.7718 18.1171 20.7718 18.2341 20.7718 10.924 0 18.5197 20.7718 18.3463 20.7718 18.5197 20.7718 18.5197 20.7718 18.3463 20.7718 18.4633 20.7718 10.1153 0 10.3279 0 10.1153 0 10.3279 20.7718 10.1153 20.7718 10.3279 20.7718 10.7114 0 10.924 0 10.7114 0 10.924 20.7718 10.7114 20.7718 10.924 0 0.326778 0 0 -0.355472 0.326778 1 1 0.644528 0.673222 0.644528 1 -0.355472 0 -0.355472 0.326778 0 0 0.644528 0.673222 1 1 1 0.673222</float_array>
+                    <technique_common>
+                        <accessor count="138" source="#shape0-lib-map-array" stride="2">
+                            <param name="U" type="float"/>
+                            <param name="V" type="float"/>
+                        </accessor>
+                    </technique_common>
+                </source>
+                <vertices id="shape0-lib-vertices">
+                    <input semantic="POSITION" source="#shape0-lib-positions"/>
+                </vertices>
+                <triangles count="24" material="material0">
+                    <input offset="0" semantic="VERTEX" source="#shape0-lib-vertices"/>
+                    <input offset="1" semantic="NORMAL" source="#shape0-lib-normals"/>
+                    <input offset="2" semantic="TEXCOORD" source="#shape0-lib-map"/>
+                    <p>0 0 0 1 0 1 2 0 2 1 1 3 0 1 4 3 1 5 0 2 6 4 2 7 3 2 8 4 3 9 0 3 10 5 3 11 5 4 12 6 4 13 4 4 14 6 5 15 5 5 16 7 5 17 7 6 18 8 6 19 6 6 20 8 7 21 7 7 22 9 7 23 10 8 24 8 8 25 9 8 26 8 9 27 10 9 28 11 9 29 12 10 30 11 10 31 10 10 32 11 11 33 12 11 34 13 11 35 32 12 36 26 12 37 30 12 38 26 13 39 32 13 40 33 13 41 34 14 42 33 14 43 32 14 44 33 15 45 34 15 46 35 15 47 34 16 48 36 16 49 35 16 50 36 17 51 34 17 52 37 17 53 38 18 54 36 18 55 37 18 56 36 19 57 38 19 58 39 19 59 38 20 60 40 20 61 39 20 62 40 21 63 38 21 64 41 21 65 42 22 66 40 22 67 41 22 68 40 23 69 42 23 70 43 23 71</p>
+                </triangles>
+                <triangles count="14" material="material1">
+                    <input offset="0" semantic="VERTEX" source="#shape0-lib-vertices"/>
+                    <input offset="1" semantic="NORMAL" source="#shape0-lib-normals"/>
+                    <input offset="2" semantic="TEXCOORD" source="#shape0-lib-map"/>
+                    <p>12 24 72 14 24 73 13 24 74 14 25 75 12 25 76 15 25 77 15 26 78 12 26 79 16 26 80 15 27 81 16 27 82 17 27 83 15 28 84 17 28 85 18 28 86 15 29 87 18 29 88 19 29 89 21 30 90 22 30 91 20 30 92 22 31 93 21 31 94 23 31 95 25 32 96 26 32 97 24 32 98 26 33 99 25 33 100 27 33 101 27 34 102 25 34 103 28 34 104 29 35 105 28 35 106 25 35 107 26 36 108 27 36 109 30 36 110 30 37 111 27 37 112 31 37 113</p>
+                </triangles>
+                <triangles count="4" material="material2">
+                    <input offset="0" semantic="VERTEX" source="#shape0-lib-vertices"/>
+                    <input offset="1" semantic="NORMAL" source="#shape0-lib-normals"/>
+                    <input offset="2" semantic="TEXCOORD" source="#shape0-lib-map"/>
+                    <p>15 38 114 20 38 115 14 38 116 20 39 117 15 39 118 21 39 119 23 40 120 24 40 121 22 40 122 24 41 123 23 41 124 25 41 125</p>
+                </triangles>
+                <triangles count="4" material="material3">
+                    <input offset="0" semantic="VERTEX" source="#shape0-lib-vertices"/>
+                    <input offset="1" semantic="NORMAL" source="#shape0-lib-normals"/>
+                    <input offset="2" semantic="TEXCOORD" source="#shape0-lib-map"/>
+                    <p>43 42 126 1 42 127 42 42 128 42 43 129 1 43 130 43 43 131 2 44 132 42 44 133 1 44 134 1 45 135 42 45 136 2 45 137</p>
+                </triangles>
+            </mesh>
+        </geometry>
+    </library_geometries>
+    <library_visual_scenes>
+        <visual_scene id="VisualSceneNode" name="VisualScene">
+            <node id="node" name="node">
+                <instance_geometry url="#shape0-lib">
+                    <bind_material>
+                        <technique_common>
+                            <instance_material symbol="material0" target="#material0">
+                                <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD"/>
+                            </instance_material>
+                            <instance_material symbol="material1" target="#material1">
+                                <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD"/>
+                            </instance_material>
+                            <instance_material symbol="material2" target="#material2">
+                                <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD"/>
+                            </instance_material>
+                            <instance_material symbol="material3" target="#material3">
+                                <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD"/>
+                            </instance_material>
+                        </technique_common>
+                    </bind_material>
+                </instance_geometry>
+            </node>
+        </visual_scene>
+    </library_visual_scenes>
+    <scene>
+        <instance_visual_scene url="#VisualSceneNode"/>
+    </scene>
+</COLLADA>
