@@ -1,0 +1,12 @@
+Gazebo Objects
+==============
+
+Install objects with:
+
+catkin_make install
+
+Test with:
+
+roslaunch gazebo_objects objectTest.launch
+
+or simply insert object using the simulation GUI

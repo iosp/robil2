@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://tree1</uri>
+      <pose>-5.0 0.0 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://tire1</uri>
+      <pose>-3.0 0.0 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://fence1</uri>
+      <pose>-1.0 0.0 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://rock1</uri>
+      <pose>1.0 0.0 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://road1</uri>
+      <pose>3.0 0.0 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://grey_wall</uri>
+      <pose>-9.0 3.0 0 0 0 3.14</pose>
+    </include>
+    <include>
+      <uri>model://drc_practice_white_jersey_barrier</uri>
+      <pose>-11.0 0.0 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://barrel1</uri>
+      <pose>-13.0 0.0 0 0 0 0</pose>
+    </include>
+  </world>
+</sdf>

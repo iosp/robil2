@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="road1">
+    <static>true</static>
+    <link name="link">
+      <pose>0 0 0.05 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <mesh>
+             <uri>model://road1/models/road.dae</uri>
+	     <scale>0.04 0.04 0.04</scale>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="visual">
+         <geometry>
+          <mesh>
+            <uri>model://road1/models/road.dae</uri>
+		<scale>0.04 0.04 0.04</scale>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>
