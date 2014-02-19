@@ -26,6 +26,7 @@ add_library(smme_rosComm
 add_library(smme_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
+  src/component/MissionStates.cpp
 )
 add_executable(smme_node src/main.cpp)
 target_link_libraries(smme_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})

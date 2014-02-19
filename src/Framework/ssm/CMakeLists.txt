@@ -26,7 +26,6 @@ add_library(ssm_rosComm
 add_library(ssm_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
-  src/component/SystemStates.cpp
 )
 add_executable(ssm_node src/main.cpp)
 target_link_libraries(ssm_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})

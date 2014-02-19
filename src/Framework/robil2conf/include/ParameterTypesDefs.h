@@ -32,7 +32,7 @@
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int8.h>
 #include <std_msgs/Bool.h>
-#include <diagnostic_msgs/DiagnosticStatus.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
 #include <robil_msgs/Path.h>
 #include <robil_msgs/IEDLocation.h>
 #include <robil_msgs/Map.h>
@@ -76,5 +76,7 @@ namespace types{
 	typedef sensor_msgs::JointState Joints;
 }
 
+#define COMPONENT context.parameters<Params>().comp
+#define HEARTBEAT_FREQUANCY 2 //Hz
 
 #endif /* PARAMETERTYPES_H_ */

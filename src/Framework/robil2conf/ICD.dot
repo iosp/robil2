@@ -20,30 +20,30 @@ GlobalPath [label="/SMME/GlobalPath [types::Path]"]
 MissionAcceptance [label="/SMME/OCU/MissionAcceptance [types::MissionAcceptance]"]
 WorkSeqData [label="/SMME/WSM/Task [types::WSMData]"]
 LocalPath [label="/PP/Path [types::Path]"]
-WPD_Velocity [label="/WPD/Speed [types::Speed]"]
-WSM_Velocity [label="/WSM/Speed [types::Speed]"]
+WPDVelocity [label="/WPD/Speed [types::Speed]"]
+WSMVelocity [label="/WSM/Speed [types::Speed]"]
 GPS [label="/PER/GPS [types::GPS]"]
 INS [label="/PER/INS [types::Imu]"]
-Blade [label="/PER/BladPosition [types::BladPose]"]
+BladePosition [label="/PER/BladPosition [types::BladPose]"]
+BladePositionCommand [label="/WSM/BladePosition [types::BladPose]"]
 Map [label="/PER/Map [types::Map]"]
 MiniMap [label="/PER/MiniMap [types::Map]"]
-VO [label="/PER/VO [types::Odometry]"]
+VOOdometry [label="/PER/VOOdometry [types::Odometry]"]
 Location [label="/LOC/Pose [types::PoseWithConf]"]
 PerVelocity [label="/LOC/Velocity [types::Speed]"]
 EffortsTh [label="/LLC/EFFORTS/Throttle [types::Effort]"]
-EffortsSt [label="/LLC/EFFORTS/Steering,Joints [types::Effort]"]
+EffortsSt [label="/LLC/EFFORTS/Steering [types::Effort]"]
 EffortsJn [label="/LLC/EFFORTS/Joints [types::Effort]"]
-SenINS [label="/SENSORS/IMU [types::Imu]"]
-SenGPS [label="/SENSORS/GPS [types::GPS]"]
-SenCamL [label="/SENSORS/CAM/L [types::CamFrame]"]
-SenCamR [label="/SENSORS/CAM/R [types::CamFrame]"]
-SenWire [label="/SENSORS/WIRE [types::WireLength]"]
-SenSICK [label="/SENSORS/SICK/1 [types::Laser]"]
-SenIBEO1 [label="/SENSORS/IBEO/1 [types::Laser]"]
-SenIBEO2 [label="/SENSORS/IBEO/2 [types::Laser]"]
-SenIBEO3 [label="/SENSORS/IBEO/3 [types::Laser]"]
-SenIBEO4 [label="/SENSORS/IBEO/4 [types::Laser]"]
-BladePositionCommand [label="/WSM/BladePosition [types::BladPose]"]
+SensorINS [label="/SENSORS/IMU [types::Imu]"]
+SensorGPS [label="/SENSORS/GPS [types::GPS]"]
+SensorCamL [label="/SENSORS/CAM/L [types::CamFrame]"]
+SensorCamR [label="/SENSORS/CAM/R [types::CamFrame]"]
+SensorWire [label="/SENSORS/WIRE [types::WireLength]"]
+SensorSICK [label="/SENSORS/SICK/1 [types::Laser]"]
+SensorIBEO1 [label="/SENSORS/IBEO/1 [types::Laser]"]
+SensorIBEO2 [label="/SENSORS/IBEO/2 [types::Laser]"]
+SensorIBEO3 [label="/SENSORS/IBEO/3 [types::Laser]"]
+SensorIBEO4 [label="/SENSORS/IBEO/4 [types::Laser]"]
 
 }
 
@@ -73,9 +73,9 @@ SMME -> MissionAcceptance -> OCU
 
 PP -> LocalPath -> {WPD OCU IEDSIM}
 
-WPD -> WPD_Velocity -> LLC
+WPD -> WPDVelocity -> LLC
 
-WSM -> WSM_Velocity -> LLC
+WSM -> WSMVelocity -> LLC
 
 WSM -> BladePositionCommand -> LLC
 
@@ -83,17 +83,17 @@ PER -> GPS -> LOC
 
 PER -> INS -> LOC
 
-PER -> Blade -> {WSM SSM PP SMME OCU}
+PER -> BladePosition -> {WSM SSM PP SMME OCU}
 
 PER -> Map -> {PP OCU}
 
 PER -> MiniMap -> PP
 
-PER -> VO -> LOC
+PER -> VOOdometry -> LOC
 
 LOC -> {PerVelocity Location} -> {PER SSM SMME WSM LLC WPD OCU}
 
-SENSORS -> {SenINS SenGPS SenCamL SenCamR SenWire SenSICK SenIBEO1 SenIBEO2 SenIBEO3 SenIBEO4} -> PER
+SENSORS -> {SensorINS SensorGPS SensorCamL SensorCamR SensorWire SensorSICK SensorIBEO1 SensorIBEO2 SensorIBEO3 SensorIBEO4} -> PER
 
 LLC -> {EffortsTh EffortsSt EffortsJn} -> {PLATFORM PER}
 
