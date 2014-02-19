@@ -103,7 +103,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 {
 """ + subs +"\n"+ pubs +\
 """
-	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostic",100));
+	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
 }
 RosComm::~RosComm()

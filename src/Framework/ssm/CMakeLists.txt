@@ -30,6 +30,8 @@ add_library(ssm_compMain
 add_executable(ssm_node src/main.cpp)
 target_link_libraries(ssm_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(ssm_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(ssm_node ssm_compMain ssm_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
-)
+target_link_libraries(ssm_node ssm_compMain ssm_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(ssm_heartbeat_monitor_node src/monitor/HeartBeatMonitor.cpp)
+target_link_libraries(ssm_heartbeat_monitor_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
