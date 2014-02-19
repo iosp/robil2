@@ -5,8 +5,6 @@ int8 type_blade_angle=1
 int8 type_clamp=2
 int8 type_advance=3
 int8 type_turn=4
-int8 type_reserved=5
-int8 type_reserved=6
 int32 value
 int32 throttle
 int64 success_timeout

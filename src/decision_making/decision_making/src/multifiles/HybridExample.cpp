@@ -31,7 +31,7 @@ void EVENTS_GENERATOR(){
 		Event t = spec[i];
 		if(t == "NOTHING"){ i=1; t=spec[0]; }else i++;
 		cout << endl << t<<" -> ";
-		mainEventQueue.riseEvent(t);
+		mainEventQueue.raiseEvent(t);
 		boost::this_thread::sleep(boost::posix_time::seconds(2));
 	}
 }

@@ -11,10 +11,11 @@ void startSystem(ComponentMain* component);
 
 static void runComponent(int argc, char** argv, ComponentMain* component){
 	init_dm(argc, argv);
-	boost::thread_group th;
-	th.add_thread( new boost::thread(boost::bind(&startSystem,component)) );
-	th.add_thread( new boost::thread(boost::bind(&startComponent,component)) );
-	th.join_all();
+// 	boost::thread_group th;
+// 	th.add_thread( new boost::thread(boost::bind(&startSystem,component)) );
+// 	th.add_thread( new boost::thread(boost::bind(&startComponent,component)) );
+// 	th.join_all();
+	startComponent(component);
 }
 
 #endif /* COMPONENTSTATES_H_ */

@@ -53,12 +53,8 @@ add_message_files(
     FILES
         Path.msg
         IEDLocation.msg
-        CommandsList.msg
         MapCell.msg
         Map.msg
-        ControlConfirm.msg
-        ControlRequest.msg
-        WPDDecision.msg
         AssignManipulatorTask.msg
         AssignManipulatorTaskList.msg
         AssignManipulatorTaskStep.msg
@@ -66,7 +62,7 @@ add_message_files(
         AssignMissionTask.msg
         AssignNavTask.msg
         AssignNavTaskList.msg
-        MissionCommand.msg
+        MissionAcceptance.msg
 )
 
 ## Generate services in the 'srv' folder

@@ -31,7 +31,7 @@ FSM(Perception_ON)
 			FSM_CALL_TASK(INIT)
 			FSM_TRANSITIONS
 			{
-				FSM_PRINT_EVENT
+				//FSM_PRINT_EVENT
 				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
 			}
 		}
@@ -52,7 +52,7 @@ FSM(Perception)
 		OFF,
 		ON
 	}
-	FSM_START(OFF);
+	FSM_START(ON);
 	FSM_BGN
 	{
 		FSM_STATE(OFF)
@@ -78,6 +78,8 @@ FSM(Perception)
 
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 	PAUSE(10000);
+	//diagnostic_msgs::DiagnosticStatus status;
+	//COMPONENT->publishDiagnostic(status);
 	return TaskResult::SUCCESS();
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){

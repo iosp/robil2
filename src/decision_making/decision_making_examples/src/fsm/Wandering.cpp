@@ -111,7 +111,7 @@ void onLaserScanMessage(const sensor_msgs::LaserScan::Ptr laserScanMessage, RosE
     double frontRange = laserScanMessage->ranges[laserScanMessage->ranges.size() / 2];
 
     if (frontRange < 0.5) {
-        eventQueue->riseEvent("/OBSTACLE");
+        eventQueue->raiseEvent("/OBSTACLE");
     }
 }
 
@@ -141,7 +141,7 @@ decision_making::TaskResult driveTask(string name, const FSMCallContext& context
         boost::this_thread::sleep(boost::posix_time::milliseconds(timeToDriveMs / 100.0));
     }
 
-    eventQueue.riseEvent("/DRIVE_TIMEOUT");
+    eventQueue.raiseEvent("/DRIVE_TIMEOUT");
     return TaskResult::SUCCESS();
 }
 
@@ -157,7 +157,7 @@ decision_making::TaskResult turnTask(string name, const FSMCallContext& context,
 
     boost::this_thread::sleep(boost::posix_time::milliseconds(timeToTurnMs));
 
-    eventQueue.riseEvent("/TURN_TIMEOUT");
+    eventQueue.raiseEvent("/TURN_TIMEOUT");
     return decision_making::TaskResult::SUCCESS();
 }
 

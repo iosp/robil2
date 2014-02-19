@@ -16,101 +16,39 @@ public:
 	std::string str()const{return "";}
 };
 
-bool MissionLoaded;
-FSM(MissionActive)
+FSM(System_ON)
 {
 	FSM_STATES
 	{
-		MissionSpooling,
-		MissionPaused,
-		MissionAborted,
-		MissionFinished,
+		Init,
+		Ready,
+		Emergency
 	}
-	FSM_START(MissionSpooling);
+	FSM_START(Init);
 	FSM_BGN
 	{
-		FSM_STATE(MissionSpooling)
+		FSM_STATE(Init)
 		{
-			FSM_CALL_TASK(MissionSpooling)
+			FSM_CALL_TASK(SYS_INIT)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/CompleteMission", FSM_NEXT(MissionFinished));
-				FSM_ON_EVENT("/AbortMission", FSM_NEXT(MissionAborted));
-				FSM_ON_EVENT("/PauseMission", FSM_NEXT(MissionPaused));
+				FSM_ON_EVENT("/EndOfCoreSystemInit", FSM_NEXT(Ready));
 			}
 		}
-		FSM_STATE(MissionPaused)
+		FSM_STATE(Ready)
 		{
-			FSM_CALL_TASK(MissionPaused)
+			FSM_CALL_TASK(SYS_READY)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/CompleteMission", FSM_NEXT(MissionFinished));
-				FSM_ON_EVENT("/AbortMission", FSM_NEXT(MissionAborted));
-				FSM_ON_EVENT("/ResumeMission", FSM_NEXT(MissionSpooling));
+				FSM_ON_EVENT("/EStopCommand", FSM_NEXT(Emergency));
 			}
 		}
-		FSM_STATE(MissionAborted)
+		FSM_STATE(Emergency)
 		{
-			FSM_CALL_TASK(MissionAborted)
+			FSM_CALL_TASK(SYS_EMERGENCY)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/StartMission", FSM_NEXT(MissionSpooling));
-			}
-		}
-		FSM_STATE(MissionFinished)
-		{
-			FSM_CALL_TASK(MissionFinished)
-			FSM_TRANSITIONS
-			{
-				FSM_ON_EVENT("/StartMission", FSM_NEXT(MissionSpooling));
-			}
-		}
-	}
-	FSM_END
-}
-
-FSM(Mission_ON)
-{
-	FSM_STATES
-	{
-		NoMissionLoaded,
-		MissionPending,
-		MissionActive
-	}
-	FSM_START(NoMissionLoaded);
-	FSM_BGN
-	{
-		FSM_STATE(NoMissionLoaded)
-		{
-			FSM_CALL_TASK(NoMissionLoaded)
-			FSM_TRANSITIONS
-			{
-				FSM_ON_CONDITION(MissionLoaded, FSM_NEXT(MissionPending));
-			}
-		}
-		FSM_STATE(MissionPending)
-		{
-			FSM_CALL_TASK(MissionPending)
-			FSM_TRANSITIONS
-			{
-				//NOTE: It's not clear for transition from MissionPending to NoMissionLoaded
-				FSM_ON_EVENT("/DeleteMission", FSM_NEXT(NoMissionLoaded));
-				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(NoMissionLoaded));
-				FSM_ON_CONDITION(not MissionLoaded, FSM_NEXT(NoMissionLoaded));
-
-				FSM_ON_EVENT("/StartMission", FSM_NEXT(MissionActive));
-			}
-		}
-		FSM_STATE(MissionActive)
-		{
-			FSM_CALL_FSM(MissionActive)
-			FSM_TRANSITIONS
-			{
-				//NOTE: It's not clear for transition from MissionActive to NoMissionLoaded
-				FSM_ON_EVENT("/DeleteMission", FSM_NEXT(NoMissionLoaded));
-				FSM_ON_EVENT("/Stendby", FSM_NEXT(NoMissionLoaded));
-				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(NoMissionLoaded));
-				FSM_ON_CONDITION(not MissionLoaded, FSM_NEXT(NoMissionLoaded));
+				FSM_ON_EVENT("/ClearEStopCommand", FSM_NEXT(Ready));
 			}
 		}
 
@@ -118,19 +56,19 @@ FSM(Mission_ON)
 	FSM_END
 }
 
-FSM(Mission)
+FSM(System)
 {
 	FSM_STATES
 	{
 		OFF,
 		ON
 	}
-	FSM_START(OFF);
+	FSM_START(ON);
 	FSM_BGN
 	{
 		FSM_STATE(OFF)
 		{
-			FSM_CALL_TASK(OFF)
+			FSM_CALL_TASK(SYS_OFF)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/SystemActivation", FSM_NEXT(ON));
@@ -138,7 +76,7 @@ FSM(Mission)
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(Mission_ON)
+			FSM_CALL_FSM(System_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/PowerOff", FSM_NEXT(OFF));
@@ -149,56 +87,47 @@ FSM(Mission)
 	FSM_END
 }
 
+namespace {
 
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 	PAUSE(10000);
+	//diagnostic_msgs::DiagnosticStatus status;
+	//COMPONENT->publishDiagnostic(status);
+	return TaskResult::SUCCESS();
+}
+TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
+	PAUSE(10000);
+	return TaskResult::SUCCESS();
+}
+TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
+	PAUSE(10000);
+	return TaskResult::SUCCESS();
+}
+TaskResult state_EMERGENCY(string id, const CallContext& context, EventQueue& events){
+	PAUSE(10000);
 	return TaskResult::SUCCESS();
 }
 
-TaskResult state_NoMissionLoaded(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
-	return TaskResult::SUCCESS();
-}
-TaskResult state_MissionPending(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
-	return TaskResult::SUCCESS();
-}
-
-
-TaskResult state_MissionSpooling(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
-	return TaskResult::SUCCESS();
-}
-TaskResult state_MissionPaused(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
-	return TaskResult::SUCCESS();
-}
-TaskResult state_MissionAborted(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
-	return TaskResult::SUCCESS();
-}
-TaskResult state_MissionFinished(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
-	return TaskResult::SUCCESS();
 }
 
 void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros_decision_making_init(argc, argv);
+	startSystem(&component);
+
+}
+void startSystem(ComponentMain* component){
+
 	RosEventQueue events;
 	CallContext context;
-	context.createParameters(new Params(&component));
+	context.createParameters(new Params(component));
 	//events.async_spin();
-	LocalTasks::registration("OFF",state_OFF);
-	LocalTasks::registration("NoMissionLoaded",state_NoMissionLoaded);
-	LocalTasks::registration("MissionPending",state_MissionPending);
-	LocalTasks::registration("MissionSpooling",state_MissionSpooling);
-	LocalTasks::registration("MissionPaused",state_MissionPaused);
-	LocalTasks::registration("MissionAborted",state_MissionAborted);
-	LocalTasks::registration("MissionFinished",state_MissionFinished);
+	LocalTasks::registration("SYS_OFF",state_OFF);
+	LocalTasks::registration("SYS_INIT",state_INIT);
+	LocalTasks::registration("SYS_READY",state_READY);
+	LocalTasks::registration("SYS_EMERGENCY",state_EMERGENCY);
 
-
-	ROS_INFO("Starting smme (Mission)...");
-	FsmMission(&context, &events);
+	ROS_INFO("Starting smme (System)...");
+	FsmSystem(&context, &events);
 
 }

@@ -51,7 +51,7 @@ FSM(LLC)
 		OFF,
 		ON
 	}
-	FSM_START(OFF);
+	FSM_START(ON);
 	FSM_BGN
 	{
 		FSM_STATE(OFF)
@@ -78,6 +78,8 @@ FSM(LLC)
 
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 	PAUSE(10000);
+	//diagnostic_msgs::DiagnosticStatus status;
+	//COMPONENT->publishDiagnostic(status);
 	return TaskResult::SUCCESS();
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){

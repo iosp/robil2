@@ -21,11 +21,14 @@ def gen_roscomm_header( subscribers, publishers, func_subscribers, func_publishe
 #include <sstream>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+#include <boost/thread.hpp>
 class ComponentMain;
 class RosComm {
   bool _inited;
   ComponentMain   * _comp;
   ros::NodeHandle _nh;
+  ros::Publisher _pub_diagnostic;
+  boost::thread_group _maintains;
 """ + subscribers +"\n"+ publishers +"\n"+\
 """
   bool init(int argc,char** argv);
@@ -34,8 +37,11 @@ public:
 	virtual ~RosComm();
 """ + func_subscribers +"\n"+ func_publisher +"\n"+ \
 """
-  void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-  tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void heartbeat();
 };
 #endif /* ROSCOMM_H_ */
 """
@@ -64,8 +70,10 @@ public:
 	virtual ~ComponentMain();
 """ + func_subscribers +"\n"+ func_publisher  +\
 """
-  void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-  tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 };
 #endif /* COMPONENTMAIN_H_ */
 """
@@ -95,6 +103,8 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 {
 """ + subs +"\n"+ pubs +\
 """
+	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
+	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
 }
 RosComm::~RosComm()
 {
@@ -120,6 +130,29 @@ tf::StampedTransform RosComm::getLastTrasform(std::string srcFrame, std::string 
 	    ROS_ERROR("%s",ex.what());
 	}
 	return _tf;
+}
+void RosComm::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report){
+	diagnostic_msgs::DiagnosticArray msg;
+	msg.status.push_back(_report);
+	_pub_diagnostic.publish(msg);
+}
+void RosComm::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
+	diagnostic_msgs::DiagnosticArray msg;
+	msg.header = header;
+	msg.status.push_back(_report);
+	_pub_diagnostic.publish(msg);
+}
+void RosComm::heartbeat(){
+	using namespace boost::posix_time;
+	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);
+	double hz = HEARTBEAT_FREQUANCY;
+	while(ros::ok()){
+		boost::system_time stop_time = boost::get_system_time() + milliseconds((1/hz)*1000);
+		std_msgs::String msg;
+		msg.data = \""""+comp+"""\";
+		_pub.publish(msg);
+	    boost::this_thread::sleep(stop_time);
+	}
 }
 """
 	return code
@@ -149,7 +182,13 @@ void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFr
 	_roscomm->publishTransform(_tf, srcFrame, distFrame);
 }
 tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::string distFrame){
-	return _roscomm->getLastTrasform(srcFrame, distFrame);;
+	return _roscomm->getLastTrasform(srcFrame, distFrame);
+}
+void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report){
+	_roscomm->publishDiagnostic(_report);
+}
+void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
+	_roscomm->publishDiagnostic(header, _report);
 }
 """
 	return code

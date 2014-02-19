@@ -269,7 +269,7 @@ public:
 		Spinner(EventQueue& events):events(events){}
 		boost::thread_group threads;
 		void spinOne(){
-			events.riseEvent(Event::SPIN_EVENT());
+			events.raiseEvent(Event::SPIN_EVENT());
 			//cout<<"[spin]"<<endl;
 		}
 		void spin(double rate = EQ_SPINNER_DIF_RATE){

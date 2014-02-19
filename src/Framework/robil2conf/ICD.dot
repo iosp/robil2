@@ -1,0 +1,100 @@
+digraph ICD{
+{node [shape="box" fillcolor="gray" fontsize=30]
+	LLC OCU PER PP SMME SSM WPD WSM SENSORS PLATFORM LOC IEDSIM
+}
+
+{node [shape="box" color="blue"]
+
+#TYPES
+
+event [label="/decision_making/events [String]"]
+diagnostic [label="/diagnostics [DiagnosticStatus]"]
+
+IEDLocation [label="/IED/Location [types::IEDLocation]"]
+CustomIED [label="/OCU/IED/Location [types::IEDLocation]"]
+PositionUpdate [label="/OCU/PositionUpdate [types::Pose]"]
+AssignNavTask [label="/OCU/SMME/NavigationTask [types::NavTask]"]
+AssignManTask [label="/OCU/SMME/ManipulationTask [types::ManTask]"]
+AssignMission [label="/OCU/SMME/MissionPlan [types::Mission]"]
+GlobalPath [label="/SMME/GlobalPath [types::Path]"]
+MissionAcceptance [label="/SMME/OCU/MissionAcceptance [types::MissionAcceptance]"]
+WorkSeqData [label="/SMME/WSM/Task [types::WSMData]"]
+LocalPath [label="/PP/Path [types::Path]"]
+WPDVelocity [label="/WPD/Speed [types::Speed]"]
+WSMVelocity [label="/WSM/Speed [types::Speed]"]
+GPS [label="/PER/GPS [types::GPS]"]
+INS [label="/PER/INS [types::Imu]"]
+BladePosition [label="/PER/BladPosition [types::BladPose]"]
+BladePositionCommand [label="/WSM/BladePosition [types::BladPose]"]
+Map [label="/PER/Map [types::Map]"]
+MiniMap [label="/PER/MiniMap [types::Map]"]
+VOOdometry [label="/PER/VOOdometry [types::Odometry]"]
+Location [label="/LOC/Pose [types::PoseWithConf]"]
+PerVelocity [label="/LOC/Velocity [types::Speed]"]
+EffortsTh [label="/LLC/EFFORTS/Throttle [types::Effort]"]
+EffortsSt [label="/LLC/EFFORTS/Steering [types::Effort]"]
+EffortsJn [label="/LLC/EFFORTS/Joints [types::Effort]"]
+SensorINS [label="/SENSORS/IMU [types::Imu]"]
+SensorGPS [label="/SENSORS/GPS [types::GPS]"]
+SensorCamL [label="/SENSORS/CAM/L [types::CamFrame]"]
+SensorCamR [label="/SENSORS/CAM/R [types::CamFrame]"]
+SensorWire [label="/SENSORS/WIRE [types::WireLength]"]
+SensorSICK [label="/SENSORS/SICK/1 [types::Laser]"]
+SensorIBEO1 [label="/SENSORS/IBEO/1 [types::Laser]"]
+SensorIBEO2 [label="/SENSORS/IBEO/2 [types::Laser]"]
+SensorIBEO3 [label="/SENSORS/IBEO/3 [types::Laser]"]
+SensorIBEO4 [label="/SENSORS/IBEO/4 [types::Laser]"]
+
+}
+
+#GRAPH
+
+{IEDSIM LLC OCU PER PP SMME SSM WPD WSM} -> event -> {IEDSIM LLC OCU PER PP SMME SSM WPD WSM}
+
+{IEDSIM LLC OCU PER PP SMME SSM WPD WSM} -> diagnostic -> SSM
+
+IEDSIM -> IEDLocation -> {SMME OCU}
+
+OCU -> CustomIED -> IEDSIM
+
+OCU -> PositionUpdate -> LOC
+
+OCU -> AssignNavTask -> SMME
+
+OCU -> AssignManTask -> SMME
+
+OCU -> AssignMission -> SMME
+
+SMME -> GlobalPath -> PP
+
+SMME -> WorkSeqData -> WSM
+
+SMME -> MissionAcceptance -> OCU
+
+PP -> LocalPath -> {WPD OCU IEDSIM}
+
+WPD -> WPDVelocity -> LLC
+
+WSM -> WSMVelocity -> LLC
+
+WSM -> BladePositionCommand -> LLC
+
+PER -> GPS -> LOC
+
+PER -> INS -> LOC
+
+PER -> BladePosition -> {WSM SSM PP SMME OCU}
+
+PER -> Map -> {PP OCU}
+
+PER -> MiniMap -> PP
+
+PER -> VOOdometry -> LOC
+
+LOC -> {PerVelocity Location} -> {PER SSM SMME WSM LLC WPD OCU}
+
+SENSORS -> {SensorINS SensorGPS SensorCamL SensorCamR SensorWire SensorSICK SensorIBEO1 SensorIBEO2 SensorIBEO3 SensorIBEO4} -> PER
+
+LLC -> {EffortsTh EffortsSt EffortsJn} -> {PLATFORM PER}
+
+}

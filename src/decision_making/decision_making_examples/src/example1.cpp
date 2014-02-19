@@ -71,7 +71,7 @@ void EVENTS_GENERATOR(){
 		Event t = spec[i];
 		if(t == "NOTHING"){ i=1; t=spec[0]; }else i++;
 		cout << endl << t<<" -> ";
-		mainEventQueue->riseEvent(t);
+		mainEventQueue->raiseEvent(t);
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
 	}
 	mainEventQueue->close();
@@ -86,7 +86,7 @@ TaskResult tst_mytask(std::string task_address, const CallContext& call_ctx, Eve
 	call_ctx.parameters<PP>().x = call_ctx.parameters<PP>().x + 1;
 	aa+=1;
 	//cout<<"[ this my dummy task : x=? ]";
-	queue.riseEvent(Event("success", call_ctx));
+	queue.raiseEvent(Event("success", call_ctx));
 	return TaskResult::SUCCESS();
 }
 TaskResult tst_onexit(std::string task_address, const CallContext& call_ctx, EventQueue& queue, int ww){
@@ -94,7 +94,7 @@ TaskResult tst_onexit(std::string task_address, const CallContext& call_ctx, Eve
 	call_ctx.parameters<PP>().x = call_ctx.parameters<PP>().x + 1;
 	aa+=1;
 	//cout<<"[ this my dummy task : x=? ]";
-	queue.riseEvent(Event("success", call_ctx));
+	queue.raiseEvent(Event("success", call_ctx));
 	return TaskResult::SUCCESS();
 }
 

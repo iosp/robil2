@@ -191,7 +191,8 @@ private:
 
 		ros::NodeHandle node;
 		//diagnostic_publisher = node.advertise<diagnostic_msgs::DiagnosticStatus>("/decision_making/monitoring", 100);
-		diagnostic_publisher = node.advertise<diagnostic_msgs::DiagnosticArray>("/decision_making/monitoring", 100);
+		//diagnostic_publisher = node.advertise<diagnostic_msgs::DiagnosticArray>("/decision_making/monitoring", 100);
+		diagnostic_publisher = node.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics", 100);
 	}
 };
 
