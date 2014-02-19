@@ -1,0 +1,15 @@
+<launch>
+
+ <!-- joy node -->
+  <node respawn="true" pkg="joy"
+        type="joy_node" name="bobcat_joy" >
+  </node>
+
+ <!-- Axes -->
+  <param name="axis_linear" value="1" type="int"/>
+  <param name="axis_angular" value="0" type="int"/>
+
+
+  <node pkg="bobcat_teleop" type="bobcat_joystick_teleop_node" name="joy_teleop"/>
+
+</launch>
