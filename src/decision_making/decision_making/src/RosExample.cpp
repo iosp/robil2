@@ -289,7 +289,7 @@ void EVENTS_GENERATOR(){
 		Event t = spec[i];
 		if(t == "NOTHING"){ i=1; t=spec[0]; }else i++;
 		cout << endl << t<<" -> ";
-		mainEventQueue->riseEvent(t);
+		mainEventQueue->raiseEvent(t);
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
 	}
 	mainEventQueue->close();
@@ -297,7 +297,7 @@ void EVENTS_GENERATOR(){
 
 TaskResult tst_mytask(std::string task_address, const CallContext& call_ctx, EventQueue& queue){
 	cout<<" this this my task ";
-	queue.riseEvent(Event("success", call_ctx));
+	queue.raiseEvent(Event("success", call_ctx));
 	return TaskResult::SUCCESS();
 }
 

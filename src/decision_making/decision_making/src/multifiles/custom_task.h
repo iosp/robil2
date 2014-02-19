@@ -22,7 +22,7 @@ TaskResult callTask(std::string task_address, const CallContext& call_ctx, Event
 		if( e=="/SUCCESS" or e=="/FAIL" or e=="/GO" ){
 			Event new_event ( Event(""+e.event_name(), call_ctx) );
 			DMDEBUG( cout<<" TASK("<<task_address<<":"<<new_event<<") "; )
-			queue.riseEvent(new_event);
+			queue.raiseEvent(new_event);
 		}
 
 		if(e=="/GO" and task_address=="T3") return TaskResult::SUCCESS();

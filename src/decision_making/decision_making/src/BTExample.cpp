@@ -61,7 +61,7 @@ void EVENTS_GENERATOR() {
 		} else
 			i++;
 		cout << endl << t << " -> ";
-		mainEventQueue.riseEvent(t);
+		mainEventQueue.raiseEvent(t);
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
 	}
 }
@@ -114,7 +114,7 @@ TaskResult test_callTask(std::string task_address, const CallContext& call_ctx, 
 //		if( e=="/SUCCESS" or e=="/FAIL" or e=="/GO" ){
 //			Event new_event ( Event(""+e.event_name(), call_ctx) );
 //			cout<<" TASK("<<task_address<<":"<<new_event<<") ";
-//			queue->riseEvent(new_event);
+//			queue->raiseEvent(new_event);
 //		}
 //	}
 //}
