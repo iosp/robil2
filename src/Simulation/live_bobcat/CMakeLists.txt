@@ -72,7 +72,7 @@ find_package(catkin REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES live_bobcat
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS bobcat gazebo_ibeo_gpu gazebo_sick_gpu
 #  DEPENDS system_lib
 )
 
@@ -130,8 +130,8 @@ catkin_package(
 # )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
- install(PROGRAMS scripts/setupEnv.sh
-DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ install(PROGRAMS scripts/setupEnv
+	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
 #############
