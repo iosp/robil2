@@ -82,7 +82,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES bobcat_teleop
-#  CATKIN_DEPENDS joystick roscpp std_msgs
+  CATKIN_DEPENDS joy
 #  DEPENDS system_lib
 )
 

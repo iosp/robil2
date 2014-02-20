@@ -1,10 +1,10 @@
-<include>
-      <uri>model://sick_stripped</uri>
+    <include>
+      <uri>model://gpu_sick</uri>
       <pose>-0.25 0.7 0.625 0 0 1.57</pose>
       <name>left_sick</name>
     </include>
     <include>
-      <uri>model://sick_stripped</uri>
+      <uri>model://gpu_sick</uri>
       <pose>-0.25 -0.7 0.625 0 0 -1.57</pose>
       <name>right_sick</name>
     </include>
@@ -32,11 +32,3 @@
         <dynamics/>
       </axis>
     </joint>
-	<plugin name="SICK1" filename="libsick.so">
-	  <name>right_sick</name>
-	  <linkName>right_sick::link</linkName>
-	 </plugin>
-	<plugin name="SICK2" filename="libsick.so">
-	  <name>left_sick</name>
-	  <linkName>left_sick::link</linkName>
-	 </plugin>

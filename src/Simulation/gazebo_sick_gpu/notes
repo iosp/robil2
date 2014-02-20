@@ -3,7 +3,7 @@ LMS511-20100 one plane Sick sensor
 
 Version
 -------
-1.2.0
+1.2.1
 
 Whats new
 ---------
@@ -12,9 +12,9 @@ In this version we use the GPU to enhance performance.
 Include
 -------
 This package includes a Sick model for Gazebo.
-The model Includes a ROS topic named \LMS511. The Topic is a ROS sensor_msgs\Laser_scan.
+The model Includes a ROS topic named /LMS511/scan . The Topic is a ROS sensor_msgs\Laser_scan.
 
-You can subscibe to the topic by: $ rostopic echo \LMS511
+You can subscibe to the topic by: $ rostopic echo /LMS511/scan
 
 Installation
 ------------

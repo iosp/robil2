@@ -1,7 +1,8 @@
 SETUP
 -----
-run setupEnv.sh after doing catkin_make install
-
+run:
+catkin_make install
+rosrun live_bobcat setupEnv
 RUN
 -----
 roslaunch the files in the launch folder
