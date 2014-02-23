@@ -66,7 +66,18 @@ namespace gazebo
       
       void Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
       {
-	
+
+	//setting the sensor name according to it's parent link name
+	//this search can handle one nesting of the sensor at this moment
+	this->name_ =_parent->GetParentName();
+	if ( this->name_.find(":") != this->name_.find_last_of(":")-1 && this->name_.find(":")>0)
+	{
+	   this->name_=this->name_.substr(0,this->name_.find_last_of(":")-1);
+	   this->name_=this->name_.substr(this->name_.find(":")+2);
+	}else
+	{
+	   this->name_=this->name_.substr(0,this->name_.find(":"));
+	}
 	//printf("I have loaded.!!!\n");
 	this->parentSensor = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(_parent);
 
@@ -74,7 +85,7 @@ namespace gazebo
 
 	this->world = physics::get_world(this->parentSensor->GetWorldName());
   	this->newLaserFrameConnection = this->parentSensor->ConnectNewLaserFrame(boost::bind(&SickPlugin::OnNewLaserFrame, this));
-	_publisher = _nodeHandle.advertise<sensor_msgs::LaserScan>(TOPIC_NAME, 10);
+	_publisher = _nodeHandle.advertise<sensor_msgs::LaserScan>(name_+"/scan", 10);
       
 	
       }
@@ -142,7 +153,7 @@ namespace gazebo
       common::Time 		_lastTime;
       sensors::GpuRaySensorPtr parentSensor;	
       event::ConnectionPtr newLaserFrameConnection;
-      
+      string name_;
       ros::NodeHandle		_nodeHandle;
       ros::Publisher 		_publisher;
   };
