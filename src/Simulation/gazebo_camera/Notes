@@ -1,0 +1,19 @@
+Camera FLEA3
+------------------
+version: 1.01
+
+This module simulates the "FLEA3" camera.
+
+Install
+-------
+copy folder to your workspace and install the workspace:
+	$ catkin_make install
+	$ catkin_make
+
+Test
+----
+Run the launch file:
+	$ roslaunch gazebo_camera camera.launch
+	
+subscribe to topic:
+	$ rostopic echo /FLEA3/image_raw
