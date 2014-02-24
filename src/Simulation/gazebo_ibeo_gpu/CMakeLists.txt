@@ -44,6 +44,6 @@ catkin_package(
 )
 install(
   DIRECTORY models/
-  DESTINATION $ENV{HOME}/.gazebo/models/gpu_ibeo
+  DESTINATION $ENV{HOME}/.gazebo/models/IBEO
 )
 
