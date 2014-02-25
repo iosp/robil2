@@ -58,7 +58,6 @@ PER_pub_VOOdometry: '/PER/VOOdometry'
 PP_sub_GlobalPath: 'SMME'
 PP_sub_BladePosition: 'PER'
 PP_sub_Map: 'PER'
-PP_sub_MiniMap: 'PER'
 
 PP_pub_LocalPath: '/PP/Path'
 
@@ -68,8 +67,6 @@ SMME_sub_AssignNavTask: 'OCU'
 SMME_sub_AssignManTask: 'OCU'
 SMME_sub_AssignMission: 'OCU'
 SMME_sub_BladePosition: 'PER'
-SMME_sub_PerVelocity: 'LOC'
-SMME_sub_Location: 'LOC'
 
 SMME_pub_GlobalPath: '/SMME/GlobalPath'
 SMME_pub_WorkSeqData: '/SMME/WSM/Task'
@@ -83,16 +80,13 @@ SSM_sub_Location: 'LOC'
 
 #WPD
 WPD_sub_LocalPath: 'PP'
-WPD_sub_PerVelocity: 'LOC'
-WPD_sub_Location: 'LOC'
+WPD_sub_MiniMap: 'PER'
 
 WPD_pub_WPDVelocity: '/WPD/Speed'
 
 #WSM
 WSM_sub_WorkSeqData: 'SMME'
 WSM_sub_BladePosition: 'PER'
-WSM_sub_PerVelocity: 'LOC'
-WSM_sub_Location: 'LOC'
 
 WSM_pub_WSMVelocity: '/WSM/Speed'
 WSM_pub_BladePositionCommand: '/WSM/BladePosition'

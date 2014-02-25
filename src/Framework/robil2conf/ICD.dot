@@ -87,11 +87,11 @@ PER -> BladePosition -> {WSM SSM PP SMME OCU}
 
 PER -> Map -> {PP OCU}
 
-PER -> MiniMap -> PP
+PER -> MiniMap -> WPD
 
 PER -> VOOdometry -> LOC
 
-LOC -> {PerVelocity Location} -> {PER SSM SMME WSM LLC WPD OCU}
+LOC -> {PerVelocity Location} -> {PER SSM LLC OCU}
 
 SENSORS -> {SensorINS SensorGPS SensorCamL SensorCamR SensorWire SensorSICK SensorIBEO1 SensorIBEO2 SensorIBEO3 SensorIBEO4} -> PER
 
