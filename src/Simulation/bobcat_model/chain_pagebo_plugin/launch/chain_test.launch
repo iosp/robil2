@@ -1,4 +1,3 @@
-<!-- -*- mode: XML -*- -->
 <launch>
 
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
@@ -12,7 +11,7 @@
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="debug" value="$(arg debug)" />
     <arg name="gui" value="$(arg gui)" />
-    <arg name="paused" value="$(arg paused)"/>
+    <arg name="paused" value="true"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
   </include>
@@ -20,15 +19,10 @@
   <!-- Load the URDF into the ROS Parameter Server -->
   <!--<param name="robot_description"
 	 command="$(find xacro)/xacro.py '$(find clam_description)/urdf/clam.xacro'" />-->
-  <param name="robot_description" command="cat $(find bobcat)/urdf/BOBCAT.URDF" />
+  <param name="robot_description" command="cat $(find chain_pagebo_plugin)/urdf/CHAIN.URDF" />
 
   <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-	args="-urdf -model bobcat -param robot_description -z 0.3"/>
-
-  <!-- ros_control clam launch file -->
-  <include file="$(find bobcat_gazebo)/launch/bobcat_gazebo_control.launch" />
-
-  <node name="RateToEffort" pkg="rate2effort" type="rate2effort" cwd="node" output="screen" />
+	args="-urdf -model chain -param robot_description -z 4"/>
 
 </launch>

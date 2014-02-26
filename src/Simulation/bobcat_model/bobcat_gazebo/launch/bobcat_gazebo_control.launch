@@ -9,7 +9,9 @@
 					  front_right_wheel_velocity_controller
 					  front_left_wheel_velocity_controller
 					  back_right_wheel_velocity_controller
-					  back_left_wheel_velocity_controller"/>
+					  back_left_wheel_velocity_controller
+					  loader_position_controller
+					  supporter_position_controller"/>
 
   <!-- convert joint states to TF transforms for rviz, etc -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
