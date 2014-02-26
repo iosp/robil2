@@ -5,16 +5,16 @@
     name="body">
     <inertial>
       <origin
-        xyz="-0.890714078986241 0.000176354230843794 0.525609535873677"
+        xyz="-0.890714078986241 0.000176354230843779 0.525609535873677"
         rpy="0 0 0" />
       <mass
         value="5018.57981030941" />
       <inertia
         ixx="1272.55944993386"
-        ixy="0.30897993676798"
+        ixy="0.308979936767991"
         ixz="-158.353301657466"
         iyy="2264.90693597666"
-        iyz="-0.107097171125939"
+        iyz="-0.107097171125965"
         izz="2025.98192908188" />
     </inertial>
     <visual>
@@ -28,7 +28,7 @@
       <material
         name="">
         <color
-          rgba="0.647058823529412 0.619607843137255 0.588235294117647 0.5" />
+          rgba="0.647058823529412 0.619607843137255 0.588235294117647 1" />
       </material>
     </visual>
     <collision>
@@ -86,7 +86,7 @@
     type="continuous">
     <origin
       xyz="-0.22722 0.47558 0.125"
-      rpy="0 2.1164E-16 0" />
+      rpy="0 0 0" />
     <parent
       link="body" />
     <child
@@ -139,7 +139,7 @@
     type="continuous">
     <origin
       xyz="-0.22722 -0.47558 0.125"
-      rpy="0 2.1164E-16 0" />
+      rpy="0 0 0" />
     <parent
       link="body" />
     <child
@@ -192,7 +192,7 @@
     type="continuous">
     <origin
       xyz="-1.227 0.47558 0.14772"
-      rpy="0 2.1164E-16 0" />
+      rpy="0 0 0" />
     <parent
       link="body" />
     <child
@@ -245,7 +245,7 @@
     type="continuous">
     <origin
       xyz="-1.227 -0.47558 0.14772"
-      rpy="0 2.1164E-16 0" />
+      rpy="0 0 0" />
     <parent
       link="body" />
     <child
@@ -257,17 +257,17 @@
     name="base_arm">
     <inertial>
       <origin
-        xyz="0.066509 1.9771E-12 0.25686"
+        xyz="0.014506 1.7898E-12 0.26493"
         rpy="0 0 0" />
       <mass
         value="194.91" />
       <inertia
-        ixx="50.76"
-        ixy="-2.9264E-11"
-        ixz="0.66798"
+        ixx="50.887"
+        ixy="-2.8544E-11"
+        ixz="-0.036345"
         iyy="4.8017"
-        iyz="7.0403E-12"
-        izz="47.388" />
+        iyz="6.6458E-13"
+        izz="47.261" />
     </inertial>
     <visual>
       <origin
@@ -298,7 +298,7 @@
     type="revolute">
     <origin
       xyz="-1.9776 0 1.1773"
-      rpy="0 2.1164E-16 0" />
+      rpy="0 0 0" />
     <parent
       link="body" />
     <child
@@ -315,17 +315,17 @@
     name="main_arm">
     <inertial>
       <origin
-        xyz="1.1865 -4.0206E-07 -0.60466"
+        xyz="1.1716 -4.5368E-07 0.63315"
         rpy="0 0 0" />
       <mass
-        value="369.05" />
+        value="1074.1" />
       <inertia
-        ixx="133.74"
-        ixy="0.00012791"
-        ixz="-68.753"
-        iyy="216.24"
-        iyz="-4.6593E-05"
-        izz="268.55" />
+        ixx="467.94"
+        ixy="0.00031534"
+        ixz="254.42"
+        iyy="629.34"
+        iyz="0.00021799"
+        izz="702.88" />
     </inertial>
     <visual>
       <origin
@@ -338,7 +338,7 @@
       <material
         name="">
         <color
-          rgba="0.89412 0.91373 0.92941 1" />
+          rgba="0.64706 0.61961 0.58824 1" />
       </material>
     </visual>
     <collision>
@@ -347,7 +347,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/main_arm.STL" />
+          filename="package://bobcat/meshes/main_arm_lite.STL" />
       </geometry>
     </collision>
   </link>
@@ -355,8 +355,8 @@
     name="main_arm_joint"
     type="revolute">
     <origin
-      xyz="0.22304 0 0.5262"
-      rpy="0 -2.1164E-16 0" />
+      xyz="0.1148 0 0.55987"
+      rpy="0 0 0" />
     <parent
       link="base_arm" />
     <child
@@ -370,20 +370,78 @@
       velocity="100" />
   </joint>
   <link
+    name="back_shaft">
+    <inertial>
+      <origin
+        xyz="-0.134 -4.4364E-09 -0.38753"
+        rpy="0 0 0" />
+      <mass
+        value="20.367" />
+      <inertia
+        ixx="6.7539"
+        ixy="-8.065E-07"
+        ixz="0.52501"
+        iyy="1.7047"
+        iyz="2.7525E-07"
+        izz="5.4171" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/back_shaft.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64706 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/back_shaft.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="back_shaft_joint"
+    type="revolute">
+    <origin
+      xyz="0.55726 0 -0.049822"
+      rpy="0 0 0" />
+    <parent
+      link="main_arm" />
+    <child
+      link="back_shaft" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="1000000"
+      velocity="100" />
+  </joint>
+  <link
     name="supporter">
     <inertial>
       <origin
-        xyz="0.51341 -4.9085E-16 -0.060486"
+        xyz="0.28839 -2.1264E-15 -0.42905"
         rpy="0 0 0" />
       <mass
         value="65.29" />
       <inertia
-        ixx="16.898"
-        ixy="-2.3004E-13"
-        ixz="-0.76501"
+        ixx="21.343"
+        ixy="-3.0065E-13"
+        ixz="-3.0481"
         iyy="6.6127"
-        iyz="-2.4072E-13"
-        izz="23.301" />
+        iyz="-1.4833E-13"
+        izz="18.857" />
     </inertial>
     <visual>
       <origin
@@ -413,8 +471,8 @@
     name="supporter_joint"
     type="revolute">
     <origin
-      xyz="0.39771 0 -0.89486"
-      rpy="0 8.0491E-16 0" />
+      xyz="0.9624 0 -0.18092"
+      rpy="0 0 0" />
     <parent
       link="main_arm" />
     <child
@@ -431,17 +489,17 @@
     name="front_cylinder">
     <inertial>
       <origin
-        xyz="0.16022 1.6587E-08 -0.17142"
+        xyz="0.23385 1.5712E-08 0.01923"
         rpy="0 0 0" />
       <mass
         value="24.149" />
       <inertia
-        ixx="4.0554"
-        ixy="-4.9938E-08"
-        ixz="-0.46391"
+        ixx="3.5653"
+        ixy="-7.5512E-08"
+        ixz="0.075956"
         iyy="0.95412"
-        iyz="6.094E-08"
-        izz="3.9926" />
+        iyz="-1.8758E-09"
+        izz="4.4827" />
     </inertial>
     <visual>
       <origin
@@ -471,8 +529,8 @@
     name="front_cylinder_joint"
     type="revolute">
     <origin
-      xyz="1.741 0 -0.80293"
-      rpy="0 8.0491E-16 0" />
+      xyz="1.6497 0 0.97689"
+      rpy="0 0 0" />
     <parent
       link="main_arm" />
     <child
@@ -486,20 +544,81 @@
       velocity="100" />
   </joint>
   <link
+    name="loader">
+    <inertial>
+      <origin
+        xyz="0.37894 2.2445E-15 0.067409"
+        rpy="0 0 0" />
+      <mass
+        value="570.61" />
+      <inertia
+        ixx="170.82"
+        ixy="6.6993E-14"
+        ixz="-9.0404"
+        iyy="53.839"
+        iyz="-2.504E-14"
+        izz="186.78" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/loader.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64706 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/loader.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="loader_joint"
+    type="revolute">
+    <origin
+      xyz="2.4733 0 0.84274"
+      rpy="0 0 0" />
+    <parent
+      link="main_arm" />
+    <child
+      link="loader" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="1000000"
+      velocity="100" />
+    <dynamics
+      damping="0.001"
+      friction="0.001" />
+  </joint>
+  <link
     name="front_shaft">
     <inertial>
       <origin
-        xyz="9.4954E-07 8.3283E-07 -0.19417"
+        xyz="-0.21435 -4.6153E-08 -0.017626"
         rpy="0 0 0" />
       <mass
-        value="13.711" />
+        value="12.378" />
       <inertia
-        ixx="2.4234"
-        ixy="-2.5882E-07"
-        ixz="1.3728E-06"
-        iyy="0.41181"
-        iyz="1.3005E-06"
-        izz="2.0158" />
+        ixx="1.8193"
+        ixy="2.4455E-08"
+        ixz="0.028747"
+        iyy="0.3554"
+        iyz="-2.2658E-08"
+        izz="2.1665" />
     </inertial>
     <visual>
       <origin
@@ -527,72 +646,14 @@
   </link>
   <joint
     name="front_shaft_joint"
-    type="prismatic">
-    <origin
-      xyz="0.50479 0 -0.54009"
-      rpy="-3.1416 0.75163 -3.1416" />
-    <parent
-      link="front_cylinder" />
-    <child
-      link="front_shaft" />
-    <axis
-      xyz="0 0 1" />
-    <limit
-      lower="-0.1"
-      upper="0.6"
-      effort="1000000"
-      velocity="100" />
-  </joint>
-  <link
-    name="loader">
-    <inertial>
-      <origin
-        xyz="0.37894 2.192E-15 0.067409"
-        rpy="0 0 0" />
-      <mass
-        value="196.06" />
-      <inertia
-        ixx="58.693"
-        ixy="1.2282E-14"
-        ixz="-3.1063"
-        iyy="18.499"
-        iyz="-4.2535E-15"
-        izz="64.178" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/loader.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.89412 0.91373 0.92941 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/loader.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="loader_joint"
     type="revolute">
     <origin
-      xyz="2.0984 0 -1.557"
-      rpy="0 2.5362E-15 0" />
+      xyz="0.14741 0 0.214"
+      rpy="0 0 0" />
     <parent
-      link="main_arm" />
-    <child
       link="loader" />
+    <child
+      link="front_shaft" />
     <axis
       xyz="0 1 0" />
     <limit
@@ -605,17 +666,17 @@
     name="back_cylinder">
     <inertial>
       <origin
-        xyz="0.14567 5.3127E-08 0.43479"
+        xyz="0.14985 5.3154E-08 0.43337"
         rpy="0 0 0" />
       <mass
         value="30.817" />
       <inertia
-        ixx="10.053"
-        ixy="-2.1135E-07"
-        ixz="0.70965"
+        ixx="10.039"
+        ixy="-2.1671E-07"
+        ixz="0.72763"
         iyy="2.3798"
-        iyz="-5.4817E-07"
-        izz="8.1729" />
+        iyz="-5.4633E-07"
+        izz="8.1867" />
     </inertial>
     <visual>
       <origin
@@ -646,7 +707,7 @@
     type="revolute">
     <origin
       xyz="-1.8135 0 0.2184"
-      rpy="0 8.0491E-16 0" />
+      rpy="0 0 0" />
     <parent
       link="body" />
     <child
@@ -659,66 +720,9 @@
       effort="1000000"
       velocity="100" />
   </joint>
-  <link
-    name="back_shaft">
-    <inertial>
-      <origin
-        xyz="-1.2324E-08 -4.788E-09 -0.41004"
-        rpy="0 0 0" />
-      <mass
-        value="20.367" />
-      <inertia
-        ixx="6.9354"
-        ixy="-8.5203E-07"
-        ixz="7.9714E-09"
-        iyy="1.7047"
-        iyz="-3.6983E-09"
-        izz="5.2356" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/back_shaft.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/back_shaft.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="back_shaft_joint"
-    type="prismatic">
-    <origin
-      xyz="0.33441 0 0.99813"
-      rpy="-5.7722E-16 0.32328 -4.9954E-16" />
-    <parent
-      link="back_cylinder" />
-    <child
-      link="back_shaft" />
-    <axis
-      xyz="0 0 1" />
-    <limit
-      lower="-0.2"
-      upper="1"
-      effort="1000000"
-      velocity="100" />
-  </joint>
 
- <!-- Transmissions for ROS Control -->
+
+  <!-- Transmissions for ROS Control -->
   <transmission name="tran1">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="front_right_wheel_joint"/>
@@ -828,22 +832,6 @@
   </transmission>
 
   <!-- ros_control plugin -->
- <gazebo>
-    <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
-      <robotNamespace>/bobcat</robotNamespace>
-      <link1>back_shaft</link1>
-      <link2>main_arm</link2>
-      <joint>back_shaft_sheker</joint>
-    </plugin>
-  </gazebo>
- <gazebo>
-    <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
-      <robotNamespace>/bobcat</robotNamespace>
-      <link1>front_shaft</link1>
-      <link2>loader</link2>
-      <joint>front_shaft_sheker</joint>
-    </plugin>
-  </gazebo>
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
       <robotNamespace>/bobcat</robotNamespace>
@@ -853,77 +841,64 @@
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/Wood</material>
   </gazebo>
   <gazebo reference="front_right_wheel">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="front_left_wheel">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="back_right_wheel">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="back_left_wheel">
     <mu1>1</mu1>
     <mu2>1</mu2>
-    <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="base_arm">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="main_arm">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/PaintedWall</material>
   </gazebo>
   <gazebo reference="back_shaft">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/Black</material>
   </gazebo>
   <gazebo reference="supporter">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/GreyTransparent</material>
   </gazebo>
   <gazebo reference="front_cylinder">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/BlueTransparent</material>
   </gazebo>
   <gazebo reference="loader">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/Gold</material>
   </gazebo>
   <gazebo reference="front_shaft">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/Black</material>
   </gazebo>
   <gazebo reference="back_cylinder">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/BlueTransparent</material>
   </gazebo>
 </robot>

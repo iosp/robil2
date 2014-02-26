@@ -1,0 +1,316 @@
+<?xml version="1.0"?>
+<robot name="chain">
+  <link name="link1">
+    <visual>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+  </link>
+  <link name="link2">
+    <visual>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+  </link>
+  <link name="link3">
+    <visual>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+  </link>
+  <link name="link4">
+    <visual>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+  </link>
+  <link name="link5">
+    <visual>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+  </link>
+  <link name="link6">
+    <visual>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+  </link>
+  <link name="link7">
+    <visual>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+  </link>
+  <link name="link8">
+    <visual>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+  </link>
+  <link name="link9">
+    <visual>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+  </link>
+  <link name="link10">
+    <visual>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+       	<sphere radius="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1"/>
+    </inertial>
+  </link>
+  <joint
+    name="joint1"
+    type="continuous">
+    <origin      xyz="0.25 0.0 0.0"      rpy="0 0 0.54" />
+    <parent
+      link="link1" />
+    <child
+      link="link2" />
+    <axis  xyz="0 0 1" />
+  </joint>
+  <joint
+    name="joint2"
+    type="continuous">
+    <origin      xyz="0.25 0.0 0.0"      rpy="0 0 0.54" />
+    <parent
+
+      link="link2" />
+    <child
+      link="link3" />
+<axis  xyz="0 0 1" />
+  </joint>
+  <joint
+    name="joint3"
+    type="continuous">
+    <origin      xyz="0.25 0.0 0.0"      rpy="0 0 0.54" />
+    <parent
+
+      link="link3" />
+    <child
+      link="link4" />
+<axis  xyz="0 0 1" />
+  </joint>
+  <joint
+    name="joint4"
+    type="continuous">
+    <origin      xyz="0.25 0.0 0.0"      rpy="0 0 0.54" />
+    <parent
+
+      link="link4" />
+    <child
+      link="link5" />
+<axis  xyz="0 0 1" />
+  </joint>
+  <joint
+    name="joint5"
+    type="continuous">
+    <origin      xyz="0.25 0.0 0.0"      rpy="0 0 0.54" />
+    <parent
+
+      link="link5" />
+    <child
+      link="link6" />
+<axis  xyz="0 0 1" />
+  </joint>
+  <joint
+    name="joint6"
+    type="continuous">
+    <origin      xyz="0.25 0.0 0.0"      rpy="0 0 0.54" />
+    <parent
+      link="link6" />
+    <child
+      link="link7" />
+    <axis  xyz="0 0 1" />
+  </joint>
+  <joint
+    name="joint7"
+    type="continuous">
+    <origin      xyz="0.25 0.0 0.0"      rpy="0 0 0.54" />
+    <parent
+      link="link7" />
+    <child
+      link="link8" />
+    <axis  xyz="0 0 1" />
+  </joint>
+  <joint
+    name="joint8"
+    type="continuous">
+    <origin      xyz="0.25 0.0 0.0"      rpy="0 0 0.54" />
+    <parent
+      link="link8" />
+    <child
+      link="link9" />
+    <axis  xyz="0 0 1" />
+  </joint>
+  <joint
+    name="joint9"
+    type="continuous">
+    <origin      xyz="0.25 0.0 0.0"      rpy="0 0 0.54" />
+    <parent
+      link="link9" />
+    <child
+      link="link10" />
+    <axis  xyz="0 0 1" />
+  </joint>
+ 
+  <!-- chain plugin -->
+  <gazebo>
+    <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
+      <robotNamespace>/bobcat</robotNamespace>
+      <link1>link1</link1>
+      <link2>link10<</link2>
+    </plugin>
+  </gazebo>
+  <gazebo reference="link1">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+    <gazebo reference="link2">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <gazebo reference="link3">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <gazebo reference="link4">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <gazebo reference="link5">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <gazebo reference="link6">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <gazebo reference="link7">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <gazebo reference="link8">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <gazebo reference="link9">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <gazebo reference="link10">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+</robot>
