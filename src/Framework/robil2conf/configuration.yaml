@@ -63,7 +63,6 @@ PP_sub_Location: 'LOC'
 PP_pub_LocalPath: '/PP/Path'
 
 #SMME
-SMME_sub_IEDLocation: 'IEDSIM'
 SMME_sub_AssignNavTask: 'OCU'
 SMME_sub_AssignManTask: 'OCU'
 SMME_sub_AssignMission: 'OCU'
