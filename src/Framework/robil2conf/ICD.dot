@@ -53,7 +53,7 @@ SensorIBEO4 [label="/SENSORS/IBEO/4 [types::Laser]"]
 
 {IEDSIM LLC OCU PER PP SMME SSM WPD WSM} -> diagnostic -> SSM
 
-IEDSIM -> IEDLocation -> {SMME OCU}
+IEDSIM -> IEDLocation -> OCU
 
 OCU -> CustomIED -> IEDSIM
 

@@ -88,7 +88,6 @@ DEF_SUB( PP, BladePosition, PER )
 DEF_SUB( PP, Map, PER )
 DEF_SUB( PP, Location, LOC )
 
-DEF_SUB( SMME, IEDLocation, IEDSIM )
 DEF_SUB( SMME, AssignNavTask, OCU )
 DEF_SUB( SMME, AssignManTask, OCU )
 DEF_SUB( SMME, AssignMission, OCU )
