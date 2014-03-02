@@ -92,19 +92,24 @@ protected:
 	//==================== External Types Data Structures Utils. ==
 protected:
 	inline
-	MissionID id(const Mission& mission){ return MissionID(); //TODO
+	MissionID id(const Mission& mission){
+		return mission.mission_id;
 	}
 	inline
-	TaskID id(const NavTask& task){ return TaskID(); //TODO
+	TaskID id(const NavTask& task){
+		return task.task_id;
 	}
 	inline
-	TaskID id(const ManTask& task){ return TaskID(); //TODO
+	TaskID id(const ManTask& task){
+		return task.task_id;
 	}
 	inline
-	size_t tasks_count( const Mission& m){ return 0; //TODO
+	size_t tasks_count( const Mission& m){
+		return m.tasks.size();
 	}
 	inline
-	TaskID task_id( const Mission& m){ return TaskID(); //TODO
+	TaskID task_id( const Mission& m, Index i){
+		return m.tasks[i].task_id;
 	}
 	//=============================================================
 

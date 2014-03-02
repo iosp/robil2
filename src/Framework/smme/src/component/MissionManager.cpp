@@ -102,7 +102,7 @@ MissionManager::TaskID MissionManager::task_id(MissionID mid, Index i) {
 	if (i >= tasks_count(mid))
 		throw TaskIndexFault();
 
-	return task_id(missions.at(mid));
+	return task_id(missions.at(mid), i);
 }
 
 MissionManager::StateID MissionManager::change_mission(const MissionID& mid) {
