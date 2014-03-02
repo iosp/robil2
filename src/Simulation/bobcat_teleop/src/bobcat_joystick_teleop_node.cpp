@@ -1,5 +1,6 @@
 #include "ros/ros.h"
-#include "std_msgs/Float64.h"
+#include "geometry_msgs/Twist.h"
+#include "geometry_msgs/Vector3.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,6 +17,8 @@ void joystickCallback(const sensor_msgs::Joy::ConstPtr & msg){
 
 int indexX=-1;
 int indexY=-1;
+int indexLift=-1;
+int indexTilt=-1;
 
 int main(int argc, char **argv)
 {
@@ -27,20 +30,28 @@ int main(int argc, char **argv)
 
   n.param("axis_linear",indexX,indexX);
   n.param("axis_angular",indexY,indexY);
+  n.param("axis_lift",indexLift,indexLift);
+  n.param("axis_tilt",indexTilt,indexTilt);
 
   ros::Subscriber joystick_sub=n.subscribe("/joy", 1, &joystickCallback);
-  ros::Publisher back_left_wheel_pub = n.advertise<std_msgs::Float64>("/bobcat/back_left_wheel_velocity_controller/command", 1000);
-  ros::Publisher back_right_wheel_pub = n.advertise<std_msgs::Float64>("/bobcat/back_right_wheel_velocity_controller/command", 1000);
-  ros::Publisher loader_pose_pub = n.advertise<std_msgs::Float64>("/bobcat/loader_position_controller/command", 1000);
-  ros::Publisher shaft_pose_pub = n.advertise<std_msgs::Float64>("/bobcat/shaft_position_controller/command", 1000);
-  ros::Publisher front_left_wheel_pub = n.advertise<std_msgs::Float64>("/bobcat/front_left_wheel_velocity_controller/command", 1000);
-  ros::Publisher front_right_wheel_pub = n.advertise<std_msgs::Float64>("/bobcat/front_right_wheel_velocity_controller/command", 1000);
-  ros::Publisher front_arm_pose_pub = n.advertise<std_msgs::Float64>("/bobcat/front_arm_position_controller/command", 1000);
-  ros::Publisher back_arm_pose_pub = n.advertise<std_msgs::Float64>("/bobcat/back_arm_position_controller/command", 1000);
 
+
+  ros::Publisher wheelsrate_pub = n.advertise<geometry_msgs::Twist>("/wheelsrate", 1000);
+  ros::Publisher armrate_pub = n.advertise<geometry_msgs::Vector3>("/armrate", 1000);
   ros::Rate rate(5);
 
 
+  double supporter_max=1.6;
+  double supporter_min=0;
+
+  double loader_max=1.0;
+  double loader_min=-1.0;
+
+  double supporter_val=0;
+  double loader_val=0;
+
+
+  geometry_msgs::Vector3 vectorMsg;
   while (ros::ok())
   {
     /**
@@ -50,30 +61,28 @@ int main(int argc, char **argv)
 
 
 
-	std_msgs::Float64 msg1;
-	std_msgs::Float64 msg2;
+	geometry_msgs::Twist twistMsg;
 
 
     if (lastmsg.header.frame_id.compare("ok")==0) {
 	lastmsg.header.frame_id="";
 
+		twistMsg.linear.x=50*lastmsg.axes[indexX];
+		twistMsg.angular.x=-50*lastmsg.axes[indexY];
+		supporter_val=supporter_val+0.05*lastmsg.axes[indexLift];
+		supporter_val=supporter_val>supporter_max?supporter_max:supporter_val;
+		supporter_val=supporter_val<supporter_min?supporter_min:supporter_val;
 
-    	msg1.data=10*lastmsg.axes[indexX]-10*lastmsg.axes[indexY];
-	msg2.data=10*lastmsg.axes[indexX]+10*lastmsg.axes[indexY];
+		loader_val=loader_val+0.05*lastmsg.axes[indexTilt];
+		loader_val=loader_val>loader_max?loader_max:loader_val;
+		loader_val=loader_val<loader_min?loader_min:loader_val;
 
-	if(msg1.data>10)
-		msg1.data=10;
-	if(msg2.data>10)
-		msg2.data=10;
-	if(msg1.data<-10)
-		msg1.data=-10;
-	if(msg2.data<-10)
-		msg2.data=-10;
-	front_left_wheel_pub.publish(msg1);
-    	front_right_wheel_pub.publish(msg2);
-    	back_left_wheel_pub.publish(msg1);
-    	back_right_wheel_pub.publish(msg2);
-	
+		vectorMsg.x=supporter_val;
+		vectorMsg.y=loader_val;
+
+		armrate_pub.publish(vectorMsg);
+		wheelsrate_pub.publish(twistMsg);
+
         ros::spinOnce();   
     }
     ros::spinOnce();

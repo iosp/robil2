@@ -1,5 +1,6 @@
 #include "ros/ros.h"
-#include "std_msgs/Float64.h"
+#include "geometry_msgs/Twist.h"
+#include "geometry_msgs/Vector3.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,14 +16,17 @@ int main(int argc, char **argv)
   //generate a node handler to handle all messages
   ros::NodeHandle n;
 
-  ros::Publisher back_left_wheel_pub = n.advertise<std_msgs::Float64>("/bobcat/back_left_wheel_velocity_controller/command", 1000);
-  ros::Publisher back_right_wheel_pub = n.advertise<std_msgs::Float64>("/bobcat/back_right_wheel_velocity_controller/command", 1000);
-  ros::Publisher loader_pose_pub = n.advertise<std_msgs::Float64>("/bobcat/loader_position_controller/command", 1000);
-  ros::Publisher shaft_pose_pub = n.advertise<std_msgs::Float64>("/bobcat/shaft_position_controller/command", 1000);
-  ros::Publisher front_left_wheel_pub = n.advertise<std_msgs::Float64>("/bobcat/front_left_wheel_velocity_controller/command", 1000);
-  ros::Publisher front_right_wheel_pub = n.advertise<std_msgs::Float64>("/bobcat/front_right_wheel_velocity_controller/command", 1000);
-  ros::Publisher front_arm_pose_pub = n.advertise<std_msgs::Float64>("/bobcat/front_arm_position_controller/command", 1000);
-  ros::Publisher back_arm_pose_pub = n.advertise<std_msgs::Float64>("/bobcat/back_arm_position_controller/command", 1000);
+  ros::Publisher wheelsrate_pub = n.advertise<geometry_msgs::Twist>("/wheelsrate", 1000);
+  ros::Publisher armrate_pub = n.advertise<geometry_msgs::Vector3>("/armrate", 1000);
+
+  double supporter_max=1.6;
+  double supporter_min=0;
+
+  double loader_max=1.0;
+  double loader_min=-1.0;
+
+  double supporter_val=0;
+  double loader_val=0;
 
   ros::Rate rate(5);
   //structs to hold the shell buffer
@@ -43,81 +47,68 @@ int main(int argc, char **argv)
   tcsetattr(STDOUT_FILENO,TCSAFLUSH,&stdio);
   fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);       // make the reads non-blocking
 
+
+  geometry_msgs::Vector3 vectorMsg;
+
   while (ros::ok() && c!='q')
   {
     /**
      * This is a message object. You stuff it with data, and then publish it.
      */
-	std_msgs::Float64 msg;
-	std_msgs::Float64 msg2;
+
+	geometry_msgs::Twist twistMsg;
 	while(read(STDIN_FILENO,&c,1)>0){}
 
 
     if (c!='q' && c!=' ') {
-    	msg.data=10;
-    	msg2.data=-10;
     	switch(c){
     		case 'i':
-    			front_left_wheel_pub.publish(msg);
-    			front_right_wheel_pub.publish(msg);
-    			back_left_wheel_pub.publish(msg);
-    			back_right_wheel_pub.publish(msg);
+    			twistMsg.linear.x=50;
+    			wheelsrate_pub.publish(twistMsg);
     			break;
     		case 'j':
-
-    			back_right_wheel_pub.publish(msg);
-    			front_right_wheel_pub.publish(msg);
-       			back_left_wheel_pub.publish(msg2);
-    			front_left_wheel_pub.publish(msg2);
+    			twistMsg.angular.x=-50;
+    			wheelsrate_pub.publish(twistMsg);
     			break;
     		case 'l':
-    			back_left_wheel_pub.publish(msg);
-    			front_left_wheel_pub.publish(msg);
-    			back_right_wheel_pub.publish(msg2);
-    			front_right_wheel_pub.publish(msg2);
+    			twistMsg.angular.x=50;
+    			wheelsrate_pub.publish(twistMsg);
     			break;
     		case 'k':
-    			front_left_wheel_pub.publish(msg2);
-    			front_right_wheel_pub.publish(msg2);
-    			back_left_wheel_pub.publish(msg2);
-    			back_right_wheel_pub.publish(msg2);
+    			twistMsg.linear.x=-50;
+    			wheelsrate_pub.publish(twistMsg);
     			break;
     		case 't':
-    			loader_pose_pub.publish(msg);
+    			supporter_val=supporter_val+0.05>supporter_max?supporter_val:supporter_val+0.05;
+    			vectorMsg.x=supporter_val;
+    			armrate_pub.publish(vectorMsg);
     			break;
     		case 'g':
-    			loader_pose_pub.publish(msg2);
+    			supporter_val=supporter_val-0.05<supporter_min?supporter_val:supporter_val-0.05;
+    			vectorMsg.x=supporter_val;
+    			armrate_pub.publish(vectorMsg);
     			break;
     		case 'r':
-    			shaft_pose_pub.publish(msg);
+    			loader_val=loader_val+0.05>loader_max?loader_val:loader_val+0.05;
+    			vectorMsg.y=loader_val;
+    			armrate_pub.publish(vectorMsg);
     			break;
     		case 'f':
-    			shaft_pose_pub.publish(msg2);
+    			loader_val=loader_val-0.05<loader_min?loader_val:loader_val-0.05;
+    			vectorMsg.y=loader_val;
+    			armrate_pub.publish(vectorMsg);
     			break;
-    		case 'e':
-    			front_arm_pose_pub.publish(msg);
+    		default:
     			break;
-    		case 'd':
-    			front_arm_pose_pub.publish(msg2);
-    			break;
-    		case 'w':
-    			back_arm_pose_pub.publish(msg);
-    			break;
-    		case 's':
-    			back_arm_pose_pub.publish(msg2);
-    			break;
-
     	}
         ros::spinOnce();
         rate.sleep();
         c=' ';
     }else{
     	  //stop all activity
-        msg.data=0;
-		back_left_wheel_pub.publish(msg);
-		back_right_wheel_pub.publish(msg);
-		front_left_wheel_pub.publish(msg);
-		front_right_wheel_pub.publish(msg);
+    	twistMsg.linear.x=0;
+    	twistMsg.angular.x=0;
+		wheelsrate_pub.publish(twistMsg);
 	    ros::spinOnce();
         rate.sleep();
     }
