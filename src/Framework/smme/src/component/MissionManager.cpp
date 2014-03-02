@@ -15,9 +15,10 @@ size_t MissionManager::tasks_count(MissionID mid) {
 	return tasks_count(missions.at(mid));
 }
 
-void MissionManager::assign(const Mission& mission) {
+MissionManager::MissionAcceptance MissionManager::assign(const Mission& mission) {
 	MissionID mid = id(mission);
 	missions[mid] = mission;
+	return createMissionAcceptedMessage(mission);
 }
 
 void MissionManager::assign(const ManTask& task) {
@@ -28,6 +29,10 @@ void MissionManager::assign(const ManTask& task) {
 void MissionManager::assign(const NavTask& task) {
 	TaskID tid = id(task);
 	nav_tasks[tid] = task;
+}
+
+MissionManager::MissionAcceptance MissionManager::createMissionAcceptedMessage(const Mission& mission){
+	return MissionAcceptance();
 }
 
 void MissionManager::start_task(const MissionID& mid) {

@@ -20,19 +20,24 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleAssignNavTask(const config::SMME::sub::AssignNavTask& msg)
 {
-	std::cout<< "SMME say:" << msg << std::endl;
+	//std::cout<< "SMME say:" << msg << std::endl;
+	_mission_manager->assign(msg);
 }
 	
 
 void ComponentMain::handleAssignManTask(const config::SMME::sub::AssignManTask& msg)
 {
-	std::cout<< "SMME say:" << msg << std::endl;
+	//std::cout<< "SMME say:" << msg << std::endl;
+	_mission_manager->assign(msg);
 }
 	
 
 void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& msg)
 {
-	std::cout<< "SMME say:" << msg << std::endl;
+	//std::cout<< "SMME say:" << msg << std::endl;
+	config::SMME::pub::MissionAcceptance acceptance =
+			_mission_manager->assign(msg);
+	publishMissionAcceptance(acceptance);
 }
 	
 

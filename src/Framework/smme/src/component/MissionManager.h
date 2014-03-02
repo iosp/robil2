@@ -22,12 +22,15 @@ using namespace std;
 using namespace boost;
 using namespace boost::posix_time;
 
+#include <ParameterTypes.h>
+
 class MissionManager{
 	//================== External Types ===========================
 public:
-	typedef struct{} Mission;
-	typedef struct{} NavTask;
-	typedef struct{} ManTask;
+	typedef config::SMME::sub::AssignMission Mission;
+	typedef config::SMME::sub::AssignNavTask NavTask;
+	typedef config::SMME::sub::AssignManTask ManTask;
+	typedef config::SMME::pub::MissionAcceptance MissionAcceptance;
 	typedef string MissionID;
 	typedef string TaskID;
 	typedef string StateID;
@@ -130,7 +133,8 @@ protected:
 public:
 	void assign(const NavTask& task);
 	void assign(const ManTask& task);
-	void assign(const Mission& mission);
+	MissionAcceptance assign(const Mission& mission);
+	MissionAcceptance createMissionAcceptedMessage(const Mission& mission);
 	//==============================================================
 
 	//==================== Mission and Tasks Interface =============
