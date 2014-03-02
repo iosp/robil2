@@ -7,8 +7,10 @@
 
 #include "MissionManager.h"
 
+#define SYNCHRONIZED boost::recursive_mutex::scoped_lock locker(mtx);
 
 size_t MissionManager::tasks_count(MissionID mid) {
+SYNCHRONIZED
 	if (!contains(missions, mid))
 		throw MissionIDFault();
 
@@ -16,17 +18,20 @@ size_t MissionManager::tasks_count(MissionID mid) {
 }
 
 MissionManager::MissionAcceptance MissionManager::assign(const Mission& mission) {
+SYNCHRONIZED
 	MissionID mid = id(mission);
 	missions[mid] = mission;
 	return createMissionAcceptedMessage(mission);
 }
 
 void MissionManager::assign(const ManTask& task) {
+SYNCHRONIZED
 	TaskID tid = id(task);
 	man_tasks[tid] = task;
 }
 
 void MissionManager::assign(const NavTask& task) {
+SYNCHRONIZED
 	TaskID tid = id(task);
 	nav_tasks[tid] = task;
 }
@@ -36,6 +41,7 @@ MissionManager::MissionAcceptance MissionManager::createMissionAcceptedMessage(c
 }
 
 void MissionManager::start_task(const MissionID& mid) {
+SYNCHRONIZED
 	if (!contains(missions_states, mid))
 		throw MissionIDFault();
 
@@ -44,6 +50,7 @@ void MissionManager::start_task(const MissionID& mid) {
 }
 
 void MissionManager::stop_task(const MissionID& mid) {
+SYNCHRONIZED
 	if (!contains(missions_states, mid))
 		throw MissionIDFault();
 
@@ -52,6 +59,7 @@ void MissionManager::stop_task(const MissionID& mid) {
 }
 
 void MissionManager::start_mission(const MissionID& mid) {
+SYNCHRONIZED
 	if (contains(missions_states, mid)) {
 		stop_task(mid);
 		missions_states.at(mid).tidx = 0;
@@ -63,6 +71,7 @@ void MissionManager::start_mission(const MissionID& mid) {
 }
 
 void MissionManager::stop_mission(const MissionID& mid) {
+SYNCHRONIZED
 	if (!contains(missions_states, mid))
 		throw MissionIDFault();
 
@@ -71,6 +80,7 @@ void MissionManager::stop_mission(const MissionID& mid) {
 }
 
 MissionManager::MissionState& MissionManager::get_current_mission() {
+SYNCHRONIZED
 	if (!contains(missions_states, current_mission))
 		throw CurrentMissionIDFault();
 
@@ -78,27 +88,33 @@ MissionManager::MissionState& MissionManager::get_current_mission() {
 }
 
 MissionManager::StateID MissionManager::mission_state() {
+SYNCHRONIZED
 	return get_current_mission().mstate;
 }
 
 void MissionManager::mission_state(StateID id) {
+SYNCHRONIZED
 	get_current_mission().mstate = id;
 }
 
 void MissionManager::task_state(StateID id) {
+SYNCHRONIZED
 	get_current_mission().tstate = id;
 }
 
 MissionManager::StateID MissionManager::task_state() {
+SYNCHRONIZED
 	return get_current_mission().tstate;
 }
 
 MissionManager::TaskID MissionManager::task_id() {
+SYNCHRONIZED
 	MissionState& m = get_current_mission();
 	return task_id(m.mid, m.tidx);
 }
 
 MissionManager::TaskID MissionManager::task_id(MissionID mid, Index i) {
+SYNCHRONIZED
 	if (i >= tasks_count(mid))
 		throw TaskIndexFault();
 
@@ -106,6 +122,7 @@ MissionManager::TaskID MissionManager::task_id(MissionID mid, Index i) {
 }
 
 MissionManager::StateID MissionManager::change_mission(const MissionID& mid) {
+SYNCHRONIZED
 	if (!contains(missions_states, current_mission))
 		throw CurrentMissionIDFault();
 
@@ -120,6 +137,7 @@ MissionManager::StateID MissionManager::change_mission(const MissionID& mid) {
 }
 
 bool MissionManager::next_task() {
+SYNCHRONIZED
 	MissionState& ms = get_current_mission();
 	stop_task(ms.mid);
 	if (ms.tidx >= tasks_count(ms.mid) - 1)
@@ -131,6 +149,7 @@ bool MissionManager::next_task() {
 }
 
 MissionManager::TASK_TYPE MissionManager::task_type() {
+SYNCHRONIZED
 	TaskID tid = task_id();
 	if (contains(nav_tasks, tid))
 		return TT_Navigation;
@@ -142,6 +161,7 @@ MissionManager::TASK_TYPE MissionManager::task_type() {
 }
 
 MissionManager::NavTask MissionManager::get_nav_task() {
+SYNCHRONIZED
 	if (TT_Navigation != task_type())
 		return NavTask();
 
@@ -150,6 +170,7 @@ MissionManager::NavTask MissionManager::get_nav_task() {
 }
 
 MissionManager::ManTask MissionManager::get_man_task() {
+SYNCHRONIZED
 	if (TT_Manipulator != task_type())
 		return ManTask();
 

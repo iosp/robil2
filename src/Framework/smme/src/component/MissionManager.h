@@ -87,6 +87,7 @@ protected:
 	Set_MissionStates missions_states;
 	MissionID current_mission;
 
+	boost::recursive_mutex mtx;
 	//=============================================================
 
 	//==================== External Types Data Structures Utils. ==
