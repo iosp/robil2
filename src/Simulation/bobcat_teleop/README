@@ -1,6 +1,6 @@
 bobcat teleoperation
 
-Currently only wheels operation is supported
+Currently wheels and arm operation is supported
 
 Joystick:
 
@@ -24,11 +24,11 @@ Keyboard:
 rosrun bobcat_teleop bobcat_keyboard_teleop_node
 
 movment keys are:
-	q (quit)      (up)
-			i
-	
-	(left)	j	k	l (right)
-		      (down)
+	q (quit) 	| 			   (up)  			|	(arm_up) 	|	(loader_out)
+				|				i				|		t		|		r
+				|								|		g		|		f
+				|	(left)	j	k	l (right)	|	(arm_down)	|	(loader_in)
+		     	|			 (down)				|				|
 
 
 3) enjoy
