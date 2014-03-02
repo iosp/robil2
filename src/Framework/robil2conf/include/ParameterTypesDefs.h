@@ -40,6 +40,7 @@
 #include <robil_msgs/AssignMission.h>
 #include <robil_msgs/AssignNavTask.h>
 #include <robil_msgs/MissionAcceptance.h>
+#include <sensor_msgs/JointState.h>
 
 #define DEF_PUB( COMP, TOPIC, TYPE )\
 	namespace config{ namespace COMP{ namespace pub{ typedef TYPE TOPIC; } } }
@@ -73,7 +74,7 @@ namespace types{
 	typedef diagnostic_msgs::DiagnosticStatus 			Diagnostic;
 	typedef robil_msgs::AssignManipulatorTask 			WSMData;
 	typedef sensor_msgs::JointState 					Joints;
-	typedef geometry_msgs::PoseStamped 					BladPose; //??? JointState?
+	typedef sensor_msgs::JointState 					BladPose; //??? JointState?
 }
 
 #define COMPONENT context.parameters<Params>().comp
