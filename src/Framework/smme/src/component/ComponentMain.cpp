@@ -8,6 +8,7 @@
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
 #include "MissionManager.h"
+#include "ComponentStates.h"
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
@@ -20,23 +21,27 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleAssignNavTask(const config::SMME::sub::AssignNavTask& msg)
 {
-	//std::cout<< "SMME say:" << msg << std::endl;
 	_mission_manager->assign(msg);
 }
 	
 
 void ComponentMain::handleAssignManTask(const config::SMME::sub::AssignManTask& msg)
 {
-	//std::cout<< "SMME say:" << msg << std::endl;
 	_mission_manager->assign(msg);
 }
 	
 
 void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& msg)
 {
-	//std::cout<< "SMME say:" << msg << std::endl;
 	config::SMME::pub::MissionAcceptance acceptance =
 			_mission_manager->assign(msg);
+	if(acceptance.status>0){
+		if(threads.size()==0){
+			threads.add_thread( startTaskThread(this) );
+			initMissionTasks();
+		}
+		threads.add_thread( startMissionThread(this, msg.mission_id) );
+	}
 	publishMissionAcceptance(acceptance);
 }
 	

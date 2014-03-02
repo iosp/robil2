@@ -141,6 +141,7 @@ public:
 	void assign(const ManTask& task);
 	MissionAcceptance assign(const Mission& mission);
 	MissionAcceptance createMissionAcceptedMessage(const Mission& mission);
+	void remove(const MissionID& mid);
 	//==============================================================
 
 	//==================== Mission and Tasks Interface =============
@@ -153,6 +154,7 @@ protected:
 
 	//==================== Current mission interface ==================
 public:
+	bool defined(const MissionID& mid){ return mid!=""; }
 	MissionState& get_current_mission();
 	StateID mission_state();
 	StateID task_state();

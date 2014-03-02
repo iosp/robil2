@@ -15,6 +15,7 @@ class MissionManager;
 class ComponentMain {
 	RosComm* _roscomm;
 	MissionManager* _mission_manager;
+	boost::thread_group threads;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -30,5 +31,7 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+
+	const MissionManager* mission_manager()const{return _mission_manager;}
 };
 #endif /* COMPONENTMAIN_H_ */

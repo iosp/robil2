@@ -79,6 +79,10 @@ SYNCHRONIZED
 	missions_states.erase(mid);
 }
 
+void MissionManager::remove_mission(const MissionID& mid){
+	stop_mission(mid);
+}
+
 MissionManager::MissionState& MissionManager::get_current_mission() {
 SYNCHRONIZED
 	if (!contains(missions_states, current_mission))
@@ -123,7 +127,11 @@ SYNCHRONIZED
 
 MissionManager::StateID MissionManager::change_mission(const MissionID& mid) {
 SYNCHRONIZED
-	if (!contains(missions_states, current_mission))
+	if (
+				!contains(missions_states, current_mission)
+			and
+				defined(current_mission)
+	)
 		throw CurrentMissionIDFault();
 
 	if (mid == current_mission)
