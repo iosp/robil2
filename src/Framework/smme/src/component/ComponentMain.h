@@ -11,8 +11,10 @@
 #include <ParameterTypes.h>
 #include <tf/tf.h>
 class RosComm;
+class MissionManager;
 class ComponentMain {
 	RosComm* _roscomm;
+	MissionManager* _mission_manager;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();

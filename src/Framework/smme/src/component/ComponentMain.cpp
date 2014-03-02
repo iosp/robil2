@@ -7,12 +7,15 @@
  */
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
+#include "MissionManager.h"
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
+	_mission_manager = new MissionManager();
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
+	if(_mission_manager) delete _mission_manager; _mission_manager=0;
 }
 
 void ComponentMain::handleAssignNavTask(const config::SMME::sub::AssignNavTask& msg)
