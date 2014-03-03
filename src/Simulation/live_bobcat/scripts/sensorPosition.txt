@@ -1,0 +1,34 @@
+    <include>
+      <uri>model://gpu_sick</uri>
+      <pose>-0.25 0.7 0.625 0 0 1.57</pose>
+      <name>left_sick</name>
+    </include>
+    <include>
+      <uri>model://gpu_sick</uri>
+      <pose>-0.25 -0.7 0.625 0 0 -1.57</pose>
+      <name>right_sick</name>
+    </include>
+    <joint name='left_sick_joint' type='revolute'>
+      <child>left_sick::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <joint name='right_sick_joint' type='revolute'>
+      <child>right_sick::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
