@@ -1,0 +1,222 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <model name="terrain">
+        <static>true</static>
+        <link name="terrain1">
+            <pose>0 0 0 0 0 0</pose>
+            <collision name="terrain1_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain1.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain1_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain1.dae</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>model://terrain/materials/scripts</uri>
+                        <uri>model://terrain/materials/textures</uri>
+                        <name>terrain/terrain1</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <link name="terrain2">
+            <pose>0 39.9871 0 0 0 0</pose>
+            <collision name="terrain2_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain2.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain2_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain2.dae</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>model://terrain/materials/scripts</uri>
+                        <uri>model://terrain/materials/textures</uri>
+                        <name>terrain/terrain2</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <link name="terrain3">
+            <pose>0 79.9742 0 0 0 0</pose>
+            <collision name="terrain3_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain3.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain3_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain3.dae</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>model://terrain/materials/scripts</uri>
+                        <uri>model://terrain/materials/textures</uri>
+                        <name>terrain/terrain3</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <link name="terrain4">
+            <pose>39.9871 0 0 0 0 0</pose>
+            <collision name="terrain4_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain4.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain4_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain4.dae</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>model://terrain/materials/scripts</uri>
+                        <uri>model://terrain/materials/textures</uri>
+                        <name>terrain/terrain4</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <link name="terrain5">
+            <pose>39.9871 39.9871 0 0 0 0</pose>
+            <collision name="terrain5_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain5.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain5_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain5.dae</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>model://terrain/materials/scripts</uri>
+                        <uri>model://terrain/materials/textures</uri>
+                        <name>terrain/terrain5</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <link name="terrain6">
+            <pose>39.9871 79.9742 0 0 0 0</pose>
+            <collision name="terrain6_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain6.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain6_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain6.dae</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>model://terrain/materials/scripts</uri>
+                        <uri>model://terrain/materials/textures</uri>
+                        <name>terrain/terrain6</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <link name="terrain7">
+            <pose>79.9742 0 0 0 0 0</pose>
+            <collision name="terrain7_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain7.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain7_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain7.dae</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>model://terrain/materials/scripts</uri>
+                        <uri>model://terrain/materials/textures</uri>
+                        <name>terrain/terrain7</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <link name="terrain8">
+            <pose>79.9742 39.9871 0 0 0 0</pose>
+            <collision name="terrain8_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain8.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain8_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain8.dae</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>model://terrain/materials/scripts</uri>
+                        <uri>model://terrain/materials/textures</uri>
+                        <name>terrain/terrain8</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+        <link name="terrain9">
+            <pose>79.9742 79.9742 0 0 0 0</pose>
+            <collision name="terrain9_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain9.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain9_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain/meshes/terrain9.dae</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>model://terrain/materials/scripts</uri>
+                        <uri>model://terrain/materials/textures</uri>
+                        <name>terrain/terrain9</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+    </model>
+</sdf>

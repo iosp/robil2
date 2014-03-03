@@ -58,11 +58,13 @@ fi
 #generate basic sdf file
 $($gazebo_prefix/bin/gzsdf "print" $bobcat_dir/urdf/BOBCAT.URDF 1> $HOME/.gazebo/models/bobcat/modelTemp.sdf 2>/dev/null)
 
-#add the sensors to the model
+
+
+#add the sensors and joints to the model
 while read line
 do
     if [[ $line == *"</model>"* ]]; then
-	$(cat $live_bobcat_dir/utils/models/sensorPosition.txt >> $HOME/.gazebo/models/bobcat/model.sdf)
+	$(cat $live_bobcat_dir/scripts/sensorPosition.txt >> $HOME/.gazebo/models/bobcat/model.sdf)
     fi
 	echo $line >> $HOME/.gazebo/models/bobcat/model.sdf
 done < $HOME/.gazebo/models/bobcat/modelTemp.sdf
@@ -93,14 +95,8 @@ if [ ! -d $HOME/.gazebo/worlds ]; then
 	$(mkdir -p $HOME/.gazebo/worlds)
 fi
 
-$(cp -u $live_bobcat_dir/utils/worlds/* $HOME/.gazebo/worlds)
+$(cp -u -r $live_bobcat_dir/utils/models/* $HOME/.gazebo/models)
 
-#create the textures dir if it doesn't exist
-if [ ! -d $HOME/.gazebo/media/materials/textures ]; then
-	$(mkdir -p $HOME/.gazebo/media/materials/textures )
-fi
-
-$(cp -u $live_bobcat_dir/utils/textures/* $HOME/.gazebo/media/materials/textures)
 
 
 printf "done\n"
