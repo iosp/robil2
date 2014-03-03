@@ -27,6 +27,7 @@ add_library(smme_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
   src/component/MissionStates.cpp
+  src/component/TaskStates.cpp
   src/component/MissionManager.cpp
 )
 add_executable(smme_node src/main.cpp)

@@ -79,7 +79,7 @@ SYNCHRONIZED
 	missions_states.erase(mid);
 }
 
-void MissionManager::remove_mission(const MissionID& mid){
+void MissionManager::remove(const MissionID& mid){
 	stop_mission(mid);
 }
 

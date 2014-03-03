@@ -131,8 +131,7 @@ FSM(Mission)
 
 TaskResult state_MissionUnloaded(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->remove_mission(mid);
-
+	comp->mission_manager()->remove(mid);
 	events.raiseEvent(Event("Stopped",context));
 	return TaskResult::SUCCESS();
 }

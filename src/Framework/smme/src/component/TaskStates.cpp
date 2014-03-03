@@ -8,6 +8,7 @@
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
+#include "MissionManager.h"
 
 class TaskParams: public CallContextParameters{
 public:
@@ -20,7 +21,6 @@ public:
 	std::string str()const{return "";}
 };
 
-bool MissionLoaded;
 FSM(TaskActive)
 {
 	FSM_STATES
@@ -96,40 +96,46 @@ FSM(Task)
 			FSM_CALL_FSM(TaskActive)
 			FSM_TRANSITIONS
 			{
+				FSM_ON_EVENT("/StopTask", FSM_NEXT(TaskPending));
+				FSM_ON_EVENT("/RestartTask", FSM_NEXT(TaskActive));
 			}
 		}
 	}
 	FSM_END
 }
 
-
-TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
-	//diagnostic_msgs::DiagnosticStatus status;
-	//context.parameters<MissionParams>.comp->publishDiagnostic(status);
-	return TaskResult::SUCCESS();
-}
+#define PARAMS \
+		ComponentMain* comp = context.parameters<TaskParams>().comp;
 
 TaskResult state_TaskPending(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PARAMS
+	comp->mission_manager()->task_state("pending");
 	return TaskResult::SUCCESS();
 }
 
-
 TaskResult state_TaskSpooling(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PARAMS
+	comp->mission_manager()->task_state("spooling");
 	return TaskResult::SUCCESS();
 }
 TaskResult state_TaskPaused(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PARAMS
+	comp->mission_manager()->task_state("paused");
 	return TaskResult::SUCCESS();
 }
 TaskResult state_TaskAborted(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PARAMS
+	comp->mission_manager()->task_state("aborted");
 	return TaskResult::SUCCESS();
 }
 TaskResult state_TaskFinished(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PARAMS
+	comp->mission_manager()->task_state("finished");
+	if( comp->mission_manager()->next_task() ){
+		events.raiseEvent(Event("/RestartTask",context));
+	}else{
+		events.raiseEvent(Event("/StopTask",context));
+	}
 	return TaskResult::SUCCESS();
 }
 
@@ -141,15 +147,14 @@ void startTask(ComponentMain* component){
 	CallContext context;
 	context.createParameters(new TaskParams(component));
 	//events.async_spin();
-	LocalTasks::registration("OFF",state_OFF);
-	LocalTasks::registration("TaskPending",state_MissionPending);
-	LocalTasks::registration("TaskSpooling",state_MissionSpooling);
-	LocalTasks::registration("TaskPaused",state_MissionPaused);
-	LocalTasks::registration("TaskAborted",state_MissionAborted);
-	LocalTasks::registration("TaskFinished",state_MissionFinished);
+	LocalTasks::registration("TaskPending",state_TaskPending);
+	LocalTasks::registration("TaskSpooling",state_TaskSpooling);
+	LocalTasks::registration("TaskPaused",state_TaskPaused);
+	LocalTasks::registration("TaskAborted",state_TaskAborted);
+	LocalTasks::registration("TaskFinished",state_TaskFinished);
 
 
 	ROS_INFO("Starting smme (Task)...");
-	FsmMission(&context, &events);
+	FsmTask(&context, &events);
 
 }
