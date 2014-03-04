@@ -5,7 +5,7 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
 #include "gazebo/sensors/SensorTypes.hh"
-#include "gazebo/sensors/GpsSensor.hh"
+#include "GpsSensor.hh"
 #include "gazebo/sensors/sensors.hh"
 #include "gazebo/gazebo.hh"
 #include <ros/ros.h>
