@@ -5,6 +5,8 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp rospy
     robil2conf
     decision_making decision_making_parser
+    
+    geometry_msgs nav_msgs tf
 )
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(

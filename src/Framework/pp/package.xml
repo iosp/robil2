@@ -14,6 +14,16 @@
 	<run_depend>robil2conf</run_depend>
 	<run_depend>decision_making</run_depend>
 	<run_depend>decision_making_parser</run_depend>
+
+	<!-- for move_base -->	
+	<build_depend>geometry_msgs</build_depend>
+	<build_depend>nav_msgs</build_depend>
+	<build_depend>tf</build_depend>
+	<run_depend>geometry_msgs</run_depend>
+	<run_depend>nav_msgs</run_depend>
+	<run_depend>tf</run_depend>
+	
+	
   <export>
   </export>
 </package>
