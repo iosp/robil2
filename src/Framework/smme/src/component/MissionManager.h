@@ -78,9 +78,10 @@ public:
 
 
 	//================== Members ==================================
-protected:
+public:
 	Configuration conf;
 
+protected:
 	Set_NavTasks nav_tasks;
 	Set_ManTasks man_tasks;
 	Set_Missions missions;

@@ -9,6 +9,8 @@ using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
 #include "MissionManager.h"
+#include "Types.h"
+
 
 class TaskParams: public CallContextParameters{
 public:
@@ -106,35 +108,45 @@ FSM(Task)
 
 #define PARAMS \
 		ComponentMain* comp = context.parameters<TaskParams>().comp;
+#define MM comp->mission_manager()
 
 TaskResult state_TaskPending(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->task_state("pending");
+	MM->task_state("pending");
 	return TaskResult::SUCCESS();
 }
 
 TaskResult state_TaskSpooling(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->task_state("spooling");
+	MM->task_state("spooling");
+	if(MM->task_type()==MissionManager::TT_Navigation){
+		MissionManager::NavTask task = MM->get_nav_task();
+		config::SMME::pub::GlobalPath path = extract_path(task);
+		comp->publishGlobalPath(path);
+	}else{
+		MissionManager::ManTask task = MM->get_man_task();
+		comp->publishWorkSeqData(task);
+	}
 	return TaskResult::SUCCESS();
 }
 TaskResult state_TaskPaused(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->task_state("paused");
+	MM->task_state("paused");
 	return TaskResult::SUCCESS();
 }
 TaskResult state_TaskAborted(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->task_state("aborted");
+	MM->task_state("aborted");
+	events.raiseEvent(Event("/AbortMission",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_TaskFinished(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->task_state("finished");
-	if( comp->mission_manager()->next_task() ){
+	MM->task_state("finished");
+	if( MM->next_task() ){
 		events.raiseEvent(Event("/RestartTask",context));
 	}else{
-		events.raiseEvent(Event("/StopTask",context));
+		events.raiseEvent(Event("/CompleteMission",context));
 	}
 	return TaskResult::SUCCESS();
 }

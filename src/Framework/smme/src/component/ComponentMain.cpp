@@ -13,6 +13,9 @@ ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
 	_mission_manager = new MissionManager();
+	_mission_manager->conf.start_mission_state="_started";
+	_mission_manager->conf.start_task_state="_started";
+	_mission_manager->conf.stop_task_state="_stopped";
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;

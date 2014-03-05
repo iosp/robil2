@@ -23,7 +23,6 @@ public:
 };
 
 
-bool MissionLoaded;
 FSM(MissionActive)
 {
 	FSM_STATES
@@ -53,6 +52,8 @@ FSM(MissionActive)
 			{
 				FSM_ON_EVENT("/CompleteMission", FSM_NEXT(MissionFinished));
 				FSM_ON_EVENT("/AbortMission", FSM_NEXT(MissionAborted));
+
+				FSM_ON_EVENT("/ResumeMission", FSM_RAISE("/RestartTask"));
 				FSM_ON_EVENT("/ResumeMission", FSM_NEXT(MissionSpooling));
 			}
 		}
@@ -103,8 +104,6 @@ FSM(Mission)
 				//NOTE: It's not clear for transition from MissionPending to NoMissionLoaded
 				FSM_ON_EVENT("/DeleteMission", FSM_NEXT(MissionUnloaded));
 				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
-				FSM_ON_CONDITION(not MissionLoaded, FSM_NEXT(MissionUnloaded));
-
 				FSM_ON_EVENT("/StartMission", FSM_NEXT(MissionActive));
 			}
 		}
@@ -115,9 +114,8 @@ FSM(Mission)
 			{
 				//NOTE: It's not clear for transition from MissionActive to NoMissionLoaded
 				FSM_ON_EVENT("/DeleteMission", FSM_NEXT(MissionUnloaded));
-				FSM_ON_EVENT("/Stendby", FSM_NEXT(MissionUnloaded));
+				FSM_ON_EVENT("/Standby", FSM_NEXT(MissionUnloaded));
 				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
-				FSM_ON_CONDITION(not MissionLoaded, FSM_NEXT(MissionUnloaded));
 			}
 		}
 
@@ -128,38 +126,42 @@ FSM(Mission)
 #define PARAMS \
 		std::string mid = context.parameters<MissionParams>().mission_id;\
 		ComponentMain* comp = context.parameters<MissionParams>().comp;
+#define MM comp->mission_manager()
 
 TaskResult state_MissionUnloaded(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->remove(mid);
+	MM->remove(mid);
 	events.raiseEvent(Event("Stopped",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_MissionPending(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->mission_state("pending");
+	MM->mission_state("pending");
 	return TaskResult::SUCCESS();
 }
 
 TaskResult state_MissionSpooling(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->change_mission(mid);
-	comp->mission_manager()->mission_state("spooling");
+	MM->change_mission(mid);
+	MM->mission_state("spooling");
+	events.raiseEvent(Event("/StartTask",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_MissionPaused(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->mission_state("paused");
+	MM->mission_state("paused");
 	return TaskResult::SUCCESS();
 }
 TaskResult state_MissionAborted(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->mission_state("aborted");
+	MM->mission_state("aborted");
+	events.raiseEvent(Event("/StopTask",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_MissionFinished(string id, const CallContext& context, EventQueue& events){
 	PARAMS
-	comp->mission_manager()->mission_state("Finished");
+	MM->mission_state("finished");
+	events.raiseEvent(Event("/StopTask",context));
 	return TaskResult::SUCCESS();
 }
 

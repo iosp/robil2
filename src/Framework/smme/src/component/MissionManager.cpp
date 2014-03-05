@@ -64,10 +64,11 @@ SYNCHRONIZED
 		stop_task(mid);
 		missions_states.at(mid).tidx = 0;
 		start_task(mid);
+	}else{
+		add(missions_states, mid, MissionState(mid));
+		missions_states.at(mid).mstate = conf.start_mission_state;
+		start_task(mid);
 	}
-	add(missions_states, mid, MissionState(mid));
-	missions_states.at(mid).mstate = conf.start_mission_state;
-	start_task(mid);
 }
 
 void MissionManager::stop_mission(const MissionID& mid) {
@@ -128,9 +129,9 @@ SYNCHRONIZED
 MissionManager::StateID MissionManager::change_mission(const MissionID& mid) {
 SYNCHRONIZED
 	if (
-				!contains(missions_states, current_mission)
-			and
 				defined(current_mission)
+			and
+				!contains(missions_states, current_mission)
 	)
 		throw CurrentMissionIDFault();
 
@@ -140,6 +141,7 @@ SYNCHRONIZED
 	if (!contains(missions_states, mid)) {
 		start_mission(mid);
 	}
+
 	current_mission = mid;
 	return mission_state();
 }
