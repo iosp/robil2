@@ -20,6 +20,7 @@
 #include "gazebo/gazebo.hh"
 #include "gazebo/physics/physics.hh"
 #include <ros/ros.h>
+#include <tf/transform_broadcaster.h>
 #include <cmath>
 
 
@@ -96,6 +97,7 @@ namespace gazebo
       PublishMessage(rangesT1, rangesT2, rangesB1, rangesB2);
       
      _lastTime = simTime;
+     BroadcastTF();
     }
     
     inline double DegreesToRad(double degrees)
@@ -103,6 +105,16 @@ namespace gazebo
       return (degrees/(180/PI));
     }
     
+    void BroadcastTF()
+    {
+      static tf::TransformBroadcaster br; 
+      tf::Transform transform; 
+      math::Pose pose= _sensorT1->GetPose(); 
+      transform.setOrigin( tf::Vector3(pose.pos.x, pose.pos.y, pose.pos.z) ); 
+      transform.setRotation( tf::Quaternion(pose.rot.x,pose.rot.y,pose.rot.z,pose.rot.w) ); 
+      br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "laser_frame")); 
+      
+    }
     
     void PublishMessage(vector<double>& rangesT1, vector<double>& rangesT2, vector<double>& rangesB1, vector<double>& rangesB2)
     {
