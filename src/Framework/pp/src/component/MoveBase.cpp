@@ -6,6 +6,8 @@
  */
 
 #include "MoveBase.h"
+#include <Geometry.h>
+
 
 MoveBase::MoveBase()
 	:gp_defined(false),gl_defined(false)
@@ -33,37 +35,49 @@ void MoveBase::on_path(const config::PP::sub::GlobalPath& goal_path){
 }
 
 namespace{
-	double calcTriangle_deg(const geometry_msgs::Pose& a,const geometry_msgs::Pose& b,const geometry_msgs::Pose& c){
 
-		return 0;
+	double calcTriangle_deg(
+			const geometry_msgs::Pose& A,
+			const geometry_msgs::Pose& C,
+			const geometry_msgs::Pose& B
+	){
+		btVector3 vA = toVector(A);
+		btVector3 vB = toVector(B);
+		btVector3 vC = toVector(C);
+		double a = vC.distance(vB);//CB
+		double c = vA.distance(vB);//AB
+		double b = vA.distance(vC);//AC
+		double gamma;// \_ ACB
+		gamma = acos( (a*a + b*b - c*c)/(2*a*b) );
+		return gamma;
 	}
-	geometry_msgs::PoseStamped search_waypoint(nav_msgs::Path& path, geometry_msgs::PoseStamped& pos){
-		if(path.poses.size()==0) return pos;
-		if(path.poses.size()==1) return path.poses[0];
-		geometry_msgs::Pose& c = pos.pose;
-		//FIRST_POINT
+	geometry_msgs::PoseStamped search_waypoint(const nav_msgs::Path& path, const geometry_msgs::PoseWithCovarianceStamped& pos){
+		if(path.poses.size()==0) return getPoseStamped( pos );
+		if(path.poses.size()==1) return getPoseStamped( path.poses[0] );
+		const geometry_msgs::Pose& c = getPose( pos );
+		//FIRST POINT
 		{
-			geometry_msgs::Pose& b = path.poses[0].pose;
-			geometry_msgs::Pose& d = path.poses[1].pose;
+			const geometry_msgs::Pose& b = getPose( path.poses[0] );
+			const geometry_msgs::Pose& d = getPose( path.poses[1] );
 			double angle = calcTriangle_deg(d,b,c);
-			if(angle>90) return path.poses[0];
+			if(angle>90) return getPoseStamped( path.poses[0] );
 		}
-		//OTHERS
+		//OTHERS POINTS
 		for(size_t i=1;i<path.poses.size();i++){
-			 geometry_msgs::Pose& a = path.poses[i-1].pose;
-			 geometry_msgs::Pose& b = path.poses[i].pose;
-			 double angle = calcTriangle_deg(a,b,c);
-			 if(angle<90) return path.poses[i].pose;
+			const geometry_msgs::Pose& a = getPose( path.poses[i-1] );
+			const geometry_msgs::Pose& b = getPose( path.poses[i] );
+			double angle = calcTriangle_deg(a,b,c);
+			if(angle<90) return getPoseStamped( path.poses[i] );
 		}
 		//PATH IS FINISHED
-		return pos;
+		return getPoseStamped( pos );
 		//return path.poses[path.poses.size()-1];
 	}
 }
 
 void MoveBase::calculate_goal(){
 	geometry_msgs::PoseStamped goal;
-	goal = search_waypoint(gotten_path, gotten_location);
+	goal = search_waypoint(gotten_path.waypoints, gotten_location);
 	on_goal(goal);
 }
 
