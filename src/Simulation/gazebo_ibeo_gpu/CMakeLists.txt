@@ -28,19 +28,20 @@ target_link_libraries(ibeo_gpu ${GAZEBO_libraries} ${catkin_LIBRARIES})
  )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+ generate_messages(
+  DEPENDENCIES
+   std_msgs  # Or other packages containing msgs
+ )
 
-generate_messages()
+#generate_messages()
 
 catkin_package(
   DEPENDS 
     roscpp 
     tf
     gazebo_ros 
-   CATKIN_DEPENDS message_runtime
+    std_msgs
+   CATKIN_DEPENDS #message_runtime
 )
 
 install(

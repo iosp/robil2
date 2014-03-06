@@ -24,4 +24,5 @@
 
 
   <node name="RateToEffort" pkg="rate2effort" type="rate2effort" cwd="node" output="screen" />
+  
 </launch>

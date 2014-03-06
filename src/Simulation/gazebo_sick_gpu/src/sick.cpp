@@ -109,11 +109,11 @@ namespace gazebo
 	//populate the LaserScan message
 	sensor_msgs::LaserScan scan;
 	scan.header.stamp = scan_time;
-	scan.header.frame_id = "laser_frame";
+	scan.header.frame_id = this->name_.c_str();
 	scan.angle_min = DegreesToRad(parentSensor->GetAngleMin().Degree());
 	scan.angle_max = DegreesToRad(parentSensor->GetAngleMax().Degree());
 	scan.angle_increment = 3.14 / (double)ranges.size();
-	scan.time_increment = 1000/double(SENSOR_FREQUENCY);
+	scan.time_increment = 1/double(SENSOR_FREQUENCY)/700;
 	scan.range_min = parentSensor->GetRangeMin();
 	scan.range_max = parentSensor->GetRangeMax();
 
