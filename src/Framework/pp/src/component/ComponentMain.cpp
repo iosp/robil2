@@ -7,17 +7,20 @@
  */
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
+#include "MoveBase.h"
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
+	_move_base = new MoveBase();
 }
 ComponentMain::~ComponentMain() {
+	if(_move_base) delete _move_base; _move_base=0;
 	if(_roscomm) delete _roscomm; _roscomm=0;
 }
 
 void ComponentMain::handleGlobalPath(const config::PP::sub::GlobalPath& msg)
 {
-	std::cout<< "PP say:" << msg << std::endl;
+	_move_base -> on_path(msg);
 }
 	
 
@@ -29,13 +32,13 @@ void ComponentMain::handleBladePosition(const config::PP::sub::BladePosition& ms
 
 void ComponentMain::handleMap(const config::PP::sub::Map& msg)
 {
-	std::cout<< "PP say:" << msg << std::endl;
+	_move_base -> on_map(msg);
 }
 	
 
 void ComponentMain::handleLocation(const config::PP::sub::Location& msg)
 {
-	std::cout<< "PP say:" << msg << std::endl;
+	_move_base -> on_position_update(msg);
 }
 	
 

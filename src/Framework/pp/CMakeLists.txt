@@ -33,6 +33,11 @@ add_library(pp_compMain
 add_executable(pp_node src/main.cpp)
 target_link_libraries(pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(pp_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(pp_node pp_compMain pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
-)
+target_link_libraries(pp_node pp_compMain pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+
+add_executable(pp_test src/tester/Tester.cpp)
+target_link_libraries(pp_test ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+
 
