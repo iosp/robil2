@@ -168,7 +168,7 @@ namespace gazebo
     ros::NodeHandle		_nodeHandle;
     ros::Publisher 		_publisher;
     
-    sensors::GpsSensorPtr 	_gps;
+    //sensors::GpsSensorPtr 	_gps;
     sensors::ImuSensorPtr 	_imu;
     
     double _start_latitude, _start_longitude;
