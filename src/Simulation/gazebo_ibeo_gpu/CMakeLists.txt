@@ -42,8 +42,8 @@ catkin_package(
     gazebo_ros 
    CATKIN_DEPENDS message_runtime
 )
+
 install(
   DIRECTORY models/
-  DESTINATION $ENV{HOME}/.gazebo/models/gpu_ibeo
+  DESTINATION $ENV{HOME}/.gazebo/models/IBEO
 )
-

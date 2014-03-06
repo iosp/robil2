@@ -5,8 +5,6 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
 #include "gazebo/sensors/SensorTypes.hh"
-//#include "gazebo/sensors/GpsSensor.hh"
-//#include "GpsSensor.hh"
 #include "gazebo/sensors/sensors.hh"
 #include "gazebo/gazebo.hh"
 #include <ros/ros.h>
@@ -42,7 +40,7 @@ using std::stringstream;
 
 namespace gazebo
 {   
-  class GPS : public ModelPlugin
+  class GPS_INS : public ModelPlugin
   {
 
   public:
@@ -50,6 +48,7 @@ namespace gazebo
     {
       // Store the pointer to the model
       this->_model = _parent;
+      //load config from sdf
       if(_sdf->HasElement("start_latitude"))
       {
 	sdf::ElementPtr elem = _sdf->GetElement("start_latitude");
@@ -58,6 +57,7 @@ namespace gazebo
 	_start_latitude = val;
 	//cout << "Value: " << str << endl;
       }
+      else _start_latitude = 0;
       if(_sdf->HasElement("start_longitude"))
       {
 	sdf::ElementPtr elem = _sdf->GetElement("start_longitude");
@@ -66,38 +66,60 @@ namespace gazebo
 	_start_longitude = val;
 	//cout << "Value: " << str << endl;
       }
+      else _start_longitude = 0;
+      if(_sdf->HasElement("frequency"))
+      {
+	sdf::ElementPtr elem = _sdf->GetElement("frequency");
+	int val;
+	elem->GetValue()->Get(val);
+	_frequency = val;
+	//cout << "Value: " << str << endl;
+      }
+      else _frequency = 1;
+      _lastTime = 0;
       physics::PhysicsEnginePtr engine =  _model->GetWorld()->GetPhysicsEngine();
       
-      sensors::SensorPtr sensorGPS;
+      //sensors::SensorPtr sensorGPS;
       sensors::SensorPtr sensorIMU;
       
-      sensorGPS = sensors::SensorManager::Instance()->GetSensor(SENSOR_GPS_NAME); 
+      //sensorGPS = sensors::SensorManager::Instance()->GetSensor(SENSOR_GPS_NAME); 
       sensorIMU = sensors::SensorManager::Instance()->GetSensor(SENSOR_IMU_NAME); 
       
-      if(!sensorGPS || !sensorIMU)
+      if(!sensorIMU)
       {
 	string error = "GPS/INS Sensor Model \"" + _parent->GetName() + "\" failed to locate some of his sub-sensors.\n(Do the names in the .sdf match the names in the .cpp?)\n";
 	gzthrow(error);
 	return;
       }
       
-      _gps = boost::dynamic_pointer_cast<sensors::GpsSensor>(sensorGPS);
+      //_gps = boost::dynamic_pointer_cast<sensors::GpsSensor>(sensorGPS);
       _imu = boost::dynamic_pointer_cast<sensors::ImuSensor>(sensorIMU);
       
       // Listen to the update event. This event is broadcast every
       // simulation iteration.
-      this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&GPS::OnUpdate, this, _1));
+      this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&GPS_INS::OnUpdate, this, _1));
       _publisher = _nodeHandle.advertise<gazebo_gps_ins::GPS_INS>(TOPIC_NAME, 1000);
 
     }
 
     // Called by the world update start event
-    void OnUpdate(const common::UpdateInfo & /*_info*/)
+    void OnUpdate(const common::UpdateInfo & _info)
     {
+      //manage frequency
+      common::Time simTime = _info.simTime;
+      if(simTime.Double()-_lastTime.Double() < 1.0/_frequency) return;
+      _lastTime = simTime;
+      
       gazebo_gps_ins::GPS_INS msg;
-      msg.altitude = _gps->GetAltitude();
-      msg.longitude = _gps->GetLongitude().Degree()+_start_longitude;
-      msg.latitude = _gps->GetLatitude().Degree()+_start_latitude;
+      math::Pose pose=_model->GetWorldPose();
+      gazebo::math::Vector3 pos = pose.pos;
+      msg.altitude = pos.z;
+      msg.longitude = _start_longitude + pos.y/DEGREE_TO_M;
+      msg.latitude = _start_latitude + pos.x/DEGREE_TO_M;
+      
+      //msg.altitude = _gps->GetAltitude();
+      //msg.longitude = _gps->GetLongitude().Degree()+_start_longitude;
+      //msg.latitude = _gps->GetLatitude().Degree()+_start_latitude;
       
       
       msg.linearAcceleration.resize(3);
@@ -150,8 +172,10 @@ namespace gazebo
     sensors::ImuSensorPtr 	_imu;
     
     double _start_latitude, _start_longitude;
+    int  _frequency;
+    common::Time		_lastTime;
   };
 
 // Register this plugin with the simulator
-GZ_REGISTER_MODEL_PLUGIN(GPS)
+GZ_REGISTER_MODEL_PLUGIN(GPS_INS)
 }
