@@ -126,6 +126,7 @@ namespace gazebo
        scan.angle_min_b = _sensorB1->GetAngleMin().Radian();
        scan.angle_max_b = _sensorB1->GetAngleMax().Radian();
        scan.angle_increment = 0.0043; //according to datasheet
+       scan.time_increment = 1.0/_updateRate/200; //YUVAL_SHEKER
        scan.angle_t1 = 0.0014;
        scan.angle_t2 = 0.0028;
        scan.angle_b1 = -0.0014; //according to datasheet

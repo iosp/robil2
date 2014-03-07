@@ -39,12 +39,12 @@ catkin_package(
   DEPENDS 
     roscpp 
     tf
-    gazebo_ros 
-   # CATKIN_DEPENDS message_runtime
+    gazebo_ros
+    CATKIN_DEPENDS message_runtime
 )
 
 install(
   DIRECTORY models/
-  DESTINATION $ENV{HOME}/.gazebo/models/FLEA3
+  DESTINATION $ENV{HOME}/.gazebo/models
 )
 

@@ -4,7 +4,7 @@
 # array), please find or create a different message, since applications
 # will make fairly laser-specific assumptions about this data
 
-#Header header            # timestamp in the header is the acquisition time of 
+Header header            # timestamp in the header is the acquisition time of 
                          # the first ray in the scan.
                          #
                          # in frame frame_id, angles are measured around 
@@ -22,7 +22,7 @@ float32 angle_t2	  # vertical angle of top plane 2
 float32 angle_b1	  # vertical angle of bottom plane 1
 float32 angle_b2	  # vertical angle of bottom plane 2
 
-#float32 time_increment   # time between measurements [seconds] - if your scanner
+float32 time_increment   # time between measurements [seconds] - if your scanner
                          # is moving, this will be used in interpolating position
                          # of 3d points
 float32 scan_time        # time between scans [seconds]

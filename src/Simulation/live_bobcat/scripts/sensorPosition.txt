@@ -3,11 +3,40 @@
       <pose>-0.25 0.7 0.625 0 0 1.57</pose>
       <name>left_sick</name>
     </include>
+
     <include>
       <uri>model://gpu_sick</uri>
       <pose>-0.25 -0.7 0.625 0 0 -1.57</pose>
       <name>right_sick</name>
     </include>
+
+    <include>
+      <uri>model://GPS_INS</uri>
+      <pose>0 0 0.5 0 0 0</pose>
+      <name>gps_ins</name>
+    </include>
+
+    <include>
+      <uri>model://gpu_ibeo</uri>
+      <pose>-0.25 0 1.80 0 0.3 0</pose>
+      <name>ibeo</name>
+    </include>
+    
+    <include>
+      <uri>model://FLEA3_L</uri>
+      <pose>-0.25 0.3 1.875 0 0.11 0</pose>
+      <name>left_flea3</name>
+    </include>
+
+
+
+    <include>
+      <uri>model://FLEA3_R</uri>
+      <pose>-0.25 -0.3 1.875 0 0.11 0</pose>
+      <name>right_flea3</name>
+    </include>
+
+
     <joint name='left_sick_joint' type='revolute'>
       <child>left_sick::link</child>
       <parent>body</parent>
@@ -32,3 +61,83 @@
         <dynamics/>
       </axis>
     </joint>
+    <joint name='gps_ins_joint' type='revolute'>
+      <child>gps_ins::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <joint name='ibeo' type='revolute'>
+      <child>ibeo::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+    <joint name='left_flea3' type='revolute'>
+      <child>left_flea3::camera_link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+    <joint name='right_flea3' type='revolute'>
+      <child>right_flea3::camera_link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+
+<plugin name='TFpublish' filename='libTFpublisher.so'>
+
+<tf1frame>left_sick</tf1frame>
+<tf1parent>body</tf1parent>
+<tf1pose>-0.25 0.7 0.625 0 0 1.57</tf1pose>
+
+<tf2frame>right_sick</tf2frame>
+<tf2parent>body</tf2parent>
+<tf2pose>-0.25 -0.7 0.625 0 0 -1.57</tf2pose>
+
+<tf3frame>gps_ins</tf3frame>
+<tf3parent>body</tf3parent>
+<tf3pose>0 0 0.5 0 0 0</tf3pose>
+
+<tf4frame>ibeo</tf4frame>
+<tf4parent>body</tf4parent>
+<tf4pose>-0.25 0 1.80 0 0.3 0</tf4pose>
+
+<tf5frame>cameraL_frame</tf5frame>
+<tf5parent>body</tf5parent>
+<tf5pose>-0.25 0.3 1.875 0 0.11 0</tf5pose>
+
+<tf6frame>cameraR_frame</tf6frame>
+<tf6parent>body</tf6parent>
+<tf6pose>-0.25 -0.3 1.875 0 0.11 0</tf6pose>
+
+<update_rate>20</update_rate>
+</plugin>
