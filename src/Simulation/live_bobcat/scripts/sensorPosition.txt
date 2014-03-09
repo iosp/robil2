@@ -139,5 +139,8 @@
 <tf6parent>body</tf6parent>
 <tf6pose>-0.25 -0.3 1.875 0 0.11 0</tf6pose>
 
+<livetf1frame>body</livetf1frame>
+<livetf1parent>world</livetf1parent>
+
 <update_rate>20</update_rate>
 </plugin>
