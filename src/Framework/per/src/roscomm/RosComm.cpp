@@ -26,10 +26,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_sub_SensorCamR=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorCamR","sub"), 10, &RosComm::SensorCamRCallback,this));
 	_sub_SensorWire=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorWire","sub"), 10, &RosComm::SensorWireCallback,this));
 	_sub_SensorSICK=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorSICK","sub"), 10, &RosComm::SensorSICKCallback,this));
-	_sub_SensorIBEO1=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorIBEO1","sub"), 10, &RosComm::SensorIBEO1Callback,this));
-	_sub_SensorIBEO2=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorIBEO2","sub"), 10, &RosComm::SensorIBEO2Callback,this));
-	_sub_SensorIBEO3=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorIBEO3","sub"), 10, &RosComm::SensorIBEO3Callback,this));
-	_sub_SensorIBEO4=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorIBEO4","sub"), 10, &RosComm::SensorIBEO4Callback,this));
+	_sub_SensorIBEO=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorIBEO","sub"), 10, &RosComm::SensorIBEOCallback,this));
 	_sub_EffortsTh=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsTh","sub"), 10, &RosComm::EffortsThCallback,this));
 	_sub_EffortsSt=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsSt","sub"), 10, &RosComm::EffortsStCallback,this));
 	_sub_EffortsJn=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsJn","sub"), 10, &RosComm::EffortsJnCallback,this));
@@ -99,29 +96,10 @@ void RosComm::SensorSICKCallback(const config::PER::sub::SensorSICK::ConstPtr &m
 }
 	
 
-void RosComm::SensorIBEO1Callback(const config::PER::sub::SensorIBEO1::ConstPtr &msg)
+void RosComm::SensorIBEOCallback(const config::PER::sub::SensorIBEO::ConstPtr &msg)
 {
-	_comp->handleSensorIBEO1(*msg);
+	_comp->handleSensorIBEO(*msg);
 }
-	
-
-void RosComm::SensorIBEO2Callback(const config::PER::sub::SensorIBEO2::ConstPtr &msg)
-{
-	_comp->handleSensorIBEO2(*msg);
-}
-	
-
-void RosComm::SensorIBEO3Callback(const config::PER::sub::SensorIBEO3::ConstPtr &msg)
-{
-	_comp->handleSensorIBEO3(*msg);
-}
-	
-
-void RosComm::SensorIBEO4Callback(const config::PER::sub::SensorIBEO4::ConstPtr &msg)
-{
-	_comp->handleSensorIBEO4(*msg);
-}
-	
 
 void RosComm::EffortsThCallback(const config::PER::sub::EffortsTh::ConstPtr &msg)
 {

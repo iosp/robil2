@@ -41,6 +41,7 @@
 #include <robil_msgs/AssignNavTask.h>
 #include <robil_msgs/MissionAcceptance.h>
 #include <sensor_msgs/JointState.h>
+#include <robil_msgs/MultiLaserScan.h>
 
 #define DEF_PUB( COMP, TOPIC, TYPE )\
 	namespace config{ namespace COMP{ namespace pub{ typedef TYPE TOPIC; } } }
@@ -56,6 +57,7 @@ namespace types{
 	typedef robil_msgs::Path 							Path;
 	typedef nav_msgs::Odometry 							Odometry;
 	typedef sensor_msgs::LaserScan 						Laser;
+	typedef robil_msgs::MultiLaserScan 					MultiLaser;
 	typedef sensor_msgs::Image 							CamFrame;
 	typedef sensor_msgs::CameraInfo 					CamInfo;
 	typedef sensor_msgs::Imu 							Imu;

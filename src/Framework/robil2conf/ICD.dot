@@ -40,10 +40,7 @@ SensorCamL [label="/SENSORS/CAM/L [types::CamFrame]"]
 SensorCamR [label="/SENSORS/CAM/R [types::CamFrame]"]
 SensorWire [label="/SENSORS/WIRE [types::WireLength]"]
 SensorSICK [label="/SENSORS/SICK/1 [types::Laser]"]
-SensorIBEO1 [label="/SENSORS/IBEO/1 [types::Laser]"]
-SensorIBEO2 [label="/SENSORS/IBEO/2 [types::Laser]"]
-SensorIBEO3 [label="/SENSORS/IBEO/3 [types::Laser]"]
-SensorIBEO4 [label="/SENSORS/IBEO/4 [types::Laser]"]
+SensorIBEO [label="/SENSORS/IBEO/1 [types::MultiLaser]"]
 
 }
 
@@ -95,7 +92,7 @@ LOC -> Location -> {PER SSM LLC OCU PP WPD SMME}
 
 LOC -> PerVelocity -> {PER SSM LLC OCU}
 
-SENSORS -> {SensorINS SensorGPS SensorCamL SensorCamR SensorWire SensorSICK SensorIBEO1 SensorIBEO2 SensorIBEO3 SensorIBEO4} -> PER
+SENSORS -> {SensorINS SensorGPS SensorCamL SensorCamR SensorWire SensorSICK SensorIBEO} -> PER
 
 LLC -> {EffortsTh EffortsSt EffortsJn} -> {PLATFORM PER}
 

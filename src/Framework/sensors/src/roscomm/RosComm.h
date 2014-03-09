@@ -29,10 +29,7 @@ class RosComm {
 	ros::Publisher  _pub_SensorCamR;
 	ros::Publisher  _pub_SensorWire;
 	ros::Publisher  _pub_SensorSICK;
-	ros::Publisher  _pub_SensorIBEO1;
-	ros::Publisher  _pub_SensorIBEO2;
-	ros::Publisher  _pub_SensorIBEO3;
-	ros::Publisher  _pub_SensorIBEO4;
+	ros::Publisher  _pub_SensorIBEO;
 
   bool init(int argc,char** argv);
 public:
@@ -45,10 +42,7 @@ public:
 	void publishSensorCamR( config::SENSORS::pub::SensorCamR &msg);
 	void publishSensorWire( config::SENSORS::pub::SensorWire &msg);
 	void publishSensorSICK( config::SENSORS::pub::SensorSICK &msg);
-	void publishSensorIBEO1( config::SENSORS::pub::SensorIBEO1 &msg);
-	void publishSensorIBEO2( config::SENSORS::pub::SensorIBEO2 &msg);
-	void publishSensorIBEO3( config::SENSORS::pub::SensorIBEO3 &msg);
-	void publishSensorIBEO4( config::SENSORS::pub::SensorIBEO4 &msg);
+	void publishSensorIBEO( config::SENSORS::pub::SensorIBEO &msg);
 
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);

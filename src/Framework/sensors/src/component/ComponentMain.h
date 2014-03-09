@@ -23,10 +23,7 @@ public:
 	void publishSensorCamR(config::SENSORS::pub::SensorCamR& msg);
 	void publishSensorWire(config::SENSORS::pub::SensorWire& msg);
 	void publishSensorSICK(config::SENSORS::pub::SensorSICK& msg);
-	void publishSensorIBEO1(config::SENSORS::pub::SensorIBEO1& msg);
-	void publishSensorIBEO2(config::SENSORS::pub::SensorIBEO2& msg);
-	void publishSensorIBEO3(config::SENSORS::pub::SensorIBEO3& msg);
-	void publishSensorIBEO4(config::SENSORS::pub::SensorIBEO4& msg);
+	void publishSensorIBEO(config::SENSORS::pub::SensorIBEO& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);

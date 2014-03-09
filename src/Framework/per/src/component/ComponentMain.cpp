@@ -63,29 +63,12 @@ void ComponentMain::handleSensorSICK(const config::PER::sub::SensorSICK& msg)
 }
 	
 
-void ComponentMain::handleSensorIBEO1(const config::PER::sub::SensorIBEO1& msg)
+void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msg)
 {
 	std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleSensorIBEO2(const config::PER::sub::SensorIBEO2& msg)
-{
-	std::cout<< "PER say:" << msg << std::endl;
-}
-	
-
-void ComponentMain::handleSensorIBEO3(const config::PER::sub::SensorIBEO3& msg)
-{
-	std::cout<< "PER say:" << msg << std::endl;
-}
-	
-
-void ComponentMain::handleSensorIBEO4(const config::PER::sub::SensorIBEO4& msg)
-{
-	std::cout<< "PER say:" << msg << std::endl;
-}
-	
 
 void ComponentMain::handleEffortsTh(const config::PER::sub::EffortsTh& msg)
 {
