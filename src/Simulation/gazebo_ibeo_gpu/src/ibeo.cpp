@@ -20,6 +20,7 @@
 #include "gazebo/gazebo.hh"
 #include "gazebo/physics/physics.hh"
 #include <ros/ros.h>
+#include <tf/transform_broadcaster.h>
 #include <cmath>
 
 
@@ -96,6 +97,7 @@ namespace gazebo
       PublishMessage(rangesT1, rangesT2, rangesB1, rangesB2);
       
      _lastTime = simTime;
+     BroadcastTF();
     }
     
     inline double DegreesToRad(double degrees)
@@ -103,6 +105,16 @@ namespace gazebo
       return (degrees/(180/PI));
     }
     
+    void BroadcastTF()
+    {
+      static tf::TransformBroadcaster br; 
+      tf::Transform transform; 
+      math::Pose pose= _sensorT1->GetPose(); 
+      transform.setOrigin( tf::Vector3(pose.pos.x, pose.pos.y, pose.pos.z) ); 
+      transform.setRotation( tf::Quaternion(pose.rot.x,pose.rot.y,pose.rot.z,pose.rot.w) ); 
+      br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "laser_frame")); 
+      
+    }
     
     void PublishMessage(vector<double>& rangesT1, vector<double>& rangesT2, vector<double>& rangesB1, vector<double>& rangesB2)
     {
@@ -114,6 +126,7 @@ namespace gazebo
        scan.angle_min_b = _sensorB1->GetAngleMin().Radian();
        scan.angle_max_b = _sensorB1->GetAngleMax().Radian();
        scan.angle_increment = 0.0043; //according to datasheet
+       scan.time_increment = 1.0/_updateRate/200; //YUVAL_SHEKER
        scan.angle_t1 = 0.0014;
        scan.angle_t2 = 0.0028;
        scan.angle_b1 = -0.0014; //according to datasheet

@@ -2,7 +2,7 @@
 <sdf version="1.4">
   <world name="default">
     
- <model name="heightmap"> 
+ <!--model name="heightmap"> 
  <static>true</static> 
  <link name="link"> 
     <collision name="collision">
@@ -50,14 +50,14 @@
      </geometry> 
      </visual> 
      </link> 
-     </model>
+     </model-->
     
     <include>
       <uri>model://sun</uri>
     </include>
      
     <include>
-      <uri>model://gpu_sick</uri>
+      <uri>model://sick</uri>
 
     </include>
   

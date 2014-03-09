@@ -1,7 +1,7 @@
 <?xml version="1.0"?> 
 <sdf version="1.4">
   
-  <model name='FLEA3'>
+  <model name='flea3'>
       <pose>0 0 3 0 0 0</pose>
       <link name='camera_link'>
        
@@ -15,7 +15,7 @@
 	  <pose>-0.03 -0.015 0.015  0 1.57 0</pose>
         </visual>
         
-        <sensor name='camera1' type='camera'>
+        <sensor name='flea3cam' type='camera'>
 	  <visualize>1</visualize>
 	 <update_rate>15.0</update_rate>
 	  <camera name="head">
@@ -31,20 +31,17 @@
 	    </clip>
 	    <noise>
 	      <type>gaussian</type>
-	      <!-- Noise is sampled independently per pixel on each frame.  
-		  That pixel's noise value is added to each of its color
-		  channels, which at that point lie in the range [0,1]. -->
 	      <mean>0.0</mean>
 	      <stddev>0.007</stddev>
 	    </noise>
 	  </camera>
 	  <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
 	    <alwaysOn>true</alwaysOn>
-	    <updateRate>0.0</updateRate>
+	    <updateRate>30.0</updateRate>
 	    <cameraName>FLEA3</cameraName>
 	    <imageTopicName>image_raw</imageTopicName>
 	    <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-	    <frameName>camera_link</frameName>
+	    <frameName>camera_frame</frameName>
 	    <hackBaseline>0.07</hackBaseline>
 	    <distortionK1>0.0</distortionK1>
 	    <distortionK2>0.0</distortionK2>
@@ -55,12 +52,16 @@
 	    
 	    
         </sensor>
-       
+      
+      
+      
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
         <gravity>0</gravity>
       </link>
       <static>1</static>
+      <plugin name="CameraTF" filename="libcameraTF.so">
+      </plugin>
     </model>
   
   

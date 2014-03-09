@@ -45,5 +45,5 @@ catkin_package(
 
 install(
   DIRECTORY models/
-  DESTINATION $ENV{HOME}/.gazebo/models/gpu_sick
+  DESTINATION $ENV{HOME}/.gazebo/models/sick
 )

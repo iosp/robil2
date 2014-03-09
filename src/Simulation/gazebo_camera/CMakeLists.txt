@@ -18,8 +18,8 @@ find_package(gazebo REQUIRED)
 link_directories(${GAZEBO_LIBRARY_DIRS})
 include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 
-#add_library(camera SHARED src/camera.cpp)
-#target_link_libraries(camera ${GAZEBO_libraries} ${catkin_LIBRARIES})
+add_library(cameraTF SHARED src/cameraTF.cpp)
+target_link_libraries(cameraTF ${GAZEBO_libraries} ${catkin_LIBRARIES})
 
 ## Generate messages in the 'msg' folder
  #add_message_files(
@@ -39,12 +39,12 @@ catkin_package(
   DEPENDS 
     roscpp 
     tf
-    gazebo_ros 
-   # CATKIN_DEPENDS message_runtime
+    gazebo_ros
+    CATKIN_DEPENDS message_runtime
 )
 
 install(
   DIRECTORY models/
-  DESTINATION $ENV{HOME}/.gazebo/models/FLEA3
+  DESTINATION $ENV{HOME}/.gazebo/models
 )
 

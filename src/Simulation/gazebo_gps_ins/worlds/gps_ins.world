@@ -4,13 +4,14 @@
     <include>
       <uri>model://ground_plane</uri>
     </include>
+
     <include>
       <uri>model://sun</uri>
     </include>
+
     <include>
-      <uri>model://bobcat</uri>
-      <name>Sahar</name>
-      <pose>0.0 0.0 0 0 0 1</pose>
+      <uri>model://GPS_INS</uri>
     </include>
   </world>
 </sdf>
+

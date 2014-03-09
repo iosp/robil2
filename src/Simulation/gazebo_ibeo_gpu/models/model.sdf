@@ -31,10 +31,9 @@
 	  </range>
 	  
 	</ray>
-	<!--<plugin name='laser' filename='libsick_gpu.so'/>-->
 	<always_on>1</always_on>
 	<update_rate>30</update_rate>
-	<visualize>1</visualize>
+	<visualize>0</visualize>
       </sensor>
       
       <sensor name='ibeo-t2' type='gpu_ray'>
@@ -55,10 +54,9 @@
 	  </range>
 	  
 	</ray>
-	<!--<plugin name='laser' filename='libsick_gpu.so'/>-->
 	<always_on>1</always_on>
 	<update_rate>30</update_rate>
-	<visualize>1</visualize>
+	<visualize>0</visualize>
       </sensor>
       
       <sensor name='ibeo-b1' type='gpu_ray'>
@@ -77,12 +75,15 @@
 	    <max>35</max>
 	    <resolution>1</resolution>
 	  </range>
-	  
+	  <noise>
+	    <type>gaussian</type>
+	    <mean>0.0</mean>
+	    <stddev>0.007</stddev>
+	  </noise>
 	</ray>
-	<!--<plugin name='laser' filename='libsick_gpu.so'/>-->
 	<always_on>1</always_on>
 	<update_rate>30</update_rate>
-	<visualize>1</visualize>
+	<visualize>0</visualize>
       </sensor>
       
       <sensor name='ibeo-b2' type='gpu_ray'>
@@ -101,12 +102,15 @@
 	    <max>35</max>
 	    <resolution>1</resolution>
 	  </range>
-	  
+	  <noise>
+	    <type>gaussian</type>
+	    <mean>0.0</mean>
+	    <stddev>0.007</stddev>
+	  </noise>
 	</ray>
-	<!--<plugin name='laser' filename='libsick_gpu.so'/>-->
 	<always_on>1</always_on>
 	<update_rate>30</update_rate>
-	<visualize>1</visualize>
+	<visualize>0</visualize>
       </sensor>
       
       
