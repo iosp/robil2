@@ -32,7 +32,7 @@ FSM(Perception_ON)
 			FSM_TRANSITIONS
 			{
 				//FSM_PRINT_EVENT
-				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
+				FSM_ON_EVENT("INIT/EndOfInit", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(READY)
@@ -61,6 +61,7 @@ FSM(Perception)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/Perception/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
@@ -69,6 +70,7 @@ FSM(Perception)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/Perception/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 

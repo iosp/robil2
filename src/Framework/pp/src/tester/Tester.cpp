@@ -127,7 +127,10 @@ void Tester::test1_step(){
 	pub_map.publish(map);
 	pub_path.publish(path);
 	if(move_index==move.poses.size())move_index=0;
-	pub_location.publish(move.poses[move_index++]);
+	PoseStamped pose = move.poses[move_index++];
+	pose.header = move.header;
+	pub_location.publish(pose);
+	std::cout<<"pose : " << pose.pose.position.x<<","<<pose.pose.position.y<<std::endl;
 }
 
 void Checker::on_goal(const geometry_msgs::PoseStamped::ConstPtr& msg){

@@ -31,7 +31,7 @@ FSM(IED_ON)
 			FSM_CALL_TASK(INIT)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
+				FSM_ON_EVENT("INIT/EndOfInit", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(READY)
@@ -60,6 +60,7 @@ FSM(IED)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/IED/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
@@ -68,6 +69,7 @@ FSM(IED)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/IED/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 

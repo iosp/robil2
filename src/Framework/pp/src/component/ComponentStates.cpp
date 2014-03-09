@@ -36,7 +36,7 @@ FSM(PathPlanner_WORK)
 			FSM_CALL_TASK(STANDBY);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/Resume", FSM_NEXT(READY));
+				FSM_ON_EVENT("/PathPlanner/Resume", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(READY)
@@ -44,7 +44,7 @@ FSM(PathPlanner_WORK)
 			FSM_CALL_TASK(READY);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/Standby", FSM_NEXT(STANDBY));
+				FSM_ON_EVENT("/PathPlanner/Standby", FSM_NEXT(STANDBY));
 			}
 		}
 
@@ -66,7 +66,7 @@ FSM(PathPlanner_ON)
 			FSM_CALL_TASK(INIT);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(WORK));
+				FSM_ON_EVENT("INIT/EndOfInit", FSM_NEXT(WORK));
 			}
 		}
 		FSM_STATE(WORK)
@@ -95,6 +95,7 @@ FSM(PathPlanner)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/PathPlanner/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
@@ -103,6 +104,7 @@ FSM(PathPlanner)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/PathPlanner/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 

@@ -38,7 +38,7 @@ FSM(WorkSequnceManager_WORK)
 			FSM_CALL_TASK(STANDBY);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/Resume", FSM_NEXT(READY));
+				FSM_ON_EVENT("/WorkSequnceManager/Resume", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(READY)
@@ -46,7 +46,7 @@ FSM(WorkSequnceManager_WORK)
 			FSM_CALL_TASK(READY);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/Standby", FSM_NEXT(STANDBY));
+				FSM_ON_EVENT("/WorkSequnceManager/Standby", FSM_NEXT(STANDBY));
 			}
 		}
 
@@ -68,7 +68,8 @@ FSM(WorkSequnceManager_ON)
 			FSM_CALL_TASK(INIT);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_CONDITION(SensorConnection, FSM_NEXT(WORK));
+				//FSM_ON_CONDITION(SensorConnection, FSM_NEXT(WORK));
+				FSM_ON_EVENT("/WorkSequnceManager/SensorConnected", FSM_NEXT(WORK));
 			}
 		}
 		FSM_STATE(WORK)
@@ -76,7 +77,8 @@ FSM(WorkSequnceManager_ON)
 			FSM_CALL_FSM(WorkSequnceManager_WORK)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_CONDITION(not SensorConnection, FSM_NEXT(INIT));
+				//FSM_ON_CONDITION(not SensorConnection, FSM_NEXT(INIT));
+				FSM_ON_EVENT("/WorkSequnceManager/SensorNotConnected", FSM_NEXT(INIT));
 			}
 		}
 
@@ -100,6 +102,7 @@ FSM(WorkSequnceManager)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/WorkSequnceManager/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
@@ -108,6 +111,7 @@ FSM(WorkSequnceManager)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/WorkSequnceManager/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 
