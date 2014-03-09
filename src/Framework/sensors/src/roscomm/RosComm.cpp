@@ -25,10 +25,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_pub_SensorCamR=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorCamR>(fetchParam(&_nh,"SENSORS","SensorCamR","pub"),10));
 	_pub_SensorWire=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorWire>(fetchParam(&_nh,"SENSORS","SensorWire","pub"),10));
 	_pub_SensorSICK=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorSICK>(fetchParam(&_nh,"SENSORS","SensorSICK","pub"),10));
-	_pub_SensorIBEO1=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorIBEO1>(fetchParam(&_nh,"SENSORS","SensorIBEO1","pub"),10));
-	_pub_SensorIBEO2=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorIBEO2>(fetchParam(&_nh,"SENSORS","SensorIBEO2","pub"),10));
-	_pub_SensorIBEO3=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorIBEO3>(fetchParam(&_nh,"SENSORS","SensorIBEO3","pub"),10));
-	_pub_SensorIBEO4=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorIBEO4>(fetchParam(&_nh,"SENSORS","SensorIBEO4","pub"),10));
+	_pub_SensorIBEO=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorIBEO>(fetchParam(&_nh,"SENSORS","SensorIBEO","pub"),10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
 }
@@ -78,29 +75,11 @@ void RosComm::publishSensorSICK( config::SENSORS::pub::SensorSICK &msg)
 }
 	
 
-void RosComm::publishSensorIBEO1( config::SENSORS::pub::SensorIBEO1 &msg)
+void RosComm::publishSensorIBEO( config::SENSORS::pub::SensorIBEO &msg)
 {
-	_pub_SensorIBEO1.publish(msg);
+	_pub_SensorIBEO.publish(msg);
 }
-	
-
-void RosComm::publishSensorIBEO2( config::SENSORS::pub::SensorIBEO2 &msg)
-{
-	_pub_SensorIBEO2.publish(msg);
-}
-	
-
-void RosComm::publishSensorIBEO3( config::SENSORS::pub::SensorIBEO3 &msg)
-{
-	_pub_SensorIBEO3.publish(msg);
-}
-	
-
-void RosComm::publishSensorIBEO4( config::SENSORS::pub::SensorIBEO4 &msg)
-{
-	_pub_SensorIBEO4.publish(msg);
-}
-	
+		
 void RosComm::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	static tf::TransformBroadcaster br;
 	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));

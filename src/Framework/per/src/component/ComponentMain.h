@@ -24,10 +24,7 @@ public:
 	void handleSensorCamR(const config::PER::sub::SensorCamR& msg);
 	void handleSensorWire(const config::PER::sub::SensorWire& msg);
 	void handleSensorSICK(const config::PER::sub::SensorSICK& msg);
-	void handleSensorIBEO1(const config::PER::sub::SensorIBEO1& msg);
-	void handleSensorIBEO2(const config::PER::sub::SensorIBEO2& msg);
-	void handleSensorIBEO3(const config::PER::sub::SensorIBEO3& msg);
-	void handleSensorIBEO4(const config::PER::sub::SensorIBEO4& msg);
+	void handleSensorIBEO(const config::PER::sub::SensorIBEO& msg);
 	void handleEffortsTh(const config::PER::sub::EffortsTh& msg);
 	void handleEffortsSt(const config::PER::sub::EffortsSt& msg);
 	void handleEffortsJn(const config::PER::sub::EffortsJn& msg);

@@ -8,15 +8,21 @@
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
+#include "MissionManager.h"
 
 class MissionParams: public CallContextParameters{
 public:
 	ComponentMain* comp;
-	MissionParams(ComponentMain* comp):comp(comp){}
+	string mission_id;
+	MissionParams(ComponentMain* comp, string mission_id)
+		:comp(comp), mission_id(mission_id)
+	{
+
+	}
 	std::string str()const{return "";}
 };
 
-bool MissionLoaded;
+
 FSM(MissionActive)
 {
 	FSM_STATES
@@ -46,6 +52,8 @@ FSM(MissionActive)
 			{
 				FSM_ON_EVENT("/CompleteMission", FSM_NEXT(MissionFinished));
 				FSM_ON_EVENT("/AbortMission", FSM_NEXT(MissionAborted));
+
+				FSM_ON_EVENT("/ResumeMission", FSM_RAISE("/RestartTask"));
 				FSM_ON_EVENT("/ResumeMission", FSM_NEXT(MissionSpooling));
 			}
 		}
@@ -69,23 +77,23 @@ FSM(MissionActive)
 	FSM_END
 }
 
-FSM(Mission_ON)
+FSM(Mission)
 {
 	FSM_STATES
 	{
-		NoMissionLoaded,
+		MissionUnloaded,
 		MissionPending,
 		MissionActive
 	}
-	FSM_START(NoMissionLoaded);
+	FSM_START(MissionPending);
 	FSM_BGN
 	{
-		FSM_STATE(NoMissionLoaded)
+		FSM_STATE(MissionUnloaded)
 		{
-			FSM_CALL_TASK(NoMissionLoaded)
+			FSM_CALL_TASK(MissionUnloaded)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_CONDITION(MissionLoaded, FSM_NEXT(MissionPending));
+				FSM_ON_EVENT("MissionUnloaded/Stopped", FSM_STOP("Stopped",TaskResult::SUCCESS()));
 			}
 		}
 		FSM_STATE(MissionPending)
@@ -94,10 +102,8 @@ FSM(Mission_ON)
 			FSM_TRANSITIONS
 			{
 				//NOTE: It's not clear for transition from MissionPending to NoMissionLoaded
-				FSM_ON_EVENT("/DeleteMission", FSM_NEXT(NoMissionLoaded));
-				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(NoMissionLoaded));
-				FSM_ON_CONDITION(not MissionLoaded, FSM_NEXT(NoMissionLoaded));
-
+				FSM_ON_EVENT("/DeleteMission", FSM_NEXT(MissionUnloaded));
+				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
 				FSM_ON_EVENT("/StartMission", FSM_NEXT(MissionActive));
 			}
 		}
@@ -107,10 +113,9 @@ FSM(Mission_ON)
 			FSM_TRANSITIONS
 			{
 				//NOTE: It's not clear for transition from MissionActive to NoMissionLoaded
-				FSM_ON_EVENT("/DeleteMission", FSM_NEXT(NoMissionLoaded));
-				FSM_ON_EVENT("/Stendby", FSM_NEXT(NoMissionLoaded));
-				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(NoMissionLoaded));
-				FSM_ON_CONDITION(not MissionLoaded, FSM_NEXT(NoMissionLoaded));
+				FSM_ON_EVENT("/DeleteMission", FSM_NEXT(MissionUnloaded));
+				FSM_ON_EVENT("/Standby", FSM_NEXT(MissionUnloaded));
+				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
 			}
 		}
 
@@ -118,89 +123,69 @@ FSM(Mission_ON)
 	FSM_END
 }
 
-FSM(Mission)
-{
-	FSM_STATES
-	{
-		OFF,
-		ON
-	}
-	FSM_START(ON);
-	FSM_BGN
-	{
-		FSM_STATE(OFF)
-		{
-			FSM_CALL_TASK(OFF)
-			FSM_TRANSITIONS
-			{
-				FSM_ON_EVENT("/SystemActivation", FSM_NEXT(ON));
-			}
-		}
-		FSM_STATE(ON)
-		{
-			FSM_CALL_FSM(Mission_ON)
-			FSM_TRANSITIONS
-			{
-				FSM_ON_EVENT("/PowerOff", FSM_NEXT(OFF));
-			}
-		}
+#define PARAMS \
+		std::string mid = context.parameters<MissionParams>().mission_id;\
+		ComponentMain* comp = context.parameters<MissionParams>().comp;
+#define MM comp->mission_manager()
 
-	}
-	FSM_END
-}
-
-
-TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
-	//diagnostic_msgs::DiagnosticStatus status;
-	//context.parameters<MissionParams>.comp->publishDiagnostic(status);
-	return TaskResult::SUCCESS();
-}
-
-TaskResult state_NoMissionLoaded(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+TaskResult state_MissionUnloaded(string id, const CallContext& context, EventQueue& events){
+	PARAMS
+	MM->remove(mid);
+	events.raiseEvent(Event("Stopped",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_MissionPending(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PARAMS
+	MM->mission_state("pending");
 	return TaskResult::SUCCESS();
 }
 
-
 TaskResult state_MissionSpooling(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PARAMS
+	MM->change_mission(mid);
+	MM->mission_state("spooling");
+	events.raiseEvent(Event("/StartTask",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_MissionPaused(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PARAMS
+	MM->mission_state("paused");
 	return TaskResult::SUCCESS();
 }
 TaskResult state_MissionAborted(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PARAMS
+	MM->mission_state("aborted");
+	events.raiseEvent(Event("/StopTask",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_MissionFinished(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PARAMS
+	MM->mission_state("finished");
+	events.raiseEvent(Event("/StopTask",context));
 	return TaskResult::SUCCESS();
 }
 
-void startMission(ComponentMain* component){ 
-
-	//ros_decision_making_init(argc, argv);
-	RosEventQueue events;
-	CallContext context;
-	context.createParameters(new MissionParams(component));
-	//events.async_spin();
-	LocalTasks::registration("OFF",state_OFF);
-	LocalTasks::registration("NoMissionLoaded",state_NoMissionLoaded);
+void initMissionTasks(){
+	LocalTasks::registration("MissionUnloaded",state_MissionUnloaded);
 	LocalTasks::registration("MissionPending",state_MissionPending);
 	LocalTasks::registration("MissionSpooling",state_MissionSpooling);
 	LocalTasks::registration("MissionPaused",state_MissionPaused);
 	LocalTasks::registration("MissionAborted",state_MissionAborted);
 	LocalTasks::registration("MissionFinished",state_MissionFinished);
-
-
-	ROS_INFO("Starting smme (Mission)...");
-	FsmMission(&context, &events);
-
 }
+
+void startMission(ComponentMain* component, std::string mission_id){
+
+	//ros_decision_making_init(argc, argv);
+	RosEventQueue events;
+	CallContext context;
+	context.push("mission_id");
+	context.createParameters(new MissionParams(component, mission_id));
+	//events.async_spin();
+
+
+	ROS_INFO_STREAM("Starting smme (Mission:"<<mission_id<<")...");
+	FsmMission(&context, &events);
+	ROS_INFO_STREAM("Stop smme (Mission:"<<mission_id<<")...");
+}
+

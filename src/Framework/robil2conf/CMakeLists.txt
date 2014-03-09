@@ -7,6 +7,8 @@ project(robil2conf)
 find_package(catkin REQUIRED COMPONENTS 
     roscpp 
     robil_msgs
+    
+    eigen_conversions angles kdl_conversions tf_conversions
 )
 
 ## System dependencies are found with CMake's conventions

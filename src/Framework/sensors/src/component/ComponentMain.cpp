@@ -46,35 +46,17 @@ void ComponentMain::publishSensorWire(config::SENSORS::pub::SensorWire& msg)
 }
 	
 
-void ComponentMain::publishSensorSICK(config::SENSORS::pub::SensorSICK& msg)
+void ComponentMain::publishSensorSICK(config::SENSORS::pub::SensorSICK& msg) 
 {
 	_roscomm->publishSensorSICK(msg);
 }
 	
 
-void ComponentMain::publishSensorIBEO1(config::SENSORS::pub::SensorIBEO1& msg)
+void ComponentMain::publishSensorIBEO(config::SENSORS::pub::SensorIBEO& msg)
 {
-	_roscomm->publishSensorIBEO1(msg);
+	_roscomm->publishSensorIBEO(msg); 
 }
-	
 
-void ComponentMain::publishSensorIBEO2(config::SENSORS::pub::SensorIBEO2& msg)
-{
-	_roscomm->publishSensorIBEO2(msg);
-}
-	
-
-void ComponentMain::publishSensorIBEO3(config::SENSORS::pub::SensorIBEO3& msg)
-{
-	_roscomm->publishSensorIBEO3(msg);
-}
-	
-
-void ComponentMain::publishSensorIBEO4(config::SENSORS::pub::SensorIBEO4& msg)
-{
-	_roscomm->publishSensorIBEO4(msg);
-}
-	
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	_roscomm->publishTransform(_tf, srcFrame, distFrame);
 }

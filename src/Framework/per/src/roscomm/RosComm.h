@@ -30,10 +30,7 @@ class RosComm {
 	ros::Subscriber _sub_SensorCamR;
 	ros::Subscriber _sub_SensorWire;
 	ros::Subscriber _sub_SensorSICK;
-	ros::Subscriber _sub_SensorIBEO1;
-	ros::Subscriber _sub_SensorIBEO2;
-	ros::Subscriber _sub_SensorIBEO3;
-	ros::Subscriber _sub_SensorIBEO4;
+	ros::Subscriber _sub_SensorIBEO;
 	ros::Subscriber _sub_EffortsTh;
 	ros::Subscriber _sub_EffortsSt;
 	ros::Subscriber _sub_EffortsJn;
@@ -56,10 +53,7 @@ public:
 	void SensorCamRCallback(const config::PER::sub::SensorCamR::ConstPtr &msg);
 	void SensorWireCallback(const config::PER::sub::SensorWire::ConstPtr &msg);
 	void SensorSICKCallback(const config::PER::sub::SensorSICK::ConstPtr &msg);
-	void SensorIBEO1Callback(const config::PER::sub::SensorIBEO1::ConstPtr &msg);
-	void SensorIBEO2Callback(const config::PER::sub::SensorIBEO2::ConstPtr &msg);
-	void SensorIBEO3Callback(const config::PER::sub::SensorIBEO3::ConstPtr &msg);
-	void SensorIBEO4Callback(const config::PER::sub::SensorIBEO4::ConstPtr &msg);
+	void SensorIBEOCallback(const config::PER::sub::SensorIBEO::ConstPtr &msg);
 	void EffortsThCallback(const config::PER::sub::EffortsTh::ConstPtr &msg);
 	void EffortsStCallback(const config::PER::sub::EffortsSt::ConstPtr &msg);
 	void EffortsJnCallback(const config::PER::sub::EffortsJn::ConstPtr &msg);

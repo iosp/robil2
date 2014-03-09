@@ -31,7 +31,7 @@ FSM(Monitoring_ON)
 			FSM_CALL_TASK(INIT)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
+				FSM_ON_EVENT("INIT/EndOfInit", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(READY)
@@ -60,6 +60,7 @@ FSM(Monitoring)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/Monitoring/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
@@ -68,6 +69,7 @@ FSM(Monitoring)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/Monitoring/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 

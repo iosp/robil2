@@ -10,9 +10,13 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+#include <boost/thread.hpp>
 class RosComm;
+class MissionManager;
 class ComponentMain {
 	RosComm* _roscomm;
+	MissionManager* _mission_manager;
+	boost::thread_group threads;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -28,5 +32,7 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+
+	MissionManager * const mission_manager(){return _mission_manager;}
 };
 #endif /* COMPONENTMAIN_H_ */
