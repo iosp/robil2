@@ -13,6 +13,7 @@ using namespace std;
 using namespace decision_making;
 
 #include "ComponentStates.h"
+#include "TwistRetranslator.h"
 
 class Params: public CallContextParameters{
 public:
@@ -113,21 +114,25 @@ FSM(WaypointDriver)
 }
 
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	//PAUSE(10000);
 	//diagnostic_msgs::DiagnosticStatus status;
 	//COMPONENT->publishDiagnostic(status);
 	return TaskResult::SUCCESS();
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	//PAUSE(10000);
+	events.raiseEvent(Event("EndOfInit",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	TwistRetranslator translator(COMPONENT);
+	while(ros::ok() and events.isTerminated() == false){
+		PAUSE(1000);
+	}
 	return TaskResult::SUCCESS();
 }
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	//PAUSE(10000);
 	return TaskResult::SUCCESS();
 }
 
