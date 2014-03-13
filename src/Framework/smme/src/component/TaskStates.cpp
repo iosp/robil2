@@ -152,7 +152,22 @@ TaskResult state_TaskFinished(string id, const CallContext& context, EventQueue&
 }
 
 
+#include <robil_msgs/MissionState.h>
+MissionManager* __mission_manager=0;
+bool service_get_mission_state(robil_msgs::MissionState::Request& req,robil_msgs::MissionState::Response& res){
+	if(__mission_manager){
+		std::string state = __mission_manager->print_state();
+		res.states = state;
+		return true;
+	}
+	return false;
+}
+
+
 void startTask(ComponentMain* component){
+	__mission_manager = component->mission_manager();
+	ros::NodeHandle node;
+	ros::ServiceServer ss_get_mission_state = node.advertiseService("/mission_state",&service_get_mission_state);
 
 	//ros_decision_making_init(argc, argv);
 	RosEventQueue events;

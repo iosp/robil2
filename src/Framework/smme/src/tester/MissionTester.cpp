@@ -7,7 +7,7 @@
 
 #include "MissionTester.h"
 
-template<class A> std::string operator+(std::string s, A t){ stringstream ss(s); ss<<t; return ss.str(); }
+std::string operator+(std::string s, const int& t){ stringstream ss; ss<<t; return s+ss.str(); }
 
 MissionTester::MissionTester() {
 
@@ -23,7 +23,7 @@ MissionTester::~MissionTester() {
 NavTask createTask(int n){
 	static int seq=0;
 	NavTask task;
-	task.task_id="task_"+n;
+	task.task_id=string("task_")+n;
 	task.task_description="description of task";
 	task.header.frame_id="map";
 	task.header.stamp=ros::Time::now();

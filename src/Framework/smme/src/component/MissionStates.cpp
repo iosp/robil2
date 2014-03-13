@@ -168,17 +168,7 @@ TaskResult state_MissionFinished(string id, const CallContext& context, EventQue
 	return TaskResult::SUCCESS();
 }
 
-#include <robil_msgs/MissionState.h>
-MissionManager* __mission_manager=0;
-bool get_mission_state(robil_msgs::MissionState::Request& req,robil_msgs::MissionState::Response& res){
-	if(__mission_manager){
-		std::string state = __mission_manager->print_state();
-		res.states = state;
-		return true;
-	}
-	return false;
 
-}
 
 void initMissionTasks(){
 	LocalTasks::registration("MissionUnloaded",state_MissionUnloaded);

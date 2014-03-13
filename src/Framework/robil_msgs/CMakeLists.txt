@@ -70,6 +70,7 @@ add_message_files(
 add_service_files(
     FILES
         FSMState.srv
+        MissionState.srv
 )
 
 ## Generate actions in the 'action' folder

@@ -198,15 +198,21 @@ SYNCHRONIZED
 	stringstream out;
 	out<<"NTasks:"<<endl;
 	for(Set_NavTasks::const_iterator i=nav_tasks.begin();i!=nav_tasks.end();i++){
-		out<<"   "<<i->first<<endl;
+		out<<"   "<<i->first;
+		out<<" {wp="<<i->second.waypoints.size()<<"}";
+		out<<endl;
 	}
 	out<<"MTasks:"<<endl;
 	for(Set_ManTasks::const_iterator i=man_tasks.begin();i!=man_tasks.end();i++){
-		out<<"   "<<i->first<<endl;
+		out<<"   "<<i->first;
+		out<<" {stp="<<i->second.steps.size()<<"}";
+		out<<endl;
 	}
 	out<<"Missions:"<<endl;
 	for(Set_Missions::const_iterator i=missions.begin();i!=missions.end();i++){
-		out<<"   "<<i->first<<endl;
+		out<<"   "<<i->first;
+		out<<" {tsk="<<i->second.tasks.size()<<"}";
+		out<<endl;
 	}
 	out<<"Missions States:"<<endl;
 	for(Set_MissionStates::const_iterator i=missions_states.begin();i!=missions_states.end();i++){
