@@ -40,6 +40,7 @@ public:
 	void start();
 	void clear(){active_items.clear();}
 	void print_actives();
+	void init();
 
 	recursive_mutex mtx;
 	NodeHandle node;

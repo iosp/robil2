@@ -122,7 +122,8 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	//PAUSE(10000);
-	//events.raiseEvent(Event("EndOfInit",context));
+	cout<<"state_INIT"<<endl;
+	events.raiseEvent(Event("EndOfInit",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
@@ -149,7 +150,6 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("INIT",state_INIT);
 	LocalTasks::registration("READY",state_READY);
 	LocalTasks::registration("STANDBY",state_STANDBY);
-	DebugModeTracker dmt(events);
 
 	ROS_INFO("Starting wpd...");
 	Fsmwpd(&context, &events);

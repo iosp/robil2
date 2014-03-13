@@ -110,7 +110,6 @@ void startComponent(ComponentMain* component){
 	LocalTasks::registration("OFF",state_OFF);
 	LocalTasks::registration("INIT",state_INIT);
 	LocalTasks::registration("READY",state_READY);
-	DebugModeTracker dmt(events);
 
 	ROS_INFO("Starting ssm (Monitoring)...");
 	Fsmssm(&context, &events);

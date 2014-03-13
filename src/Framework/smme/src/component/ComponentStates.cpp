@@ -129,7 +129,6 @@ void startSystem(ComponentMain* component){
 	LocalTasks::registration("SYS_INIT",state_INIT);
 	LocalTasks::registration("SYS_READY",state_READY);
 	LocalTasks::registration("SYS_EMERGENCY",state_EMERGENCY);
-	DebugModeTracker dmt(events);
 
 	ROS_INFO("Starting smme (System)...");
 	Fsmsmme(&context, &events);

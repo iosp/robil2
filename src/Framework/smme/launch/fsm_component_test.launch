@@ -1,0 +1,4 @@
+<launch>
+	<node name="fsm_component_tester" type="fsm_component_tester" pkg="smme" output="screen"/>
+	<include file="$(find robil2conf)/frameworkInit.launch" />
+</launch>

@@ -12,14 +12,17 @@
 FsmComponentTester::FsmComponentTester():all(0) {
 	sub_diagnostic = node.subscribe("/diagnostics", 10, &FsmComponentTester::on_diagnostic_msg, this);
 	pub_events = node.advertise<std_msgs::String>("/decision_making/events", 10);
+	node.setParam("/decision_making/debug",true);
 }
 
 FsmComponentTester::~FsmComponentTester() {
-	send("/stop_fsm_debug");
+	//send("/stop_fsm_debug");
+	node.setParam("/decision_making/debug",false);
 }
 
 void FsmComponentTester::start(){
-	send("/start_fsm_debug");
+	//send("/start_fsm_debug");
+	//node.setParam("/decision_making/debug",true);
 }
 
 namespace{
@@ -51,11 +54,11 @@ std::string get(const diagnostic_msgs::DiagnosticStatus& status, std::string nam
 	return "";
 }
 
-std::vector<std::string> split(const string& s, char d){
+std::vector<std::string> split(const string& s, char d, int start=1){
 	stringstream ss;
 	vector<std::string> res;
-	for(size_t i=1;i<s.size();i++){
-		if(s[i]==d){res.push_back(ss.str());ss.str("");}
+	for(size_t i=start;i<s.size();i++){
+		if(s[i]==d){res.push_back(ss.str());ss.str("");continue;}
 		ss<<s[i];
 	}
 	res.push_back(ss.str());
@@ -64,6 +67,30 @@ std::vector<std::string> split(const string& s, char d){
 
 }
 
+#include <robil_msgs/FSMState.h>
+void FsmComponentTester::init(){
+	ros::ServiceClient srv = node.serviceClient<robil_msgs::FSMState>("/fsm_tracker/states");
+	robil_msgs::FSMState st;
+	st.request.fsm="/";
+	if( srv.call(st) ){
+		SYNCH
+		cout<<"Current states:"<<endl;
+		for(size_t i=0;i<st.response.states.size();i++){
+			string state = st.response.states[i];
+			cout<<"\t"<<state<<endl;
+			diagnostic_msgs::DiagnosticStatus msg;
+			typedef diagnostic_msgs::DiagnosticStatus::_values_type::value_type vtype;
+#			define SET_VALUE(K,V) msg.values.push_back(vtype());msg.values.back().key=K;msg.values.back().value=V;
+			SET_VALUE("status", "started");
+			SET_VALUE("name", state);
+#			undef SET_VALUE
+			on_diagnostic(msg);
+		}
+		boost::this_thread::sleep(seconds(1));
+	}else{
+
+	}
+}
 
 void FsmComponentTester::on_diagnostic_msg(const diagnostic_msgs::DiagnosticArray::ConstPtr msg){
 	BOOST_FOREACH(diagnostic_msgs::DiagnosticStatus st, msg->status){
@@ -179,11 +206,13 @@ void FsmComponentTester::print_actives(){
 #define WAIT  std::cout<<"WAIT FOR COMPONENT "<<target_component<<std::endl; \
 	int s;{SYNCH s=active_items[target_component].size();}\
 	while(ros::ok() and active_items[target_component].size()==0){sleep();{SYNCH s=active_items[target_component].size();}}\
-	std::cout<<"START TEST"<<std::endl;
+	std::cout<<"START TEST"<<std::endl;\
+	start();
 
 #define PASS std::cout<<"TEST "<<BOLDGREEN<<"PASS"<<RESET<<std::endl; return true;
 
 bool FsmComponentTester::test1(bool wait){
+	cout<<"[test type 1]"<<endl;
 	SET state_on;
 		state_on.insert(target_component+"/ON");
 		state_on.insert(target_component+"/ON"+target_component+"_ON/INIT");
@@ -200,7 +229,6 @@ bool FsmComponentTester::test1(bool wait){
 
 	if(wait){
 		WAIT
-		send("/start_fsm_debug");
 	}
 
 	TEST(state_on);
@@ -229,10 +257,12 @@ bool FsmComponentTester::test1(bool wait){
 	SEND(target_component+"/Shutdown");
 	TEST(state_off);
 
+	SEND(target_component+"/Activation");
 	PASS
 }
 
 bool FsmComponentTester::test2(bool wait){
+	cout<<"[test type 2]"<<endl;
 	SET state_on;
 		state_on.insert(target_component+"/ON");
 		state_on.insert(target_component+"/ON"+target_component+"_ON/INIT");
@@ -249,7 +279,6 @@ bool FsmComponentTester::test2(bool wait){
 
 	if(wait){
 		WAIT
-		send("/start_fsm_debug");
 	}
 
 	TEST(state_on);
@@ -284,10 +313,12 @@ bool FsmComponentTester::test2(bool wait){
 	SEND(target_component+"/Shutdown");
 	TEST(state_off);
 
+	SEND(target_component+"/Activation");
 	PASS
 }
 
 bool FsmComponentTester::test3(bool wait){
+	cout<<"[test type 3]"<<endl;
 	SET state_on;
 		state_on.insert(target_component+"/ON");
 		state_on.insert(target_component+"/ON"+target_component+"_ON/INIT");
@@ -299,7 +330,6 @@ bool FsmComponentTester::test3(bool wait){
 
 	if(wait){
 		WAIT
-		send("/start_fsm_debug");
 	}
 
 	TEST(state_on);
@@ -316,18 +346,19 @@ bool FsmComponentTester::test3(bool wait){
 	SEND(target_component+"/Shutdown");
 	TEST(state_off);
 
+	SEND(target_component+"/Activation");
 	PASS
 }
 
 bool FsmComponentTester::test(bool wait){
-	if(target_component=="/WorkSequnceManager"){
+	if(target_component=="/wsm"){
 		return test2(wait);
 	}else
 	if(
-		target_component=="/LLC" or
-		target_component=="/Perception" or
-		target_component=="/Monitoring" or
-		target_component=="/IED" or
+		target_component=="/llc" or
+		target_component=="/per" or
+		target_component=="/ssm" or
+		target_component=="/iedsim" or
 	false){
 		return test3(wait);
 	}else{
@@ -356,8 +387,11 @@ int main(int a, char** aa){
 	ros::AsyncSpinner spinner(2);
 	FsmComponentTester tester;
 	spinner.start();
+
+	tester.init();
+
 	int errors = 0;
-	if(a==1){
+	if(a==2 and string(aa[1])=="all"){
 		tester.all = true;
 		tester.target_component="/";
 		spinner.start();
@@ -365,9 +399,16 @@ int main(int a, char** aa){
 		errors+=tester.test(true)?0:1;
 		return 0;
 	}
-
-	for(int i=1;i<a;i++){
-		tester.target_component = string(aa[i]);
+	vector<string> components;
+	if(a==1){
+		string params; ros::param::param("/testing/components",params,string());
+		cout<<"Components: "<<params<<endl;
+		components = split(params,' ',0);
+	}else{
+		for(int i=1;i<a;i++) components.push_back(string(aa[i]));
+	}
+	for(size_t i=0;i<components.size();i++){
+		tester.target_component = components[i];
 		cout<<BOLDBLACK<<"---- "<<tester.target_component<<" ----"<<RESET<<endl;
 		if(comp_rename.find(tester.target_component)!=comp_rename.end())tester.target_component=comp_rename[tester.target_component];
 		if(tester.target_component[0]!='/') tester.target_component="/"+tester.target_component;

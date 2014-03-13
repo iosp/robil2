@@ -159,11 +159,13 @@ public:
 #define __DEFSUBCTEXT(TASK) decision_making::ScoppedThreads::CallContextPtr call_ctx##TASK( new decision_making::CallContext(state_call_ctx, #TASK) );
 #define __SHR_TO_REF(X) (*(X.get()))
 #define FSM_CALL_TASK(TASK) \
+			DIGNOR{\
 			__DEFSUBEVENTQUEUE(TASK) __DEFSUBCTEXT(TASK) \
 			SUBMACHINESTHREADS.add(events_queu##TASK); \
 			SUBMACHINESTHREADS.add(call_ctx##TASK); \
 			SUBMACHINESTHREADS.add(\
-				new boost::thread(  CALL_REMOTE(TASK, boost::ref(__SHR_TO_REF(call_ctx##TASK)), boost::ref(__SHR_TO_REF(events_queu##TASK)))  ));
+				new boost::thread(  CALL_REMOTE(TASK, boost::ref(__SHR_TO_REF(call_ctx##TASK)), boost::ref(__SHR_TO_REF(events_queu##TASK)))  ));\
+			}
 
 #define FSM_CALL_FSM(NAME) \
 			__DEFSUBEVENTQUEUE(NAME) \
