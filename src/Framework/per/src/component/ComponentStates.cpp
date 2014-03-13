@@ -5,6 +5,8 @@
 #include <decision_making/FSM.h>
 #include <decision_making/ROSTask.h>
 #include <decision_making/DecisionMaking.h>
+#include <decision_making/DebugModeTracker.hpp>
+
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
@@ -16,7 +18,7 @@ public:
 	std::string str()const{return "";}
 };
 
-FSM(Perception_ON)
+FSM(per_ON)
 {
 	FSM_STATES
 	{
@@ -45,7 +47,7 @@ FSM(Perception_ON)
 	FSM_END
 }
 
-FSM(Perception)
+FSM(per)
 {
 	FSM_STATES
 	{
@@ -61,16 +63,16 @@ FSM(Perception)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-				FSM_ON_EVENT("/Perception/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/per/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(Perception_ON)
+			FSM_CALL_FSM(per_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-				FSM_ON_EVENT("/Perception/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/per/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 
@@ -86,6 +88,7 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	PAUSE(10000);
+	events.raiseEvent(Event("EndOfInit",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
@@ -103,8 +106,9 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("OFF",state_OFF);
 	LocalTasks::registration("INIT",state_INIT);
 	LocalTasks::registration("READY",state_READY);
+	DebugModeTracker dmt(events);
 
 	ROS_INFO("Starting per...");
-	FsmPerception(&context, &events);
+	Fsmper(&context, &events);
 
 }

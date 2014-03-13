@@ -15,6 +15,11 @@ FsmComponentTester::FsmComponentTester():all(0) {
 }
 
 FsmComponentTester::~FsmComponentTester() {
+	send("/stop_fsm_debug");
+}
+
+void FsmComponentTester::start(){
+	send("/start_fsm_debug");
 }
 
 namespace{
@@ -195,6 +200,7 @@ bool FsmComponentTester::test1(bool wait){
 
 	if(wait){
 		WAIT
+		send("/start_fsm_debug");
 	}
 
 	TEST(state_on);
@@ -243,6 +249,7 @@ bool FsmComponentTester::test2(bool wait){
 
 	if(wait){
 		WAIT
+		send("/start_fsm_debug");
 	}
 
 	TEST(state_on);
@@ -292,6 +299,7 @@ bool FsmComponentTester::test3(bool wait){
 
 	if(wait){
 		WAIT
+		send("/start_fsm_debug");
 	}
 
 	TEST(state_on);
@@ -331,14 +339,14 @@ bool FsmComponentTester::test(bool wait){
 map<string,string> comp_rename;
 
 void init_comp_rename(){
-	comp_rename["llc"]="/LLC";
-	comp_rename["per"]="/Perception";
-	comp_rename["ssm"]="/Monitoring";
-	comp_rename["iedsim"]="/IED";
-	comp_rename["ied"]="/IED";
-	comp_rename["wsm"]="/WorkSequnceManager";
-	comp_rename["pp"]="/PathPlanner";
-	comp_rename["wpd"]="/WaypointDriver";
+// 	comp_rename["llc"]="/LLC";
+// 	comp_rename["per"]="/Perception";
+// 	comp_rename["ssm"]="/Monitoring";
+// 	comp_rename["iedsim"]="/IED";
+// 	comp_rename["ied"]="/IED";
+// 	comp_rename["wsm"]="/WorkSequnceManager";
+// 	comp_rename["pp"]="/PathPlanner";
+// 	comp_rename["wpd"]="/WaypointDriver";
 }
 
 int main(int a, char** aa){
@@ -353,6 +361,7 @@ int main(int a, char** aa){
 		tester.all = true;
 		tester.target_component="/";
 		spinner.start();
+		tester.start();
 		errors+=tester.test(true)?0:1;
 		return 0;
 	}

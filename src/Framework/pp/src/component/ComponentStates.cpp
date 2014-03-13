@@ -8,6 +8,7 @@
 #include <decision_making/FSM.h>
 #include <decision_making/ROSTask.h>
 #include <decision_making/DecisionMaking.h>
+#include <decision_making/DebugModeTracker.hpp>
 
 using namespace std;
 using namespace decision_making;
@@ -21,7 +22,8 @@ public:
 	std::string str()const{return "";}
 };
 
-FSM(PathPlanner_WORK)
+
+FSM(pp_WORK)
 {
 	FSM_STATES
 	{
@@ -36,7 +38,7 @@ FSM(PathPlanner_WORK)
 			FSM_CALL_TASK(STANDBY);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/PathPlanner/Resume", FSM_NEXT(READY));
+				FSM_ON_EVENT("/pp/Resume", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(READY)
@@ -44,14 +46,14 @@ FSM(PathPlanner_WORK)
 			FSM_CALL_TASK(READY);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/PathPlanner/Standby", FSM_NEXT(STANDBY));
+				FSM_ON_EVENT("/pp/Standby", FSM_NEXT(STANDBY));
 			}
 		}
 
 	}
 	FSM_END
 }
-FSM(PathPlanner_ON)
+FSM(pp_ON)
 {
 	FSM_STATES
 	{
@@ -71,7 +73,7 @@ FSM(PathPlanner_ON)
 		}
 		FSM_STATE(WORK)
 		{
-			FSM_CALL_FSM(PathPlanner_WORK)
+			FSM_CALL_FSM(pp_WORK)
 			FSM_TRANSITIONS{}
 		}
 
@@ -79,7 +81,7 @@ FSM(PathPlanner_ON)
 	FSM_END
 }
 
-FSM(PathPlanner)
+FSM(pp)
 {
 	FSM_STATES
 	{
@@ -95,16 +97,16 @@ FSM(PathPlanner)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-				FSM_ON_EVENT("/PathPlanner/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/pp/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(PathPlanner_ON)
+			FSM_CALL_FSM(pp_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-				FSM_ON_EVENT("/PathPlanner/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/pp/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 
@@ -120,6 +122,7 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	PAUSE(10000);
+	events.raiseEvent(Event("EndOfInit",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
@@ -142,9 +145,10 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("INIT",state_INIT);
 	LocalTasks::registration("READY",state_READY);
 	LocalTasks::registration("STANDBY",state_STANDBY);
+	DebugModeTracker dmt(events);
 
-	ROS_INFO("Starting PathPlanner...");
-	FsmPathPlanner(&context, &events);
+	ROS_INFO("Starting pp (PathPlanner)...");
+	Fsmpp(&context, &events);
 
 }
 

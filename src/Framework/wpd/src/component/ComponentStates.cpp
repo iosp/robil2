@@ -8,6 +8,7 @@
 #include <decision_making/FSM.h>
 #include <decision_making/ROSTask.h>
 #include <decision_making/DecisionMaking.h>
+#include <decision_making/DebugModeTracker.hpp>
 
 using namespace std;
 using namespace decision_making;
@@ -22,7 +23,7 @@ public:
 	std::string str()const{return "";}
 };
 
-FSM(WaypointDriver_WORK)
+FSM(wpd_WORK)
 {
 	FSM_STATES
 	{
@@ -37,7 +38,7 @@ FSM(WaypointDriver_WORK)
 			FSM_CALL_TASK(STANDBY);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/WaypointDriver/Resume", FSM_NEXT(READY));
+				FSM_ON_EVENT("/wpd/Resume", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(READY)
@@ -45,14 +46,14 @@ FSM(WaypointDriver_WORK)
 			FSM_CALL_TASK(READY);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/WaypointDriver/Standby", FSM_NEXT(STANDBY));
+				FSM_ON_EVENT("/wpd/Standby", FSM_NEXT(STANDBY));
 			}
 		}
 
 	}
 	FSM_END
 }
-FSM(WaypointDriver_ON)
+FSM(wpd_ON)
 {
 	FSM_STATES
 	{
@@ -72,7 +73,7 @@ FSM(WaypointDriver_ON)
 		}
 		FSM_STATE(WORK)
 		{
-			FSM_CALL_FSM(WaypointDriver_WORK)
+			FSM_CALL_FSM(wpd_WORK)
 			FSM_TRANSITIONS{}
 		}
 
@@ -80,7 +81,7 @@ FSM(WaypointDriver_ON)
 	FSM_END
 }
 
-FSM(WaypointDriver)
+FSM(wpd)
 {
 	FSM_STATES
 	{
@@ -96,16 +97,16 @@ FSM(WaypointDriver)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-				FSM_ON_EVENT("/WaypointDriver/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/wpd/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(WaypointDriver_ON)
+			FSM_CALL_FSM(wpd_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-				FSM_ON_EVENT("/WaypointDriver/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/wpd/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 
@@ -121,7 +122,7 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	//PAUSE(10000);
-	events.raiseEvent(Event("EndOfInit",context));
+	//events.raiseEvent(Event("EndOfInit",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
@@ -148,9 +149,10 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("INIT",state_INIT);
 	LocalTasks::registration("READY",state_READY);
 	LocalTasks::registration("STANDBY",state_STANDBY);
+	DebugModeTracker dmt(events);
 
-	ROS_INFO("Starting WaypointDriver...");
-	FsmWaypointDriver(&context, &events);
+	ROS_INFO("Starting wpd...");
+	Fsmwpd(&context, &events);
 
 }
 

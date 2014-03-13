@@ -5,6 +5,8 @@
 #include <decision_making/FSM.h>
 #include <decision_making/ROSTask.h>
 #include <decision_making/DecisionMaking.h>
+#include <decision_making/DebugModeTracker.hpp>
+
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
@@ -16,7 +18,7 @@ public:
 	std::string str()const{return "";}
 };
 
-FSM(System_ON)
+FSM(smme_ON)
 {
 	FSM_STATES
 	{
@@ -56,7 +58,7 @@ FSM(System_ON)
 	FSM_END
 }
 
-FSM(System)
+FSM(smme)
 {
 	FSM_STATES
 	{
@@ -76,7 +78,7 @@ FSM(System)
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(System_ON)
+			FSM_CALL_FSM(smme_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/PowerOff", FSM_NEXT(OFF));
@@ -97,6 +99,7 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	//PAUSE(10000);
+	events.raiseEvent(Event("/EndOfCoreSystemInit",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
@@ -126,8 +129,9 @@ void startSystem(ComponentMain* component){
 	LocalTasks::registration("SYS_INIT",state_INIT);
 	LocalTasks::registration("SYS_READY",state_READY);
 	LocalTasks::registration("SYS_EMERGENCY",state_EMERGENCY);
+	DebugModeTracker dmt(events);
 
 	ROS_INFO("Starting smme (System)...");
-	FsmSystem(&context, &events);
+	Fsmsmme(&context, &events);
 
 }

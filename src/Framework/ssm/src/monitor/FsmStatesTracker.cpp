@@ -204,14 +204,14 @@ bool FsmStatesTracker::on_ss_remove(robil_msgs::FSMState::Request& req, robil_ms
 map<string,string> comp_rename;
 
 void init_comp_rename(){
-	comp_rename["llc"]="/LLC";
-	comp_rename["per"]="/Perception";
-	comp_rename["ssm"]="/Monitoring";
-	comp_rename["iedsim"]="/IED";
-	comp_rename["ied"]="/IED";
-	comp_rename["wsm"]="/WorkSequnceManager";
-	comp_rename["pp"]="/PathPlanner";
-	comp_rename["wpd"]="/WaypointDriver";
+// 	comp_rename["llc"]="/LLC";
+// 	comp_rename["per"]="/Perception";
+// 	comp_rename["ssm"]="/Monitoring";
+// 	comp_rename["iedsim"]="/IED";
+// 	comp_rename["ied"]="/IED";
+// 	comp_rename["wsm"]="/WorkSequnceManager";
+// 	comp_rename["pp"]="/PathPlanner";
+// 	comp_rename["wpd"]="/WaypointDriver";
 }
 
 int main(int a, char** aa){

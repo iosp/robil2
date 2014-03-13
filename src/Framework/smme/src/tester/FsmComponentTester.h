@@ -37,6 +37,7 @@ public:
 	bool test2(bool);
 	bool test3(bool);
 	bool test(bool);
+	void start();
 	void clear(){active_items.clear();}
 	void print_actives();
 
