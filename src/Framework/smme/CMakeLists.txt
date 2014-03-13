@@ -38,5 +38,12 @@ target_link_libraries(smme_node smme_compMain smme_rosComm ${catkin_LIBRARIES} $
 add_executable(fsm_component_tester src/tester/FsmComponentTester.cpp)
 target_link_libraries(fsm_component_tester ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
+add_executable(mission_tester src/tester/MissionTester.cpp)
+target_link_libraries(mission_tester ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+
+
+
+
 
 

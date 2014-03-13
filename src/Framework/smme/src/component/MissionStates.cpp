@@ -14,6 +14,7 @@ class MissionParams: public CallContextParameters{
 public:
 	ComponentMain* comp;
 	string mission_id;
+	MissionParams():comp(0), mission_id(""){struct MissionParametersConstructorEmpty{}; throw MissionParametersConstructorEmpty();}
 	MissionParams(ComponentMain* comp, string mission_id)
 		:comp(comp), mission_id(mission_id)
 	{
@@ -22,6 +23,7 @@ public:
 	std::string str()const{return "";}
 };
 
+#define MISSION_ID string("/")+FSM_CONTEXT.parameters<MissionParams>().mission_id
 
 FSM(MissionActive)
 {
@@ -40,9 +42,9 @@ FSM(MissionActive)
 			FSM_CALL_TASK(MissionSpooling)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/CompleteMission", FSM_NEXT(MissionFinished));
-				FSM_ON_EVENT("/AbortMission", FSM_NEXT(MissionAborted));
-				FSM_ON_EVENT("/PauseMission", FSM_NEXT(MissionPaused));
+				FSM_ON_EVENT(MISSION_ID+"/CompleteMission", FSM_NEXT(MissionFinished));
+				FSM_ON_EVENT(MISSION_ID+"/AbortMission", FSM_NEXT(MissionAborted));
+				FSM_ON_EVENT(MISSION_ID+"/PauseMission", FSM_NEXT(MissionPaused));
 			}
 		}
 		FSM_STATE(MissionPaused)
@@ -50,11 +52,11 @@ FSM(MissionActive)
 			FSM_CALL_TASK(MissionPaused)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/CompleteMission", FSM_NEXT(MissionFinished));
-				FSM_ON_EVENT("/AbortMission", FSM_NEXT(MissionAborted));
+				FSM_ON_EVENT(MISSION_ID+"/CompleteMission", FSM_NEXT(MissionFinished));
+				FSM_ON_EVENT(MISSION_ID+"/AbortMission", FSM_NEXT(MissionAborted));
 
-				FSM_ON_EVENT("/ResumeMission", FSM_RAISE("/RestartTask"));
-				FSM_ON_EVENT("/ResumeMission", FSM_NEXT(MissionSpooling));
+				FSM_ON_EVENT(MISSION_ID+"/ResumeMission", FSM_RAISE("/RestartTask"));
+				FSM_ON_EVENT(MISSION_ID+"/ResumeMission", FSM_NEXT(MissionSpooling));
 			}
 		}
 		FSM_STATE(MissionAborted)
@@ -62,7 +64,7 @@ FSM(MissionActive)
 			FSM_CALL_TASK(MissionAborted)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/StartMission", FSM_NEXT(MissionSpooling));
+				FSM_ON_EVENT(MISSION_ID+"/StartMission", FSM_NEXT(MissionSpooling));
 			}
 		}
 		FSM_STATE(MissionFinished)
@@ -70,7 +72,7 @@ FSM(MissionActive)
 			FSM_CALL_TASK(MissionFinished)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/StartMission", FSM_NEXT(MissionSpooling));
+				FSM_ON_EVENT(MISSION_ID+"/StartMission", FSM_NEXT(MissionSpooling));
 			}
 		}
 	}
@@ -86,6 +88,7 @@ FSM(Mission)
 		MissionActive
 	}
 	FSM_START(MissionPending);
+	call_ctx.pop();
 	FSM_BGN
 	{
 		FSM_STATE(MissionUnloaded)
@@ -102,9 +105,9 @@ FSM(Mission)
 			FSM_TRANSITIONS
 			{
 				//NOTE: It's not clear for transition from MissionPending to NoMissionLoaded
-				FSM_ON_EVENT("/DeleteMission", FSM_NEXT(MissionUnloaded));
+				FSM_ON_EVENT(MISSION_ID+"/DeleteMission", FSM_NEXT(MissionUnloaded));
 				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
-				FSM_ON_EVENT("/StartMission", FSM_NEXT(MissionActive));
+				FSM_ON_EVENT(MISSION_ID+"/StartMission", FSM_NEXT(MissionActive));
 			}
 		}
 		FSM_STATE(MissionActive)
@@ -113,9 +116,9 @@ FSM(Mission)
 			FSM_TRANSITIONS
 			{
 				//NOTE: It's not clear for transition from MissionActive to NoMissionLoaded
-				FSM_ON_EVENT("/DeleteMission", FSM_NEXT(MissionUnloaded));
-				FSM_ON_EVENT("/Standby", FSM_NEXT(MissionUnloaded));
-				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
+				FSM_ON_EVENT(MISSION_ID+"/DeleteMission", FSM_NEXT(MissionUnloaded));
+				FSM_ON_EVENT(MISSION_ID+"/Standby", FSM_NEXT(MissionUnloaded));
+				FSM_ON_EVENT(MISSION_ID+"/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
 			}
 		}
 
@@ -165,6 +168,18 @@ TaskResult state_MissionFinished(string id, const CallContext& context, EventQue
 	return TaskResult::SUCCESS();
 }
 
+#include <robil_msgs/MissionState.h>
+MissionManager* __mission_manager=0;
+bool get_mission_state(robil_msgs::MissionState::Request& req,robil_msgs::MissionState::Response& res){
+	if(__mission_manager){
+		std::string state = __mission_manager->print_state();
+		res.states = state;
+		return true;
+	}
+	return false;
+
+}
+
 void initMissionTasks(){
 	LocalTasks::registration("MissionUnloaded",state_MissionUnloaded);
 	LocalTasks::registration("MissionPending",state_MissionPending);
@@ -179,7 +194,7 @@ void startMission(ComponentMain* component, std::string mission_id){
 	//ros_decision_making_init(argc, argv);
 	RosEventQueue events;
 	CallContext context;
-	context.push("mission_id");
+	context.push(mission_id);
 	context.createParameters(new MissionParams(component, mission_id));
 	//events.async_spin();
 

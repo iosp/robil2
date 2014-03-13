@@ -171,6 +171,7 @@ public:
 	TASK_TYPE task_type();
 	NavTask get_nav_task();
 	ManTask get_man_task();
+	string print_state();
 	//=================================================================
 
 };

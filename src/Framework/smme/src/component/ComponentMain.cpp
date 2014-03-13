@@ -16,6 +16,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	_mission_manager->conf.start_mission_state="_started";
 	_mission_manager->conf.start_task_state="_started";
 	_mission_manager->conf.stop_task_state="_stopped";
+	ROS_INFO("Mission manager created");
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -39,11 +40,15 @@ void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& 
 	config::SMME::pub::MissionAcceptance acceptance =
 			_mission_manager->assign(msg);
 	if(acceptance.status>0){
+		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" accepted");
 		if(threads.size()==0){
+			_mission_manager->change_mission(msg.mission_id);
 			threads.add_thread( startTaskThread(this) );
 			initMissionTasks();
 		}
 		threads.add_thread( startMissionThread(this, msg.mission_id) );
+	}else{
+		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" rejected");
 	}
 	publishMissionAcceptance(acceptance);
 }
