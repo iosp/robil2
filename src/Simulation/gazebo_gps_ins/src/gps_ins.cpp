@@ -10,8 +10,10 @@
 #include <ros/ros.h>
 #include <iostream>
 #include <cmath>
-#include "std_msgs/String.h"
-#include "gazebo_gps_ins/GPS_INS.h"
+#include "sensor_msgs/Imu.h"
+#include "sensor_msgs/NavSatFix.h"
+#include "sensor_msgs/NavSatStatus.h"
+
 #include <sstream>
 #include <string>
 
@@ -20,7 +22,9 @@
 #define DEGREE_TO_M		111000 			//1 degree has appprox. 111km
 #define ABS(x) (x > 0 ? x : -x)
 
-#define TOPIC_NAME 		"GPS_INS"
+
+#define TOPIC_NAME_GPS 		"/SENSORS/GPS"
+#define TOPIC_NAME_IMU 		"/SENSORS/IMU"
 #define SENSOR_GPS_NAME		"gps_component"
 #define SENSOR_IMU_NAME		"imu_component"
 
@@ -46,6 +50,7 @@ namespace gazebo
   public:
     void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     {
+		_seq = 0;
       // Store the pointer to the model
       this->_model = _parent;
       //load config from sdf
@@ -98,7 +103,8 @@ namespace gazebo
       // Listen to the update event. This event is broadcast every
       // simulation iteration.
       this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&GPS_INS::OnUpdate, this, _1));
-      _publisher = _nodeHandle.advertise<gazebo_gps_ins::GPS_INS>(TOPIC_NAME, 1000);
+      _publisherGPS = _nodeHandle.advertise<sensor_msgs::NavSatFix>(TOPIC_NAME_GPS, 10);
+	  _publisherIMU = _nodeHandle.advertise<sensor_msgs::Imu>(TOPIC_NAME_IMU, 10);
 
     }
 
@@ -110,35 +116,39 @@ namespace gazebo
       if(simTime.Double()-_lastTime.Double() < 1.0/_frequency) return;
       _lastTime = simTime;
       
-      gazebo_gps_ins::GPS_INS msg;
-      math::Pose pose=_model->GetWorldPose();
-      gazebo::math::Vector3 pos = pose.pos;
-      msg.altitude = pos.z;
-      msg.longitude = _start_longitude + pos.y/DEGREE_TO_M;
-      msg.latitude = _start_latitude + pos.x/DEGREE_TO_M;
-      
-      //msg.altitude = _gps->GetAltitude();
-      //msg.longitude = _gps->GetLongitude().Degree()+_start_longitude;
-      //msg.latitude = _gps->GetLatitude().Degree()+_start_latitude;
-      
-      
-      msg.linearAcceleration.resize(3);
-      msg.angularVelocity.resize(3);
-      msg.orientation.resize(3);
-      
-      msg.linearAcceleration[0] = _imu->GetLinearAcceleration().x;
-      msg.linearAcceleration[1] = _imu->GetLinearAcceleration().y;
-      msg.linearAcceleration[2] = _imu->GetLinearAcceleration().z;
-      
-      msg.angularVelocity[0] = _imu->GetAngularVelocity().x;
-      msg.angularVelocity[1] = _imu->GetAngularVelocity().y;
-      msg.angularVelocity[2] = _imu->GetAngularVelocity().z;
-      
-      msg.orientation[0] = _imu->GetOrientation().GetRoll();
-      msg.orientation[1] = _imu->GetOrientation().GetPitch();
-      msg.orientation[2] = _imu->GetOrientation().GetYaw();
-      
-      _publisher.publish(msg);
+	  	sensor_msgs::NavSatFix msg_gps;
+		sensor_msgs::Imu msg_imu;
+
+		math::Pose pose=_model->GetWorldPose();
+		gazebo::math::Vector3 pos = pose.pos;		
+		msg_gps.altitude = pos.z;
+		msg_gps.longitude = _start_longitude + pos.y/DEGREE_TO_M;
+		msg_gps.latitude = _start_latitude + pos.x/DEGREE_TO_M;
+		msg_gps.header.seq = _seq++;
+		msg_gps.header.frame_id = 1;
+		msg_gps.header.stamp.sec = (int)simTime.Double();
+		msg_gps.status.status = sensor_msgs::NavSatStatus::STATUS_FIX;
+		msg_gps.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
+
+		msg_imu.header.seq = _seq;
+		msg_imu.header.frame_id = 1;
+		msg_imu.header.stamp.sec = (int)simTime.Double();
+		msg_imu.orientation.x = _imu->GetOrientation().x;
+		msg_imu.orientation.y = _imu->GetOrientation().y;
+		msg_imu.orientation.z = _imu->GetOrientation().z;
+		msg_imu.orientation.w = _imu->GetOrientation().w;
+		
+		msg_imu.angular_velocity.x = _imu->GetAngularVelocity().x;
+		msg_imu.angular_velocity.y = _imu->GetAngularVelocity().y;
+		msg_imu.angular_velocity.z = _imu->GetAngularVelocity().z;
+		
+		msg_imu.linear_acceleration.x = _imu->GetLinearAcceleration().x;
+		msg_imu.linear_acceleration.y = _imu->GetLinearAcceleration().y;
+		msg_imu.linear_acceleration.z = _imu->GetLinearAcceleration().z;
+
+		_publisherGPS.publish(msg_gps);
+		_publisherIMU.publish(msg_imu);
+		
     }
 
 
@@ -166,7 +176,7 @@ namespace gazebo
     event::ConnectionPtr 	_updateConnection; // Pointer to the update event connection
 
     ros::NodeHandle		_nodeHandle;
-    ros::Publisher 		_publisher;
+    ros::Publisher 		_publisherGPS, _publisherIMU;
     
     //sensors::GpsSensorPtr 	_gps;
     sensors::ImuSensorPtr 	_imu;
@@ -174,6 +184,7 @@ namespace gazebo
     double _start_latitude, _start_longitude;
     int  _frequency;
     common::Time		_lastTime;
+  	int 				_seq;
   };
 
 // Register this plugin with the simulator

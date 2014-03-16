@@ -19,10 +19,6 @@ add_library(gps_ins SHARED src/gps_ins.cpp)
 target_link_libraries(gps_ins ${GAZEBO_libraries})
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   GPS_INS.msg
- )
 
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
@@ -30,7 +26,6 @@ target_link_libraries(gps_ins ${GAZEBO_libraries})
 #   std_msgs  # Or other packages containing msgs
 # )
 
-generate_messages()
 
 catkin_package(
   DEPENDS 
