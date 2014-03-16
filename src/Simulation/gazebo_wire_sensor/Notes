@@ -1,20 +1,12 @@
-GPS INS sensor
+Wire sensor
 ------------------
 version: 1.01
 
-This module publishes the data received from a GPS and IMU sensor.
-The data you receive from subscribing is:
-- altitude
-- latitude
-- longitude
-- linear acceleration
-- angular velocity
-- orientation
+This module publishes the distance between wire_sensor and wire_sensor_mount.
 
+An additional noise of ~N(0,0.1) is added free of charge :)
 
-You can modify the initial position in the world (in terms of latitue and longitude). The default is at Ben Gurion University coordinates.
-
-
+Enjoy...
 
 
 Install
@@ -26,12 +18,9 @@ copy folder to your workspace and install the workspace:
 Test
 ----
 Run the launch file:
-	$ roslaunch gazebo_gps_ins gps.launch
+	$ roslaunch gazebo_wire_sensor wire.launch
 	
 subscribe to topic:
-	$ rostopic echo /GPS_INS
+	$ rostopic echo /SENSORS/WIRE
 	
-TODO
-----
-- Add publish rate option to sdf file.
-- Add noise to all of the sensors.
+
