@@ -1,0 +1,37 @@
+GPS INS sensor
+------------------
+version: 1.01
+
+This module publishes the data received from a GPS and IMU sensor.
+The data you receive from subscribing is:
+- altitude
+- latitude
+- longitude
+- linear acceleration
+- angular velocity
+- orientation
+
+
+You can modify the initial position in the world (in terms of latitue and longitude). The default is at Ben Gurion University coordinates.
+
+
+
+
+Install
+-------
+copy folder to your workspace and install the workspace:
+	$ catkin_make install
+	$ catkin_make
+
+Test
+----
+Run the launch file:
+	$ roslaunch gazebo_gps_ins gps.launch
+	
+subscribe to topic:
+	$ rostopic echo /GPS_INS
+	
+TODO
+----
+- Add publish rate option to sdf file.
+- Add noise to all of the sensors.

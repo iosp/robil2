@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <include>
+      <uri>model://wire_sensor</uri>
+    </include>
+    <include>
+      <uri>model://wire_sensor_mount</uri>
+    </include>
+  </world>
+</sdf>
+
