@@ -21,6 +21,10 @@ MissionManager::MissionAcceptance MissionManager::assign(const Mission& mission)
 SYNCHRONIZED
 	MissionID mid = id(mission);
 	missions[mid] = mission;
+	if(tasks_count(mid)<1){
+		missions.erase(mid);
+		return createMissionRejectedMessage(mission, 0);
+	}
 	ROS_INFO_STREAM("New mission task: "<<mission);
 	return createMissionAcceptedMessage(mission);
 }
@@ -41,6 +45,11 @@ SYNCHRONIZED
 MissionManager::MissionAcceptance MissionManager::createMissionAcceptedMessage(const Mission& mission){
 	MissionAcceptance accep;
 	accep.status = 1;
+	return accep;
+}
+MissionManager::MissionAcceptance MissionManager::createMissionRejectedMessage(const Mission& mission, int error_code){
+	MissionAcceptance accep;
+	accep.status = error_code;
 	return accep;
 }
 
@@ -147,6 +156,9 @@ SYNCHRONIZED
 	}
 
 	current_mission = mid;
+
+	task_id(); // index validation
+
 	return mission_state();
 }
 

@@ -34,7 +34,7 @@ public:
 	MissionTester();
 	virtual ~MissionTester();
 
-	void test();
+	bool test();
 
 	ros::NodeHandle node;
 	Publisher p_NavTask;
