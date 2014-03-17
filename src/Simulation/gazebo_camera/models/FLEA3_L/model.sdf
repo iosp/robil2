@@ -39,7 +39,7 @@
 	    <alwaysOn>true</alwaysOn>
 	    <updateRate>30.0</updateRate>
 	    <cameraName>flea3/cameraL</cameraName>
-	    <imageTopicName>image_raw</imageTopicName>
+	    <imageTopicName>/SENSORS/CAM/L</imageTopicName>
 	    <cameraInfoTopicName>camera_info</cameraInfoTopicName>
 	    <frameName>cameraL_frame</frameName>
 	    <hackBaseline>0.07</hackBaseline>

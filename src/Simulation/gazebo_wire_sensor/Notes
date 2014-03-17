@@ -1,0 +1,26 @@
+Wire sensor
+------------------
+version: 1.01
+
+This module publishes the distance between wire_sensor and wire_sensor_mount.
+
+An additional noise of ~N(0,0.1) is added free of charge :)
+
+Enjoy...
+
+
+Install
+-------
+copy folder to your workspace and install the workspace:
+	$ catkin_make install
+	$ catkin_make
+
+Test
+----
+Run the launch file:
+	$ roslaunch gazebo_wire_sensor wire.launch
+	
+subscribe to topic:
+	$ rostopic echo /SENSORS/WIRE
+	
+
