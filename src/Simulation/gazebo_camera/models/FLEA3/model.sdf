@@ -39,7 +39,7 @@
 	    <alwaysOn>true</alwaysOn>
 	    <updateRate>30.0</updateRate>
 	    <cameraName>rrbot/camera1</cameraName>
-	    <imageTopicName>image_raw</imageTopicName>
+	    <imageTopicName>/SENSORS/CAM/TEST</imageTopicName>
 	    <cameraInfoTopicName>camera_info</cameraInfoTopicName>
 	    <frameName>camera_frame</frameName>
 	    <hackBaseline>0.07</hackBaseline>
