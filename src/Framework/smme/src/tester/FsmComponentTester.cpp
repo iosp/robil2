@@ -191,7 +191,8 @@ void FsmComponentTester::print_actives(){
 	int s;{SYNCH s=active_items[target_component].size();}\
 	while(ros::ok() and active_items[target_component].size()==0){sleep();{SYNCH s=active_items[target_component].size();}}\
 	std::cout<<"START TEST"<<std::endl;\
-	start();
+	start();\
+	sleep();
 
 #define PASS std::cout<<"TEST "<<BOLDGREEN<<"PASS"<<RESET<<std::endl; return true;
 
@@ -398,5 +399,5 @@ int main(int a, char** aa){
 		if(tester.target_component[0]!='/') tester.target_component="/"+tester.target_component;
 		errors+=tester.test(true)?0:1;
 	}
-	std::cout<<BOLDBLACK<<"SUMMERY: "<<(errors?RED:GREEN)<< errors <<" error(s)"<<RESET<< std::endl;
+	std::cout<<BOLDBLACK<<"SUMMARY: "<<(errors?RED:GREEN)<< errors <<" error(s)"<<RESET<< std::endl;
 }
