@@ -10,6 +10,7 @@
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
+#include "AblManager.h"
 
 class Params: public CallContextParameters{
 public:
@@ -40,6 +41,7 @@ FSM(smme_ON)
 		FSM_STATE(Ready)
 		{
 			FSM_CALL_TASK(SYS_READY)
+			FSM_CALL_TASK(ABL)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/EStopCommand", FSM_NEXT(Emergency));
@@ -110,6 +112,11 @@ TaskResult state_EMERGENCY(string id, const CallContext& context, EventQueue& ev
 	PAUSE(10000);
 	return TaskResult::SUCCESS();
 }
+TaskResult tsk_ABL(string id, const CallContext& context, EventQueue& events){
+	AblManager abl(COMPONENT);
+	abl.listen(&events);
+	return TaskResult::SUCCESS();
+}
 
 }
 
@@ -129,6 +136,7 @@ void startSystem(ComponentMain* component){
 	LocalTasks::registration("SYS_INIT",state_INIT);
 	LocalTasks::registration("SYS_READY",state_READY);
 	LocalTasks::registration("SYS_EMERGENCY",state_EMERGENCY);
+	LocalTasks::registration("ABL",tsk_ABL);
 
 	ROS_INFO("Starting smme (System)...");
 	Fsmsmme(&context, &events);
