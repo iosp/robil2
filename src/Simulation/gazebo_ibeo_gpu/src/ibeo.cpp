@@ -144,7 +144,7 @@ namespace gazebo
 	for(unsigned int i = 0; i < rangesT1.size(); ++i) scan.ranges_t1[i] = rangesT1[i];
 	for(unsigned int i = 0; i < rangesT2.size(); ++i) scan.ranges_t2[i] = rangesT2[i];
 	for(unsigned int i = 0; i < rangesB1.size(); ++i) scan.ranges_b1[i] = rangesB1[i];
-	for(unsigned int i = 0; i < rangesT2.size(); ++i) scan.ranges_b2[i] = rangesB2[i];
+	for(unsigned int i = 0; i < rangesB2.size(); ++i) scan.ranges_b2[i] = rangesB2[i];
 	
 	_publisher.publish(scan);
        

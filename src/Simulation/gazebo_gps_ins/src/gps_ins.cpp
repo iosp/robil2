@@ -133,10 +133,10 @@ namespace gazebo
 		msg_imu.header.seq = _seq;
 		msg_imu.header.frame_id = 1;
 		msg_imu.header.stamp.sec = (int)simTime.Double();
-		msg_imu.orientation.x = _imu->GetOrientation().x;
-		msg_imu.orientation.y = _imu->GetOrientation().y;
-		msg_imu.orientation.z = _imu->GetOrientation().z;
-		msg_imu.orientation.w = _imu->GetOrientation().w;
+		msg_imu.orientation.x = pose.rot.x;
+		msg_imu.orientation.y = pose.rot.y;
+		msg_imu.orientation.z = pose.rot.z;
+		msg_imu.orientation.w = pose.rot.w;
 		
 		msg_imu.angular_velocity.x = _imu->GetAngularVelocity().x;
 		msg_imu.angular_velocity.y = _imu->GetAngularVelocity().y;
@@ -184,7 +184,7 @@ namespace gazebo
     double _start_latitude, _start_longitude;
     int  _frequency;
     common::Time		_lastTime;
-  	int 				_seq;
+    int 			_seq;
   };
 
 // Register this plugin with the simulator
