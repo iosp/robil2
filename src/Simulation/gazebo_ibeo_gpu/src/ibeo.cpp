@@ -125,7 +125,7 @@ namespace gazebo
        scan.angle_max_t = _sensorT1->GetAngleMax().Radian();
        scan.angle_min_b = _sensorB1->GetAngleMin().Radian();
        scan.angle_max_b = _sensorB1->GetAngleMax().Radian();
-       scan.angle_increment = 0.0043; //according to datasheet
+       scan.angle_increment = 0.0022; //according to datasheet
        scan.time_increment = 1.0/_updateRate/200; //YUVAL_SHEKER
        scan.angle_t1 = 0.0014;
        scan.angle_t2 = 0.0028;
@@ -144,7 +144,7 @@ namespace gazebo
 	for(unsigned int i = 0; i < rangesT1.size(); ++i) scan.ranges_t1[i] = rangesT1[i];
 	for(unsigned int i = 0; i < rangesT2.size(); ++i) scan.ranges_t2[i] = rangesT2[i];
 	for(unsigned int i = 0; i < rangesB1.size(); ++i) scan.ranges_b1[i] = rangesB1[i];
-	for(unsigned int i = 0; i < rangesT2.size(); ++i) scan.ranges_b2[i] = rangesB2[i];
+	for(unsigned int i = 0; i < rangesB2.size(); ++i) scan.ranges_b2[i] = rangesB2[i];
 	
 	_publisher.publish(scan);
        

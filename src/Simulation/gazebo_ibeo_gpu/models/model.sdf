@@ -33,7 +33,7 @@
 	</ray>
 	<always_on>1</always_on>
 	<update_rate>30</update_rate>
-	<visualize>0</visualize>
+	<visualize>1</visualize>
       </sensor>
       
       <sensor name='ibeo-t2' type='gpu_ray'>
@@ -56,7 +56,7 @@
 	</ray>
 	<always_on>1</always_on>
 	<update_rate>30</update_rate>
-	<visualize>0</visualize>
+	<visualize>1</visualize>
       </sensor>
       
       <sensor name='ibeo-b1' type='gpu_ray'>
@@ -83,7 +83,7 @@
 	</ray>
 	<always_on>1</always_on>
 	<update_rate>30</update_rate>
-	<visualize>0</visualize>
+	<visualize>1</visualize>
       </sensor>
       
       <sensor name='ibeo-b2' type='gpu_ray'>
@@ -110,7 +110,7 @@
 	</ray>
 	<always_on>1</always_on>
 	<update_rate>30</update_rate>
-	<visualize>0</visualize>
+	<visualize>1</visualize>
       </sensor>
       
       

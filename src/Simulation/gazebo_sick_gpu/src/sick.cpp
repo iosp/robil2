@@ -78,7 +78,7 @@ namespace gazebo
 	{
 	   this->name_=this->name_.substr(0,this->name_.find(":"));
 	}
-	//printf("I have loaded.!!!\n");
+	
 	this->parentSensor = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(_parent);
 
 	if (!this->parentSensor) gzthrow("RayPlugin requires a Ray Sensor as its parent");
