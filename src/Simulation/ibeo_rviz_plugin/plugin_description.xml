@@ -1,0 +1,9 @@
+<library path="lib/libibeo_rviz_plugin">
+  <class name="ibeo_rviz_plugin/IBEO"
+         type="ibeo_rviz_plugin::IBEOScanDisplay"
+         base_class_type="rviz::Display">
+    <description>
+      support for ibeo multilaser
+    </description>
+  </class>
+</library>

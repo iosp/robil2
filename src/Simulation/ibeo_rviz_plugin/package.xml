@@ -1,0 +1,24 @@
+<package>
+  <name>ibeo_rviz_plugin</name>
+  <version>0.8.4</version>
+  <description>
+     a plugin for the ibeo integration in rviz
+  </description>
+  <maintainer email="yderi@iai.co.il">Yuval Deri</maintainer>
+  <license>BSD</license>
+
+  <url>http://</url>
+  <author>Yuval</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rviz</build_depend>
+  <build_depend>gazebo_ibeo_gpu</build_depend>
+<build_depend>message_runtime</build_depend>
+  <run_depend>rviz</run_depend>
+  <run_depend>gazebo_ibeo_gpu</run_depend>
+<run_depend>message_runtime</run_depend>
+  <export>
+      <rviz plugin="${prefix}/plugin_description.xml"/>
+  </export>
+</package>
