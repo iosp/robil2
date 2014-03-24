@@ -13,17 +13,18 @@
 
   ros::Publisher supporter_pub_;
   ros::Publisher loader_pub_;
+  ros::Publisher brackets_pub_;
 
 
 void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 {
 	std_msgs::Float64 pub;    
 	
-    	pub.data = (msg->linear.x + msg->angular.x )*100;
+    	pub.data = (msg->linear.x + msg->angular.x );
     	front_left_pub_.publish(pub);
 	back_left_pub_.publish(pub);
 
-    	pub.data = (msg->linear.x - msg->angular.x )*100;
+    	pub.data = (msg->linear.x - msg->angular.x );
 	front_right_pub_.publish(pub);
 	back_right_pub_.publish(pub);
 }
@@ -37,6 +38,9 @@ void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
 
     	pub.data = msg->y;
 	loader_pub_.publish(pub);
+    	
+	pub.data = msg->z;
+	brackets_pub_.publish(pub);
 }
 
 int main(int argc, char **argv)
@@ -53,6 +57,7 @@ int main(int argc, char **argv)
 
   supporter_pub_ = n.advertise<std_msgs::Float64>("/bobcat/supporter_position_controller/command", 100);
   loader_pub_ = n.advertise<std_msgs::Float64>("/bobcat/loader_position_controller/command", 100);
+  brackets_pub_ = n.advertise<std_msgs::Float64>("/bobcat/brackets_position_controller/command", 100);
 
   ros::Subscriber twist_sub_ = n.subscribe("/wheelsrate", 1000, wheelsCallback );
   ros::Subscriber arm_sub_ = n.subscribe("/armrate", 1000, armCallback );
