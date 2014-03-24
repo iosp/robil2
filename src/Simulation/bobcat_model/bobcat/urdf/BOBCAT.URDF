@@ -77,7 +77,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/front_left_wheel_lite.STL" />
+          filename="package://bobcat/meshes/front_left_wheel_lite.stl" />
       </geometry>
     </collision>
   </link>
@@ -130,7 +130,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/front_right_wheel_lite.STL" />
+          filename="package://bobcat/meshes/front_right_wheel_lite.stl" />
       </geometry>
     </collision>
   </link>
@@ -183,7 +183,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/back_left_wheel_lite.STL" />
+          filename="package://bobcat/meshes/back_left_wheel_lite.stl" />
       </geometry>
     </collision>
   </link>
@@ -236,7 +236,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/back_right_wheel_lite.STL" />
+          filename="package://bobcat/meshes/back_right_wheel_lite.stl" />
       </geometry>
     </collision>
   </link>
@@ -422,6 +422,7 @@
     <axis
       xyz="0 1 0" />
     <limit
+
       lower="-1.57"
       upper="1.57"
       effort="1000000"
@@ -602,6 +603,64 @@
       velocity="100" />
   </joint>
   <link
+    name="brackets">
+    <inertial>
+      <origin
+        xyz="0.14213 -1.579E-16 0.33109"
+        rpy="0 0 0" />
+      <mass
+        value="12.857" />
+      <inertia
+        ixx="2.9339"
+        ixy="-2.9653E-16"
+        ixz="0.23718"
+        iyy="0.67251"
+        iyz="3.0656E-16"
+        izz="2.738" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/brackets.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/brackets.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="brackets_joint"
+    type="revolute">
+    <origin
+      xyz="0.33833 0 0.49449"
+      rpy="0 0 0" />
+    <parent
+      link="loader" />
+    <child
+      link="brackets" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="0"
+      upper="1"
+      effort="1000000"
+      velocity="1000000" />
+  </joint>
+  <link
     name="back_cylinder">
     <inertial>
       <origin
@@ -717,6 +776,271 @@
       effort="1000000"
       velocity="100" />
   </joint>
+<link
+    name="cabin">
+    <inertial>
+      <origin
+        xyz="-0.70338 -5.738E-08 0.72817"
+        rpy="0 0 0" />
+      <mass
+        value="496.33" />
+      <inertia
+        ixx="138.34"
+        ixy="-1.1017E-06"
+        ixz="8.4609"
+        iyy="150.8"
+        iyz="-2.3341E-06"
+        izz="117.01" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/cabin.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64706 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/cabin.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="cabin_joint"
+    type="fixed">
+    <origin
+      xyz="-0.11317 0 0.61042"
+      rpy="0 8.0491E-16 0" />
+    <parent
+      link="body" />
+    <child
+      link="cabin" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="Ibeo">
+    <inertial>
+      <origin
+        xyz="-0.50455 -0.03223 -1.3338"
+        rpy="0 0 0" />
+      <mass
+        value="10.460" />
+      <inertia
+        ixx="8.1287"
+        ixy="0"
+        ixz="0.55289"
+        iyy="8.9548"
+        iyz="0"
+        izz="6.4192" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/Ibeo.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/Ibeo_lite.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Ibeo_joint"
+    type="fixed">
+    <origin
+      xyz="-0.18258 0.03227 1.2493"
+      rpy="1.570796327 -5.9328E-16 1.570796327" />
+    <parent
+      link="cabin" />
+    <child
+      link="Ibeo" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="left_sick">
+    <inertial>
+      <origin
+        xyz="-0.89565 0.58058 -0.24712"
+        rpy="0 0 0" />
+      <mass
+        value="10642" />
+      <inertia
+        ixx="5510.7"
+        ixy="-0.22597"
+        ixz="0.019765"
+        iyy="4536.4"
+        iyz="670.63"
+        izz="6567.4" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/left_sick.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/left_sick_lite.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_sick_joint"
+    type="fixed">
+    <origin
+      xyz="-0.21801 0.89557 0.66494"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="body" />
+    <child
+      link="left_sick" />
+    <axis
+      xyz="0 -1 0" />
+  </joint>
+  <link
+    name="right_sick">
+    <inertial>
+      <origin
+        xyz="-0.89568 -0.58119 -0.24712"
+        rpy="0 0 0" />
+      <mass
+        value="10642" />
+      <inertia
+        ixx="5510.7"
+        ixy="-0.22597"
+        ixz="-0.019765"
+        iyy="4536.4"
+        iyz="-670.63"
+        izz="6567.4" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/right_sick.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/right_sick_lite.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_sick_joint"
+    type="fixed">
+    <origin
+      xyz="-0.2174 -0.89576 0.66494"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="body" />
+    <child
+      link="right_sick" />
+    <axis
+      xyz="0 -1 0" />
+  </joint>
+  <link
+    name="front_sick">
+    <inertial>
+      <origin
+        xyz="-0.89885 0.00019572 0.43638"
+        rpy="0 0 0" />
+      <mass
+        value="4522.3" />
+      <inertia
+        ixx="770.18"
+        ixy="0.31619"
+        ixz="-200.02"
+        iyy="1747"
+        iyz="-0.0281"
+        izz="1905.9" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/front_sick.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64706 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobcat/meshes/front_sick_lite.stl" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="front_sick_joint"
+    type="fixed">
+    <origin
+      xyz="0.26113 0 0.048493"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="body" />
+    <child
+      link="front_sick" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
 
  <!-- Transmissions for ROS Control -->
   <transmission name="tran1">
@@ -820,6 +1144,15 @@
 
   <transmission name="tran12">
     <type>transmission_interface/SimpleTransmission</type>
+    <joint name="brackets_joint"/>
+    <actuator name="motor12">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran12">
+    <type>transmission_interface/SimpleTransmission</type>
     <joint name="back_cylinder_joint"/>
     <actuator name="motor12">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
@@ -879,21 +1212,12 @@
     <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="base_arm">
-    <mu1>1</mu1>
-    <mu2>1</mu2>
-    <selfCollide>true</selfCollide>
     <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="main_arm">
-    <mu1>1</mu1>
-    <mu2>1</mu2>
-    <selfCollide>true</selfCollide>
     <material>Gazebo/PaintedWall</material>
   </gazebo>
   <gazebo reference="back_shaft">
-    <mu1>1</mu1>
-    <mu2>1</mu2>
-    <selfCollide>true</selfCollide>
     <material>Gazebo/Black</material>
   </gazebo>
   <gazebo reference="supporter">
@@ -903,9 +1227,6 @@
     <material>Gazebo/GreyTransparent</material>
   </gazebo>
   <gazebo reference="front_cylinder">
-    <mu1>1</mu1>
-    <mu2>1</mu2>
-    <selfCollide>true</selfCollide>
     <material>Gazebo/BlueTransparent</material>
   </gazebo>
   <gazebo reference="loader">
@@ -915,15 +1236,28 @@
     <material>Gazebo/Gold</material>
   </gazebo>
   <gazebo reference="front_shaft">
-    <mu1>1</mu1>
-    <mu2>1</mu2>
-    <selfCollide>true</selfCollide>
     <material>Gazebo/Black</material>
   </gazebo>
   <gazebo reference="back_cylinder">
+    <material>Gazebo/BlueTransparent</material>
+  </gazebo>
+  <gazebo reference="brackets">
     <mu1>1</mu1>
     <mu2>1</mu2>
     <selfCollide>true</selfCollide>
-    <material>Gazebo/BlueTransparent</material>
+    <material>Gazebo/Grey</material>
+  </gazebo>
+  <gazebo reference="Ibeo">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+  <gazebo reference="left_sick">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+  <gazebo reference="right_sick">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+  <gazebo reference="front_sick">
+    <material>Gazebo/Grey</material>
   </gazebo>
 </robot>
+
