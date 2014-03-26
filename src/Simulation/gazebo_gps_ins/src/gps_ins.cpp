@@ -129,7 +129,7 @@ namespace gazebo
 		double dist = (pos - _init_pos).GetLength();
 		double brng;
 		if(!(pos.GetLength()*_init_pos.GetLength())) brng = atan2(pos.y,pos.x);
-		else brng = acos(pos.Dot(_init_pos)/(pos.GetLength()*_init_pos.GetLength()));
+		else brng = atan2(pos.y-_init_pos.y,pos.x-_init_pos.x);//acos(pos.Dot(_init_pos)/(pos.GetLength()*_init_pos.GetLength()));
 		//std::cout << "bearing: " << brng << std::endl;
 		//lat2 = asin(sin(lat1)*cos(d/R) + cos(lat1)*sin(d/R)*cos(θ))
 		//lon2 = lon1 + atan2(sin(θ)*sin(d/R)*cos(lat1), cos(d/R)−sin(lat1)*sin(lat2))
