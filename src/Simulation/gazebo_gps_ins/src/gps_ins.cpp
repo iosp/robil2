@@ -28,6 +28,8 @@
 #define SENSOR_GPS_NAME		"gps_component"
 #define SENSOR_IMU_NAME		"imu_component"
 
+const double PI  =3.141592653589793238463;
+
 using namespace std;
 
 //        E (y)
@@ -50,9 +52,12 @@ namespace gazebo
   public:
     void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     {
+      
 		_seq = 0;
       // Store the pointer to the model
       this->_model = _parent;
+      _init_pos = _parent->GetWorldPose().pos;
+      
       //load config from sdf
       if(_sdf->HasElement("start_latitude"))
       {
@@ -120,10 +125,19 @@ namespace gazebo
 		sensor_msgs::Imu msg_imu;
 
 		math::Pose pose=_model->GetWorldPose();
-		gazebo::math::Vector3 pos = pose.pos;		
+		gazebo::math::Vector3 pos = pose.pos;
+		double dist = (pos - _init_pos).GetLength();
+		double brng;
+		if(!(pos.GetLength()*_init_pos.GetLength())) brng = atan2(pos.y,pos.x);
+		else brng = atan2(pos.y-_init_pos.y,pos.x-_init_pos.x);//acos(pos.Dot(_init_pos)/(pos.GetLength()*_init_pos.GetLength()));
+		//std::cout << "bearing: " << brng << std::endl;
+		//lat2 = asin(sin(lat1)*cos(d/R) + cos(lat1)*sin(d/R)*cos(θ))
+		//lon2 = lon1 + atan2(sin(θ)*sin(d/R)*cos(lat1), cos(d/R)−sin(lat1)*sin(lat2))
+		
+		double R = 6378.1*1000;
 		msg_gps.altitude = pos.z;
-		msg_gps.longitude = _start_longitude + pos.y/DEGREE_TO_M;
-		msg_gps.latitude = _start_latitude + pos.x/DEGREE_TO_M;
+		msg_gps.latitude = 180/PI*asin(sin(_start_latitude*PI/180)*cos(dist/R)+cos(_start_latitude*PI/180)*sin(dist/R)*cos(brng));
+		msg_gps.longitude = _start_longitude + 180/PI*atan2(sin(brng)*sin(dist/R)*cos(_start_latitude*PI/180),cos(dist/R)-sin(_start_latitude*PI/180)*sin(msg_gps.latitude*PI/180));
 		msg_gps.header.seq = _seq++;
 		msg_gps.header.frame_id = 1;
 		msg_gps.header.stamp.sec = (int)simTime.Double();
@@ -180,7 +194,7 @@ namespace gazebo
     
     //sensors::GpsSensorPtr 	_gps;
     sensors::ImuSensorPtr 	_imu;
-    
+    math::Vector3 _init_pos;
     double _start_latitude, _start_longitude;
     int  _frequency;
     common::Time		_lastTime;
