@@ -7,6 +7,7 @@
  */
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
+
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);

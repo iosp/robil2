@@ -5,6 +5,8 @@
 #include <decision_making/FSM.h>
 #include <decision_making/ROSTask.h>
 #include <decision_making/DecisionMaking.h>
+#include <decision_making/DebugModeTracker.hpp>
+
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
@@ -16,7 +18,7 @@ public:
 	std::string str()const{return "";}
 };
 
-FSM(IED_ON)
+FSM(iedsim_ON)
 {
 	FSM_STATES
 	{
@@ -44,7 +46,7 @@ FSM(IED_ON)
 	FSM_END
 }
 
-FSM(IED)
+FSM(iedsim)
 {
 	FSM_STATES
 	{
@@ -60,16 +62,16 @@ FSM(IED)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-				FSM_ON_EVENT("/IED/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/iedsim/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(IED_ON)
+			FSM_CALL_FSM(iedsim_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-				FSM_ON_EVENT("/IED/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/iedsim/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 
@@ -86,6 +88,7 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	PAUSE(10000);
+	events.raiseEvent(Event("EndOfInit",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
@@ -106,6 +109,6 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("READY",state_READY);
 
 	ROS_INFO("Starting iedsim...");
-	FsmIED(&context, &events);
+	Fsmiedsim(&context, &events);
 
 }

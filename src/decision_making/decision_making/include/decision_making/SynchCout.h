@@ -33,6 +33,7 @@ inline void endl(){}
 #define cout Log()
 
 #define DMDEBUG(...) //__VA_ARGS__
+#define DIGNOR
 
 
 #endif /*DISABLE_DECISION_MAKING_LOG*/

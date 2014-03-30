@@ -8,6 +8,7 @@
 #include <decision_making/FSM.h>
 #include <decision_making/ROSTask.h>
 #include <decision_making/DecisionMaking.h>
+#include <decision_making/DebugModeTracker.hpp>
 
 using namespace std;
 using namespace decision_making;
@@ -23,7 +24,7 @@ public:
 
 bool SensorConnection;
 
-FSM(WorkSequnceManager_WORK)
+FSM(wsm_WORK)
 {
 	FSM_STATES
 	{
@@ -38,7 +39,7 @@ FSM(WorkSequnceManager_WORK)
 			FSM_CALL_TASK(STANDBY);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/WorkSequnceManager/Resume", FSM_NEXT(READY));
+				FSM_ON_EVENT("/wsm/Resume", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(READY)
@@ -46,14 +47,14 @@ FSM(WorkSequnceManager_WORK)
 			FSM_CALL_TASK(READY);
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/WorkSequnceManager/Standby", FSM_NEXT(STANDBY));
+				FSM_ON_EVENT("/wsm/Standby", FSM_NEXT(STANDBY));
 			}
 		}
 
 	}
 	FSM_END
 }
-FSM(WorkSequnceManager_ON)
+FSM(wsm_ON)
 {
 	FSM_STATES
 	{
@@ -69,16 +70,16 @@ FSM(WorkSequnceManager_ON)
 			FSM_TRANSITIONS
 			{
 				//FSM_ON_CONDITION(SensorConnection, FSM_NEXT(WORK));
-				FSM_ON_EVENT("/WorkSequnceManager/SensorConnected", FSM_NEXT(WORK));
+				FSM_ON_EVENT("/wsm/SensorConnected", FSM_NEXT(WORK));
 			}
 		}
 		FSM_STATE(WORK)
 		{
-			FSM_CALL_FSM(WorkSequnceManager_WORK)
+			FSM_CALL_FSM(wsm_WORK)
 			FSM_TRANSITIONS
 			{
 				//FSM_ON_CONDITION(not SensorConnection, FSM_NEXT(INIT));
-				FSM_ON_EVENT("/WorkSequnceManager/SensorNotConnected", FSM_NEXT(INIT));
+				FSM_ON_EVENT("/wsm/SensorNotConnected", FSM_NEXT(INIT));
 			}
 		}
 
@@ -86,7 +87,7 @@ FSM(WorkSequnceManager_ON)
 	FSM_END
 }
 
-FSM(WorkSequnceManager)
+FSM(wsm)
 {
 	FSM_STATES
 	{
@@ -102,16 +103,16 @@ FSM(WorkSequnceManager)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-				FSM_ON_EVENT("/WorkSequnceManager/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/wsm/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(WorkSequnceManager_ON)
+			FSM_CALL_FSM(wsm_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-				FSM_ON_EVENT("/WorkSequnceManager/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/wsm/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 
@@ -127,6 +128,7 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	PAUSE(10000);
+	events.raiseEvent(Event("EndOfInit",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
@@ -150,7 +152,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("READY",state_READY);
 	LocalTasks::registration("STANDBY",state_STANDBY);
 
-	ROS_INFO("Starting WorkSequnceManager...");
-	FsmWorkSequnceManager(&context, &events);
+	ROS_INFO("Starting wsm (WorkSequnceManager)...");
+	Fsmwsm(&context, &events);
 
 }

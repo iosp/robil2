@@ -5,6 +5,8 @@
 #include <decision_making/FSM.h>
 #include <decision_making/ROSTask.h>
 #include <decision_making/DecisionMaking.h>
+#include <decision_making/DebugModeTracker.hpp>
+
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
@@ -16,7 +18,7 @@ public:
 	std::string str()const{return "";}
 };
 
-FSM(Monitoring_ON)
+FSM(ssm_ON)
 {
 	FSM_STATES
 	{
@@ -44,7 +46,7 @@ FSM(Monitoring_ON)
 	FSM_END
 }
 
-FSM(Monitoring)
+FSM(ssm)
 {
 	FSM_STATES
 	{
@@ -60,16 +62,16 @@ FSM(Monitoring)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-				FSM_ON_EVENT("/Monitoring/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/ssm/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(Monitoring_ON)
+			FSM_CALL_FSM(ssm_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-				FSM_ON_EVENT("/Monitoring/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/ssm/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 
@@ -110,5 +112,5 @@ void startComponent(ComponentMain* component){
 	LocalTasks::registration("READY",state_READY);
 
 	ROS_INFO("Starting ssm (Monitoring)...");
-	FsmMonitoring(&context, &events);
+	Fsmssm(&context, &events);
 }
