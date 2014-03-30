@@ -1,0 +1,52 @@
+    <include>
+      <uri>model://gpu_sick</uri>
+      <pose>1 0 0.2 0 0 0</pose>
+      <name>front_sick</name>
+    </include>
+
+    <joint name='front_sick_joint' type='revolute'>
+      <child>front_sick::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+
+
+    <include>
+      <uri>model://GPS_INS</uri>
+      <pose>0 0 0.5 0 0 0</pose>
+      <name>gps_ins</name>
+    </include>
+
+    <joint name='gps_ins_joint' type='revolute'>
+      <child>gps_ins::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+
+<!--
+<plugin name='TFpublish' filename='libTFpublisher.so'>
+
+<tf1frame>front_sick</tf1frame>
+<tf1parent>body</tf1parent>
+<tf1pose>1 0 0.2 0 0 0</tf1pose>
+
+<update_rate>20</update_rate>
+</plugin>
+-->
+

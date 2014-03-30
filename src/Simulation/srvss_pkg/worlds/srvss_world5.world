@@ -8,12 +8,45 @@
   <include>
       <uri>model://bobcat</uri>
       <name>SRVSS_BobCat</name>
-      <pose>50 50 4 0 0 0</pose>
+      <pose>30 10 4 0 0 0</pose>
     </include>
 
        <include>
             <uri>model://srvss_terrain3</uri>
         </include>
+
+
+    <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_1</name>
+      <pose>70 15 7 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_2</name>
+      <pose>90 50 7 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_3</name>
+      <pose>20 50 7 0 0 0</pose>
+    </include>
+
+   <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_4</name>
+      <pose>50 90 7 0 0 0</pose>
+    </include>
+
+   <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_5</name>
+      <pose>10 10 7 0 0 0</pose>
+    </include>
+
+
         <include>
             <uri>model://tree1</uri>
             <pose>33.7866 27.4835 2.29013 -0.190981 0.0657644 -0.852162</pose>
@@ -140,5 +173,6 @@
             <scale>0.857873 0.857873 0.857873</scale>
             <name>object20</name>
         </include>
+
     </world>
 </sdf>
