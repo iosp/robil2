@@ -29,6 +29,7 @@ add_library(smme_compMain
   src/component/MissionStates.cpp
   src/component/TaskStates.cpp
   src/component/MissionManager.cpp
+  src/component/AblManager.cpp
 )
 add_executable(smme_node src/main.cpp)
 target_link_libraries(smme_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
@@ -37,6 +38,13 @@ target_link_libraries(smme_node smme_compMain smme_rosComm ${catkin_LIBRARIES} $
 
 add_executable(fsm_component_tester src/tester/FsmComponentTester.cpp)
 target_link_libraries(fsm_component_tester ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(mission_tester src/tester/MissionTester.cpp)
+target_link_libraries(mission_tester ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+
+
+
 
 
 

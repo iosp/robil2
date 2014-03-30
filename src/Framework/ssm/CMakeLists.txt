@@ -35,3 +35,5 @@ target_link_libraries(ssm_node ssm_compMain ssm_rosComm ${catkin_LIBRARIES} ${Bo
 add_executable(ssm_heartbeat_monitor_node src/monitor/HeartBeatMonitor.cpp)
 target_link_libraries(ssm_heartbeat_monitor_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
+add_executable(ssm_fsm_states_tracker_node src/monitor/FsmStatesTracker.cpp)
+target_link_libraries(ssm_fsm_states_tracker_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})

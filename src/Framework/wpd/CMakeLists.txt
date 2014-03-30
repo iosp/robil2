@@ -5,6 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp rospy
     robil2conf
     decision_making decision_making_parser
+    geometry_msgs nav_msgs sensor_msgs tf
 )
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
@@ -26,6 +27,7 @@ add_library(wpd_rosComm
 add_library(wpd_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
+  src/component/TwistRetranslator.cpp
 )
 add_executable(wpd_node src/main.cpp)
 target_link_libraries(wpd_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})

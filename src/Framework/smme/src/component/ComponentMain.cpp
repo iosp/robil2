@@ -9,13 +9,17 @@
 #include "../roscomm/RosComm.h"
 #include "MissionManager.h"
 #include "ComponentStates.h"
+
+std::map<std::string, boost::shared_ptr<MissionMachine> > machines;
+
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
 	_mission_manager = new MissionManager();
-	_mission_manager->conf.start_mission_state="_started";
-	_mission_manager->conf.start_task_state="_started";
-	_mission_manager->conf.stop_task_state="_stopped";
+	_mission_manager->conf.start_mission_state="loaded";
+	_mission_manager->conf.start_task_state="loaded";
+	_mission_manager->conf.stop_task_state="unloaded";
+	ROS_INFO("Mission manager created");
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -39,11 +43,11 @@ void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& 
 	config::SMME::pub::MissionAcceptance acceptance =
 			_mission_manager->assign(msg);
 	if(acceptance.status>0){
-		if(threads.size()==0){
-			threads.add_thread( startTaskThread(this) );
-			initMissionTasks();
-		}
-		threads.add_thread( startMissionThread(this, msg.mission_id) );
+		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" accepted");
+		machines[msg.mission_id]=boost::shared_ptr<MissionMachine>(new MissionMachine(this,msg.mission_id));
+		machines[msg.mission_id]->start();
+	}else{
+		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" rejected");
 	}
 	publishMissionAcceptance(acceptance);
 }

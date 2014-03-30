@@ -1,0 +1,4 @@
+<launch>
+	<node name="fsm_component_tester" type="fsm_component_tester" args="pp wpd llc iedsim wsm per ssm" pkg="smme" output="screen"/>
+	<include file="$(find robil2conf)/frameworkInit.launch" />
+</launch>

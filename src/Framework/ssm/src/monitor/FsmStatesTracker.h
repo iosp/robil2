@@ -1,12 +1,12 @@
 /*
- * FsmComponentTester.h
+ * FsmStatesTracker.h
  *
  *  Created on: Mar 9, 2014
  *      Author: dan
  */
 
-#ifndef FSMCOMPONENTTESTER_H_
-#define FSMCOMPONENTTESTER_H_
+#ifndef FSMSTATESTRACKER_H_
+#define FSMSTATESTRACKER_H_
 
 #include <ros/ros.h>
 #include <ParameterTypes.h>
@@ -18,37 +18,36 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
+#include <robil_msgs/FSMState.h>
 
 using namespace std;
 using namespace ros;
 using namespace boost;
 using namespace boost::posix_time;
 
-class FsmComponentTester {
+class FsmStatesTracker {
 public:
-	FsmComponentTester();
-	virtual ~FsmComponentTester();
+	FsmStatesTracker();
+	virtual ~FsmStatesTracker();
 
 	void on_diagnostic_msg(const diagnostic_msgs::DiagnosticArray::ConstPtr msg);
 	void on_diagnostic(const diagnostic_msgs::DiagnosticStatus& status);
 	void on_states_change(const set<string> old_state,const set<string> new_state);
-	void send(std::string e);
-	bool test1(bool);
-	bool test2(bool);
-	bool test3(bool);
-	bool test(bool);
-	void start();
 	void clear(){active_items.clear();}
 	void print_actives();
-	void init();
+
+	bool on_ss_actives(robil_msgs::FSMState::Request& req, robil_msgs::FSMState::Response& res);
+	bool on_ss_remove(robil_msgs::FSMState::Request& req, robil_msgs::FSMState::Response& res);
+	bool on_ss_add(robil_msgs::FSMState::Request& req, robil_msgs::FSMState::Response& res);
 
 	recursive_mutex mtx;
 	NodeHandle node;
 	Subscriber sub_diagnostic;
-	Publisher pub_events;
-	string target_component;
-	bool all;
 	map< string,set<string> > active_items;
+
+	ros::ServiceServer ss_actives;
+	ros::ServiceServer ss_remove;
+	ros::ServiceServer ss_add;
 };
 
 #endif /* FSMCOMPONENTTESTER_H_ */

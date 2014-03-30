@@ -142,6 +142,7 @@ public:
 	void assign(const ManTask& task);
 	MissionAcceptance assign(const Mission& mission);
 	MissionAcceptance createMissionAcceptedMessage(const Mission& mission);
+	MissionAcceptance createMissionRejectedMessage(const Mission& mission, int error_code);
 	void remove(const MissionID& mid);
 	//==============================================================
 
@@ -149,8 +150,9 @@ public:
 protected:
 	void start_task(const MissionID& mid);
 	void stop_task(const MissionID& mid);
-	void start_mission(const MissionID& mid);
 	void stop_mission(const MissionID& mid);
+public:
+	void start_mission(const MissionID& mid);
 	//=================================================================
 
 	//==================== Current mission interface ==================
@@ -171,6 +173,7 @@ public:
 	TASK_TYPE task_type();
 	NavTask get_nav_task();
 	ManTask get_man_task();
+	string print_state();
 	//=================================================================
 
 };

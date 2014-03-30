@@ -3,18 +3,11 @@
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
         <!-- <param name="base_global_planner" value="SBPLLatticePlanner" /> -->
 
-        <rosparam file="$(find NAVIGATION_PACKAGE_PP)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
-        <rosparam file="$(find NAVIGATION_PACKAGE_PP)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
-        <rosparam file="$(find NAVIGATION_PACKAGE_PP)/params/local_costmap_params.yaml" command="load" />
-        <rosparam file="$(find NAVIGATION_PACKAGE_PP)/params/global_costmap_params.yaml" command="load" />
-        <rosparam file="$(find NAVIGATION_PACKAGE_PP)/params/base_local_planner_params.yaml" command="load" />
+        <rosparam file="$(find pp)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find pp)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find pp)/params/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find pp)/params/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find pp)/params/base_local_planner_params.yaml" command="load" />
     </node>
 
 </launch>
-<!-- for include to other launch
-<launch>
-
-	<include file="$(find NAVIGATION_PACKAGE_PP)/launch/move_base.launch" />
-
-</launch>
--->

@@ -21,6 +21,11 @@ MissionManager::MissionAcceptance MissionManager::assign(const Mission& mission)
 SYNCHRONIZED
 	MissionID mid = id(mission);
 	missions[mid] = mission;
+	if(tasks_count(mid)<1){
+		missions.erase(mid);
+		return createMissionRejectedMessage(mission, 0);
+	}
+	ROS_INFO_STREAM("New mission task: "<<mission);
 	return createMissionAcceptedMessage(mission);
 }
 
@@ -34,10 +39,18 @@ void MissionManager::assign(const NavTask& task) {
 SYNCHRONIZED
 	TaskID tid = id(task);
 	nav_tasks[tid] = task;
+	ROS_INFO_STREAM("New navigation task: "<<task);
 }
 
 MissionManager::MissionAcceptance MissionManager::createMissionAcceptedMessage(const Mission& mission){
-	return MissionAcceptance();
+	MissionAcceptance accep;
+	accep.status = 1;
+	return accep;
+}
+MissionManager::MissionAcceptance MissionManager::createMissionRejectedMessage(const Mission& mission, int error_code){
+	MissionAcceptance accep;
+	accep.status = error_code;
+	return accep;
 }
 
 void MissionManager::start_task(const MissionID& mid) {
@@ -143,6 +156,9 @@ SYNCHRONIZED
 	}
 
 	current_mission = mid;
+
+	task_id(); // index validation
+
 	return mission_state();
 }
 
@@ -187,5 +203,41 @@ SYNCHRONIZED
 	TaskID tid = task_id();
 	return man_tasks.at(tid);
 }
+
+
+string MissionManager::print_state() {
+SYNCHRONIZED
+	stringstream out;
+	out<<"NTasks:"<<endl;
+	for(Set_NavTasks::const_iterator i=nav_tasks.begin();i!=nav_tasks.end();i++){
+		out<<"   "<<i->first;
+		out<<" {wp="<<i->second.waypoints.size()<<"}";
+		out<<endl;
+	}
+	out<<"MTasks:"<<endl;
+	for(Set_ManTasks::const_iterator i=man_tasks.begin();i!=man_tasks.end();i++){
+		out<<"   "<<i->first;
+		out<<" {stp="<<i->second.steps.size()<<"}";
+		out<<endl;
+	}
+	out<<"Missions:"<<endl;
+	for(Set_Missions::const_iterator i=missions.begin();i!=missions.end();i++){
+		out<<"   "<<i->first;
+		out<<" {tsk="<<i->second.tasks.size()<<"}";
+		out<<endl;
+	}
+	out<<"Missions States:"<<endl;
+	for(Set_MissionStates::const_iterator i=missions_states.begin();i!=missions_states.end();i++){
+		const MissionID& mission_id = i->first;
+		const MissionState& mission_state = i->second;
+		out<<"   "<<mission_id<<"{ms="<<mission_state.mstate<<":ti="<<mission_state.tidx<<":ts="<<mission_state.tstate<<"}"<<endl;
+	}
+	return out.str();
+}
+
+
+
+
+
 
 
