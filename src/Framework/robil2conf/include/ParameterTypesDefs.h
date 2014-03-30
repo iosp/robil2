@@ -66,7 +66,7 @@ namespace types{
 	typedef robil_msgs::Map 							Map;
 	typedef std_msgs::Float64 							WireLength;
 	typedef geometry_msgs::TwistStamped 				Speed;
-	typedef std_msgs::Int32 							Effort;
+	typedef std_msgs::Float64 							Effort;
 	typedef robil_msgs::IEDLocation 					IEDLocation;
 	typedef std_msgs::String 							Events;
 	typedef robil_msgs::AssignManipulatorTask 			ManTask;
