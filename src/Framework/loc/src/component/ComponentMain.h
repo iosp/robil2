@@ -10,6 +10,7 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+#include "ekf_class.h"
 class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;
@@ -26,5 +27,8 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+private:
+  ekf estimator;
+  
 };
 #endif /* COMPONENTMAIN_H_ */

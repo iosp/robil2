@@ -17,85 +17,98 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleLocation(const config::PER::sub::Location& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handlePerVelocity(const config::PER::sub::PerVelocity& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleSensorINS(const config::PER::sub::SensorINS& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	_imuData = msg;
+	//std::cout<< "PER say:" << msg << std::endl;
+	config::PER::pub::INS msg2;
+	msg2 = msg;
+	publishINS(msg2);
+	
 }
 	
 
 void ComponentMain::handleSensorGPS(const config::PER::sub::SensorGPS& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
+	_gpsData = msg;
+	config::PER::pub::GPS msg2;
+	msg2 = msg;
+	publishGPS(msg2);	
 }
 	
 
 void ComponentMain::handleSensorCamL(const config::PER::sub::SensorCamL& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleSensorCamR(const config::PER::sub::SensorCamR& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleSensorWire(const config::PER::sub::SensorWire& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleSensorSICK(const config::PER::sub::SensorSICK& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
+	
 }
 	
 
 void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
 
 void ComponentMain::handleEffortsTh(const config::PER::sub::EffortsTh& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleEffortsSt(const config::PER::sub::EffortsSt& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleEffortsJn(const config::PER::sub::EffortsJn& msg)
 {
-	std::cout<< "PER say:" << msg << std::endl;
+	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::publishGPS(config::PER::pub::GPS& msg)
 {
+	msg = _gpsData;
+	//std::cout << "publishing: " << msg << std::endl;
 	_roscomm->publishGPS(msg);
 }
 	
 
 void ComponentMain::publishINS(config::PER::pub::INS& msg)
 {
+	msg = _imuData;
 	_roscomm->publishINS(msg);
 }
 	
