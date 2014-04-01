@@ -1,0 +1,26 @@
+Localization module
+-------------------
+
+This module gets as an input data from GPS/INS, visual odometry and other inputs.
+The module outputs the location of the bobcat with relation to the starting point of the bobcat.
+
+In order to run the framework do:
+
+	$ roslaunch robil2conf frameworkInit.launch
+
+The launch will run all of the modules in the framework. They are all required.
+You will see alot of gibrish in the terminal... it's OK.
+
+once you run all of the modules you can subscribe to the LOC topics
+
+	$ rostopic echo /LOC/Pose
+	$ rostopic echo /LOC/Velocity
+
+
+NOTE - For now the module is 100% accurate since there are is no noise.
+	
+TODO
+----
+
+add tests.
+Add Noise to sensors and implement KF.	

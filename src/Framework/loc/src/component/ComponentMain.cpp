@@ -7,9 +7,11 @@
  */
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
+
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
+	//estimator = new ekf();
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -17,25 +19,34 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handlePositionUpdate(const config::LOC::sub::PositionUpdate& msg)
 {
-	std::cout<< "LOC say:" << msg << std::endl;
+	//std::cout<< "LOC say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleGPS(const config::LOC::sub::GPS& msg)
 {
-	std::cout<< "LOC say:" << msg << std::endl;
+	//std::cout<< "LOC say:" << msg << std::endl;
+	estimator.setGPSMeasurement(msg);
+	estimator.estimator();
+	config::LOC::pub::Location msg1;
+	msg1 = estimator.getEstimatedPose();
+	publishLocation(msg1);
+	config::LOC::pub::PerVelocity msg2;
+	msg2 = estimator.getEstimatedSpeed();
+ 	publishPerVelocity(msg2);
 }
 	
 
 void ComponentMain::handleINS(const config::LOC::sub::INS& msg)
 {
-	std::cout<< "LOC say:" << msg << std::endl;
+	//std::cout<< "LOC say:" << msg << std::endl;
+	estimator.setIMUMeasurement(msg);
 }
 	
 
 void ComponentMain::handleVOOdometry(const config::LOC::sub::VOOdometry& msg)
 {
-	std::cout<< "LOC say:" << msg << std::endl;
+	//std::cout<< "LOC say:" << msg << std::endl;
 }
 	
 
