@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS thread system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -49,6 +49,7 @@ find_package(catkin REQUIRED COMPONENTS
 #   Message1.msg
 #   Message2.msg
 # )
+
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -103,16 +104,27 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-# add_executable(srvss_pkg_node src/srvss_pkg_node.cpp)
+add_executable(srvss_wp_driver_node src/srvss_wp_driver_node.cpp)
+add_executable(srvss_rate2effort_node src/srvss_rate2effort_node.cpp)
+add_executable(srvss_wp_keyboard_commander_node src/srvss_wp_keyboard_commander_node.cpp)
+
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(srvss_pkg_node srvss_pkg_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(srvss_pkg_node
-#   ${catkin_LIBRARIES}
-# )
+ target_link_libraries(srvss_wp_driver_node
+   ${catkin_LIBRARIES}   ${Boost_LIBRARIES}
+ )
+
+ target_link_libraries(srvss_rate2effort_node
+   ${catkin_LIBRARIES}
+ )
+
+ target_link_libraries(srvss_wp_keyboard_commander_node
+   ${catkin_LIBRARIES}
+ )
 
 #############
 ## Install ##
