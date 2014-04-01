@@ -21,6 +21,7 @@ add_library(loc_rosComm
 )
 add_library(loc_compMain
   src/component/ComponentMain.cpp
+  src/component/ekf_class.cpp
 )
 add_executable(loc_node src/main.cpp)
 target_link_libraries(loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
