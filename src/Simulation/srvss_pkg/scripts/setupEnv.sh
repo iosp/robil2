@@ -47,7 +47,9 @@ if [ ! -d $HOME/.gazebo/models/bobcat ]; then
 fi
 
 #copy meshes
-$(cp -u $bobcat_dir/meshes/* $HOME/.gazebo/models/bobcat/meshes)
+#$(cp -u $bobcat_dir/meshes/* $HOME/.gazebo/models/bobcat/meshes)
+$(cp -u $srvss_pkg_dir/bobcat_model/meshes/* $HOME/.gazebo/models/bobcat/meshes)
+
 
 #overite model.sdf
 if [ -a $HOME/.gazebo/models/bobcat/model.sdf ]; then
@@ -56,13 +58,14 @@ if [ -a $HOME/.gazebo/models/bobcat/model.sdf ]; then
 fi
 
 #generate basic sdf file
-$($gazebo_prefix/bin/gzsdf "print" $bobcat_dir/urdf/BOBCAT.URDF 1> $HOME/.gazebo/models/bobcat/modelTemp.sdf 2>/dev/null)
+#$($gazebo_prefix/bin/gzsdf "print" $bobcat_dir/urdf/BOBCAT.URDF 1> $HOME/.gazebo/models/bobcat/modelTemp.sdf 2>/dev/null)
+$($gazebo_prefix/bin/gzsdf "print" $srvss_pkg_dir/bobcat_model/BOBCAT.URDF 1> $HOME/.gazebo/models/bobcat/modelTemp.sdf 2>/dev/null)
 
 #add the sensors to the model
 while read line
 do
     if [[ $line == *"</model>"* ]]; then
-	$(cat $srvss_pkg_dir/utils/models/sensorPosition.txt >> $HOME/.gazebo/models/bobcat/model.sdf)
+	$(cat $srvss_pkg_dir/scripts/sensorPosition.txt >> $HOME/.gazebo/models/bobcat/model.sdf)
     fi
 	echo $line >> $HOME/.gazebo/models/bobcat/model.sdf
 done < $HOME/.gazebo/models/bobcat/modelTemp.sdf

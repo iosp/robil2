@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+
 <sdf version="1.4">
   <world name="default">
     <include>
@@ -12,39 +13,38 @@
     <include>
       <uri>model://bobcat</uri>
       <name>SRVSS_BobCat</name>
-      <pose>0 20 3 0 0 0</pose>
+      <pose>10 10 0 0 0 0</pose>
+    </include>
+
+
+<!-- -->
+
+    <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_1</name>
+      <pose>10 70 0 0 0 3</pose>
     </include>
 
     <include>
       <uri>model://barrel1</uri>
-      <name>barrel1</name>
-      <pose>15 15 1.25 0.2 0 0</pose>
+      <name>target_barrel_2</name>
+      <pose>50 0 3 0 0 0</pose>
     </include>
 
     <include>
       <uri>model://barrel1</uri>
-      <name>barrel2</name>
-      <pose>20 25 1 0 0.2 0</pose>
+      <name>target_barrel_3</name>
+      <pose>-50 50 3 0 0 0</pose>
+
     </include>
 
-    <include>
+   <include>
       <uri>model://barrel1</uri>
-      <name>barrel3</name>
-      <pose>23 13 0.75 0 0 0</pose>
+      <name>target_barrel_4</name>
+      <pose>-50 -50 3 0 0 0</pose>
     </include>
 
-    <include>
-      <uri>model://barrel1</uri>
-      <name>barrel4</name>
-      <pose>30 17 0.5 0 0.4 0</pose>
-    </include>
-
-    <include>
-      <uri>model://barrel1</uri>
-      <name>barrel5</name>
-      <pose>34 21 0.3 0 0.4 0</pose>
-    </include>
-
+<!-- -->
 
   </world>
 </sdf>
