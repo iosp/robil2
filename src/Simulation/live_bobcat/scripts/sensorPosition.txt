@@ -1,12 +1,12 @@
     <include>
-      <uri>model://gpu_sick</uri>
-      <pose>-0.25 0.7 0.625 0 0 1.57</pose>
+      <uri>model://sick</uri>
+      <pose>-0.2187 0.85 0.631 0 0 1.57</pose>
       <name>left_sick</name>
     </include>
 
     <include>
-      <uri>model://gpu_sick</uri>
-      <pose>-0.25 -0.7 0.625 0 0 -1.57</pose>
+      <uri>model://sick</uri>
+      <pose>-0.2187 -0.85 0.631 0 0 -1.57</pose>
       <name>right_sick</name>
     </include>
 
@@ -17,14 +17,14 @@
     </include>
 
     <include>
-      <uri>model://gpu_ibeo</uri>
-      <pose>-0.25 0 1.80 0 0.3 0</pose>
+      <uri>model://IBEO</uri>
+      <pose>-0.375 0.055 1.89 0 0.284 0.13</pose>
       <name>ibeo</name>
     </include>
     
     <include>
       <uri>model://FLEA3_L</uri>
-      <pose>-0.25 0.3 1.875 0 0.11 0</pose>
+      <pose>-0.35 0.3335 1.974 0 0 0</pose>
       <name>left_flea3</name>
     </include>
 
@@ -32,7 +32,7 @@
 
     <include>
       <uri>model://FLEA3_R</uri>
-      <pose>-0.25 -0.3 1.875 0 0.11 0</pose>
+      <pose>-0.30 0.23 1.93 0 0.7 -0.35</pose>
       <name>right_flea3</name>
     </include>
 
@@ -117,11 +117,11 @@
 
 <tf1frame>left_sick</tf1frame>
 <tf1parent>body</tf1parent>
-<tf1pose>-0.25 0.7 0.625 0 0 1.57</tf1pose>
+<tf1pose>-0.2187 0.85 0.631 0 0 1.57</tf1pose>
 
 <tf2frame>right_sick</tf2frame>
 <tf2parent>body</tf2parent>
-<tf2pose>-0.25 -0.7 0.625 0 0 -1.57</tf2pose>
+<tf2pose>-0.2187 -0.85 0.631 0 0 -1.57</tf2pose>
 
 <tf3frame>gps_ins</tf3frame>
 <tf3parent>body</tf3parent>
@@ -129,15 +129,15 @@
 
 <tf4frame>ibeo</tf4frame>
 <tf4parent>body</tf4parent>
-<tf4pose>-0.25 0 1.80 0 0.3 0</tf4pose>
+<tf4pose>-0.375 0.055 1.89 0 0.284 0.13</tf4pose>
 
 <tf5frame>cameraL_frame</tf5frame>
 <tf5parent>body</tf5parent>
-<tf5pose>-0.25 0.3 1.875 0 0.11 0</tf5pose>
+<tf5pose>-0.35 0.3335 1.974 0 0 0</tf5pose>
 
 <tf6frame>cameraR_frame</tf6frame>
 <tf6parent>body</tf6parent>
-<tf6pose>-0.25 -0.3 1.875 0 0.11 0</tf6pose>
+<tf6pose>-0.30 0.23 1.93 0 0.7 -0.35</tf6pose>
 
 <livetf1frame>body</livetf1frame>
 <livetf1parent>world</livetf1parent>
