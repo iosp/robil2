@@ -11,7 +11,7 @@
 
   <param name="axis_lift" value="3" type="int"/>
   <param name="axis_tilt" value="2" type="int"/>
-
+  <param name="button_hold" value="5" type="int"/>
 
   <node pkg="bobcat_teleop" type="bobcat_joystick_teleop_node" name="joy_teleop"/>
 

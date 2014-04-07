@@ -19,7 +19,7 @@ int indexX=-1;
 int indexY=-1;
 int indexLift=-1;
 int indexTilt=-1;
-
+int indexHold=0;
 int main(int argc, char **argv)
 {
   //Initialize the node and connect to master
@@ -32,6 +32,7 @@ int main(int argc, char **argv)
   n.param("axis_angular",indexY,indexY);
   n.param("axis_lift",indexLift,indexLift);
   n.param("axis_tilt",indexTilt,indexTilt);
+  n.param("button_hold",indexHold,indexHold);
 
   ros::Subscriber joystick_sub=n.subscribe("/joy", 1, &joystickCallback);
 
@@ -47,8 +48,12 @@ int main(int argc, char **argv)
   double loader_max=1.0;
   double loader_min=-1.0;
 
+  double bracket_max=1.0;
+  double bracket_min=-1.0;
+
   double supporter_val=0;
   double loader_val=0;
+  double bracket_val=0;
 
 
   geometry_msgs::Vector3 vectorMsg;
@@ -69,16 +74,26 @@ int main(int argc, char **argv)
 
 		twistMsg.linear.x=50*lastmsg.axes[indexX];
 		twistMsg.angular.x=-50*lastmsg.axes[indexY];
-		supporter_val=supporter_val+0.05*lastmsg.axes[indexLift];
-		supporter_val=supporter_val>supporter_max?supporter_max:supporter_val;
-		supporter_val=supporter_val<supporter_min?supporter_min:supporter_val;
 
-		loader_val=loader_val+0.05*lastmsg.axes[indexTilt];
-		loader_val=loader_val>loader_max?loader_max:loader_val;
-		loader_val=loader_val<loader_min?loader_min:loader_val;
+		if(lastmsg.buttons[indexHold]==0)
+		{
+			supporter_val=supporter_val+0.05*lastmsg.axes[indexLift];
+			supporter_val=supporter_val>supporter_max?supporter_max:supporter_val;
+			supporter_val=supporter_val<supporter_min?supporter_min:supporter_val;
+			loader_val=loader_val+0.05*lastmsg.axes[indexTilt];
+			loader_val=loader_val>loader_max?loader_max:loader_val;
+			loader_val=loader_val<loader_min?loader_min:loader_val;
+		}
+		else
+		{
+			bracket_val=bracket_val+0.1*lastmsg.axes[indexTilt];
+			bracket_val=bracket_val>bracket_max?bracket_max:bracket_val;
+			bracket_val=bracket_val<bracket_min?bracket_min:bracket_val;
+		}
 
 		vectorMsg.x=supporter_val;
 		vectorMsg.y=loader_val;
+		vectorMsg.z=bracket_val;
 
 		armrate_pub.publish(vectorMsg);
 		wheelsrate_pub.publish(twistMsg);

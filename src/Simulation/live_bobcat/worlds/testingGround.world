@@ -10,7 +10,7 @@
     <include>
       <uri>model://bobcat</uri>
       <name>Sahar</name>
-      <pose>33.0 91.0 1.5 0 0 -1.39</pose>
+      <pose>33.0 91.0 1.8 0 0 -1.39</pose>
     </include>
   </world>
 </sdf>
