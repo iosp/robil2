@@ -48,7 +48,7 @@ DEF_PUB( SENSORS, SensorIBEO, types::MultiLaser )
 
 //SUBSCRIPTIONS
 DEF_SUB( IEDSIM, CustomIED, OCU )
-DEF_SUB( IEDSIM, LocalPath, PP )
+DEF_SUB( IEDSIM, Location, LOC )
 
 DEF_SUB( LLC, WPDVelocity, WPD )
 DEF_SUB( LLC, WSMVelocity, WSM )
