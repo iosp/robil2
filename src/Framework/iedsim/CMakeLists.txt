@@ -27,9 +27,14 @@ add_library(iedsim_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
 )
+
+add_library(iedsim_logic
+  src/component/IEDSimLogic.cpp
+)
+
 add_executable(iedsim_node src/main.cpp)
 target_link_libraries(iedsim_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(iedsim_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(iedsim_node iedsim_compMain iedsim_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(iedsim_node iedsim_compMain iedsim_rosComm iedsim_logic ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
 
