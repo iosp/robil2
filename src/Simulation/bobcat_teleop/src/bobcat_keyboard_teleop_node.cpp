@@ -25,8 +25,12 @@ int main(int argc, char **argv)
   double loader_max=1.0;
   double loader_min=-1.0;
 
+  double bracket_max=1.0;
+  double bracket_min=-1.0;
+
   double supporter_val=0;
   double loader_val=0;
+  double bracket_val=0;
 
   ros::Rate rate(5);
   //structs to hold the shell buffer
@@ -96,6 +100,15 @@ int main(int argc, char **argv)
     		case 'f':
     			loader_val=loader_val-0.05<loader_min?loader_val:loader_val-0.05;
     			vectorMsg.y=loader_val;
+    			armrate_pub.publish(vectorMsg);
+    		case 'e':
+    			bracket_val=bracket_val+0.05>bracket_max?bracket_val:bracket_val+0.05;
+    			vectorMsg.z=bracket_val;
+    			armrate_pub.publish(vectorMsg);
+    			break;
+    		case 'd':
+    			bracket_val=bracket_val-0.05<bracket_min?bracket_val:bracket_val-0.05;
+    			vectorMsg.z=bracket_val;
     			armrate_pub.publish(vectorMsg);
     			break;
     		default:
