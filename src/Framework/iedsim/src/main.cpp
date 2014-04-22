@@ -6,7 +6,7 @@
 int main(int argc,char** argv)
 {
     ComponentMain comp(argc,argv);
-    ros::AsyncSpinner spinner(4); // Use 4 threads
+    ros::AsyncSpinner spinner(2); // Use 1 thread
     spinner.start();
     //ros::waitForShutdown();
     runComponent(argc,argv, comp);
