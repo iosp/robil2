@@ -23,10 +23,12 @@ IEDSimLogic::IEDSimLogic() :
 	m_z(0),
 	m_roll(0),
 	m_pitch(0),
-	m_yaw(0)
+	m_yaw(0),
+	msg_counter(0)
 {
 	spawm_model=inner_nh.serviceClient<gazebo_msgs::SpawnModel>("/gazebo/spawn_sdf_model");
 	move_model=inner_nh.serviceClient<gazebo_msgs::SetModelState>("/gazebo/set_model_state");
+	check_model=inner_nh.subscribe("/gazebo/model_states",1,&IEDSimLogic::updateLocationFromSim,this);
 }
 
 IEDSimLogic::~IEDSimLogic()
@@ -34,13 +36,35 @@ IEDSimLogic::~IEDSimLogic()
 	// TODO Auto-generated destructor stub
 }
 
+void IEDSimLogic::updateLocationFromSim(const gazebo_msgs::ModelStates::ConstPtr & msg)
+{
+	if(msg_counter<1000)
+		return;
+
+	bool found=false;
+	for(int i=0;i<msg->name.size();i++)
+	{
+		if(msg->name.at(i).compare("IEDSIM_IED")==0)
+		{
+			found=true;
+			m_x=msg->pose[i].position.x;
+			m_y=msg->pose[i].position.y;
+			m_z=msg->pose[i].position.z;
+			break;
+		}
+	}
+	if(found)
+	{
+		m_isSet=true;
+	}else
+	{
+		m_isSet=false;
+	}
+	msg_counter=0;
+}
 
 void IEDSimLogic::setAtLocation(float x,float y,float z)
 {
-	m_x=x;
-	m_y=y;
-	m_z=z;
-
 	if(m_isSet)
 	{
 		gazebo_msgs::SetModelState srv;
@@ -72,7 +96,7 @@ void IEDSimLogic::setAtLocation(float x,float y,float z)
 }
 bool IEDSimLogic::isPoseWithinRadius(float x,float y,float z)
 {
-	if( std::sqrt(std::pow(m_x-x,2)+std::pow(m_y-y,2)+std::pow(m_z-z,2))<=10)
+	if(m_isSet && std::sqrt(std::pow(m_x-x,2)+std::pow(m_y-y,2)+std::pow(m_z-z,2))<=10)
 	{
 		return true;
 	}
