@@ -10,6 +10,9 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+
+class HeightMap;
+
 class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;
@@ -41,6 +44,9 @@ public:
 private:
       sensor_msgs::Imu _imuData;
       sensor_msgs::NavSatFix _gpsData;
+      HeightMap* height_map;
+      
+      
   
 };
 #endif /* COMPONENTMAIN_H_ */

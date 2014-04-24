@@ -7,9 +7,26 @@
  */
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
+#include "heightmap.h"
+#include "heightmap_projection.h"
+#include "helpermath.h"
+#include "stereo.h"
+
+#define DEGREE_TO_M		111000
+
+using namespace std; 
+typedef string String;
+typedef bool boolean;
+using namespace cv;
+Rotation myRot, ibeoRot, leftSickRot, rightSickRot;
+Vec3D position;
+Quaternion myQuat;
+bool loc_received = false;
+
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
+	 height_map = new HeightMap(1000,1000);
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -17,7 +34,14 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleLocation(const config::PER::sub::Location& msg)
 {
-	//std::cout<< "PER say:" << msg << std::endl;
+  geometry_msgs::Pose pose = msg.pose.pose;
+  position = Vec3D(pose.position.x, pose.position.y, pose.position.z);
+  myQuat = Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
+  myRot = GetRotation(myQuat);
+  ibeoRot = myRot.add(Rotation(0, 0.284, -0));
+  leftSickRot = Rotation(myRot.pitch, myRot.roll, myRot.yaw+1.57);
+  rightSickRot = Rotation(-myRot.pitch, -myRot.roll, myRot.yaw-1.57);
+  loc_received = true;
 }
 	
 
@@ -68,14 +92,98 @@ void ComponentMain::handleSensorWire(const config::PER::sub::SensorWire& msg)
 
 void ComponentMain::handleSensorSICK(const config::PER::sub::SensorSICK& msg)
 {
-	//std::cout<< "PER say:" << msg << std::endl;
-	
+  if(!loc_received) return;
+  Quaternion q = GetFromRPY(rightSickRot);
+  Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
+  Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
+  Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
+  
+  Vec3D pos = position.add(front.multiply(-0.2187)).add(right.multiply(-0.85)).add(up.multiply(0.631));
+  
+  for(int i = 0; i < msg.ranges.size(); i++) 
+    if(msg.ranges[i] < 0.5*msg.range_max && msg.ranges[i]>5)
+      ProjectLaserRange(
+		      height_map, 
+		      right, 
+		      front,
+		      pos, 
+		      msg.ranges[i],
+		      msg.angle_min + i*msg.angle_increment);
 }
 	
 
 void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msg)
 {
-	//std::cout<< "PER say:" << msg << std::endl;
+  if(!loc_received) return;
+  Rotation t2 = ibeoRot.add(Rotation(0, -msg.angle_t2, 0));
+  Rotation t1 = ibeoRot.add(Rotation(0, -msg.angle_t1, 0));
+  Rotation b1 = ibeoRot.add(Rotation(0, -msg.angle_b1, 0));
+  Rotation b2 = ibeoRot.add(Rotation(0, -msg.angle_b2, 0));
+  Quaternion qt2 = GetFromRPY(t2);
+  Quaternion qt1 = GetFromRPY(t1);
+  Quaternion qb1 = GetFromRPY(b1);
+  Quaternion qb2 = GetFromRPY(b2);
+  Vec3D t2front = GetFrontVector(qt2.x,qt2.y,qt2.z,qt2.w), t2right = GetRightVector(qt2.x,qt2.y,qt2.z,qt2.w);
+  Vec3D t1front = GetFrontVector(qt1.x,qt1.y,qt1.z,qt1.w), t1right = GetRightVector(qt1.x,qt1.y,qt1.z,qt1.w);
+  Vec3D b1front = GetFrontVector(qb1.x,qb1.y,qb1.z,qb1.w), b1right = GetRightVector(qb1.x,qb1.y,qb1.z,qb1.w);
+  Vec3D b2front = GetFrontVector(qb2.x,qb2.y,qb2.z,qb2.w), b2right = GetRightVector(qb2.x,qb2.y,qb2.z,qb2.w);
+  
+  Quaternion q = GetFromRPY(ibeoRot);
+  Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
+  Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
+  Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
+  
+  Vec3D pos = position.add(front.multiply(-0.375)).add(right.multiply(0.055)).add(up.multiply(1.89));
+  
+  
+  double incrtop = msg.angle_increment;
+  double incrbottom = msg.angle_increment;
+  
+    for(int i = 0; i < msg.ranges_t2.size(); i++) 
+    {
+      if(msg.ranges_t2[i] < 0.5*msg.range_max)
+      ProjectLaserRange(
+			height_map, 
+			t2right, 
+			t2front,
+			pos, 
+			msg.ranges_t2[i],
+			msg.angle_min_t + i*incrtop);
+    }  
+    
+    for(int i = 0; i < msg.ranges_t1.size(); i++) 
+    {
+      if(msg.ranges_t1[i] < 0.5*msg.range_max)
+      ProjectLaserRange(
+			height_map, 
+			t1right, 
+			t1front,
+			pos, 
+			msg.ranges_t1[i],
+			msg.angle_min_t + i*incrtop); 
+    }
+    for(int i = 0; i < msg.ranges_b1.size(); i++) 
+    {
+      if(msg.ranges_b1[i] < 0.5*msg.range_max)
+      ProjectLaserRange(
+		      height_map, 
+		      b1right, 
+		      b1front,
+		      pos, 
+		      msg.ranges_b1[i],
+		      msg.angle_min_b + i*incrbottom);
+    }
+    for(int i = 0; i < msg.ranges_b2.size(); i++) 
+    {
+      if(msg.ranges_b2[i] < 0.5*msg.range_max)
+      ProjectLaserRange(
+		      height_map, 
+		      b2right, 
+		      b2front,
+		      pos, 
+		      msg.ranges_b2[i],
+		      msg.angle_min_b + i*incrbottom);
+    }
 }
 	
 
