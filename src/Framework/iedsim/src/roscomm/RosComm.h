@@ -23,7 +23,7 @@ class RosComm {
   ros::Publisher _pub_diagnostic;
   boost::thread_group _maintains;
 	ros::Subscriber _sub_CustomIED;
-	ros::Subscriber _sub_LocalPath;
+	ros::Subscriber _sub_Location;
 	ros::Publisher  _pub_IEDLocation;
 
   bool init(int argc,char** argv);
@@ -31,7 +31,7 @@ public:
 	RosComm(ComponentMain* comp,int argc,char** argv);
 	virtual ~RosComm();
 	void CustomIEDCallback(const config::IEDSIM::sub::CustomIED::ConstPtr &msg);
-	void LocalPathCallback(const config::IEDSIM::sub::LocalPath::ConstPtr &msg);
+	void LocationCallback(const config::IEDSIM::sub::Location::ConstPtr &msg);
 	void publishIEDLocation( config::IEDSIM::pub::IEDLocation &msg);
 
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);

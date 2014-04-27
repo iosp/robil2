@@ -17,7 +17,7 @@ public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 	void handleCustomIED(const config::IEDSIM::sub::CustomIED& msg);
-	void handleLocalPath(const config::IEDSIM::sub::LocalPath& msg);
+	void handleLocation(const config::IEDSIM::sub::Location& msg);
 	void publishIEDLocation(config::IEDSIM::pub::IEDLocation& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);

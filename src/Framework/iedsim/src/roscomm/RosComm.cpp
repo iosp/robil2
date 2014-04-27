@@ -19,7 +19,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	: _inited(init(argc, argv)), _comp(comp)
 {
 	_sub_CustomIED=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"IEDSIM","CustomIED","sub"), 10, &RosComm::CustomIEDCallback,this));
-	_sub_LocalPath=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"IEDSIM","LocalPath","sub"), 10, &RosComm::LocalPathCallback,this));
+	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"IEDSIM","Location","sub"), 10, &RosComm::LocationCallback,this));
 	_pub_IEDLocation=ros::Publisher(_nh.advertise<config::IEDSIM::pub::IEDLocation>(fetchParam(&_nh,"IEDSIM","IEDLocation","pub"),10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
@@ -39,9 +39,9 @@ void RosComm::CustomIEDCallback(const config::IEDSIM::sub::CustomIED::ConstPtr &
 }
 	
 
-void RosComm::LocalPathCallback(const config::IEDSIM::sub::LocalPath::ConstPtr &msg)
+void RosComm::LocationCallback(const config::IEDSIM::sub::Location::ConstPtr &msg)
 {
-	_comp->handleLocalPath(*msg);
+	_comp->handleLocation(*msg);
 }
 	
 

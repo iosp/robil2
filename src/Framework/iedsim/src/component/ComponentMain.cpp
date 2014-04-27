@@ -21,7 +21,7 @@ void ComponentMain::handleCustomIED(const config::IEDSIM::sub::CustomIED& msg)
 }
 	
 
-void ComponentMain::handleLocalPath(const config::IEDSIM::sub::LocalPath& msg)
+void ComponentMain::handleLocation(const config::IEDSIM::sub::Location& msg)
 {
 	std::cout<< "IEDSIM say:" << msg << std::endl;
 }
