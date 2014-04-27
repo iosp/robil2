@@ -29,7 +29,8 @@ class RosComm {
 	ros::Subscriber _sub_SensorCamL;
 	ros::Subscriber _sub_SensorCamR;
 	ros::Subscriber _sub_SensorWire;
-	ros::Subscriber _sub_SensorSICK;
+	ros::Subscriber _sub_SensorSICK1;
+	ros::Subscriber _sub_SensorSICK2;
 	ros::Subscriber _sub_SensorIBEO;
 	ros::Subscriber _sub_EffortsTh;
 	ros::Subscriber _sub_EffortsSt;
@@ -52,7 +53,8 @@ public:
 	void SensorCamLCallback(const config::PER::sub::SensorCamL::ConstPtr &msg);
 	void SensorCamRCallback(const config::PER::sub::SensorCamR::ConstPtr &msg);
 	void SensorWireCallback(const config::PER::sub::SensorWire::ConstPtr &msg);
-	void SensorSICKCallback(const config::PER::sub::SensorSICK::ConstPtr &msg);
+	void SensorSICK1Callback(const config::PER::sub::SensorSICK1::ConstPtr &msg);
+	void SensorSICK2Callback(const config::PER::sub::SensorSICK2::ConstPtr &msg);
 	void SensorIBEOCallback(const config::PER::sub::SensorIBEO::ConstPtr &msg);
 	void EffortsThCallback(const config::PER::sub::EffortsTh::ConstPtr &msg);
 	void EffortsStCallback(const config::PER::sub::EffortsSt::ConstPtr &msg);

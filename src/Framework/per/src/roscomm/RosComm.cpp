@@ -25,7 +25,8 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_sub_SensorCamL=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorCamL","sub"), 10, &RosComm::SensorCamLCallback,this));
 	_sub_SensorCamR=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorCamR","sub"), 10, &RosComm::SensorCamRCallback,this));
 	_sub_SensorWire=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorWire","sub"), 10, &RosComm::SensorWireCallback,this));
-	_sub_SensorSICK=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorSICK","sub"), 10, &RosComm::SensorSICKCallback,this));
+	_sub_SensorSICK1=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorSICK1","sub"), 10, &RosComm::SensorSICK1Callback,this));
+	_sub_SensorSICK2=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorSICK2","sub"), 10, &RosComm::SensorSICK2Callback,this));
 	_sub_SensorIBEO=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorIBEO","sub"), 10, &RosComm::SensorIBEOCallback,this));
 	_sub_EffortsTh=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsTh","sub"), 10, &RosComm::EffortsThCallback,this));
 	_sub_EffortsSt=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsSt","sub"), 10, &RosComm::EffortsStCallback,this));
@@ -90,9 +91,13 @@ void RosComm::SensorWireCallback(const config::PER::sub::SensorWire::ConstPtr &m
 }
 	
 
-void RosComm::SensorSICKCallback(const config::PER::sub::SensorSICK::ConstPtr &msg)
+void RosComm::SensorSICK1Callback(const config::PER::sub::SensorSICK1::ConstPtr &msg)
 {
-	_comp->handleSensorSICK(*msg);
+	_comp->handleSensorSICK1(*msg);
+}
+void RosComm::SensorSICK2Callback(const config::PER::sub::SensorSICK2::ConstPtr &msg)
+{
+	_comp->handleSensorSICK2(*msg);
 }
 	
 

@@ -24,7 +24,8 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_pub_SensorCamL=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorCamL>(fetchParam(&_nh,"SENSORS","SensorCamL","pub"),10));
 	_pub_SensorCamR=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorCamR>(fetchParam(&_nh,"SENSORS","SensorCamR","pub"),10));
 	_pub_SensorWire=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorWire>(fetchParam(&_nh,"SENSORS","SensorWire","pub"),10));
-	_pub_SensorSICK=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorSICK>(fetchParam(&_nh,"SENSORS","SensorSICK","pub"),10));
+	_pub_SensorSICK1=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorSICK1>(fetchParam(&_nh,"SENSORS","SensorSICK1","pub"),10));
+	_pub_SensorSICK2=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorSICK2>(fetchParam(&_nh,"SENSORS","SensorSICK2","pub"),10));
 	_pub_SensorIBEO=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorIBEO>(fetchParam(&_nh,"SENSORS","SensorIBEO","pub"),10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
@@ -69,9 +70,13 @@ void RosComm::publishSensorWire( config::SENSORS::pub::SensorWire &msg)
 }
 	
 
-void RosComm::publishSensorSICK( config::SENSORS::pub::SensorSICK &msg)
+void RosComm::publishSensorSICK1( config::SENSORS::pub::SensorSICK1 &msg)
 {
-	_pub_SensorSICK.publish(msg);
+	_pub_SensorSICK1.publish(msg);
+}
+void RosComm::publishSensorSICK2( config::SENSORS::pub::SensorSICK2 &msg)
+{
+	_pub_SensorSICK2.publish(msg);
 }
 	
 
