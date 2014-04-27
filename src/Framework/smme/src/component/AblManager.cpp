@@ -44,11 +44,11 @@ bool AblManager::is_trigger(std::string event_name)const{
 }
 
 bool AblManager::on_trigger(std::string event_name){
-	std::string def="_UNKNOWN_";
+	std::string bydefault="_UNKNOWN_";
 	std::string trigger_policy;
-	std::string trigger_name = "/ABL/Events/"+event_name;
-	ros::param::param(trigger_name,trigger_policy,def);
-	if(trigger_policy==def) return false;
+	std::string trigger_name = "/ABL/Events"+event_name;
+	ros::param::param(trigger_name,trigger_policy,bydefault);
+	if(trigger_policy==bydefault) return false;
 	activate(all_triggers[trigger_name],trigger_policy);
 	return true;
 }
