@@ -57,7 +57,11 @@ void ComponentMain::handleSensorWire(const config::PER::sub::SensorWire& msg)
 }
 	
 
-void ComponentMain::handleSensorSICK(const config::PER::sub::SensorSICK& msg)
+void ComponentMain::handleSensorSICK1(const config::PER::sub::SensorSICK1& msg)
+{
+	std::cout<< "PER say:" << msg << std::endl;
+}
+void ComponentMain::handleSensorSICK2(const config::PER::sub::SensorSICK2& msg)
 {
 	std::cout<< "PER say:" << msg << std::endl;
 }
