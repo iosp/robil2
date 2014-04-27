@@ -23,7 +23,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/body.STL" />
+          filename="package://bobcat/meshes/body_lite.STL" />
       </geometry>
       <material
         name="">

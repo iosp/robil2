@@ -25,7 +25,9 @@
 
 #include <boost/thread/mutex.hpp>
 
- 
+     const double PI = 3.14159265359;
+
+
      int wp_num = 1;
      const int max_wp_num = 10;
      int wp = 0;
@@ -57,10 +59,35 @@ float new_bobcat_lon = -1;
 boost::mutex GPS_data_mutex;
 void GPS_callback(const sensor_msgs::NavSatFix GPS_msg) 
 {    
-  GPS_data_mutex.lock(); 
 
-      new_bobcat_lat =  (GPS_msg.latitude - 31.2622) * (1/0.000009) ;     // GPS sensor origin (lat = 31.2622, lon = 34.803611) - BenGuriyon University 
-      new_bobcat_lon =  (GPS_msg.longitude - 34.803611) * (1/0.000009) ;  // (1/0.000009) is used for approximate conversion of lat, lon degrees to meters
+      sensor_msgs::NavSatFix p1, p2;
+      p1.latitude = 31.2622;     // GPS sensor origin (lat = 31.2622, lon = 34.803611) - BenGuriyon University
+      p1.longitude = 34.803611;
+
+      p2.latitude = GPS_msg.latitude;
+      p2.longitude = GPS_msg.longitude;
+
+
+      double R = 6371 * 1000; //[m]
+      double lat1 = p1.latitude*PI/180;
+      double lat2 = p2.latitude*PI/180;
+      double dLat = lat2 - lat1;
+      double dLon = (p2.longitude - p1.longitude)*PI/180;
+
+      double a = sin(dLat/2) * sin(dLat/2) +
+                  sin(dLon/2) * sin(dLon/2) * cos(lat1) * cos(lat2);
+      double c = 2 * atan2(sqrt(a), sqrt(1-a));
+      double d = R*c;
+
+      double y = sin(dLon) * cos(lat2);
+      double x = cos(lat1) * sin(lat2) -
+            sin(lat1) * cos(lat2) * cos(dLon);
+      double brng = atan2(y, x);
+
+   GPS_data_mutex.lock();
+
+        new_bobcat_lat =  cos(brng) * d;
+        new_bobcat_lon =  sin(brng) * d;
 
   GPS_data_mutex.unlock();
 }
@@ -129,9 +156,9 @@ void SICK_callback(const sensor_msgs::LaserScan::ConstPtr& SICK_msg)
      float previous_lon ;
      float previous_time;
      float previous_t_azi;
-     int jt = 0;   // counter of rotation of the t_azi, needed in order to prevent jumps near 3.14 
+     int jt = 0;   // counter of rotation of the t_azi, needed in order to prevent jumps near PI
      float previous_bobcat_azi;
-     int jb = 0;   // counter of rotation of the bobcat_azi, needed in order to prevent jumps near 3.14 
+     int jb = 0;   // counter of rotation of the bobcat_azi, needed in order to prevent jumps near PI
  
      float current_lat_t;
      float current_lon_t;
@@ -255,28 +282,28 @@ void wp_driver(const ros::TimerEvent& )
        float bobcat_azi = new_bobcat_azi; 
      IMU_data_mutex.unlock();
    
-     if ( (bobcat_azi + jb*2*3.14) - previous_bobcat_azi > 1 )
+     if ( (bobcat_azi + jb*2*PI) - previous_bobcat_azi > 1 )
              { jb = jb-1; }
-     else if  ( (bobcat_azi + jb*2*3.14) - previous_bobcat_azi < -1 )
+     else if  ( (bobcat_azi + jb*2*PI) - previous_bobcat_azi < -1 )
              { jb = jb+1; }
-     bobcat_azi = bobcat_azi + jb*2*3.14;
+     bobcat_azi = bobcat_azi + jb*2*PI;
      previous_bobcat_azi = bobcat_azi ;
   
      // calculation and adjusting the target azimuth 
      float t_azi = atan2(lon_error,lat_error);
-     if  (((t_azi+jt*2*3.14) - previous_t_azi) > 1) 
+     if  (((t_azi+jt*2*PI) - previous_t_azi) > 1)
             { jt = jt-1; }
-     else if (((t_azi+jt*2*3.14) - previous_t_azi) < -1)
+     else if (((t_azi+jt*2*PI) - previous_t_azi) < -1)
             { jt = jt+1; }
-       t_azi = t_azi + jt*2*3.14;
+       t_azi = t_azi + jt*2*PI;
        
      float temp_azi_error = t_azi - bobcat_azi;
-     if ( std::abs(temp_azi_error) > (2*3.14 - std::abs(temp_azi_error)) ) 
+     if ( std::abs(temp_azi_error) > (2*PI - std::abs(temp_azi_error)) )
            {  
          if ( temp_azi_error <= 0) 
-               { t_azi = t_azi + 2*3.14;}
+               { t_azi = t_azi + 2*PI;}
          else
-               { t_azi = t_azi - 2*3.14; }
+               { t_azi = t_azi - 2*PI; }
            } 
 
      // calculation of the bobcat velocity azimuth 
@@ -286,7 +313,7 @@ void wp_driver(const ros::TimerEvent& )
     
      // calculation of the bobcat velocity (relative to the bobcat azimuth)
      bobcat_lin_vel =  sqrt ( pow( bobcat_lat_diff/time_interval , 2) + pow( bobcat_lon_diff/time_interval , 2) );        
-     float relative_vel_der =  std::abs(bobcat_vel_azi - (bobcat_azi-jb*2*3.14));
+     float relative_vel_der =  std::abs(bobcat_vel_azi - (bobcat_azi-jb*2*PI));
      if ( relative_vel_der <= 1.57 ) 
           { bobcat_lin_vel =  sqrt( pow( bobcat_lat_diff/time_interval , 2) + pow( bobcat_lon_diff/time_interval , 2) ); } 
      else 
