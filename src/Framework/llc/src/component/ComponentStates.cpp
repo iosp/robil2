@@ -95,8 +95,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	ROS_INFO("LLC Ready");
 
-	double Kp = 0.01 , Kd = 0 , Ki = 0 ; 					/* PID constants of linear x */
-	double Kpz = 0.01, Kdz = 0 , Kiz = 0 ;				/* PID constants of angular z */
+	double Kp = 0.5 , Kd = 0.001 , Ki = 0 ; 					/* PID constants of linear x */
+	double Kpz = 0.1, Kdz = 0.001 , Kiz = 0 ;				/* PID constants of angular z */
  	double dt = 0.01 ; 									/* control time interval */
 	double integral [2] = {} ; 							/* integration part */
 	double der [2] = {} ;  								/* the derivative of the error */
@@ -127,20 +127,14 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 		// Gazebo PID */
 		ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
 		gazebo_msgs::GetModelState getmodelstate;
-	    getmodelstate.request.model_name ="bobcat";
+	    getmodelstate.request.model_name ="Sahar";
 	    gmscl.call(getmodelstate);
 	    /*
 	    COMPONENT->WPD_desired_speed.twist.linear.x = getmodelstate.response.twist.linear.x;
 	    COMPONENT->WPD_desired_speed.twist.angular.z = getmodelstate.response.twist.angular.z;
 	    */
 	    //Gazebo PID /
-/*
-		cur_error.twist.angular.z =
-		(COMPONENT->WPD_desired_speed.twist.angular.z - COMPONENT->Per_measured_speed.twist.angular.z);
 
-		cur_error.twist.linear.x =
-		(COMPONENT->WPD_desired_speed.twist.linear.x - COMPONENT->Per_measured_speed.twist.linear.x);
-*/
 
 	    cur_error.twist.linear.x =
 	    	(COMPONENT->WPD_desired_speed.twist.linear.x - getmodelstate.response.twist.linear.x );
@@ -153,10 +147,11 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	integral[1] += ((cur_error.twist.angular.z)* dt);
 	der[1] = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt);
 
-	Throttle_rate.data = E_stop*(Kp*cur_error.twist.linear.x + Ki*integral[0] + Kd*der[0]) ;
-	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] + Kdz*der[1]) ;
+	Throttle_rate.data = E_stop*(Kp*cur_error.twist.linear.x + Ki*integral[0] - Kd*der[0]) ;
+	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
 
-		ROS_INFO("Linear x error - %f" , cur_error.twist.linear.x);
+	//ROS_INFO("Linear x error : %f" , cur_error.twist.linear.x);
+
 
 	/* publish */
 	COMPONENT->publishEffortsTh(Throttle_rate);

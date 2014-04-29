@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot
-  name="Sahar">
+  name="bobcat">
   <link
     name="body">
     <inertial>
@@ -306,8 +306,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-1.57"
-      upper="1.57"
+      lower="0"
+      upper="0"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -364,8 +364,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-1.57"
-      upper="1.57"
+      lower="0"
+      upper="0"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -422,8 +422,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-0.2"
-      upper="1"
+      lower="0"
+      upper="0"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -538,8 +538,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-0.1"
-      upper="0.6"
+      lower="0"
+      upper="0"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -597,7 +597,7 @@
       xyz="0 1 0" />
     <limit
       lower="0"
-      upper="1.57"
+      upper="0"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -1215,7 +1215,7 @@
   <!-- ros_control plugin -->
  <gazebo>
     <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
-      <robotNamespace>/Sahar</robotNamespace>
+      <robotNamespace>/bobcat</robotNamespace>
       <link1>back_shaft</link1>
       <link2>main_arm</link2>
       <joint>back_shaft_sheker</joint>
@@ -1223,7 +1223,7 @@
   </gazebo>
  <gazebo>
     <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
-      <robotNamespace>/Sahar</robotNamespace>
+      <robotNamespace>/bobcat</robotNamespace>
       <link1>front_shaft</link1>
       <link2>loader</link2>
       <joint>front_shaft_sheker</joint>
@@ -1231,7 +1231,7 @@
   </gazebo>
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>/Sahar</robotNamespace>
+      <robotNamespace>/bobcat</robotNamespace>
     </plugin>
   </gazebo>
   <gazebo reference="body">

@@ -35,7 +35,7 @@ void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
     	supporter_pub_.publish(pub);
 
     	pub.data = msg->y;
-	loader_pub_.publish(pub);
+    	loader_pub_.publish(pub);
 }
 void ThCallback (const std_msgs::Float64ConstPtr &msg){
 
@@ -56,18 +56,18 @@ int main(int argc, char **argv)
   
   ros::init(argc, argv, "rate2effort");
 
-  //geometry_msgs::Twist::Ptr wheels2(new geometry_msgs::Twist());
+ //geometry_msgs::Twist::Ptr wheels2(new geometry_msgs::Twist());
  // wheels = wheels2 ;
 
   ros::NodeHandle n;
 
-  front_left_pub_ = n.advertise<std_msgs::Float64>("/bobcat/front_left_wheel_velocity_controller/command", 100);
-  front_right_pub_ = n.advertise<std_msgs::Float64>("/bobcat/front_right_wheel_velocity_controller/command", 100);
-  back_left_pub_ = n.advertise<std_msgs::Float64>("/bobcat/back_left_wheel_velocity_controller/command", 100);
-  back_right_pub_ = n.advertise<std_msgs::Float64>("/bobcat/back_right_wheel_velocity_controller/command", 100);
+  front_left_pub_ = n.advertise<std_msgs::Float64>("/Sahar/front_left_wheel_velocity_controller/command", 100);
+  front_right_pub_ = n.advertise<std_msgs::Float64>("/Sahar/front_right_wheel_velocity_controller/command", 100);
+  back_left_pub_ = n.advertise<std_msgs::Float64>("/Sahar/back_left_wheel_velocity_controller/command", 100);
+  back_right_pub_ = n.advertise<std_msgs::Float64>("/Sahar/back_right_wheel_velocity_controller/command", 100);
 
-  supporter_pub_ = n.advertise<std_msgs::Float64>("/bobcat/supporter_position_controller/command", 100);
-  loader_pub_ = n.advertise<std_msgs::Float64>("/bobcat/loader_position_controller/command", 100);
+  supporter_pub_ = n.advertise<std_msgs::Float64>("/Sahar/supporter_position_controller/command", 100);
+  loader_pub_ = n.advertise<std_msgs::Float64>("/Sahar/loader_position_controller/command", 100);
 
   ros::Subscriber twist_sub_ = n.subscribe("/wheelsrate", 1000, wheelsCallback );
   ros::Subscriber arm_sub_ = n.subscribe("/armrate", 1000, armCallback );
