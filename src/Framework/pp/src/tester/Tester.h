@@ -11,6 +11,8 @@
 #include <ros/ros.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <move_base_msgs/MoveBaseActionGoal.h>
+
 #include <Geometry.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Path.h>
@@ -50,7 +52,7 @@ public:
 	Checker();
 	virtual ~Checker();
 
-	void on_goal(const geometry_msgs::PoseStamped::ConstPtr& msg);
+	void on_goal(const move_base_msgs::MoveBaseActionGoal::ConstPtr& msg);
 
 	ros::NodeHandle node;
 	ros::Subscriber sub_on_goal;
