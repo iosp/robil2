@@ -46,9 +46,13 @@ void ComponentMain::publishSensorWire(config::SENSORS::pub::SensorWire& msg)
 }
 	
 
-void ComponentMain::publishSensorSICK(config::SENSORS::pub::SensorSICK& msg) 
+void ComponentMain::publishSensorSICK1(config::SENSORS::pub::SensorSICK1& msg) 
 {
-	_roscomm->publishSensorSICK(msg);
+	_roscomm->publishSensorSICK1(msg);
+}
+void ComponentMain::publishSensorSICK2(config::SENSORS::pub::SensorSICK2& msg) 
+{
+	_roscomm->publishSensorSICK2(msg);
 }
 	
 

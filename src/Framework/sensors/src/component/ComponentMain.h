@@ -22,7 +22,8 @@ public:
 	void publishSensorCamL(config::SENSORS::pub::SensorCamL& msg);
 	void publishSensorCamR(config::SENSORS::pub::SensorCamR& msg);
 	void publishSensorWire(config::SENSORS::pub::SensorWire& msg);
-	void publishSensorSICK(config::SENSORS::pub::SensorSICK& msg);
+	void publishSensorSICK1(config::SENSORS::pub::SensorSICK1& msg);
+	void publishSensorSICK2(config::SENSORS::pub::SensorSICK2& msg);
 	void publishSensorIBEO(config::SENSORS::pub::SensorIBEO& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
