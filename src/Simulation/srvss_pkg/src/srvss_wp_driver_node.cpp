@@ -6,6 +6,8 @@
  
 #include <iostream>
 #include <string>     // std::string, std::stof
+#include <fstream>
+
 
 #include "std_msgs/String.h"
 
@@ -34,7 +36,7 @@
 
      float t_lat[max_wp_num];   // path lat array 
      float t_lon[max_wp_num];   // path lon array
-
+     float t_vel[max_wp_num];
 
 // receiving the WP command and overrides the existing target WP and WP path
 int keybord_com_wp = 0; // flag that tells the wp_driver that a commanded WP was received (and that previous WP can be lost) 
@@ -480,17 +482,71 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "srvss_wp_driver_node");
  
-  if (  ((argc-1) > max_wp_num*2 )  || (  ((argc-1)%2)!=0  )  )
-      {
-         ROS_ERROR(" wrong input !!! ");
-         if  ( ((argc-1)%2)!=0 )   
-           { ROS_ERROR(" Not equal lat-log parameters number "); }   
-         else if ( (argc-1) > max_wp_num*2 )
-           { ROS_ERROR(" To many WP, the max allowed WP number is %d you sent %d " , max_wp_num, (argc-4)/2); }
-         else 
-           { ROS_ERROR(" It is not clear why... ");}         
-     return 1;     
-      }
+    if ( (std::string(argv[1]).compare("-path")!=0) && (std::string(argv[1]).compare("-file")!=0) )
+    {
+    	std::cout << "usage:" <<std:: endl;
+    	std::cout <<"(1) -path <wp_1_lat> <wp_1_lon> .... <wp_N_lat> <wp_N_lon> # will perform the in line specified WP path" <<std:: endl;
+    	std::cout <<"(2) -file <file_name>  # will perform the WP_path specified in the file " <<std:: endl;
+		  return 1;
+    }
+    else if (std::string(argv[1]).compare("-path")==0)
+		{
+		std::cout << "!! path !!"<<std::endl;
+
+		  if (  ((argc-2) > max_wp_num*2 )  || (  ((argc-2)%2)!=0  )  )
+		  	  {
+			  ROS_ERROR(" wrong input !!! ");
+			  if  ( ((argc-2)%2)!=0 )
+			  { ROS_ERROR(" Not equal lat-log parameters number "); }
+			  else if ( (argc-2) > max_wp_num*2 )
+			  { ROS_ERROR(" To many WP, the max allowed WP number is %d you sent %d " , max_wp_num, (argc-5)/2); }
+			  else
+			  { ROS_ERROR(" It is not clear why... ");}
+			  return 1;
+		  	  }
+
+		  wp_num = ((argc-2)/2);
+	      for (int i=1 ; i<=wp_num ; i++)
+		    {
+		      t_lat[i] = std::atof(argv[2*i]);
+		      t_lon[i] = std::atof(argv[2*i+1]);
+		    }
+		}
+
+  else if(std::string(argv[1]).compare("-file")==0)
+		{
+		std::cout << "!! file !!"<<std::endl;
+		std::string dir_path = "/home/userws3/srvss/devel/lib/SRVSS/";
+		std::string file_path = dir_path + argv[2];
+
+		std::fstream mfile(file_path.data() ,std::ios_base::in);
+		//std::fstream mfile("/home/userws3/srvss/devel/lib/SRVSS/myMission.txt",std::ios_base::in);
+
+		char word[10] = "";
+		while( (std::string(word).compare("START")!=0) && !mfile.eof() )
+		{
+			mfile>>word;
+			std::cout << word <<std::endl;
+		}
+
+		mfile >> t_lat[0];
+		mfile >> t_lon[0];
+		t_vel[0] = 0;
+
+		while( (std::string(word).compare("WAYPOINTS")!=0) && !mfile.eof() )
+		{    mfile>>word; }
+
+		int i = 1;
+		while (!mfile.eof())
+		{
+			mfile >> t_lat[i];
+			mfile >> t_lon[i];
+			mfile >> t_vel[i];
+      	i++;
+		}
+		 wp_num = --i;
+		}
+
 
   ros::NodeHandle n;
 
@@ -500,18 +556,11 @@ int main(int argc, char **argv)
   ros::Subscriber IMU_data = n.subscribe("/SENSORS/IMU", 100, IMU_callback); 
   ros::Subscriber SICK_data = n.subscribe("/front_sick/scan", 100, SICK_callback); 
     
-  init_nav_data(); // a loop that waits for reception of GPS and INS data
 
-  wp_num = ((argc-1)/2);   
- 
-  WP_mutex.lock();
-    for (int i=1 ; i<=wp_num ; i++)  
-       {   
-          t_lat[i] = std::atof(argv[2*i-1]);
-          t_lon[i] = std::atof(argv[2*i]);  
-       }
-  WP_mutex.unlock();
- 
+  init_nav_data(); // a loop that waits for reception of GPS and INS data
+  for(int j=0 ; j<wp_num ; j++)
+  	std::cout << "wp[" << j << "] lat = " << t_lat[j] << " lon = " << t_lon[j] << std::endl;
+
   ros::Timer wp_driver_timer = n.createTimer(ros::Duration(0.05), wp_driver);
   ros::Timer obstacle_avoidance_timer = n.createTimer(ros::Duration(0.25), obstacle_avoidance);     
   wheelsrate_pub = n.advertise<geometry_msgs::Twist>("/wheelsrate", 1000);
