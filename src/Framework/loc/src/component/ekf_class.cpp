@@ -3,7 +3,10 @@
 
 ekf::ekf()
 {
+  __init__props();
+  this->first_GPS_flag = 1;
   this->GPS_flag = 1;
+  this->IMU_flag = 1;
   this->estimatedPose.pose.pose.position.x = 0;
   this->estimatedPose.pose.pose.position.y = 0;
   this->estimatedPose.pose.pose.position.z = 0;
@@ -30,17 +33,32 @@ void ekf::setInitGPS(sensor_msgs::NavSatFix initGPS)
 
 void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 {
-  if(GPS_flag)
+  if(first_GPS_flag)
   {
     std::cout << "setting first GPS location as (0,0)" << std::endl;
     setInitGPS(measurement); 
-    GPS_flag = 0;
+    first_GPS_flag = 0;
   }
   this->GPSmeasurement = measurement;
+  //transform GPS measurement to x-y measurement
+  double d = calcDistance(GPSmeasurement,initialGPS);
+  double theta = calcBearing(initialGPS,GPSmeasurement);
+  double x = d * cos(theta);
+  double y = d * sin(theta);
+  z.at<double>(0,0) = x;
+  z.at<double>(1,0) = y;
 }
 void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
 {
   this->IMUmeasurement = measurement;
+  Quaternion qut2(measurement.orientation);
+  Rotation rot2 = GetRotation(qut2);
+  z.at<double>(2,0) = rot2.yaw;
+  z.at<double>(3,0) = sqrt(measurement.angular_velocity.x*measurement.angular_velocity.x+
+		  	  	  	  measurement.angular_velocity.y*measurement.angular_velocity.y+
+		  	  	  	  measurement.angular_velocity.z*measurement.angular_velocity.z);
+  z.at<double>(4,0) = sqrt(measurement.linear_acceleration.x*measurement.linear_acceleration.x+
+		  	  	  	  measurement.linear_acceleration.y*measurement.linear_acceleration.y);//- 60*9.81*pow10(-6);
 }
 double ekf::calcDistance(sensor_msgs::NavSatFix p1,sensor_msgs::NavSatFix p2)
 {
@@ -80,6 +98,22 @@ geometry_msgs::TwistStamped ekf::getEstimatedSpeed()
 }
 void ekf::estimator()
 {
+	/*
+	 Kalman filter
+
+	ros::Time time;
+	time = ros::Time::now();
+	measurement_update();
+	time_propagation();
+	this->velocity.twist.linear.x = xk.at<double>(3,0) * cos(xk.at<double>(2,0));
+	this->velocity.twist.linear.y = xk.at<double>(3,0) * sin(xk.at<double>(2,0));
+	this->velocity.header.stamp = time;
+
+	this->estimatedPose.pose.pose.position.x = xk.at<double>(0,0);
+	this->estimatedPose.pose.pose.position.y = xk.at<double>(1,0);
+	this->estimatedPose.pose.pose.orientation = IMUmeasurement.orientation;
+	this->estimatedPose.header.stamp = time;*/
+	/* non KF estimation*/
   double d = calcDistance(GPSmeasurement,initialGPS);
   double theta = calcBearing(initialGPS,GPSmeasurement);
   double x = d * cos(theta);
@@ -107,9 +141,29 @@ void ekf::estimator()
   this->velocity.twist.angular.y = rot2.pitch;
   this->velocity.twist.angular.z = rot2.yaw;
 
-    
-  this->estimatedPose.pose.pose.position.x = x;
-  this->estimatedPose.pose.pose.position.y = y;
-  this->estimatedPose.pose.pose.orientation = IMUmeasurement.orientation;
-  this->estimatedPose.header.stamp = time;
+  	this->estimatedPose.pose.pose.position.x = x;
+	this->estimatedPose.pose.pose.position.y = y;
+	this->estimatedPose.pose.pose.position.z = GPSmeasurement.altitude;
+	this->estimatedPose.pose.pose.orientation = IMUmeasurement.orientation;
+	this->estimatedPose.header.stamp = time;
+
+
 }
+
+void ekf::measurement_update()
+{
+	Mat A = H*P1*H.t()+R;
+	K = P1*H.t()*A.inv();
+	xk = xk1 + K*(z-H*xk1);
+	Mat L = Mat::eye(s,s,CV_64F) - K*H;
+	P = L*P1*L.t() + K*R*K.t();
+	modify_F(0.1,xk.at<double>(2,0));
+}
+
+void ekf::time_propagation()
+{
+	xk1 = F*xk;
+	P1 = F*P*F.t() + Q;
+}
+
+
