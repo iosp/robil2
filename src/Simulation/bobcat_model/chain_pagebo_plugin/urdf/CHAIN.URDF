@@ -258,7 +258,7 @@
   <!-- chain plugin -->
   <gazebo>
     <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
-      <robotNamespace>/bobcat</robotNamespace>
+      <robotNamespace>/Sahar</robotNamespace>
       <link1>link1</link1>
       <link2>link10<</link2>
     </plugin>
