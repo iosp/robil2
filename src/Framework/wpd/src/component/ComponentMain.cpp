@@ -8,12 +8,16 @@
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
 
+#include "MoveBase.h"
+
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
+	_move_base = new MoveBase(this);
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
+	if(_move_base) delete _move_base; _move_base=0;
 }
 
 void ComponentMain::handleLocalPath(const config::WPD::sub::LocalPath& msg)
@@ -30,7 +34,7 @@ void ComponentMain::handleMiniMap(const config::WPD::sub::MiniMap& msg)
 
 void ComponentMain::handleLocation(const config::WPD::sub::Location& msg)
 {
-	std::cout<< "WPD say:" << msg << std::endl;
+	_move_base->on_position_update(msg);
 }
 	
 

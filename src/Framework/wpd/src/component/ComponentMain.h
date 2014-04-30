@@ -11,8 +11,10 @@
 #include <ParameterTypes.h>
 #include <tf/tf.h>
 class RosComm;
+class MoveBase;
 class ComponentMain {
 	RosComm* _roscomm;
+	MoveBase* _move_base;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
