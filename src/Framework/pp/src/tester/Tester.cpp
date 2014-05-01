@@ -123,17 +123,21 @@ void Tester::test1_init(){
 
 int move_index=0 ;
 void Tester::test1_step(){
-
+	static int dir = -1;
 	pub_map.publish(map);
 	pub_path.publish(path);
-	if(move_index==move.poses.size())move_index=0;
-	PoseStamped pose = move.poses[move_index++];
+	int size = move.poses.size();
+	if(move_index>=size-1 or move_index<=0)dir*=-1;
+	ROS_INFO_STREAM("index : "<<move_index<<" from "<<move.poses.size()<<" : "<<dir);
+	move_index = move_index + dir;
+	ROS_INFO_STREAM("index : result "<<move_index);
+	PoseStamped pose = move.poses[move_index];
 	pose.header = move.header;
 	pub_location.publish(pose);
 	std::cout<<"pose : " << pose.pose.position.x<<","<<pose.pose.position.y<<std::endl;
 }
 
-void Checker::on_goal(const geometry_msgs::PoseStamped::ConstPtr& msg){
+void Checker::on_goal(const move_base_msgs::MoveBaseActionGoal::ConstPtr& msg){
 	ROS_INFO_STREAM("Nav goal: "<<*msg);
 }
 

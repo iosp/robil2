@@ -7,15 +7,15 @@
  
     <include>
       <uri>model://bobcat</uri>
-      <name>SRVSS_BobCat</name>
-      <pose>10 10 0.6 0 0 0</pose>
+      <name>BobCat</name>
+      <pose>50 50 0.6 0 0 0</pose>
     </include>
 
    <include>
       <uri>model://srvss_terrain1</uri>
    </include>
  
-<!--
+
     <include>
       <uri>model://barrel1</uri>
       <name>target_barrel_1</name>
@@ -25,7 +25,7 @@
     <include>
       <uri>model://barrel1</uri>
       <name>target_barrel_2</name>
-      <pose>50 50 5 0 0 0</pose>
+      <pose>90 10 5 0 0 0</pose>
     </include>
 
     <include>
@@ -37,21 +37,21 @@
     <include>
       <uri>model://barrel1</uri>
       <name>target_barrel_4</name>
-      <pose>90 10 5 0 0 0</pose>
-    </include>
-
-   <include>
-      <uri>model://barrel1</uri>
-      <name>target_barrel_5</name>
       <pose>90 90 5 0 0 0</pose>
     </include>
 
    <include>
       <uri>model://barrel1</uri>
-      <name>target_barrel_6</name>
-      <pose>90 10 5 0 0 0</pose>
+      <name>target_barrel_5</name>
+      <pose>60 50 5 0 0 0</pose>
     </include>
--->
+
+   <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_6</name>
+      <pose>40 50 5 0 0 0</pose>
+    </include>
+
 
 
    <include>

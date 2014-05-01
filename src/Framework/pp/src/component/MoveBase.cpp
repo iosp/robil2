@@ -8,6 +8,8 @@
 #include "MoveBase.h"
 #include <Geometry.h>
 
+#include <move_base_msgs/MoveBaseActionGoal.h>
+
 #define SYNCH 	boost::recursive_mutex::scoped_lock locker(mtx);
 
 namespace{
@@ -15,7 +17,7 @@ namespace{
 		goal.pose.orientation.x = 0;
 		goal.pose.orientation.y = 0;
 		goal.pose.orientation.z = 0;
-		goal.pose.orientation.w = 0;
+		goal.pose.orientation.w = 1;
 	}
 	double calcTriangle_deg(
 			const geometry_msgs::Pose& A,
@@ -77,7 +79,7 @@ MoveBase::MoveBase()
 {
 	ros::NodeHandle node;
 
-	goalPublisher = node.advertise<geometry_msgs::PoseStamped>("/move_base/goal", 5, false);
+	goalPublisher = node.advertise<move_base_msgs::MoveBaseActionGoal>("/move_base/goal", 5, false);
 	mapPublisher = node.advertise<nav_msgs::OccupancyGrid>("/map", 5, false);
 
 
@@ -171,15 +173,23 @@ void MoveBase::calculate_goal(){
 
 void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 
-	geometry_msgs::PoseStamped goal;
+	move_base_msgs::MoveBaseActionGoal goal;
+	geometry_msgs::PoseStamped ps_goal;
 
-	goal = robil_goal;
-	remove_orientation(goal);
+	ps_goal = robil_goal;
+	remove_orientation(ps_goal);
 
 	goal.header.frame_id = "/map";
 	goal.header.stamp = ros::Time::now();
+	ps_goal.header = goal.header;
 
-	std::cout<<"goal : "<<goal.pose.position.x<<","<<goal.pose.position.y<<std::endl;
+	std::stringstream sid ; sid<<"goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y;
+	goal.goal_id.id = sid.str();
+	goal.goal_id.stamp = goal.header.stamp;
+	
+	goal.goal.target_pose = ps_goal;
+	
+	std::cout<<"goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y<<std::endl;
 	goalPublisher.publish(goal);
 
 }
