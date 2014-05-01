@@ -8,7 +8,7 @@
 	<pose>0 0 0 1.57 0 1.57 </pose>
 	<geometry>
 	  <mesh>
-	    <uri>model://gpu_ibeo/meshes/IBEO.STL </uri>
+	    <uri>model://IBEO/meshes/IBEO.STL </uri>
 	  </mesh>
 	</geometry>
       </visual>
