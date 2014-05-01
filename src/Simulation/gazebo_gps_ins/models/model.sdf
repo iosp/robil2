@@ -40,6 +40,15 @@
     <plugin name="GPS_INS" filename="libgps_ins.so">
       <start_latitude>31.2622</start_latitude>
       <start_longitude>34.803611</start_longitude>
+      <!--noise>
+	<gps>2.5</gps>
+	<rollpitch>0.2</rollpitch>
+	<yaw>0.8</yaw>
+	<acc_bias>0.0005886</acc_bias>
+	<gyro_bias>0.000833333</gyro_bias>
+	<acc_noise>0.000465329</acc_noise>
+	<gyro_noise>0.000252982</gyro_noise>
+      </noise-->
       <frequency>20</frequency>
     </plugin>
     </model>        
