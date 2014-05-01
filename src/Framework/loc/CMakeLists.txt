@@ -2,8 +2,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(loc)
 find_package(catkin REQUIRED COMPONENTS
- roscpp rospy robil2conf
+ roscpp rospy robil2conf cv_bridge
 )
+find_package(OpenCV 2)
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
 	CATKIN_DEPENDS robil2conf
@@ -14,6 +15,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 ## Declare a cpp library
 add_library(loc_rosComm
@@ -26,6 +28,6 @@ add_library(loc_compMain
 add_executable(loc_node src/main.cpp)
 target_link_libraries(loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(loc_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(loc_node loc_compMain loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(loc_node loc_compMain loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS}
 )
 
