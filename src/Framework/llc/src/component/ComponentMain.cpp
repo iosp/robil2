@@ -17,10 +17,12 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg)
 {
-	std::cout<< "LLC say:" << msg << std::endl;
+
+	this->WPD_desired_speed.twist.linear.x = msg.twist.linear.x ;
+	this->WPD_desired_speed.twist.angular.z = msg.twist.angular.z ;
+	std::cout<< "LLC say:" << this->WPD_desired_speed << std::endl;
 }
 	
-
 void ComponentMain::handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg)
 {
 	std::cout<< "LLC say:" << msg << std::endl;
@@ -41,6 +43,10 @@ void ComponentMain::handleLocation(const config::LLC::sub::Location& msg)
 
 void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
 {
+ /* mutex ? */
+	Per_measured_speed.twist.linear.x = msg.twist.linear.x ;
+	Per_measured_speed.twist.angular.z = msg.twist.angular.z ;
+
 	std::cout<< "LLC say:" << msg << std::endl;
 }
 	
@@ -74,3 +80,4 @@ void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
 	_roscomm->publishDiagnostic(header, _report);
 }
+
