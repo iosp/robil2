@@ -14,6 +14,9 @@ class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;
 public:
+	config::LLC::sub::PerVelocity Per_measured_speed ;		/* real measured speed */
+	config::LLC::sub::WSMVelocity WSM_desired_speed ;		/* WSM desired vel. - on work sequence mode */
+	config::LLC::sub::WPDVelocity WPD_desired_speed ;		/* WPD desired vel. - on driving mode */
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 	void handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg);
@@ -30,3 +33,4 @@ public:
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 };
 #endif /* COMPONENTMAIN_H_ */
+
