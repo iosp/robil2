@@ -49,5 +49,5 @@ add_dependencies(ibeo_gpu ${catkin_EXPORTED_TARGETS})
 
 install(
   DIRECTORY models/
-  DESTINATION $ENV{HOME}/.gazebo/models/gpu_ibeo
+  DESTINATION $ENV{HOME}/.gazebo/models/IBEO
 )
