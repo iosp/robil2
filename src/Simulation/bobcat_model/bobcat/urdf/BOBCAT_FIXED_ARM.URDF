@@ -1215,7 +1215,7 @@
   <!-- ros_control plugin -->
  <gazebo>
     <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
-      <robotNamespace>/bobcat</robotNamespace>
+      <robotNamespace>/Sahar</robotNamespace>
       <link1>back_shaft</link1>
       <link2>main_arm</link2>
       <joint>back_shaft_sheker</joint>
@@ -1223,7 +1223,7 @@
   </gazebo>
  <gazebo>
     <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
-      <robotNamespace>/bobcat</robotNamespace>
+      <robotNamespace>/Sahar</robotNamespace>
       <link1>front_shaft</link1>
       <link2>loader</link2>
       <joint>front_shaft_sheker</joint>
@@ -1231,7 +1231,7 @@
   </gazebo>
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>/bobcat</robotNamespace>
+      <robotNamespace>/Sahar</robotNamespace>
     </plugin>
   </gazebo>
   <gazebo reference="body">
