@@ -42,6 +42,10 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	
+	
+	void setVisualize(bool);
+	
 private:
       sensor_msgs::Imu _imuData;
       sensor_msgs::NavSatFix _gpsData;
