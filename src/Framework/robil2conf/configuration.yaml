@@ -107,8 +107,8 @@ SENSORS_pub_SensorGPS: '/SENSORS/GPS'
 SENSORS_pub_SensorCamL: '/SENSORS/CAM/L'
 SENSORS_pub_SensorCamR: '/SENSORS/CAM/R'
 SENSORS_pub_SensorWire: '/SENSORS/WIRE'
-SENSORS_pub_SensorSICK1: '/SENSORS/SICK/1'
-SENSORS_pub_SensorSICK2: '/SENSORS/SICK/2'
+SENSORS_pub_SensorSICK1: '/right_sick/scan'
+SENSORS_pub_SensorSICK2: '/left_sick/scan'
 SENSORS_pub_SensorIBEO: '/SENSORS/IBEO/1'
 
 #PLATFORM
