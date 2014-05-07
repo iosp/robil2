@@ -59,7 +59,7 @@
         <kinematic>0</kinematic>
         <gravity>0</gravity>
       </link>
-      <static>1</static>
+      <static>0</static>
       <plugin name="CameraTF" filename="libcameraTF.so">
       </plugin>
     </model>
