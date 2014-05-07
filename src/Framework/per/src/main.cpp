@@ -3,9 +3,12 @@
 #include "component/ComponentStates.h"
 #include <ros/spinner.h>
 #include <boost/thread/thread.hpp>
+#include <std_msgs/Bool.h>
 #include <opencv2/opencv.hpp>
 #include <cmath>
+#include "component/rdbg.h"
 
+using namespace cv;
 
 /*
 #define DEGREE_TO_M		111000
@@ -269,9 +272,26 @@ int main(int argc, char** argv)
 
 */
 
+ComponentMain* cptr;
+
+void setVisual(const std_msgs::Bool::ConstPtr& msg)
+{
+   cptr->setVisualize(msg->data);
+}
+
 int main(int argc,char** argv)
 {
+  /*
+  Mat x(513, 513, CV_8UC1);
+  for(int i = 0; i < x.rows; i++)
+    for(int j = 0; j < x.cols; j++)
+      x.at<uchar>(j, i) = (i*j*255)/(513*513);
+  imwrite( "oded.png", x );
+  */
   ComponentMain comp(argc,argv);
+  cptr = &comp;
+  ros::NodeHandle n;
+  ros::Subscriber vis = n.subscribe("/PER/VISUAL", 5, setVisual);
   ros::AsyncSpinner spinner(4); // Use 4 threads
   spinner.start();
   ros::waitForShutdown();

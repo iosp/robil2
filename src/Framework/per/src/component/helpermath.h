@@ -1,6 +1,8 @@
 #ifndef HELPERMATH__H
 #define HELPERMATH__H
 #include <string>
+#include <cstdio>
+#include <cmath>
 using std::string;
 
 class Vec3D
@@ -15,6 +17,24 @@ class Vec3D
 	{ 
 	  char buf[50];
 	  sprintf(buf, "V[%f %f %f]", x, y, z);
+	  return string(buf);
+	}
+};
+
+class Vec2D
+{
+  public:
+        Vec2D(double x, double y) : x(x), y(y) { }
+        Vec2D() { x = y = 0; }
+        Vec2D multiply(double r) { return Vec2D(x*r, y*r); }        
+        Vec2D add(Vec2D other) { return Vec2D(x+other.x, y+other.y); }
+        double length() { return sqrt(x*x+y*y); }
+        Vec2D normalize() { return Vec2D(x/length(), y/length()); };
+        double x,y;
+	string toString() 
+	{ 
+	  char buf[50];
+	  sprintf(buf, "V[%f %f]", x, y);
 	  return string(buf);
 	}
 };

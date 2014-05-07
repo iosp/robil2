@@ -1,5 +1,5 @@
-#ifndef HEIGHTMAP_PROJECTION__H
-#define HEIGHTMAP_PROJECTION__H
+#ifndef STEREO__H
+#define STEREO__H
 
 #include <opencv2/opencv.hpp>
 using namespace cv;
@@ -11,7 +11,7 @@ Mat getDisparity(Mat left_image, Mat right_image)
     IplImage temp=left_image;
     IplImage temp2=right_image;
     CvMat *matf= cvCreateMat ( temp.height, temp.width, CV_16S);
-    CvStereoBMState * state=cvCreateStereoBMState(CV_STEREO_BM_NARROW,16*10);
+    CvStereoBMState * state=cvCreateStereoBMState(CV_STEREO_BM_NARROW,16*16);
     cvFindStereoCorrespondenceBM(&temp,&temp2,matf,state);
     CvMat * disp_left_visual= cvCreateMat(temp.height, temp.width, CV_8U);
     cvConvertScale( matf, disp_left_visual, -16 );
@@ -38,9 +38,23 @@ Mat getDisparity(Mat left_image, Mat right_image)
 	cvtColor(img,img, CV_BGR2GRAY);
     for(int i = 0; i < img.rows; i++)
 	   for(int j = 0; j < img.cols; j++)
-	       if(img.at<uchar>(i, j) > 150) img.at<uchar>(i, j) = 0;
+	       if(img.at<uchar>(i, j) > 250) img.at<uchar>(i, j) = 0;
 	       else img.at<uchar>(i, j) = (int)(img.at<uchar>(i, j)*3) ;
     return img;
+}
+
+
+
+void handleStereo(Mat left, Mat right)
+{
+  Mat l,r;
+  resize(left, l, Size(left.size().width/2, left.size().height/2), 0, 0, cv::INTER_CUBIC);
+  resize(right, r, Size(right.size().width/2, right.size().height/2), 0, 0, cv::INTER_CUBIC);
+  blur( l, l, Size( 3, 3 ), Point(-1,-1));
+  blur( r, r, Size( 3, 3 ), Point(-1,-1));
+  imshow("dispx", getDisparity(r, l)); 
+  imshow("camz", l); 
+  waitKey(1);
 }
 
 
