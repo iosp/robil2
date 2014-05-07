@@ -43,3 +43,7 @@ target_link_libraries(per_node per_compMain per_rosComm ${catkin_LIBRARIES} ${Bo
 )
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
+install(
+  DIRECTORY img/
+  DESTINATION $ENV{HOME}/.ros/
+)

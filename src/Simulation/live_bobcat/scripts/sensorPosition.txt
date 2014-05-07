@@ -18,21 +18,18 @@
 
     <include>
       <uri>model://IBEO</uri>
-      <pose>-0.375 0.055 1.89 0 0.284 0.13</pose>
+      <pose>-0.375 0.055 1.89 0 0.284 0</pose>
       <name>ibeo</name>
     </include>
     
     <include>
       <uri>model://FLEA3_L</uri>
-      <pose>-0.35 0.3335 1.974 0 0 0</pose>
+      <pose>-0.35 0.3335 1.93 0 0 0</pose>
       <name>left_flea3</name>
     </include>
-
-
-
     <include>
       <uri>model://FLEA3_R</uri>
-      <pose>-0.30 0.23 1.93 0 0.7 -0.35</pose>
+      <pose>-0.30 0.23 1.93 0 0 0</pose>
       <name>right_flea3</name>
     </include>
 

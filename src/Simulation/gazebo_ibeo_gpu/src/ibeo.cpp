@@ -25,7 +25,7 @@
 
 
 #define PI 			3.14159
-#define TOPIC_NAME 		"LD_MRS"
+#define TOPIC_NAME 		"SENSORS/IBEO/1"
 
 #define SENSOR_T1_NAME		"ibeo-t1"
 #define SENSOR_T2_NAME		"ibeo-t2"
