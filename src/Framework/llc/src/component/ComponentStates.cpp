@@ -95,8 +95,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	ROS_INFO("LLC Ready");
 
-	double Kp = 0.5 , Kd = 0.001 , Ki = 0 ; 					/* PID constants of linear x */
-	double Kpz = 0.1, Kdz = 0.001 , Kiz = 0 ;				/* PID constants of angular z */
+	double Kp = 0.2 , Kd = 0 , Ki = 0 ; 					/* PID constants of linear x */
+	double Kpz = 0.005 , Kdz = 0, Kiz = 0 ;					/* PID constants of angular z */
  	double dt = 0.01 ; 									/* control time interval */
 	double integral [2] = {} ; 							/* integration part */
 	double der [2] = {} ;  								/* the derivative of the error */
@@ -129,12 +129,13 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 		gazebo_msgs::GetModelState getmodelstate;
 	    getmodelstate.request.model_name ="Sahar";
 	    gmscl.call(getmodelstate);
+
 	    /*
 	    COMPONENT->WPD_desired_speed.twist.linear.x = getmodelstate.response.twist.linear.x;
 	    COMPONENT->WPD_desired_speed.twist.angular.z = getmodelstate.response.twist.angular.z;
 	    */
-	    //Gazebo PID /
 
+	    //Gazebo PID//
 
 	    cur_error.twist.linear.x =
 	    	(COMPONENT->WPD_desired_speed.twist.linear.x - getmodelstate.response.twist.linear.x );
@@ -147,31 +148,35 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	integral[1] += ((cur_error.twist.angular.z)* dt);
 	der[1] = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt);
 
+		/*PID Constants debugging
+
+	Kp = COMPONENT->PID_CONSTANTS.twist.linear.x ;
+	Ki = COMPONENT->PID_CONSTANTS.twist.linear.y ;
+	Kd = COMPONENT->PID_CONSTANTS.twist.linear.z ;
+
+	Kpz = COMPONENT->PID_CONSTANTS.twist.angular.x ;
+	Kiz = COMPONENT->PID_CONSTANTS.twist.angular.y ;
+	Kdz = COMPONENT->PID_CONSTANTS.twist.angular.z ;
+		*/
+
 	Throttle_rate.data = E_stop*(Kp*cur_error.twist.linear.x + Ki*integral[0] - Kd*der[0]) ;
 	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
-
-	//ROS_INFO("Linear x error : %f" , cur_error.twist.linear.x);
-
 
 	/* publish */
 	COMPONENT->publishEffortsTh(Throttle_rate);
 	COMPONENT->publishEffortsSt(Steering_rate);
 
-	/* output data */
-	/*
-	if((Throttle_rate <= 100) && (Throttle_rate >= -100))
-		COMPONENT->publishEffortsTh(Throttle_rate);
-	if(Steering_rate <= 100 && Steering_rate >= -100)
-		COMPONENT->publishEffortsSt(Steering_rate);
-	*/
 	/* calibrate the error */
 	old_error.twist.angular.z = cur_error.twist.angular.z ;
 	old_error.twist.linear.x = cur_error.twist.linear.x ;
-
+/*
+	cout<< "Linear x error:" << cur_error.twist.linear.x << endl;
+	cout<< "Angular Z error:" << cur_error.twist.angular.z << endl;
+*/
 		if(!E_stop)
 			break ;
+		PAUSE(10);		/* wait dt time to recalculate error */
 
-		PAUSE(100);		/* wait dt time to recalculate error */
 		//usleep(100000);
 	}
 	return TaskResult::SUCCESS();
