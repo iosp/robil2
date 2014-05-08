@@ -269,6 +269,8 @@ void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msg)
 		      msg.ranges_b2[i],
 		      msg.angle_min_b + i*incrbottom);
     }
+    config::PER::pub::Map msg2;
+    publishMap(msg2);
 }
 	
 
