@@ -4,6 +4,7 @@
 #include "geometry_msgs/Twist.h"
 #include <sstream>
 
+ // std_msgs::Float64 x ;
 
   ros::Publisher front_left_pub_;
   ros::Publisher front_right_pub_;
@@ -13,16 +14,21 @@
   ros::Publisher supporter_pub_;
   ros::Publisher loader_pub_;
   geometry_msgs::Twist::Ptr wheels (new geometry_msgs::Twist()) ;
+/*
+void pricecall(const std_msgs::Float64::ConstPtr& price){
+	x.data = price->data ;
+}
+*/
 
 void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 {
 	std_msgs::Float64 pub;    
 	
-    	pub.data = (msg->linear.x + msg->angular.x )*100;
+    	pub.data = (msg->linear.x + 0.15*msg->angular.x )*(100/(1+0.15));
     	front_left_pub_.publish(pub);
 	back_left_pub_.publish(pub);
 
-    	pub.data = (msg->linear.x - msg->angular.x )*100;
+    	pub.data = (msg->linear.x - 0.15*msg->angular.x )*(100/(1+0.15));
 	front_right_pub_.publish(pub);
 	back_right_pub_.publish(pub);
 }
@@ -73,6 +79,7 @@ int main(int argc, char **argv)
   ros::Subscriber arm_sub_ = n.subscribe("/armrate", 1000, armCallback );
   ros::Subscriber Throttle_rate_sub = n.subscribe("/LLC/EFFORTS/Throttle" , 1000, ThCallback);
   ros::Subscriber Steering_rate_sub = n.subscribe("/LLC/EFFORTS/Steering" , 1000, StCallback);
+  //ros::Subscriber debug_sub = n.subscribe("/price", 1000, pricecall);
 
   ros::Rate loop_rate(10);	
   ros::spin();
