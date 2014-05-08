@@ -17,43 +17,43 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleIEDLocation(const config::OCU::sub::IEDLocation& msg)
 {
-	std::cout<< "OCU say:" << msg << std::endl;
+//	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleMissionAcceptance(const config::OCU::sub::MissionAcceptance& msg)
 {
-	std::cout<< "OCU say:" << msg << std::endl;
+//	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleLocalPath(const config::OCU::sub::LocalPath& msg)
 {
-	std::cout<< "OCU say:" << msg << std::endl;
+//	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleBladePosition(const config::OCU::sub::BladePosition& msg)
 {
-	std::cout<< "OCU say:" << msg << std::endl;
+//	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleMap(const config::OCU::sub::Map& msg)
 {
-	std::cout<< "OCU say:" << msg << std::endl;
+//	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleLocation(const config::OCU::sub::Location& msg)
 {
-	std::cout<< "OCU say:" << msg << std::endl;
+//	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handlePerVelocity(const config::OCU::sub::PerVelocity& msg)
 {
-	std::cout<< "OCU say:" << msg << std::endl;
+//	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
