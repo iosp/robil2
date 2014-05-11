@@ -4,59 +4,20 @@
     <include>
       <uri>model://sun</uri>
     </include>
- 
-   <include>
-      <uri>model://srvss_terrain1</uri>
-   </include>
 
     <include>
+        <uri>model://srvss_terrain1</uri>
+     </include>
+   
+    <include>
       <uri>model://bobcat</uri>
-      <name>Sahar</name>
+      <name>BobCat</name>
       <pose>50 50 0.6 0 0 0</pose>
     </include>
 
 
- 
 
-    <include>
-      <uri>model://barrel1</uri>
-      <name>target_barrel_1</name>
-      <pose>10 10 5 0 0 0</pose>
-    </include>
-
-    <include>
-      <uri>model://barrel1</uri>
-      <name>target_barrel_2</name>
-      <pose>90 10 5 0 0 0</pose>
-    </include>
-
-    <include>
-      <uri>model://barrel1</uri>
-      <name>target_barrel_3</name>
-      <pose>10 90 5 0 0 0</pose>
-    </include>
-
-    <include>
-      <uri>model://barrel1</uri>
-      <name>target_barrel_4</name>
-      <pose>90 90 5 0 0 0</pose>
-    </include>
-
-   <include>
-      <uri>model://barrel1</uri>
-      <name>target_barrel_5</name>
-      <pose>60 50 5 0 0 0</pose>
-    </include>
-
-   <include>
-      <uri>model://barrel1</uri>
-      <name>target_barrel_6</name>
-      <pose>40 50 5 0 0 0</pose>
-    </include>
-
-
-
-   <include>
+        <include>
             <uri>model://rock1</uri>
             <pose>51.1455 71.4138 0.200329 -0.0184248 0.222311 0.507678</pose>
             <scale>1.30243 1.30243 1.30243</scale>
@@ -152,7 +113,5 @@
             <scale>1.43067 1.43067 1.43067</scale>
             <name>object15</name>
         </include>
-
-
     </world>
 </sdf>
