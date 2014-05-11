@@ -67,11 +67,11 @@ int main(int argc, char **argv)
     if (c!='q' && c!=' ') {
     	switch(c){
     		case 'i':
-    			twistMsg.linear.x=50;
+    			twistMsg.linear.x=0.1;
     			wheelsrate_pub.publish(twistMsg);
     			break;
     		case 'j':
-    			twistMsg.angular.x=-50;
+    			twistMsg.angular.x=-1;
     			wheelsrate_pub.publish(twistMsg);
     			break;
     		case 'l':
