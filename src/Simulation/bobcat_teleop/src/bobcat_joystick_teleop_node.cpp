@@ -72,8 +72,8 @@ int main(int argc, char **argv)
     if (lastmsg.header.frame_id.compare("ok")==0) {
 	lastmsg.header.frame_id="";
 
-		twistMsg.linear.x=50*lastmsg.axes[indexX];
-		twistMsg.angular.x=-50*lastmsg.axes[indexY];
+		twistMsg.linear.x=0.5*lastmsg.axes[indexX];
+		twistMsg.angular.x=-0.5*lastmsg.axes[indexY];
 
 		if(lastmsg.buttons[indexHold]==0)
 		{
