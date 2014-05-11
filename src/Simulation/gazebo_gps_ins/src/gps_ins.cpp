@@ -161,10 +161,10 @@ namespace gazebo
 		math::Pose pose=_model->GetWorldPose();
 		gazebo::math::Vector3 pos = pose.pos;
 		
-		//pos.x += add_gps_noise();
-		//pos.y += add_gps_noise();
+		pos.x += add_gps_noise();
+		pos.y += add_gps_noise();
 		double other_dist = (pos - _init_pos).GetLength();
-		double dist = sqrt((pos.x*pos.x-_init_pos.x*_init_pos.x)+(pos.y*pos.y-_init_pos.y*_init_pos.y));
+		double dist = sqrt((pos.x-_init_pos.x)*(pos.x-_init_pos.x)+(pos.y-_init_pos.y)*(pos.y-_init_pos.y));
 		//std::cout << "x= " << pos.x << "  y= " << pos.y <<"   init.x= "<<_init_pos.x<<"   init.y= "<<_init_pos.y<<"   dist= "<<dist <<"   my_dist= " << my_dist<<std::endl;
 		double brng;
 		if(!(pos.GetLength()*_init_pos.GetLength())) brng = atan2(pos.y,pos.x);
@@ -176,16 +176,19 @@ namespace gazebo
 		double R = 6378.1*1000;
 		msg_gps.altitude = pos.z;
 		msg_gps.latitude = 180/PI*asin(sin(_start_latitude*PI/180)*cos(dist/R)+cos(_start_latitude*PI/180)*sin(dist/R)*cos(brng));
+		
 		msg_gps.longitude = _start_longitude + 180/PI*atan2(sin(brng)*sin(dist/R)*cos(_start_latitude*PI/180),cos(dist/R)-sin(_start_latitude*PI/180)*sin(msg_gps.latitude*PI/180));
+		
 		msg_gps.header.seq = _seq++;
 		msg_gps.header.frame_id = 1;
-		msg_gps.header.stamp.sec = (int)simTime.Double();
+		msg_gps.header.stamp = ros::Time::now();
 		msg_gps.status.status = sensor_msgs::NavSatStatus::STATUS_FIX;
 		msg_gps.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
 
 		msg_imu.header.seq = _seq;
 		msg_imu.header.frame_id = 1;
-		msg_imu.header.stamp.sec = (int)simTime.Double();
+		msg_imu.header.stamp = ros::Time::now();
+		
 		msg_imu.orientation.x = pose.rot.x;
 		msg_imu.orientation.y = pose.rot.y;
 		msg_imu.orientation.z = pose.rot.z;
