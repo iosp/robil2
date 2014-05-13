@@ -40,14 +40,14 @@ FSM(LLC_ON)
 		{
 			FSM_CALL_TASK(READY)
 			FSM_TRANSITIONS{
-				FSM_ON_EVENT("/llc/pause", FSM_NEXT(READY));
+				FSM_ON_EVENT("/llc/Standby", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(STANDBY)
 		{
 			FSM_CALL_TASK(STANDBY)
 			FSM_TRANSITIONS{
-				FSM_ON_EVENT("/llc/resume", FSM_NEXT(READY));
+				FSM_ON_EVENT("/llc/Resume", FSM_NEXT(READY));
 			}
 		}
 
