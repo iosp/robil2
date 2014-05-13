@@ -22,7 +22,8 @@ FSM(LLC_ON)
 	FSM_STATES
 	{
 		INIT,
-		READY
+		READY,
+		STANDBY
 	}
 	FSM_START(INIT);
 	FSM_BGN
@@ -32,13 +33,22 @@ FSM(LLC_ON)
 			FSM_CALL_TASK(INIT)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
+				FSM_ON_EVENT("INIT/EndOfInit", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(READY)
 		{
 			FSM_CALL_TASK(READY)
-			FSM_TRANSITIONS{}
+			FSM_TRANSITIONS{
+				FSM_ON_EVENT("/llc/Standby", FSM_NEXT(READY));
+			}
+		}
+		FSM_STATE(STANDBY)
+		{
+			FSM_CALL_TASK(STANDBY)
+			FSM_TRANSITIONS{
+				FSM_ON_EVENT("/llc/Resume", FSM_NEXT(READY));
+			}
 		}
 
 	}
@@ -61,6 +71,7 @@ FSM(LLC)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/llc/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
@@ -69,6 +80,7 @@ FSM(LLC)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/llc/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 
@@ -87,7 +99,7 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 	//PAUSE(10000);
 
 	ROS_INFO("LLC Init");
-	Event e("/EndOfInit");
+	Event e("EndOfInit");
 	events.raiseEvent(e);
 	return TaskResult::SUCCESS();
 }
@@ -182,6 +194,13 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	return TaskResult::SUCCESS();
 }
 
+TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
+	//PAUSE(10000);
+
+	ROS_INFO("LLC Standby");
+	return TaskResult::SUCCESS();
+}
+
 void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros_decision_making_init(argc, argv);
@@ -192,6 +211,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("OFF",state_OFF);
 	LocalTasks::registration("INIT",state_INIT);
 	LocalTasks::registration("READY",state_READY);
+	LocalTasks::registration("STANDBY",state_STANDBY);
 
 	ROS_INFO("Starting llc...");
 	FsmLLC(&context, &events);
