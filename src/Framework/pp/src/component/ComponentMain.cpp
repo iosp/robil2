@@ -39,6 +39,7 @@ void ComponentMain::handleMap(const config::PP::sub::Map& msg)
 void ComponentMain::handleLocation(const config::PP::sub::Location& msg)
 {
 	_move_base -> on_position_update(msg);
+
 }
 	
 

@@ -8,21 +8,20 @@
 	<pose>0 0 0 1.57 0 1.57 </pose>
 	<geometry>
 	  <mesh>
-	    <uri>model://gpu_ibeo/meshes/IBEO.STL </uri>
-<scale>0.9 0.9 0.9</scale>
+	    <uri>model://IBEO/meshes/IBEO.STL </uri>
 	  </mesh>
 	</geometry>
       </visual>
       
       <sensor name='ibeo-t1' type='gpu_ray'>
-	<pose>0.01 0.04 0.005 0 0.014 0</pose>
+	<pose>0.01 0.04 0.005 0 -0.014 0</pose>
 	<ray>
 	  <scan>
 	    <horizontal>
 	      <samples>760</samples>
 	      <resolution>1</resolution>
 	      <min_angle>-1.04719</min_angle>
-	      <max_angle>0.610867</max_angle>
+	      <max_angle>0.69813</max_angle>
 	    </horizontal>
 	  </scan>
 	  <range>
@@ -38,14 +37,14 @@
       </sensor>
       
       <sensor name='ibeo-t2' type='gpu_ray'>
-	<pose>0.01 0.04 0.006 0 0.028 0</pose>
+	<pose>0.01 0.04 0.006 0 -0.028 0</pose>
 	<ray>
 	  <scan>
 	    <horizontal>
 	      <samples>760</samples>
 	      <resolution>1</resolution>
 	      <min_angle>-1.04719</min_angle>
-	      <max_angle>0.610867</max_angle>
+	      <max_angle>0.69813</max_angle>
 	    </horizontal>
 	  </scan>
 	  <range>
@@ -61,7 +60,7 @@
       </sensor>
       
       <sensor name='ibeo-b1' type='gpu_ray'>
-	<pose>0.01 0.04 0.007 0 -0.014 0</pose>
+	<pose>0.01 0.04 0.007 0 0.014 0</pose>
 	<ray>
 	  <scan>
 	    <horizontal>
@@ -88,7 +87,7 @@
       </sensor>
       
       <sensor name='ibeo-b2' type='gpu_ray'>
-	<pose>0.01 0.04 0.008 0 -0.028 0</pose>
+	<pose>0.01 0.04 0.008 0 0.028 0</pose>
 	<ray>
 	  <scan>
 	    <horizontal>

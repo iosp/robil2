@@ -62,8 +62,8 @@ public:
 	void on_sub_map(const nav_msgs::OccupancyGrid::ConstPtr& msg);
 	void on_sub_path(const nav_msgs::Path::ConstPtr& msg);
 	void on_sub_loc(const geometry_msgs::PoseStamped::ConstPtr& msg);
-	void on_sub_commands(const std_msgs::String::ConstPtr& msg);
 	void on_sub_loc_cov(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
+	void on_sub_commands(const std_msgs::String::ConstPtr& msg);
 
 };
 

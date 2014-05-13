@@ -5,55 +5,54 @@
       <uri>model://sun</uri>
     </include>
  
-  <include>
+    <include>
       <uri>model://bobcat</uri>
       <name>SRVSS_BobCat</name>
       <pose>10 10 0.6 0 0 0</pose>
     </include>
 
-         <include>
-            <uri>model://srvss_terrain1</uri>
-        </include>
-
-<!-- -->
-
+   <include>
+      <uri>model://srvss_terrain1</uri>
+   </include>
+ 
+<!--
     <include>
       <uri>model://barrel1</uri>
       <name>target_barrel_1</name>
-      <pose>50 20 5 0 0 0</pose>
+      <pose>10 10 5 0 0 0</pose>
     </include>
 
     <include>
       <uri>model://barrel1</uri>
       <name>target_barrel_2</name>
-      <pose>70 50 5 0 0 0</pose>
+      <pose>50 50 5 0 0 0</pose>
     </include>
 
     <include>
       <uri>model://barrel1</uri>
       <name>target_barrel_3</name>
-      <pose>50 50 5 0 0 0</pose>
+      <pose>10 90 5 0 0 0</pose>
     </include>
 
-   <include>
+    <include>
       <uri>model://barrel1</uri>
       <name>target_barrel_4</name>
-      <pose>10 30 5 0 0 0</pose>
+      <pose>90 10 5 0 0 0</pose>
     </include>
 
    <include>
       <uri>model://barrel1</uri>
       <name>target_barrel_5</name>
-      <pose>25 25 5 0 0 0</pose>
+      <pose>90 90 5 0 0 0</pose>
     </include>
 
    <include>
       <uri>model://barrel1</uri>
       <name>target_barrel_6</name>
-      <pose>10 10 5 0 0 0</pose>
+      <pose>90 10 5 0 0 0</pose>
     </include>
+-->
 
-<!-- -->
 
    <include>
             <uri>model://rock1</uri>

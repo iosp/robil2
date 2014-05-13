@@ -28,6 +28,7 @@ add_library(wpd_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
   src/component/TwistRetranslator.cpp
+  src/component/MoveBase.cpp
 )
 add_executable(wpd_node src/main.cpp)
 target_link_libraries(wpd_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})

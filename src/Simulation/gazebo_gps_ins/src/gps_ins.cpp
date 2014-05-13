@@ -13,7 +13,7 @@
 #include "sensor_msgs/Imu.h"
 #include "sensor_msgs/NavSatFix.h"
 #include "sensor_msgs/NavSatStatus.h"
-
+#include <ctime>
 #include <sstream>
 #include <string>
 
@@ -52,6 +52,7 @@ namespace gazebo
   public:
     void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     {
+      srand(time(NULL));
       
 		_seq = 0;
       // Store the pointer to the model
@@ -68,6 +69,7 @@ namespace gazebo
 	//cout << "Value: " << str << endl;
       }
       else _start_latitude = 0;
+      
       if(_sdf->HasElement("start_longitude"))
       {
 	sdf::ElementPtr elem = _sdf->GetElement("start_longitude");
@@ -77,6 +79,26 @@ namespace gazebo
 	//cout << "Value: " << str << endl;
       }
       else _start_longitude = 0;
+      _gps_noise=_rp_noise=_yaw_noise=_gy_noise=_acc_noise=_acc_bias=_gy_bias=0;
+      if(_sdf->HasElement("noise"))
+      {
+	sdf::ElementPtr elem = _sdf->GetElement("noise");
+	if (elem->HasElement("gps"))
+	  elem->GetElement("gps")->GetValue()->Get(_gps_noise);
+	if (elem->HasElement("rollpitch"))
+	  elem->GetElement("rollpitch")->GetValue()->Get(_rp_noise);
+	if (elem->HasElement("yaw"))
+	  elem->GetElement("yaw")->GetValue()->Get(_yaw_noise);
+	if (elem->HasElement("acc_bias"))
+	  elem->GetElement("acc_bias")->GetValue()->Get(_acc_bias);
+	if (elem->HasElement("_gyro_bias"))
+	  elem->GetElement("_gyro_bias")->GetValue()->Get(_gy_bias);
+	if (elem->HasElement("acc_noise"))
+	  elem->GetElement("acc_noise")->GetValue()->Get(_acc_noise);
+	if (elem->HasElement("gyro_noise"))
+	  elem->GetElement("gyro_noise")->GetValue()->Get(_gy_noise);
+      }
+
       if(_sdf->HasElement("frequency"))
       {
 	sdf::ElementPtr elem = _sdf->GetElement("frequency");
@@ -112,7 +134,19 @@ namespace gazebo
 	  _publisherIMU = _nodeHandle.advertise<sensor_msgs::Imu>(TOPIC_NAME_IMU, 10);
 
     }
-
+    double sampleNormal() 
+    {
+      double u = ((double) rand() / (RAND_MAX)) * 2 - 1;
+      double v = ((double) rand() / (RAND_MAX)) * 2 - 1;
+      double r = u * u + v * v;
+      if (r == 0 || r > 1) return sampleNormal();
+      double c = sqrt(-2 * log(r) / r);
+      return u * c;
+    }
+    double add_gps_noise()
+    {
+      return sampleNormal()*_gps_noise;
+    }
     // Called by the world update start event
     void OnUpdate(const common::UpdateInfo & _info)
     {
@@ -126,7 +160,12 @@ namespace gazebo
 
 		math::Pose pose=_model->GetWorldPose();
 		gazebo::math::Vector3 pos = pose.pos;
-		double dist = (pos - _init_pos).GetLength();
+		
+		pos.x += add_gps_noise();
+		pos.y += add_gps_noise();
+		double other_dist = (pos - _init_pos).GetLength();
+		double dist = sqrt((pos.x-_init_pos.x)*(pos.x-_init_pos.x)+(pos.y-_init_pos.y)*(pos.y-_init_pos.y));
+		//std::cout << "x= " << pos.x << "  y= " << pos.y <<"   init.x= "<<_init_pos.x<<"   init.y= "<<_init_pos.y<<"   dist= "<<dist <<"   my_dist= " << my_dist<<std::endl;
 		double brng;
 		if(!(pos.GetLength()*_init_pos.GetLength())) brng = atan2(pos.y,pos.x);
 		else brng = atan2(pos.y-_init_pos.y,pos.x-_init_pos.x);//acos(pos.Dot(_init_pos)/(pos.GetLength()*_init_pos.GetLength()));
@@ -137,34 +176,36 @@ namespace gazebo
 		double R = 6378.1*1000;
 		msg_gps.altitude = pos.z;
 		msg_gps.latitude = 180/PI*asin(sin(_start_latitude*PI/180)*cos(dist/R)+cos(_start_latitude*PI/180)*sin(dist/R)*cos(brng));
+		
 		msg_gps.longitude = _start_longitude + 180/PI*atan2(sin(brng)*sin(dist/R)*cos(_start_latitude*PI/180),cos(dist/R)-sin(_start_latitude*PI/180)*sin(msg_gps.latitude*PI/180));
+		
 		msg_gps.header.seq = _seq++;
 		msg_gps.header.frame_id = 1;
-		msg_gps.header.stamp.sec = (int)simTime.Double();
+		msg_gps.header.stamp = ros::Time::now();
 		msg_gps.status.status = sensor_msgs::NavSatStatus::STATUS_FIX;
 		msg_gps.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
 
 		msg_imu.header.seq = _seq;
 		msg_imu.header.frame_id = 1;
-		msg_imu.header.stamp.sec = (int)simTime.Double();
+		msg_imu.header.stamp = ros::Time::now();
+		
 		msg_imu.orientation.x = pose.rot.x;
 		msg_imu.orientation.y = pose.rot.y;
 		msg_imu.orientation.z = pose.rot.z;
 		msg_imu.orientation.w = pose.rot.w;
 		
-		msg_imu.angular_velocity.x = _imu->GetAngularVelocity().x;
-		msg_imu.angular_velocity.y = _imu->GetAngularVelocity().y;
-		msg_imu.angular_velocity.z = _imu->GetAngularVelocity().z;
+		msg_imu.angular_velocity.x = _imu->GetAngularVelocity().x;+_gy_bias+_gy_noise*sampleNormal();
+		msg_imu.angular_velocity.y = _imu->GetAngularVelocity().y;+_gy_bias+_gy_noise*sampleNormal();
+		msg_imu.angular_velocity.z = _imu->GetAngularVelocity().z;+_gy_bias+_gy_noise*sampleNormal();
 		
-		msg_imu.linear_acceleration.x = _imu->GetLinearAcceleration().x;
-		msg_imu.linear_acceleration.y = _imu->GetLinearAcceleration().y;
-		msg_imu.linear_acceleration.z = _imu->GetLinearAcceleration().z;
+		msg_imu.linear_acceleration.x = _imu->GetLinearAcceleration().x+_acc_bias+_acc_noise*sampleNormal();
+		msg_imu.linear_acceleration.y = _imu->GetLinearAcceleration().y+_acc_bias+_acc_noise*sampleNormal();
+		msg_imu.linear_acceleration.z = _imu->GetLinearAcceleration().z+_acc_bias+_acc_noise*sampleNormal();
 
 		_publisherGPS.publish(msg_gps);
-		_publisherIMU.publish(msg_imu);
-		
+		_publisherIMU.publish(msg_imu);	
     }
-
+    
 
     static string WorldPosToGPLL(gazebo::math::Vector3& pos)
     {
@@ -196,6 +237,7 @@ namespace gazebo
     sensors::ImuSensorPtr 	_imu;
     math::Vector3 _init_pos;
     double _start_latitude, _start_longitude;
+    double _gps_noise,_rp_noise, _yaw_noise, _gy_noise, _acc_noise, _acc_bias, _gy_bias;
     int  _frequency;
     common::Time		_lastTime;
     int 			_seq;

@@ -10,6 +10,9 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+
+class HeightMap;
+
 class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;
@@ -23,7 +26,8 @@ public:
 	void handleSensorCamL(const config::PER::sub::SensorCamL& msg);
 	void handleSensorCamR(const config::PER::sub::SensorCamR& msg);
 	void handleSensorWire(const config::PER::sub::SensorWire& msg);
-	void handleSensorSICK(const config::PER::sub::SensorSICK& msg);
+	void handleSensorSICK1(const config::PER::sub::SensorSICK1& msg);
+	void handleSensorSICK2(const config::PER::sub::SensorSICK2& msg);
 	void handleSensorIBEO(const config::PER::sub::SensorIBEO& msg);
 	void handleEffortsTh(const config::PER::sub::EffortsTh& msg);
 	void handleEffortsSt(const config::PER::sub::EffortsSt& msg);
@@ -38,9 +42,16 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	
+	
+	void setVisualize(bool);
+	
 private:
       sensor_msgs::Imu _imuData;
       sensor_msgs::NavSatFix _gpsData;
+      HeightMap* height_map;
+      
+      
   
 };
 #endif /* COMPONENTMAIN_H_ */
