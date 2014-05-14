@@ -294,7 +294,7 @@ int main(int argc,char** argv)
   ros::Subscriber vis = n.subscribe("/PER/VISUAL", 5, setVisual);
   ros::AsyncSpinner spinner(4); // Use 4 threads
   spinner.start();
-  ros::waitForShutdown();
   runComponent(argc,argv, comp);
+  ros::waitForShutdown();
   return 0;
 }

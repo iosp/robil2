@@ -17,7 +17,7 @@ public:
 	std::string str()const{return "";}
 };
 
-FSM(LLC_ON)
+FSM(llc_ON)
 {
 	FSM_STATES
 	{
@@ -40,7 +40,7 @@ FSM(LLC_ON)
 		{
 			FSM_CALL_TASK(READY)
 			FSM_TRANSITIONS{
-				FSM_ON_EVENT("/llc/Standby", FSM_NEXT(READY));
+				FSM_ON_EVENT("/llc/Standby", FSM_NEXT(STANDBY));
 			}
 		}
 		FSM_STATE(STANDBY)
@@ -55,7 +55,7 @@ FSM(LLC_ON)
 	FSM_END
 }
 
-FSM(LLC)
+FSM(llc)
 {
 	FSM_STATES
 	{
@@ -76,7 +76,7 @@ FSM(LLC)
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(LLC_ON)
+			FSM_CALL_FSM(llc_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
@@ -214,7 +214,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("STANDBY",state_STANDBY);
 
 	ROS_INFO("Starting llc...");
-	FsmLLC(&context, &events);
+	Fsmllc(&context, &events);
 
 }
 

@@ -1,0 +1,5 @@
+for testing components FSM run 
+roslaunch smme fsm_components.launch
+
+for testing missions FSM run 
+roslaunch smme mission_test.launch
