@@ -22,13 +22,13 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleLocalPath(const config::WPD::sub::LocalPath& msg)
 {
-	std::cout<< "WPD say:" << msg << std::endl;
+	//std::cout<< "WPD say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleMiniMap(const config::WPD::sub::MiniMap& msg)
 {
-	std::cout<< "WPD say:" << msg << std::endl;
+	//std::cout<< "WPD say:" << msg << std::endl;
 }
 	
 
