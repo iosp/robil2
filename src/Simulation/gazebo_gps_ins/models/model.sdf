@@ -48,7 +48,7 @@
 	<gyro_bias>0.000833333</gyro_bias>
 	<acc_noise>0.000465329</acc_noise>
 	<gyro_noise>0.000252982</gyro_noise>
-      </noise-->
+      </noise>-->
       <frequency>20</frequency>
     </plugin>
     </model>        
