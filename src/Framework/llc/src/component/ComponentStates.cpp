@@ -154,13 +154,15 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	    cur_error.twist.angular.z =
 	    	(COMPONENT->WPD_desired_speed.twist.angular.z - getmodelstate.response.twist.angular.z);
 
+	    cout << "The x twist coordinate : " << getmodelstate.response.twist.linear.x << endl ;
+
 	/* calculate integral and derivatives */
 	integral[0] += ((cur_error.twist.linear.x )* dt);
 	der[0] = ((cur_error.twist.linear.x - old_error.twist.linear.x)/dt);
 	integral[1] += ((cur_error.twist.angular.z)* dt);
 	der[1] = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt);
 
-		/*PID Constants debugging
+		/*PID Constants debugging */
 
 	Kp = COMPONENT->PID_CONSTANTS.twist.linear.x ;
 	Ki = COMPONENT->PID_CONSTANTS.twist.linear.y ;
@@ -169,7 +171,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	Kpz = COMPONENT->PID_CONSTANTS.twist.angular.x ;
 	Kiz = COMPONENT->PID_CONSTANTS.twist.angular.y ;
 	Kdz = COMPONENT->PID_CONSTANTS.twist.angular.z ;
-		*/
+
 
 	Throttle_rate.data = E_stop*(Kp*cur_error.twist.linear.x + Ki*integral[0] - Kd*der[0]) ;
 	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;

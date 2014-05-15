@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot
-  name="bobcat">
+  name="Sahar">
   <link
     name="body">
     <inertial>
@@ -8,14 +8,14 @@
         xyz="-0.890714078986241 0.000176354230843794 0.525609535873677"
         rpy="0 0 0" />
       <mass
-        value="2112.2632057713" />
+        value="5018.57981030941" />
       <inertia
-        ixx="330.451427275626"
-        ixy="0.1258707518716585"
-        ixz="-85.8115001993615"
-        iyy="750.047261721269"
-        iyz="-0.001202697501709275"
-        izz="817.534535636717" />
+        ixx="1272.55944993386"
+        ixy="0.30897993676798"
+        ixz="-158.353301657466"
+        iyy="2264.90693597666"
+        iyz="-0.107097171125939"
+        izz="2025.98192908188" />
     </inertial>
     <visual>
       <origin
@@ -37,7 +37,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/body.STL" />
+          filename="package://bobcat/meshes/body_lite.STL" />
       </geometry>
     </collision>
   </link>
@@ -48,14 +48,14 @@
         xyz="2.0502E-07 0.19645 -3.6566E-09"
         rpy="0 0 0" />
       <mass
-        value="333.358058377662" />
+        value="1113.6" />
       <inertia
-        ixx="17.076451771348393"
-        ixy="-0.0000402018623479272"
-        ixz="0.0000757982020811204"
-        iyy="29.61581234283818"
-        iyz="-0.66419529835185E-05"
-        izz="17.076451812789907" />
+        ixx="57.645"
+        ixy="-0.0001268"
+        ixz="0.00024451"
+        iyy="96.158"
+        iyz="-4.2461E-05"
+        izz="57.645" />
     </inertial>
     <visual>
       <origin
@@ -63,7 +63,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/front_left_wheel.STL" />
+          filename="package://bobcat/meshes/front_left_wheel.stl" />
       </geometry>
       <material
         name="">
@@ -101,14 +101,14 @@
         xyz="-2.0519E-07 -0.19645 -4.3198E-09"
         rpy="0 0 0" />
       <mass
-        value="333.358057183995" />
+        value="1113.6" />
       <inertia
-        ixx="17.076452573211751"
-        ixy="-0.0000366953981898767"
-        ixz="-0.0000754939559210241"
-        iyy="29.61581234970523"
-        iyz="1.220983077663846E-05"
-        izz="17.076451008669259" />
+        ixx="57.645"
+        ixy="-0.00012695"
+        ixz="-0.00024494"
+        iyy="96.158"
+        iyz="4.2098E-05"
+        izz="57.645" />
     </inertial>
     <visual>
       <origin
@@ -116,7 +116,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/front_right_wheel.STL" />
+          filename="package://bobcat/meshes/front_right_wheel.stl" />
       </geometry>
       <material
         name="">
@@ -154,14 +154,14 @@
         xyz="7.7344E-08 0.19645 1.8868E-07"
         rpy="0 0 0" />
       <mass
-        value="333.35805719188" />
+        value="1113.6" />
       <inertia
-        ixx="17.076452970123344"
-        ixy="-2.7936718473607865E-06"
-        ixz="-0.0000668628917564486"
-        iyy="29.61581228201546"
-        iyz="-0.0000133650614295266"
-        izz="17.076450606340583" />
+        ixx="57.645"
+        ixy="-9.3672E-06"
+        ixz="-0.00022863"
+        iyy="96.158"
+        iyz="-0.00013365"
+        izz="57.645" />
     </inertial>
     <visual>
       <origin
@@ -169,7 +169,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/back_left_wheel.STL" />
+          filename="package://bobcat/meshes/back_left_wheel.stl" />
       </geometry>
       <material
         name="">
@@ -207,14 +207,14 @@
         xyz="-1.4894E-07 -0.19645 1.3751E-07"
         rpy="0 0 0" />
       <mass
-        value="333.36" />
+        value="1113.6" />
       <inertia
-        ixx="17.07645"
-        ixy="-1.87699E-05"
-        ixz="1.23277E-05"
-        iyy="29.6158"
-        iyz="0.000031578"
-        izz="17.07645" />
+        ixx="57.645"
+        ixy="-6.7699E-05"
+        ixz="4.3277E-05"
+        iyy="96.158"
+        iyz="0.00011578"
+        izz="57.645" />
     </inertial>
     <visual>
       <origin
@@ -222,7 +222,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/back_right_wheel.STL" />
+          filename="package://bobcat/meshes/back_right_wheel.stl" />
       </geometry>
       <material
         name="">
@@ -306,8 +306,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="0"
-      upper="0"
+      lower="-1.57"
+      upper="1.57"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -364,8 +364,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="0"
-      upper="0"
+      lower="-1.57"
+      upper="1.57"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -422,8 +422,9 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="0"
-      upper="0"
+
+      lower="-1.57"
+      upper="1.57"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -538,8 +539,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="0"
-      upper="0"
+      lower="-0.1"
+      upper="0.6"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -550,14 +551,14 @@
         xyz="0.37894 2.192E-15 0.067409"
         rpy="0 0 0" />
       <mass
-        value="98.03" />
+        value="196.06" />
       <inertia
-        ixx="29.346"
-        ixy="0"
-        ixz="-1.55"
-        iyy="9.25"
-        iyz="0"
-        izz="32.05" />
+        ixx="58.693"
+        ixy="1.2282E-14"
+        ixz="-3.1063"
+        iyy="18.499"
+        iyz="-4.2535E-15"
+        izz="64.178" />
     </inertial>
     <visual>
       <origin
@@ -596,8 +597,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="0"
-      upper="0"
+      lower="-1.57"
+      upper="1.57"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -888,14 +889,14 @@
         xyz="-0.89565 0.58058 -0.24712"
         rpy="0 0 0" />
       <mass
-        value="10.642" />
+        value="10642" />
       <inertia
-        ixx="5.5107"
-        ixy="-0.00022597"
-        ixz="0.000019765"
-        iyy="4.5364"
-        iyz="0.67063"
-        izz="6.5674" />
+        ixx="5510.7"
+        ixy="-0.22597"
+        ixz="0.019765"
+        iyy="4536.4"
+        iyz="670.63"
+        izz="6567.4" />
     </inertial>
     <visual>
       <origin
@@ -941,14 +942,14 @@
         xyz="-0.89568 -0.58119 -0.24712"
         rpy="0 0 0" />
       <mass
-        value="10.642" />
+        value="10642" />
       <inertia
-        ixx="5.5107"
-        ixy="-0.00022597"
-        ixz="-0.000019765"
-        iyy="4.5364"
-        iyz="-0.67063"
-        izz="6.5674" />
+        ixx="5510.7"
+        ixy="-0.22597"
+        ixz="-0.019765"
+        iyy="4536.4"
+        iyz="-670.63"
+        izz="6567.4" />
     </inertial>
     <visual>
       <origin
@@ -994,14 +995,14 @@
         xyz="-0.89885 0.00019572 0.43638"
         rpy="0 0 0" />
       <mass
-        value="4.5223" />
+        value="4522.3" />
       <inertia
-        ixx="0.77018"
-        ixy="0.00031619"
-        ixz="-0.20002"
-        iyy="1.747"
-        iyz="-0.0000281"
-        izz="1.9059" />
+        ixx="770.18"
+        ixy="0.31619"
+        ixz="-200.02"
+        iyy="1747"
+        iyz="-0.0281"
+        izz="1905.9" />
     </inertial>
     <visual>
       <origin
@@ -1040,59 +1041,6 @@
     <axis
       xyz="0 1 0" />
   </joint>
-  <link
-    name="supporter_hinge">
-    <inertial>
-      <origin
-        xyz="-6.2676E-16 -2.2204E-16 1.1102E-16"
-        rpy="0 0 0" />
-      <mass
-        value="1.6828" />
-      <inertia
-        ixx="0.00017338"
-        ixy="-6.163E-33"
-        ixz="-1.9205E-35"
-        iyy="0.42748"
-        iyz="6.6217E-37"
-        izz="0.42748" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/supporter_hinge.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/supporter_hinge.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="supporter_hinge_joint"
-    type="fixed">
-    <origin
-      xyz="-0.31547 0 0.68593"
-      rpy="1.5708 0 1.5708" />
-    <parent
-      link="body" />
-    <child
-      link="supporter_hinge" />
-    <axis
-      xyz="1 0 0" />
-  </joint>
 
  <!-- Transmissions for ROS Control -->
   <transmission name="tran1">
@@ -1111,7 +1059,7 @@
       <hardwareInterface>EffortJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
-  </transmission>
+  </transmission>    
 
   <transmission name="tran3">
     <type>transmission_interface/SimpleTransmission</type>
@@ -1240,27 +1188,27 @@
     <selfCollide>true</selfCollide>
     <material>Gazebo/Wood</material>
   </gazebo>
-  <gazebo reference="front_right_wheel">
-    <mu1>0.5</mu1>
-    <mu2>0.5</mu2>
+ <gazebo reference="front_right_wheel">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
     <selfCollide>true</selfCollide>
     <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="front_left_wheel">
-    <mu1>0.5</mu1>
-    <mu2>0.5</mu2>
+    <mu1>1</mu1>
+    <mu2>1</mu2>
     <selfCollide>true</selfCollide>
     <material>Gazebo/Grey</material>
-  </gazebo>
+  </gazebo> 
   <gazebo reference="back_right_wheel">
-    <mu1>0.5</mu1>
-    <mu2>0.5</mu2>
+    <mu1>1</mu1>
+    <mu2>1</mu2>
     <selfCollide>true</selfCollide>
     <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="back_left_wheel">
-    <mu1>0.5</mu1>
-    <mu2>0.5</mu2>
+    <mu1>1</mu1>
+    <mu2>1</mu2>
     <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="base_arm">
