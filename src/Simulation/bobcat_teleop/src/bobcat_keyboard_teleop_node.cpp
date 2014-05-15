@@ -72,6 +72,7 @@ int main(int argc, char **argv)
     			break;
     		case 'j':
     			twistMsg.angular.x=-0.5;
+    			twistMsg.linear.x=0.5;
     			wheelsrate_pub.publish(twistMsg);
     			break;
     		case 'l':
