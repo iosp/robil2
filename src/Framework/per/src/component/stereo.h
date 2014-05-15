@@ -50,10 +50,10 @@ void handleStereo(Mat left, Mat right)
   Mat l,r;
   resize(left, l, Size(left.size().width/2, left.size().height/2), 0, 0, cv::INTER_CUBIC);
   resize(right, r, Size(right.size().width/2, right.size().height/2), 0, 0, cv::INTER_CUBIC);
-  blur( l, l, Size( 3, 3 ), Point(-1,-1));
-  blur( r, r, Size( 3, 3 ), Point(-1,-1));
-  imshow("dispx", getDisparity(r, l)); 
-  imshow("camz", l); 
+  //blur( l, l, Size( 3, 3 ), Point(-1,-1));
+  //blur( r, r, Size( 3, 3 ), Point(-1,-1));
+  //imshow("dispx", getDisparity(r, l)); 
+  //imshow("camz", l); 
   waitKey(1);
 }
 
