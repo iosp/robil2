@@ -8,15 +8,15 @@ Features:
 5. Rely purely on the LOC package for localization info.
 
 Features that work correctly:
-1. The basic height map is published with obstacle information.
+1. The basic height map and mini-map is published with obstacle information.
 2. The visualization tool can be used (see below how to use).
 
 Problems and unimplemented things:
 1. Stereo vision is not used for mapping due to the poor performance of the stereo matching algorithm, until a new algorithm is found.
 2. Due to (1) creation of a point cloud from the stereo information is unimplemented.
 3. Due to (2) the stereo visualization tool cannot be used (however the implementation is complete)
-4. The map visualization tool may crash after the map has grown it's size 3-4 times. Do not drive the bobcat further than 100m until this is fixed.
-5. SICK ranges information is still not passed to the package because the topic names were set incorrectly from above.
+(FIXED) 4. The map visualization tool may crash after the map has grown it's size 3-4 times. Do not drive the bobcat further than 100m until this is fixed.
+(FIXED) 5. SICK ranges information is still not passed to the package because the topic names were set incorrectly from above.
 6. When the bobcat is flipped, the heightmap may contain incorrect heights. Do not flip or heavily skew the bobcat!
 
 
@@ -25,10 +25,6 @@ Once the framework is running, open a terminal and enter this:
 
     rostopic pub /PER/VISUAL std_msgs/Bool "data: true" 
 
-And two windows will pop open. The bigger one is the inner map that is stored within the package. It is rotated relative to the north and
-the bobcat's location is drawn inside the map based on real-world coordinates.
-The smaller window is what is delivered over the network. The bobcat is always in the center and the map is rotated to match the bobcat so that it always looks
-towards the relative north.
-
-
-
+And two windows will pop open. The smaller window is the heightmap which is sent on the /MAP topic.
+The large window is the terrain types window for the /MAP topic. Pink color represents unexplored area, 
+black is obstacles and green is passable terrain. The thresholding slope angle chosen is arctan(0.1)
