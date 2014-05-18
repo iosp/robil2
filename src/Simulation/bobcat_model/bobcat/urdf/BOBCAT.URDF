@@ -830,7 +830,7 @@
       xyz="0 1 0" />
   </joint>
   <link
-    name="Ibeo">
+    name="Ibeo_link">
     <inertial>
       <origin
         xyz="-0.50455 -0.03223 -1.3338"
@@ -878,12 +878,12 @@
     <parent
       link="cabin" />
     <child
-      link="Ibeo" />
+      link="Ibeo_link" />
     <axis
       xyz="0 0 0" />
   </joint>
   <link
-    name="left_sick">
+    name="left_sick_link">
     <inertial>
       <origin
         xyz="-0.89565 0.58058 -0.24712"
@@ -931,12 +931,12 @@
     <parent
       link="body" />
     <child
-      link="left_sick" />
+      link="left_sick_link" />
     <axis
       xyz="0 -1 0" />
   </joint>
   <link
-    name="right_sick">
+    name="right_sick_link">
     <inertial>
       <origin
         xyz="-0.89568 -0.58119 -0.24712"
@@ -984,7 +984,7 @@
     <parent
       link="body" />
     <child
-      link="right_sick" />
+      link="right_sick_link" />
     <axis
       xyz="0 -1 0" />
   </joint>
@@ -1247,13 +1247,13 @@
     <selfCollide>true</selfCollide>
     <material>Gazebo/Grey</material>
   </gazebo>
-  <gazebo reference="Ibeo">
+  <gazebo reference="Ibeo_link">
     <material>Gazebo/Grey</material>
   </gazebo>
-  <gazebo reference="left_sick">
+  <gazebo reference="left_sick_link">
     <material>Gazebo/Grey</material>
   </gazebo>
-  <gazebo reference="right_sick">
+  <gazebo reference="right_sick_link">
     <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="front_sick">
