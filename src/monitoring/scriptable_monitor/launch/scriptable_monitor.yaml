@@ -1,0 +1,3 @@
+analyzers:
+  motors:
+    type: scriptable_monitor   
