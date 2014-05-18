@@ -1,0 +1,4 @@
+std_msgs/String script
+---
+uint8 success
+std_msgs/String message
