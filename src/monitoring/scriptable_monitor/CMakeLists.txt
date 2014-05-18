@@ -86,6 +86,8 @@ set(CPP_FILES
 	src/scripting/SomeInternalFunctionExample.cpp
 	
 	src/scripting/ScriptParameters.cpp
+	src/scripting/plp/PlpFunctions.cpp
+	src/scripting/plp/PlpModule.cpp
 	${CPP_PLP_FILES}
 )
 

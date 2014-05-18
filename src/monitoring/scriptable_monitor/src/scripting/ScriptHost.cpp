@@ -34,15 +34,15 @@ bool ScriptHost::typeAnalization(string sourceCode, AddScriptResponse& response)
 		parser.read_all();
 		bool res = parser.create_structures();
 		if(res){
-			cout<<"PLP SCRIPT\n"<<parser.plp();cout<<endl;
+			//cout<<"PLP SCRIPT\n"<<parser.plp();cout<<endl;
 			PLPCompiler compiler;
 			int error_code=0;
-			//vector<MonitorningScript> ms = compiler.compile(parser.plp(), error_code);
-			vector<MonitorningScript> ms = compiler.compile_testing(parser.plp(), error_code);
+			vector<MonitorningScript> ms = compiler.compile(parser.plp(), error_code);
+			//vector<MonitorningScript> ms = compiler.compile_testing(parser.plp(), error_code);
 			if(not error_code){
 				for(size_t i=0;i<ms.size();i++){
 					stringstream predicat_script; predicat_script<<ms[i];
-					std::cout<<"-------------\n"<<predicat_script.str()<<endl;
+					//std::cout<<"-------------\n"<<predicat_script.str()<<endl;
 					addScript(predicat_script.str(), response);
 					if(not response.success){
 						cout<<"[i] some problem during script add"<<endl;
@@ -78,6 +78,16 @@ AddScriptResponse ScriptHost::addScript(string sourceCode, AddScriptResponse& re
 	if(not typeAnalization(sourceCode,response)) return response;
 
 	lock_recursive(_scriptsMutex);
+
+
+	cout<<"======== add script ================="<<endl;
+	cout<<sourceCode<<endl;
+	cout<<"======== ========== ================="<<endl;
+
+//	cout << "[+] Script added [ DEBUG ]" << endl;
+//	response.message = "[+] Script added";
+//	response.success = true;
+//	return response;
 
 	set<string> internalFunctions;
 	foreach (string functionName, InternalFunctionsManager::getFunctionNames()) {

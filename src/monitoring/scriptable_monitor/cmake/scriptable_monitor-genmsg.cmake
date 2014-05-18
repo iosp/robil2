@@ -2,7 +2,7 @@
 
 message(STATUS "scriptable_monitor: 1 messages, 2 services")
 
-set(MSG_I_FLAGS "-Iscriptable_monitor:/home/dan/git/scriptable_monitoring/scriptable_monitor/msg;-Istd_msgs:/opt/ros/hydro/share/std_msgs/cmake/../msg")
+set(MSG_I_FLAGS "-Iscriptable_monitor:/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/msg;-Istd_msgs:/opt/ros/hydro/share/std_msgs/cmake/../msg")
 
 # Find all generators
 find_package(gencpp REQUIRED)
@@ -18,7 +18,7 @@ add_custom_target(scriptable_monitor_generate_messages ALL)
 ### Section generating for lang: gencpp
 ### Generating Messages
 _generate_msg_cpp(scriptable_monitor
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/msg/Script.msg"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/msg/Script.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/scriptable_monitor
@@ -26,15 +26,15 @@ _generate_msg_cpp(scriptable_monitor
 
 ### Generating Services
 _generate_srv_cpp(scriptable_monitor
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/srv/AddScript.srv"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/srv/AddScript.srv"
   "${MSG_I_FLAGS}"
   "/opt/ros/hydro/share/std_msgs/cmake/../msg/String.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/scriptable_monitor
 )
 _generate_srv_cpp(scriptable_monitor
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/srv/GetScripts.srv"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/srv/GetScripts.srv"
   "${MSG_I_FLAGS}"
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/msg/Script.msg"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/msg/Script.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/scriptable_monitor
 )
 
@@ -59,7 +59,7 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS scriptable_monitor_generate_message
 ### Section generating for lang: genlisp
 ### Generating Messages
 _generate_msg_lisp(scriptable_monitor
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/msg/Script.msg"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/msg/Script.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/scriptable_monitor
@@ -67,15 +67,15 @@ _generate_msg_lisp(scriptable_monitor
 
 ### Generating Services
 _generate_srv_lisp(scriptable_monitor
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/srv/AddScript.srv"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/srv/AddScript.srv"
   "${MSG_I_FLAGS}"
   "/opt/ros/hydro/share/std_msgs/cmake/../msg/String.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/scriptable_monitor
 )
 _generate_srv_lisp(scriptable_monitor
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/srv/GetScripts.srv"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/srv/GetScripts.srv"
   "${MSG_I_FLAGS}"
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/msg/Script.msg"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/msg/Script.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/scriptable_monitor
 )
 
@@ -100,7 +100,7 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS scriptable_monitor_generate_message
 ### Section generating for lang: genpy
 ### Generating Messages
 _generate_msg_py(scriptable_monitor
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/msg/Script.msg"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/msg/Script.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/scriptable_monitor
@@ -108,15 +108,15 @@ _generate_msg_py(scriptable_monitor
 
 ### Generating Services
 _generate_srv_py(scriptable_monitor
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/srv/AddScript.srv"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/srv/AddScript.srv"
   "${MSG_I_FLAGS}"
   "/opt/ros/hydro/share/std_msgs/cmake/../msg/String.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/scriptable_monitor
 )
 _generate_srv_py(scriptable_monitor
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/srv/GetScripts.srv"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/srv/GetScripts.srv"
   "${MSG_I_FLAGS}"
-  "/home/dan/git/scriptable_monitoring/scriptable_monitor/msg/Script.msg"
+  "/home/dan/workspace/robil_2/ros_ws/src/robil2/src/monitoring/scriptable_monitor/msg/Script.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/scriptable_monitor
 )
 

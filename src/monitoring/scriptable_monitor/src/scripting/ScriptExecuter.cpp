@@ -124,14 +124,14 @@ PyObject* ScriptExecuter::convertToPythonType(string object) {
 PyObject* ScriptExecuter::internalTopic(PyObject* self, PyObject* args)
 {
 	if (_validationFailed)
-		return PyString_FromString("0");
+		return PyFloat_FromDouble(0);
 
 	string 	scriptName 	= PyString_AsString(PyTuple_GetItem(args, 0));
 	string	topicName 	= PyString_AsString(PyTuple_GetItem(args, 1));
 
 	if (_simulation) {
 		_currentScript->addUsedTopic(topicName);
-		return PyString_FromString("0");
+		return PyFloat_FromDouble(0);
 	}
 
 	string value = _topicValues.count(topicName) > 0 ? _topicValues[topicName].c_str() : "0";
@@ -176,7 +176,7 @@ PyObject* ScriptExecuter::internalFunction(PyObject* self, PyObject* args)
 
 	if (_simulation) {
 		_currentScript->addUsedInternalFunction(functionName);
-		return PyString_FromString("0");
+		return PyFloat_FromDouble(0);
 	} else {
 
 		InternalFunction* function = InternalFunctionsManager::resolve(functionName);

@@ -29,6 +29,7 @@ bool is_delimiter(char c){
 	if('A'<=c and c<='Z') return false;
 	if('0'<=c and c<='9') return false;
 	if(c=='_' or c=='-' or c=='/') return false;
+	if(c=='[' or c==']') return false;
 	return true;
 }
 bool isNumeric(const std::string& s){
@@ -37,6 +38,13 @@ bool isNumeric(const std::string& s){
 	bool n=false;
 	for(size_t i=st;i<s.size();i++){ if( s[i]<'0' or '9'<s[i] ) return false; n=true; }
 	return n;
+}
+
+string tr(const string& src, char d, char t){
+	string dst = src;
+	size_t i=dst.find(d);
+	while( i!=string::npos ){ dst[i]=t; i=dst.find(d); }
+	return dst;
 }
 
 vector<Token> tokenizer(istream& text){
@@ -176,7 +184,7 @@ bool parse_item_name(std::string& name, OutTokenStream& tokens){
 				return false;
 			}else{
 				Token tt = combine(name_of," ");
-				name = tt.name;
+				name = tr(tt.name,' ','_');
 				return true;
 			}
 		}else{
