@@ -55,13 +55,13 @@ void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& 
 
 void ComponentMain::handleBladePosition(const config::SMME::sub::BladePosition& msg)
 {
-	std::cout<< "SMME say:" << msg << std::endl;
+	//std::cout<< "SMME say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleLocation(const config::SMME::sub::Location& msg)
 {
-	std::cout<< "SMME say:" << msg << std::endl;
+	//std::cout<< "SMME say:" << msg << std::endl;
 }
 	
 

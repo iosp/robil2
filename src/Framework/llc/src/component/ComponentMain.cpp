@@ -34,19 +34,19 @@ void ComponentMain::handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg)
 	this->PID_CONSTANTS.twist.angular.z = msg.twist.angular.x; // Kd for angular z
 
 
-	std::cout<< "LLC say:" << msg << std::endl;
+	//std::cout<< "LLC say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleBladePositionCommand(const config::LLC::sub::BladePositionCommand& msg)
 {
-	std::cout<< "LLC say:" << msg << std::endl;
+	//std::cout<< "LLC say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleLocation(const config::LLC::sub::Location& msg)
 {
-	std::cout<< "LLC say:" << msg << std::endl;
+	//std::cout<< "LLC say:" << msg << std::endl;
 }
 	
 
@@ -56,7 +56,7 @@ void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
 	Per_measured_speed.twist.linear.x = msg.twist.linear.x ;
 	Per_measured_speed.twist.angular.z = msg.twist.angular.z ;
 
-	std::cout<< "LLC say:" << msg << std::endl;
+	//std::cout<< "LLC say:" << msg << std::endl;
 }
 	
 

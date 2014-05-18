@@ -26,7 +26,7 @@ void ComponentMain::handleGlobalPath(const config::PP::sub::GlobalPath& msg)
 
 void ComponentMain::handleBladePosition(const config::PP::sub::BladePosition& msg)
 {
-	std::cout<< "PP say:" << msg << std::endl;
+	//std::cout<< "PP say:" << msg << std::endl;
 }
 	
 
