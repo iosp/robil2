@@ -15,6 +15,9 @@ class IEDSimLogic {
 	ros::ServiceClient move_model;
 	ros::Subscriber check_model;
 public:
+	float m_robot_x;
+	float m_robot_y;
+	float m_robot_z;
 	bool m_isSet;
 	float m_x;
 	float m_y;
