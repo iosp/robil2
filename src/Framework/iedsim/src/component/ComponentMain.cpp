@@ -18,20 +18,19 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleCustomIED(const config::IEDSIM::sub::CustomIED& msg)
 {
-	ROS_INFO("got location");
 	_lg->setAtLocation(msg.location.x,msg.location.y,msg.location.z);
 }
 	
 
 void ComponentMain::handleLocation(const config::IEDSIM::sub::Location& msg)
 {
-	if(_lg->isPoseWithinRadius(msg.pose.pose.position.x,msg.pose.pose.position.y,msg.pose.pose.position.z))
+	if(_lg->isPoseWithinRadius(_lg->m_robot_x,_lg->m_robot_y,_lg->m_robot_z))
 	{
 		config::IEDSIM::pub::IEDLocation msg2;
 		msg2.is_detected=1;
-		msg2.location.x=_lg->m_x;
-		msg2.location.y=_lg->m_y;
-		msg2.location.z=_lg->m_z;
+		msg2.location.x=_lg->m_x-_lg->m_robot_x;
+		msg2.location.y=_lg->m_y-_lg->m_robot_y;
+		msg2.location.z=_lg->m_z-_lg->m_robot_z;
 		publishIEDLocation(msg2);
 	}
 }
