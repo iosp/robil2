@@ -54,7 +54,7 @@ public:
 
 	vector<string> assignments()const{
 		vector<string> ass;
-		static const string comp_char = "<>=";
+		static const string comp_char = "<>=!";
 		BOOST_FOREACH(string line, lines){
 			size_t i = line.find('=');
 			if(i==string::npos or i==0 or i==line.size()-1){ continue; }

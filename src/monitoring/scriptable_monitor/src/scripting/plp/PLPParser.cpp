@@ -209,7 +209,7 @@ bool parse_plp_params_goal_repeat(PLP& plp, OutTokenStream& tokens){
 	READ_ANY(t)
 	string tp = t.name;
 	READ(t, " ");
-	set(plp , goal_repeat , tp);
+	PLP_set(plp , goal_repeat , tp);
 	return true;
 }
 bool parse_plp_params_repeat_freq(PLP& plp, OutTokenStream& tokens){
@@ -218,7 +218,7 @@ bool parse_plp_params_repeat_freq(PLP& plp, OutTokenStream& tokens){
 	READ_ANY(t) if(t.name!="frequencey" and t.name!="frequency"){tokens.set_error(__LINE__); return false;}
 	READ(t, ":")
 	READ_VALUE(t)
-	set(plp, repeat_frequency, t.name);
+	PLP_set(plp, repeat_frequency, t.name);
 	return true;
 }
 bool parse_plp_params_variables(PLP& plp, OutTokenStream& tokens, int& stage){

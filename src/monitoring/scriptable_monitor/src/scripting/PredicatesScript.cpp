@@ -55,6 +55,21 @@ void PredicatesScript::processTopics(string& script)
 	script = boost::regex_replace(script, regex, "topic(\"\\1\")");
 }
 
+namespace {
+	bool isAssignment(string line){
+		using namespace boost::algorithm;
+		static const string comp_char = "<>=!";
+#		define IN(S,D) S.find(D)!=string::npos
+		size_t i = line.find('=');
+		if(i==string::npos or i==0 or i==line.size()-1){
+			return not( contains(line, ">") || contains(line, "<") || ( contains(line, "!") and not contains(line, "#!") ) );
+		}
+		if( IN(comp_char, line[i-1]) or IN(comp_char,line[i+1]) ){ return false; }
+#		undef IN
+		return true;
+	}
+}
+
 void PredicatesScript::processPredicates(string& script)
 {
 	using namespace boost::algorithm;
@@ -64,7 +79,7 @@ void PredicatesScript::processPredicates(string& script)
 	split(lines, script, is_any_of("\n"));
 
 	foreach(string line, lines) {
-		if (contains(line, ">") || contains(line, "<") || contains(line, "==") || contains(line, "!=")) {
+		if (not isAssignment(line)) {
 			string escapedLine = line;
 			boost::replace_all(escapedLine, "\"", "'");
 			string newLine = "validate.is_true(" + line + ", \"" + escapedLine + "\")";

@@ -22,5 +22,7 @@ FUNCTION(set_global_var_int)
 FUNCTION(Now)
 FUNCTION(get_module_status)
 
+FUNCTION(remove_script)
+
 #undef FUNCTION
 #endif /* PLPFUNCTIONS_H_ */

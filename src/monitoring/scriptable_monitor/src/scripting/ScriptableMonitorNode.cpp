@@ -24,6 +24,14 @@ ScriptableMonitorNode::ScriptableMonitorNode()
 
 	_addScriptService =
 			node.advertiseService("/scriptable_monitor/add_script", &ScriptableMonitorNode::addScript, this);
+
+
+	_pauseModuleSubscriber =
+			node.subscribe("/scriptable_monitor/pause_module", 0, &ScriptableMonitorNode::onPauseModule, this);
+
+	_resumeModuleSubscriber =
+			node.subscribe("/scriptable_monitor/resume_module", 0, &ScriptableMonitorNode::onResumeModule, this);
+
 }
 
 ScriptableMonitorNode::~ScriptableMonitorNode()
@@ -88,3 +96,13 @@ void ScriptableMonitorNode::onDeleteScriptMessage(
 {
 	_scriptHost.deleteScript(scriptName->data);
 }
+
+
+void ScriptableMonitorNode::onPauseModule(const std_msgs::String::ConstPtr scriptName){
+	_scriptHost.pauseModule(scriptName->data);
+}
+void ScriptableMonitorNode::onResumeModule(const std_msgs::String::ConstPtr scriptName){
+	_scriptHost.resumeModule(scriptName->data);
+}
+
+

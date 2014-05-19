@@ -185,8 +185,8 @@ void scriptHostTest() {
 //	host.addScript(s1);
 //	host.addScript(s2);
 //	host.addScript(plp);
-//	host.addScript(plp_test4);
-	host.addScript(plp1);
+	host.addScript(plp_test4);
+//	host.addScript(plp1);
 
 	sleep(5);
 

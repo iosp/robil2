@@ -44,6 +44,8 @@ public:
 	vector<DiagnosticStatusPtr> getDiagnosticStatusesAndClear();
 	set<PythonScriptPtr> getScripts();
 	void deleteScript(string scriptName);
+	void pauseModule(string scriptName);
+	void resumeModule(string scriptName);
 
 private:
 
@@ -70,6 +72,7 @@ private:
 
 
 	bool typeAnalization(string sourceCode, AddScriptResponse& response);
+	bool typeAnalizationForRemove(string sourceCode);
 	AddScriptResponse addScript(string sourceCode, AddScriptResponse& response);
 };
 

@@ -89,5 +89,14 @@ FUNCTION(get_module_status)
 	output.set<string>(PlpModule::status(name));
 }
 
+FUNCTION(remove_script)
+{
+	string mdlname = input.get<string>(0);
+	string scrname = input.get<string>(1);
+	PlpModule::stop_script(mdlname, scrname);
+	output.set<int>(0);
+}
+
+
 
 

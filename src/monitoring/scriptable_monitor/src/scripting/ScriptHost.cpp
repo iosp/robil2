@@ -8,10 +8,12 @@
 #include <scriptable_monitor/ScriptHost.h>
 #include <scriptable_monitor/ScriptParameters.h>
 #include "plp/PLP.h"
+#include <scriptable_monitor/PlpModule.h>
 
 ScriptHost::ScriptHost()
 {
 	_executionInterval = 0.1;
+	PlpModule::sh = this;
 	RosTopicListener::start();
 }
 
@@ -38,17 +40,16 @@ bool ScriptHost::typeAnalization(string sourceCode, AddScriptResponse& response)
 			PLPCompiler compiler;
 			int error_code=0;
 			vector<MonitorningScript> ms = compiler.compile(parser.plp(), error_code);
-			//vector<MonitorningScript> ms = compiler.compile_testing(parser.plp(), error_code);
 			if(not error_code){
+				string modulename="";
 				for(size_t i=0;i<ms.size();i++){
 					stringstream predicat_script; predicat_script<<ms[i];
-					//std::cout<<"-------------\n"<<predicat_script.str()<<endl;
-					addScript(predicat_script.str(), response);
-					if(not response.success){
-						cout<<"[i] some problem during script add"<<endl;
-						break;
-					}
+					ScriptParameters p(predicat_script.str());
+					modulename = p["module"];
+					PlpModule::add_script(predicat_script.str());
 				}
+				PlpModule::start(modulename);
+
 			}else{
 				cerr << "[e] PLP script compilation problem, cannot add to ScriptHost" << endl;
 				response.message = "[e] PLP script compilation problem, cannot add to ScriptHost";
@@ -89,6 +90,8 @@ AddScriptResponse ScriptHost::addScript(string sourceCode, AddScriptResponse& re
 //	response.success = true;
 //	return response;
 
+	ScriptParameters params(sourceCode);
+
 	set<string> internalFunctions;
 	foreach (string functionName, InternalFunctionsManager::getFunctionNames()) {
 		internalFunctions.insert(functionName);
@@ -116,6 +119,7 @@ AddScriptResponse ScriptHost::addScript(string sourceCode, AddScriptResponse& re
 	 * Convert to python script, simulate execution to extract used topic names
 	 */
 	PythonScript* pythonScript = new PythonScript(predicateScript.getPythonScript());
+	//cout<<"=== PYTHON SCRIPT ================================ \n"<<pythonScript->getSourceCode()<<"\n=============================="<<endl;
 	bool validScript = prepareScript(*pythonScript);
 
 	if (validScript)
@@ -211,9 +215,18 @@ bool ScriptHost::isExecutionTime(PythonScriptPtr script)
 	return nowTime > nextExecutionTime;
 }
 
+bool ScriptHost::typeAnalizationForRemove(string name)
+{
+	lock_recursive(_scriptsMutex);
+	if(PlpModule::contains(name)){
+		PlpModule::stop(name);
+	}
+	return false;
+}
 void ScriptHost::deleteScript(string scriptName)
 {
 	lock_recursive(_scriptsMutex);
+	if(typeAnalizationForRemove(scriptName)) return;
 
 	PythonScriptPtr script = getScript(scriptName);
 
@@ -285,3 +298,22 @@ bool ScriptHost::scriptExists(string scriptName)
 	lock_recursive(_scriptsMutex);
 	return !(!getScript(scriptName));
 }
+
+
+void ScriptHost::pauseModule(string scriptName)
+{
+	PlpModule::pause(scriptName);
+}
+
+void ScriptHost::resumeModule(string scriptName)
+{
+	PlpModule::resume(scriptName);
+
+}
+
+
+
+
+
+
+

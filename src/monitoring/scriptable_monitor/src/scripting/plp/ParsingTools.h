@@ -76,8 +76,8 @@ bool read_param(Token& t, OutTokenStream& tokens, string TYPE){
 		}\
 	return true;
 
-#define COLLECTION_ITEM_REQ(TYPE, F) tokens.push(); if(read_param(t, tokens, TYPE)){tokens.drop();READ_VALUE(t); set(_item,F,t.name);}else{tokens.pop();}
-#define COLLECTION_ITEM_OPT(TYPE, F) tokens.push(); if(read_param(t, tokens, TYPE)){tokens.drop();READ_VALUE(t);  if(t.name!=""){set(_item,F,t.name);}else{ _item.F="N/A"; }}else{tokens.pop();}
+#define COLLECTION_ITEM_REQ(TYPE, F) tokens.push(); if(read_param(t, tokens, TYPE)){tokens.drop();READ_VALUE(t); PLP_set(_item,F,t.name);}else{tokens.pop();}
+#define COLLECTION_ITEM_OPT(TYPE, F) tokens.push(); if(read_param(t, tokens, TYPE)){tokens.drop();READ_VALUE(t);  if(t.name!=""){PLP_set(_item,F,t.name);}else{ _item.F="N/A"; }}else{tokens.pop();}
 
 
 

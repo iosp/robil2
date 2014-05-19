@@ -7,6 +7,7 @@
 
 #include "PLPCompiler.h"
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 PLPCompiler::PLPCompiler() {
 
@@ -134,6 +135,37 @@ Script predicate_to_variable(string var_name, Script& scr){
 
 	return res;
 }
+
+
+namespace for_time_to_seconds{
+	bool isNumeric(const std::string& s){
+		int st=0;
+		if(s[st]=='+' or s[st]=='-') st=1;
+		bool n=false;
+		for(size_t i=st;i<s.size();i++){ if( s[i]<'0' or '9'<s[i] ) return false; n=true; }
+		return n;
+	}
+}
+string time_to_seconds(string src){
+	using namespace for_time_to_seconds;
+	boost::trim(src);
+	if(isNumeric(src)) return src;
+	size_t i = string::npos; double sec;
+	#define BLOCK_BNG do{
+	#define BLOCK_END }while(false);
+	#define CHECK(N,P) i = src.find(N); if(i!=string::npos){ string substr=src.substr(0,i); stringstream s; boost::trim(substr); s<<substr; s>>sec; sec*=P; break; }
+	BLOCK_BNG
+		CHECK("millisec",0.001)
+		CHECK("min",60)
+		CHECK("hour",(60*60))
+	BLOCK_END
+	#undef CHECK
+	#undef BLOCK_BNG
+	#undef BLOCK_END
+	stringstream ret; ret<<sec;
+	return ret.str();
+}
+
 
 #undef CALL
 
@@ -320,11 +352,11 @@ Script transform_time(const PLP& plp, const Goal& par, int& error_code){
 	if(plp_exists(plp, VARIABLES_SET, "name", par.parameter) and isnum(par.max_time_to_complete)){
 		PREDICATE( "_now = Now()");
 		PREDICATE( "_st = " << GET_GLOBAL_VAR(name_of_gloval_var("StartTime_",plp,par)) );
-		PREDICATE( "duration = _now - _st");
+		PREDICATE( "_duration = _now - _st");
 		Script tmp = transform_goal(plp,par,error_code);
 		if(error_code) return res;
 		res << predicate_to_variable( "_goal",tmp );
-		PREDICATE( "_goal or ( not( _goal ) and _duration < " + par.max_time_to_complete << " )" );
+		PREDICATE( "_goal or ( not( _goal ) and _duration < " + time_to_seconds(par.max_time_to_complete) << " )" );
 	}
 	return res;
 }
@@ -436,46 +468,6 @@ vector<MonitorningScript> PLPCompiler::compile(const PLP& plp, int& error_code){
 }
 
 
-vector<MonitorningScript> PLPCompiler::compile_testing(const PLP& plp, int& error_code){
-	vector<MonitorningScript> results;
-	MonitorningScript s1;
-	s1.properties<<"type predicate";
-	s1.properties<<"name predicate_script1";
-	s1.properties<<"interval 2";
-	s1<<"core1 = {/scan/ranges[0:1]}";
-	s1<<"core2 = {/scan/ranges[1:2]}";
-	s1<<"core3 = {/scan/ranges[2:3]}";
-	s1<<"core4 = {/scan/ranges[3:4]}";
-	s1<<"cpu_th = {/scan/ranges[4:5]}";
-	s1<<"core_th = {/scan/ranges[5:6]}";
-	s1<<"average = SomeFunction(core1, core2, core3, core4)";
-	s1<<"average < cpu_th";
-	s1<<"core1 < core_th";
-	s1<<"core2 < core_th";
-	s1<<"core3 > core_th";
-	s1<<"core4 < core_th";
-
-	MonitorningScript s2;
-	s2.properties<<"type predicate";
-	s2.properties<<"name predicate_script2";
-	s2.properties<<"interval 3";
-	s2<<"core1 = {/scan/ranges[0:1]}";
-	s2<<"core2 = {/scan/ranges[1:2]}";
-	s2<<"core3 = {/scan/ranges[2:3]}";
-	s2<<"core4 = {/scan/ranges[3:4]}";
-	s2<<"cpu_th = {/scan/ranges[4:5]}";
-	s2<<"core_th = {/scan/ranges[5:6]}";
-	s2<<"average = SomeFunction(core1, core2, core3, core4)";
-	s2<<"average < cpu_th";
-	s2<<"core1 < core_th";
-	s2<<"core2 < core_th";
-	s2<<"core3 > core_th";
-	s2<<"core4 < core_th";
-
-	results << s1 << s2;
-
-	return results;
-}
 
 
 

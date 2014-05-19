@@ -17,8 +17,8 @@
 #include <map>
 using namespace std;
 
-#define set_name(obj,var,value) if(#var=="name" or #var=="parameter"){obj.var=tr(value,' ','_');obj.vars[#var]=obj.var;}
-#define set(obj,var,value) set_name(obj,var,value) else{ obj.var=value;obj.vars[#var]=value; }
+#define PLP_set_name(obj,var,value) if(#var=="name" or #var=="parameter"){obj.var=tr(value,' ','_');obj.vars[#var]=obj.var;}
+#define PLP_set(obj,var,value) PLP_set_name(obj,var,value) else{ obj.var=value;obj.vars[#var]=value; }
 
 struct Variable{
 	string name;
