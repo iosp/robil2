@@ -1,0 +1,68 @@
+4 catkin packages: bobcat – the mesh and urdf
+		       bobcat_gazebo – launch files and config
+                       chain_pagebo_plugin – virtual joint plugin
+                       rate2effort – converting from joystick rates to effort
+NIR YOU SHOULD ADD UPDATE  about:
+
+rate to effort node works between -1 to 1.
+- we still need to change the price function – angular speed alone causes the model to flip over.
+upates:
+(22/04/14) 
+Added supporter hinge link with fixed joint
+Added launch for a bobcat with fixed arm
+launch simulation:
+roslaunch bobcat_gazebo bobcat_world.launch
+roslaunch bobcat_gazebo bobcat_world_FIXED_ARM.launch
+
+
+(23/02/14) – New rate to Effort converter Node
+launch simulation:
+roslaunch bobcat_gazebo bobcat_world.launch
+
+To added topics : /wheelsrate and /armrate
+examples:
+------------------------------------------------------
+rostopic pub /wheelsrate geometry_msgs/Twist "linear: 
+  x: 50.0 (or any other value between -100:100)
+  y: 0.0 
+  z: 0.0 
+angular: 
+  x: 50.0 (or any other value between -100:100)
+  y: 0.0 
+  z: 0.0" 
+------------------------------------------------------
+rostopic pub /armrate geometry_msgs/Vector3 "x: 1.0 (or any other value from 0 to 1.6)
+y: 0.0  (or any other value from -1 to 1)
+z: 0.0" 
+------------------------------------------------------
+
+NOTE:
+This two topics are not yet working under robil2 msg/nodes requirements and will be changed soon.
+
+(13/01/14) – New model of the bobcat, stl files changed.
+	All the the Joints except the wheels are fixed so don't try to move the arm.
+
+first put the packages in a  catkin ws and make the ws
+
+launch simulation:
+roslaunch bobcat_gazebo bobcat_world.launch
+
+A few packages of gazebo are required so pay attention for any error colored with red.
+The basic packages needed are: 
+gazebo_msgs/         gazebo_plugins/      gazebo_ros/          gazebo_ros_control/  gazebo_ros_pkgs/ 
+ 
+we have 0.4 real time factor on laptop and 0.7 on desktop computer.
+
+Controllers:
+you can find command topics for all joins and wheel, for example:
+
+rostopic echo /bobcat/back_left_wheel_velocity_controller/command
+rostopic pub /bobcat/back_left_wheel_velocity_controller/command std_msgs/Float64 "data: 100.0" -1
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+not active
+/bobcat/loader_position_controller/command
+ rostopic pub /bobcat/loader_position_controller/command std_msgs/Float64 "data: -0.5" -1 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pid can be configured at bobcat_gazebo/config/bobcat_gazebo_control.yamal or in realtime with rqt

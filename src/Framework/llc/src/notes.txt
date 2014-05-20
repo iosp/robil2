@@ -1,0 +1,13 @@
+roslaunch bobcat_gazebo bobcat_world.launch
+roslaunch robil2conf frameworkInit.launch 
+
+We publish The desired speed via the following Topic:
+	
+	/WPD_speed
+
+The LLC publishes the efforts and sterring to the rate2effort node via
+	
+	/LLC_steering
+	/LLC_throttle
+
+
