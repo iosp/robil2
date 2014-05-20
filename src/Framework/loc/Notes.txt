@@ -32,12 +32,21 @@ In addition, if you wish to work with noise you will have to uncomment the model
       </noise>-->
       
  remove the starting and ending <!-- ...... --> to add the noise.
+
+Testing
+-------
+You can test the Localization by running,
+python WORKSPACE/src/Framework/loc/test/graph_tracker.py
+
+Press 3 - to get the defualt 2 graphs of location (x and y) and speed (x and y).
+The graphs consists of the estimated position (in green) and the real position (in blue).
+
+In case the real location is biased from the estimation, you can add this bias by pressing 4.
 	
 
 TODO
 ----
-
-Add tests.
+Add thread for the estimation process.
 Add GPS speed data to estimation.
 Add bobcat input to the estimation.
 Add visual odometry.
