@@ -168,6 +168,11 @@ void print(const SET& t, const SET& c){
 	std::cout<<"Target:"<<endl<<t<<endl;
 	std::cout<<"Actual:"<<endl<<c<<endl;
 }
+void print(const SET& t,const SET& tt, const SET& c){
+	std::cout<<"Target:"<<endl<<t<<endl;
+	std::cout<<"    or:"<<endl<<tt<<endl;
+	std::cout<<"Actual:"<<endl<<c<<endl;
+}
 void print(const SET& c){
 	std::cout<<"State:"<<endl<<c<<endl;
 }
@@ -187,6 +192,13 @@ void FsmComponentTester::print_actives(){
 		std::cout<<"TEST " #S <<BOLDRED<< " FAULT" <<RESET<< std::endl; print(S,active_items[target_component]);  return false; }\
 		else{ std::cout<<"   test " #S <<std::endl; \
 	}}
+
+#define TEST_OR(S,SS) {SYNCH \
+	if(active_items[target_component]!=S and active_items[target_component]!=SS){ \
+		std::cout<<"TEST "<< #S <<" or "<< #SS <<BOLDRED<< " FAULT" <<RESET<< std::endl; print(S,SS,active_items[target_component]);  return false; }\
+		else{ std::cout<<"   test " << (active_items[target_component]!=S?BOLDBLACK:RESET)<<#S<<RESET<<" or "<<(active_items[target_component]!=S?RESET:BOLDBLACK)<<#SS<<RESET <<std::endl; \
+	}}
+
 #define WAIT  std::cout<<"WAIT FOR COMPONENT "<<target_component<<std::endl; \
 	int s;{SYNCH s=active_items[target_component].size();}\
 	while(ros::ok() and active_items[target_component].size()==0){sleep();{SYNCH s=active_items[target_component].size();}}\
@@ -197,7 +209,7 @@ void FsmComponentTester::print_actives(){
 #define PASS std::cout<<"TEST "<<BOLDGREEN<<"PASS"<<RESET<<std::endl; return true;
 
 bool FsmComponentTester::test1(bool wait){
-	cout<<"[test type 1]"<<endl;
+	cout<<"[test type 1] for fsm with standby state, that does not start submachines."<<endl;
 	SET state_on;
 		state_on.insert(target_component+"/ON");
 		state_on.insert(target_component+"/ON"+target_component+"_ON/INIT");
@@ -247,7 +259,7 @@ bool FsmComponentTester::test1(bool wait){
 }
 
 bool FsmComponentTester::test2(bool wait){
-	cout<<"[test type 2]"<<endl;
+	cout<<"[test type 2] for wsm, that uses SensorConnected event"<<endl;
 	SET state_on;
 		state_on.insert(target_component+"/ON");
 		state_on.insert(target_component+"/ON"+target_component+"_ON/INIT");
@@ -303,7 +315,7 @@ bool FsmComponentTester::test2(bool wait){
 }
 
 bool FsmComponentTester::test3(bool wait){
-	cout<<"[test type 3]"<<endl;
+	cout<<"[test type 3] for fsm without standby state"<<endl;
 	SET state_on;
 		state_on.insert(target_component+"/ON");
 		state_on.insert(target_component+"/ON"+target_component+"_ON/INIT");
@@ -335,21 +347,129 @@ bool FsmComponentTester::test3(bool wait){
 	PASS
 }
 
+bool FsmComponentTester::test4(bool wait){
+	cout<<"[test type 4] for fsm without WORK submachine, but with standby state, that starts with ready state."<<endl;
+	SET state_on;
+		state_on.insert(target_component+"/ON");
+		state_on.insert(target_component+"/ON"+target_component+"_ON/INIT");
+	SET state_off;
+		state_off.insert(target_component+"/OFF");
+	SET state_work;
+		state_work.insert(target_component+"/ON");
+		state_work.insert(target_component+"/ON"+target_component+"_ON/STANDBY");
+	SET state_work_ready;
+		state_work_ready.insert(target_component+"/ON");
+		state_work_ready.insert(target_component+"/ON"+target_component+"_ON/READY");
+
+	if(wait){
+		WAIT
+	}
+
+	TEST(state_on);
+
+	SEND(target_component+"/Shutdown");
+	TEST(state_off);
+
+	SEND(target_component+"/Activation");
+	TEST(state_on);
+
+	SEND(target_component+"/ON"+target_component+"_ON/INIT/INIT/EndOfInit")
+	TEST(state_work_ready);
+
+	SEND(target_component+"/Standby")
+	TEST(state_work);
+
+	SEND(target_component+"/Shutdown");
+	TEST(state_off);
+
+	SEND(target_component+"/Activation");
+	SEND(target_component+"/ON"+target_component+"_ON/INIT/INIT/EndOfInit")
+	SEND(target_component+"/Resume")
+	SEND(target_component+"/Shutdown");
+	TEST(state_off);
+
+	SEND(target_component+"/Activation");
+	PASS
+}
+
+bool FsmComponentTester::test5(bool wait){
+	cout<<"[test type 5] for fsm with standby state, that starts with standby state."<<endl;
+	SET state_on;
+		state_on.insert(target_component+"/ON");
+		state_on.insert(target_component+"/ON"+target_component+"_ON/INIT");
+	SET state_off;
+		state_off.insert(target_component+"/OFF");
+	SET state_work;
+		state_work.insert(target_component+"/ON");
+		state_work.insert(target_component+"/ON"+target_component+"_ON/WORK");
+		state_work.insert(target_component+"/ON"+target_component+"_ON/WORK"+target_component+"_WORK/STANDBY");
+	SET state_work_ready;
+		state_work_ready.insert(target_component+"/ON");
+		state_work_ready.insert(target_component+"/ON"+target_component+"_ON/WORK");
+		state_work_ready.insert(target_component+"/ON"+target_component+"_ON/WORK"+target_component+"_WORK/READY");
+
+	if(wait){
+		WAIT
+	}
+
+	TEST_OR(state_on, state_work);
+
+	SEND(target_component+"/Shutdown");
+	TEST(state_off);
+
+	SEND(target_component+"/Activation");
+	TEST(state_on);
+
+	SEND(target_component+"/ON"+target_component+"_ON/INIT/INIT/EndOfInit")
+	TEST(state_work);
+
+	SEND(target_component+"/Resume")
+	TEST(state_work_ready);
+
+	SEND(target_component+"/Standby")
+	TEST(state_work);
+
+	SEND(target_component+"/Shutdown");
+	TEST(state_off);
+
+	SEND(target_component+"/Activation");
+	SEND(target_component+"/ON"+target_component+"_ON/INIT/INIT/EndOfInit")
+	SEND(target_component+"/Resume")
+	SEND(target_component+"/Shutdown");
+	TEST(state_off);
+
+	SEND(target_component+"/Activation");
+	PASS
+}
+
+
 bool FsmComponentTester::test(bool wait){
+#	define end_list false
 	if(target_component=="/wsm"){
 		return test2(wait);
 	}else
+	if(target_component=="/llc"){
+		return test4(wait);
+	}else
 	if(
-		target_component=="/llc" or
+		target_component=="/pp" or
+		target_component=="/wpd" or
+		end_list
+	){
+		return test5(wait);
+	}else
+	if(
 		target_component=="/per" or
 		target_component=="/ssm" or
 		target_component=="/iedsim" or
-	false){
+		end_list
+	){
 		return test3(wait);
 	}else{
 		return test1(wait);
 	}
 	return false;
+#	undef end_list
 }
 
 map<string,string> comp_rename;

@@ -1,0 +1,9 @@
+<launch>
+
+	<include file="$(find robil_tests)/launch/template.launch">
+		<arg name="package" value="wpd" />
+		<arg name="node" value="wpd_node" />
+		<arg name="bag" value="$(find robil_tests)/bags/wpd_test.bag" />
+	</include>
+
+</launch>

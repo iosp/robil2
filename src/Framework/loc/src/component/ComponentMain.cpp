@@ -7,11 +7,11 @@
  */
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
+#include "userHeader.h"
 
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
-	//estimator = new ekf();
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -25,22 +25,33 @@ void ComponentMain::handlePositionUpdate(const config::LOC::sub::PositionUpdate&
 
 void ComponentMain::handleGPS(const config::LOC::sub::GPS& msg)
 {
-	//std::cout<< "LOC say:" << msg << std::endl;
-	estimator.setGPSMeasurement(msg);
-	estimator.estimator();
 	config::LOC::pub::Location msg1;
-	msg1 = estimator.getEstimatedPose();
-	publishLocation(msg1);
 	config::LOC::pub::PerVelocity msg2;
-	msg2 = estimator.getEstimatedSpeed();
- 	publishPerVelocity(msg2);
+	if(_added_noise)
+	{
+		_estimator.setGPSMeasurement(msg);
+		_estimator.estimator();
+		msg1 = _estimator.getEstimatedPose();
+		msg2 = _estimator.getEstimatedSpeed();
+	}
+	else
+	{
+		_observer.setGPSMeasurement(msg);
+		_observer.estimator();
+		msg1 = _observer.getEstimatedPose();
+		msg2 = _observer.getEstimatedSpeed();
+	}
+	publishLocation(msg1);
+	publishPerVelocity(msg2);
 }
 	
 
 void ComponentMain::handleINS(const config::LOC::sub::INS& msg)
 {
-	//std::cout<< "LOC say:" << msg << std::endl;
-	estimator.setIMUMeasurement(msg);
+	if(_added_noise)
+		_estimator.setIMUMeasurement(msg);
+	else
+		_observer.setIMUMeasurement(msg);
 }
 	
 

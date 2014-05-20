@@ -11,6 +11,8 @@
 #include <ParameterTypes.h>
 #include <tf/tf.h>
 #include "ekf_class.h"
+#include "noiseless_estimator.h"
+
 class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;
@@ -28,7 +30,8 @@ public:
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 private:
-  ekf estimator;
+  ekf _estimator;
+  Observer _observer;
   
 };
 #endif /* COMPONENTMAIN_H_ */

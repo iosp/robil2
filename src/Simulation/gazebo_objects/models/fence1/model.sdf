@@ -6,7 +6,7 @@
       <pose>0 0 0 0 0 0</pose>
       <collision name="collision">
         <geometry>
-          <mesh>
+          <mesh scale="0.1 0.1 0.1">
              <uri>model://fence1/models/fence.dae</uri>
           </mesh>
         </geometry>

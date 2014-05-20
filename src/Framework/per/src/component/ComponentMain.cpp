@@ -36,7 +36,7 @@ bool visualize = false;
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
-	 height_map = new HeightMap(400,400);
+	 height_map = new HeightMap(500,500);
 	 
 	
 }
@@ -58,9 +58,13 @@ void ComponentMain::handleLocation(const config::PER::sub::Location& msg)
   //rdbg("VISUALISE");
   if(visualize)
   {
-    height_map->displayGUI(myRot.yaw*180/3.14159, position.x, position.y);
-    HeightMap m = height_map->getRelativeMap(position.x, position.y, myRot);
-    m.displayGUI(0,0,0);
+    //height_map->displayGUI(myRot.yaw*180/3.14159, position.x, position.y);
+    //waitKey(1);
+    HeightMap m = height_map->deriveMap(position.x, position.y, myRot);
+    m.displayGUI(0,-5,0);
+    waitKey(1);
+    m.calculateTypes();
+    m.displayTypesGUI();
   }
   
   //height_map->calculateTypes();
@@ -119,7 +123,7 @@ void ComponentMain::handleSensorCamL(const config::PER::sub::SensorCamL& msg)
   if(camL && camR)
   {
       camL = camR = false;
-      //handleStereo(camLImg, camRImg);
+      handleStereo(camLImg, camRImg);
   }
 }
 	
@@ -142,7 +146,8 @@ void ComponentMain::handleSensorCamR(const config::PER::sub::SensorCamR& msg)
   if(camL && camR)
   {
       camL = camR = false;
-      //handleStereo(camLImg, camRImg);
+      handleStereo(camLImg, camRImg);
+      
   }
   
 }
@@ -193,7 +198,6 @@ void ComponentMain::handleSensorSICK2(const config::PER::sub::SensorSICK2& msg)
 		      pos, 
 		      msg.ranges[i],
 		      msg.angle_min + i*msg.angle_increment);
-      
 }
 	
 
@@ -270,7 +274,9 @@ void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msg)
 		      msg.angle_min_b + i*incrbottom);
     }
     config::PER::pub::Map msg2;
+    config::PER::pub::Map msg3;
     publishMap(msg2);
+    publishMiniMap(msg3);
 }
 	
 
@@ -317,16 +323,19 @@ void ComponentMain::publishBladePosition(config::PER::pub::BladePosition& msg)
 void ComponentMain::publishMap(config::PER::pub::Map& msg)
 {
   static int seq = 0;
-  //rdbg("hi");
+  static ros::Time lastSendTime;
+  if(ros::Time::now().toSec() - lastSendTime.toSec() > 0.5)
+    lastSendTime = ros::Time::now();
+  else return;
   msg.header.seq = seq++;
   msg.header.stamp.sec = ros::Time::now().sec;
   msg.header.stamp.nsec = ros::Time::now().nsec;
-  msg.header.frame_id = "0";
+  msg.header.frame_id = "map";
   
   msg.info.map_load_time.sec = ros::Time::now().sec;
   msg.info.map_load_time.nsec = ros::Time::now().nsec;
-  msg.info.width = 200;
-  msg.info.height = 200;
+  msg.info.width = 150;
+  msg.info.height = 150;
   msg.info.resolution = 0.2;
   msg.info.origin.position.x = position.x;
   msg.info.origin.position.y = position.y;
@@ -335,17 +344,17 @@ void ComponentMain::publishMap(config::PER::pub::Map& msg)
   msg.info.origin.orientation.y = myQuat.y;
   msg.info.origin.orientation.z = myQuat.z;
   msg.info.origin.orientation.w = myQuat.w;
-  msg.data.resize(200*200);
+  msg.data.resize(150*150);
   
-  HeightMap Oded = height_map->getRelativeMap(position.x, position.y, myRot);
+  HeightMap Oded = height_map->deriveMap(position.x, position.y, myRot);
   Oded.calculateTypes();
   vector<double>& heights = Oded.getHeights();
   vector<int>& types = Oded.getTypes();
-  for(int i = 0; i < 200; i++)
-    for(int j = 0; j < 200; j++)
+  for(int i = 0; i < 150; i++)
+    for(int j = 0; j < 150; j++)
     {
-      msg.data[j*200+i].height = heights[j*200+i];
-      msg.data[j*200+i].type = types[j*200+i];
+      msg.data[j*150+i].height = heights[j*150+i];
+      msg.data[j*150+i].type = types[j*150+i];
     }
   _roscomm->publishMap(msg);
 }
@@ -353,7 +362,38 @@ void ComponentMain::publishMap(config::PER::pub::Map& msg)
 
 void ComponentMain::publishMiniMap(config::PER::pub::MiniMap& msg)
 {
-	_roscomm->publishMiniMap(msg);
+    static int seq = 0;
+    //rdbg("hi");
+    msg.header.seq = seq++;
+    msg.header.stamp.sec = ros::Time::now().sec;
+    msg.header.stamp.nsec = ros::Time::now().nsec;
+    msg.header.frame_id = "map";
+    
+    msg.info.map_load_time.sec = ros::Time::now().sec;
+    msg.info.map_load_time.nsec = ros::Time::now().nsec;
+    msg.info.width = 50;
+    msg.info.height = 30;
+    msg.info.resolution = 0.2;
+    msg.info.origin.position.x = position.x;
+    msg.info.origin.position.y = position.y;
+    msg.info.origin.position.z = position.z;
+    msg.info.origin.orientation.x = myQuat.x;
+    msg.info.origin.orientation.y = myQuat.y;
+    msg.info.origin.orientation.z = myQuat.z;
+    msg.info.origin.orientation.w = myQuat.w;
+    msg.data.resize(50*30);
+    
+    HeightMap Oded = height_map->deriveMiniMap(position.x, position.y, myRot);
+    Oded.calculateTypes();
+    vector<double>& heights = Oded.getHeights();
+    vector<int>& types = Oded.getTypes();
+    for(int j = 0; j < 50; j++) //height
+      for(int i = 0; i < 30; i++) //width
+      {
+	msg.data[j*30+i].height = heights[j*30+i];
+	msg.data[j*30+i].type = types[j*30+i];
+      }
+    _roscomm->publishMiniMap(msg);
 }
 	
 

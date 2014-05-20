@@ -5,15 +5,17 @@
       <uri>model://sun</uri>
     </include>
  
+   <include>
+      <uri>model://srvss_terrain1</uri>
+   </include>
+
     <include>
       <uri>model://bobcat</uri>
       <name>Sahar</name>
       <pose>50 50 0.6 0 0 0</pose>
     </include>
 
-   <include>
-      <uri>model://srvss_terrain1</uri>
-   </include>
+
  
 
     <include>

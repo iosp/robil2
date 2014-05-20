@@ -17,13 +17,13 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
 {
-	std::cout<< "WSM say:" << msg << std::endl;
+	//std::cout<< "WSM say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleBladePosition(const config::WSM::sub::BladePosition& msg)
 {
-	std::cout<< "WSM say:" << msg << std::endl;
+	//std::cout<< "WSM say:" << msg << std::endl;
 }
 	
 

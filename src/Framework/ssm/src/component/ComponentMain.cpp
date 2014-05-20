@@ -17,19 +17,19 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleBladePosition(const config::SSM::sub::BladePosition& msg)
 {
-	std::cout<< "SSM say:" << msg << std::endl;
+	//std::cout<< "SSM say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleLocation(const config::SSM::sub::Location& msg)
 {
-	std::cout<< "SSM say:" << msg << std::endl;
+	//std::cout<< "SSM say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handlePerVelocity(const config::SSM::sub::PerVelocity& msg)
 {
-	std::cout<< "SSM say:" << msg << std::endl;
+	//std::cout<< "SSM say:" << msg << std::endl;
 }
 	
 

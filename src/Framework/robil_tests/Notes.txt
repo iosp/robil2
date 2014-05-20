@@ -1,0 +1,27 @@
+
+****************************************************************************************
+19/05/2014 SHA: 8167eada2487fceecb0c226c4eff1582fc550228 
+What's new:
+===========
+The whole package is new.
+
+Module Implemented Functionality:
+===============
+This package provides a framework for testing specific component. So far, it includes the following tests:
+1. Testing WPD: roslaunch robil_tests wpd_test.launch ==> check WPD by running rostopic echo /WPD/Speed
+
+Interfaces changed:
+=========
+NONE
+
+
+Tests:
+=============
+NA
+
+
+Known Bugs and Limitations:
+=========================
+
+
+

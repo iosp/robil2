@@ -36,6 +36,8 @@ public:
 	bool test1(bool);
 	bool test2(bool);
 	bool test3(bool);
+	bool test4(bool);
+	bool test5(bool);
 	bool test(bool);
 	void start();
 	void clear(){active_items.clear();}
