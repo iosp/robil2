@@ -1,13 +1,33 @@
-roslaunch bobcat_gazebo bobcat_world.launch
-roslaunch robil2conf frameworkInit.launch 
+****************************************************************************************
+20/05/2014 SHA: 3b9476afede9c6a00487b1a301a05aa68ab2786c
+What's new:
+===========
+1. Functioning PID controller over linear speed along vessel's X axis.
+2. correct inputs from gazebo simulator.
 
-We publish The desired speed via the following Topic:
-	
-	/WPD_speed
+Module Implemented Functionality:
+===============
+Velocity PID controller.
 
-The LLC publishes the efforts and sterring to the rate2effort node via
-	
-	/LLC_steering
-	/LLC_throttle
+Interfaces changed:
+=========
+NONE
 
+Tests:
+=============
+In order to test our LLC node, please take these follwing steps:
+
+1. Run the Gazebo Simulation - In empty world enviorment.
+2. Run robil2conf frameworkInit.launch 
+3. Make sure that RateToEffort node is alive and running via "rqt_graph".
+4. Pull the model's Loader by publishing 1 to the topic:
+	/Sahar/supporter_position_controller/command	
+5. Publish a referenced speed with the Topic "WPD/velocity" - a good reasonable speed is between 0 - 2 (in magnitude).
+
+Known Bugs and Limitations:
+=========================
+1. At the moment, Velocity controller over Angular speed along Z axis isn't fully functioning - 
+   Therefore, this feature is unavilable at the moment. It will be by Thursday (22.05.14).
+2. If you wish to use Teleoperation for manual driving, please move the LLC node to standby mode.
+************************************************************************************************
 
