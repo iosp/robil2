@@ -1,7 +1,6 @@
 import thread
 import rospy
 from geometry_msgs.msg._PoseWithCovarianceStamped import PoseWithCovarianceStamped
-import simpleguitk as simplegui
 from geometry_msgs.msg import PoseWithCovarianceStamped,TwistStamped
 from sensor_msgs.msg import NavSatFix
 from gazebo_msgs.msg import ModelStates
