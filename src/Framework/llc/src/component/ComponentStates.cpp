@@ -133,7 +133,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	ROS_INFO("LLC Ready");
 
 	double Kp = 20 , Kd = 0 , Ki = 0 ; 					/* PID constants of linear x */
-	double Kpz = 0 , Kdz = 0, Kiz = 0 ;					/* PID constants of angular z */
+	double Kpz = 1 , Kdz = 0, Kiz = 0 ;					/* PID constants of angular z */
  	double dt = 0.01 ; 									/* control time interval */
 	double integral [2] = {} ; 							/* integration part */
 	double der [2] = {} ;  								/* the derivative of the error */
