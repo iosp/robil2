@@ -41,11 +41,11 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 	if(msg->angular.x < -1)
 		ang.data = -1 ;
 
-    	pub.data = (lin.data + 2*ang.data)*(10);
+    	pub.data = (2.5*lin.data + ang.data);
     	front_left_pub_.publish(pub);
     	back_left_pub_.publish(pub);
 
-    	pub.data = (lin.data - 2*ang.data )*(10);
+    	pub.data = (2.5*lin.data - ang.data);
 	front_right_pub_.publish(pub);
 	back_right_pub_.publish(pub);
 }

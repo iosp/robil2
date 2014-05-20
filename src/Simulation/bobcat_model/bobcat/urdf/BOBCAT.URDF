@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot
-  name="bobcat">
+  name="Sahar">
   <link
     name="body">
     <inertial>
@@ -829,7 +829,7 @@
       xyz="0 1 0" />
   </joint>
   <link
-    name="Ibeo">
+    name="Ibeo_link">
     <inertial>
       <origin
         xyz="-0.50455 -0.03223 -1.3338"
@@ -877,12 +877,12 @@
     <parent
       link="cabin" />
     <child
-      link="Ibeo" />
+      link="Ibeo_link" />
     <axis
       xyz="0 0 0" />
   </joint>
   <link
-    name="left_sick">
+    name="left_sick_link">
     <inertial>
       <origin
         xyz="-0.89565 0.58058 -0.24712"
@@ -930,12 +930,12 @@
     <parent
       link="body" />
     <child
-      link="left_sick" />
+      link="left_sick_link" />
     <axis
       xyz="0 -1 0" />
   </joint>
   <link
-    name="right_sick">
+    name="right_sick_link">
     <inertial>
       <origin
         xyz="-0.89568 -0.58119 -0.24712"
@@ -983,12 +983,12 @@
     <parent
       link="body" />
     <child
-      link="right_sick" />
+      link="right_sick_link" />
     <axis
       xyz="0 -1 0" />
   </joint>
   <link
-    name="front_sick">
+    name="front_sick_link">
     <inertial>
       <origin
         xyz="-0.89885 0.00019572 0.43638"
@@ -1036,7 +1036,7 @@
     <parent
       link="body" />
     <child
-      link="front_sick" />
+      link="front_sick_link" />
     <axis
       xyz="0 1 0" />
   </joint>
@@ -1215,7 +1215,7 @@
   <!-- ros_control plugin -->
  <gazebo>
     <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
-      <robotNamespace>/bobcat</robotNamespace>
+      <robotNamespace>/Sahar</robotNamespace>
       <link1>back_shaft</link1>
       <link2>main_arm</link2>
       <joint>back_shaft_sheker</joint>
@@ -1223,7 +1223,7 @@
   </gazebo>
  <gazebo>
     <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
-      <robotNamespace>/bobcat</robotNamespace>
+      <robotNamespace>/Sahar</robotNamespace>
       <link1>front_shaft</link1>
       <link2>loader</link2>
       <joint>front_shaft_sheker</joint>
@@ -1231,7 +1231,7 @@
   </gazebo>
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>/bobcat</robotNamespace>
+      <robotNamespace>/Sahar</robotNamespace>
     </plugin>
   </gazebo>
   <gazebo reference="body">
