@@ -13,6 +13,7 @@
 
   ros::Publisher supporter_pub_;
   ros::Publisher loader_pub_;
+  ros::Publisher brackets_pub_;
   geometry_msgs::Twist::Ptr wheels (new geometry_msgs::Twist()) ;
 
 /*
@@ -40,11 +41,11 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 	if(msg->angular.x < -1)
 		ang.data = -1 ;
 
-    	pub.data = (lin.data + 2*ang.data)*(10);
+    	pub.data = (2.5*lin.data + ang.data);
     	front_left_pub_.publish(pub);
     	back_left_pub_.publish(pub);
 
-    	pub.data = (lin.data - 2*ang.data )*(10);
+    	pub.data = (2.5*lin.data - ang.data);
 	front_right_pub_.publish(pub);
 	back_right_pub_.publish(pub);
 }
@@ -58,6 +59,9 @@ void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
 
     	pub.data = msg->y;
     	loader_pub_.publish(pub);
+
+    	pub.data = msg->z;
+    	brackets_pub_.publish(pub);
 }
 void ThCallback (const std_msgs::Float64ConstPtr &msg){
 
@@ -90,6 +94,7 @@ int main(int argc, char **argv)
 
   supporter_pub_ = n.advertise<std_msgs::Float64>("/Sahar/supporter_position_controller/command", 100);
   loader_pub_ = n.advertise<std_msgs::Float64>("/Sahar/loader_position_controller/command", 100);
+  brackets_pub_ = n.advertise<std_msgs::Float64>("/Sahar/brackets_position_controller/command", 100);
 
   ros::Subscriber twist_sub_ = n.subscribe("/wheelsrate", 1000, wheelsCallback );
   ros::Subscriber arm_sub_ = n.subscribe("/armrate", 1000, armCallback );
