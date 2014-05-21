@@ -1,0 +1,9 @@
+<launch>
+
+	<include file="$(find robil_tests)/launch/template.launch">
+		<arg name="package" value="llc" />
+		<arg name="node" value="llc_node" />
+		<arg name="bag" value="$(find robil_tests)/bags/llc_test.bag" />
+	</include>
+
+</launch>

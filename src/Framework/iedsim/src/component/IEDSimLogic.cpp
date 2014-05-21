@@ -18,6 +18,9 @@
 
 IEDSimLogic::IEDSimLogic() :
 	m_isSet(false),
+	m_robot_x(999),
+	m_robot_y(999),
+	m_robot_z(999),
 	m_x(0),
 	m_y(0),
 	m_z(0),
@@ -38,9 +41,6 @@ IEDSimLogic::~IEDSimLogic()
 
 void IEDSimLogic::updateLocationFromSim(const gazebo_msgs::ModelStates::ConstPtr & msg)
 {
-	if(msg_counter<1000)
-		return;
-
 	bool found=false;
 	for(int i=0;i<msg->name.size();i++)
 	{
@@ -50,7 +50,13 @@ void IEDSimLogic::updateLocationFromSim(const gazebo_msgs::ModelStates::ConstPtr
 			m_x=msg->pose[i].position.x;
 			m_y=msg->pose[i].position.y;
 			m_z=msg->pose[i].position.z;
-			break;
+			
+		}
+		else if(msg->name.at(i).compare("Sahar")==0)
+		{
+			m_robot_x=msg->pose[i].position.x;
+			m_robot_y=msg->pose[i].position.y;
+			m_robot_z=msg->pose[i].position.z;	
 		}
 	}
 	if(found)
@@ -60,7 +66,6 @@ void IEDSimLogic::updateLocationFromSim(const gazebo_msgs::ModelStates::ConstPtr
 	{
 		m_isSet=false;
 	}
-	msg_counter=0;
 }
 
 void IEDSimLogic::setAtLocation(float x,float y,float z)
