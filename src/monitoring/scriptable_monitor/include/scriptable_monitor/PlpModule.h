@@ -106,7 +106,7 @@ public:
 	void stop_script(string scr);
 	static void stop_script(string name, string scr){
 		PlpModuleLock
-		cout<<"[i] stop script : "<<name<<endl;
+		cout<<"[i] stop script : "<<name<<" , "<<scr<<endl;
 		get_all_modules()[name].stop_script(scr);
 	}
 

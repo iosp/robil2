@@ -44,7 +44,12 @@ PlpModule::~PlpModule() {
 void PlpModule::start(){
 	for(vector<Info>::iterator i=_scripts.begin();i!=_scripts.end();i++){
 		if(i->params["time"]=="on_start"){
-			string s = i->source+"\n"+"_tmp=remove_script("+i->params["module"]+","+i->params["name"]+")\n";
+			string source = i->source;
+			string mname = i->params["module"];
+			string sname = i->params["name"];
+			string s = i->source;
+			s = s + "\n" +"print 'on time script ', '"+sname+"'";
+			s = boost::str(boost::format("%s\n_tmp = remove_script('%s','%s')\n") %s %mname %sname );
 			sh->addScript(s);
 		}else
 		if(i->params["time"]=="on_stop"){

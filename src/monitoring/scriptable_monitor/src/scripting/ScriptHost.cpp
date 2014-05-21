@@ -220,20 +220,28 @@ bool ScriptHost::typeAnalizationForRemove(string name)
 	lock_recursive(_scriptsMutex);
 	if(PlpModule::contains(name)){
 		PlpModule::stop(name);
+		true;
 	}
 	return false;
 }
 void ScriptHost::deleteScript(string scriptName)
 {
 	lock_recursive(_scriptsMutex);
-	if(typeAnalizationForRemove(scriptName)) return;
+	if(typeAnalizationForRemove(scriptName)){
+		return;
+	}
 
 	PythonScriptPtr script = getScript(scriptName);
 
-	if (!scriptExists(scriptName))
+	if (!scriptExists(scriptName)){
+		cout<<"[e] Script "<<scriptName<<" cann't be deleted, it doesn't exists."<<endl;
 		return;
+	}
 
+	cout<<"[d] deleteScript: "<<__LINE__<<": name="<<scriptName<<endl;
 	_scripts.erase(script);
+	cout << "[-] Script removed [" << scriptName << "]" << endl;
+
 }
 
 void ScriptHost::addDiagnosticStatus(PythonScriptPtr script)

@@ -29,6 +29,9 @@ PyMethodDef ScriptExecuter::MonitorPythonLib[] =
 	{NULL, 					NULL, 									0, 		NULL}
 };
 
+#define VALIDATION_FAILED _validationFailed and _currentScript->getParameter("evaluation_strategy")=="lazy"
+
+
 ScriptExecuter::ScriptExecuter()
 {
 	PythonExecuter::initModule("robil_monitor_lib", MonitorPythonLib);
@@ -123,7 +126,7 @@ PyObject* ScriptExecuter::convertToPythonType(string object) {
 
 PyObject* ScriptExecuter::internalTopic(PyObject* self, PyObject* args)
 {
-	if (_validationFailed)
+	if (VALIDATION_FAILED)
 		return PyFloat_FromDouble(0);
 
 	string 	scriptName 	= PyString_AsString(PyTuple_GetItem(args, 0));
@@ -140,7 +143,7 @@ PyObject* ScriptExecuter::internalTopic(PyObject* self, PyObject* args)
 
 PyObject* ScriptExecuter::internalValidation(PyObject* self, PyObject* args)
 {
-	if (_validationFailed)
+	if (VALIDATION_FAILED)
 		return PyString_FromString("");
 
 	string 	scriptName 			= PyString_AsString(PyTuple_GetItem(args, 0));
@@ -161,12 +164,15 @@ PyObject* ScriptExecuter::internalValidation(PyObject* self, PyObject* args)
 
 PyObject* ScriptExecuter::internalFunction(PyObject* self, PyObject* args)
 {
-	if (_validationFailed)
+	//cout<<"[d] criptExecuter::internalFunction::"<<__LINE__<<": validation = "<<(_validationFailed?"Failed":"Success")<<endl;
+	if (VALIDATION_FAILED)
 		return PyString_FromString("");
 
 	long int argCount = PyTuple_Size(args);
 	string scriptName = PyString_AsString(PyTuple_GetItem(args, 0));
 	string functionName = PyString_AsString(PyTuple_GetItem(args, 1));
+
+	//cout<<"[d] criptExecuter::internalFunction::"<<__LINE__<<": functionName = "<<functionName<<endl;
 
 	vector<string> arguments;
 	for (int i = 2; i < argCount; i++) {

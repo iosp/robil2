@@ -26,7 +26,8 @@ bool ScriptParameters::addParameter(
 
 	if (paramName == "name")
 		_name = paramValue;
-	else {
+	//else
+	{
 		_parameters[paramName] = paramValue;
 	}
 

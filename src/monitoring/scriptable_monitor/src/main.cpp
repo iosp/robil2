@@ -165,14 +165,14 @@ void scriptHostTest() {
 
 	string plp1 =
 			"#! type predicate\n"
-			"#! name Module_1_Resource_effects\n"
+			"#! name Module_1_Resource_precondition\n"
 			"#! module Module_1\n"
-			"#! time on_stop\n"
+			"#! time on_start\n"
 			"Power_source = {/scan/ranges[3]}\n"
-			"_isd = get_global_var('InitSourceData_Module_1_Power')\n"
-			"print '_isd = ', type(_isd), _isd\n"
-			"print 'Power_source = ', type(Power_source), Power_source\n"
-			"_isd - Power_source <= 5\n";
+			"_tmp = set_global_var('InitSourceData_Module_1_Power',Power_source)\n"
+			"20 <= Power_source\n"
+			"print 'on time script ', 'Module_1_Resource_precondition'\n"
+			"_tmp = remove_script('Module_1','Module_1_Resource_precondition')\nprint 'End'\n";
 
 	string plp_test4 = plp_header + read_file("test4.plp");
 	//cout<<"TEST4"<<endl<<plp_test4<<endl;

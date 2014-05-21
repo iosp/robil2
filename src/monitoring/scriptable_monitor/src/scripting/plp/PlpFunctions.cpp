@@ -91,6 +91,7 @@ FUNCTION(get_module_status)
 
 FUNCTION(remove_script)
 {
+	//cout<<"[d] remove_script"<<endl;
 	string mdlname = input.get<string>(0);
 	string scrname = input.get<string>(1);
 	PlpModule::stop_script(mdlname, scrname);
