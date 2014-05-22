@@ -66,6 +66,8 @@ private:
 	bool isExecutionTime(PythonScriptPtr script);
 	bool hasAllTopicValues(PythonScriptPtr script);
 	void addDiagnosticStatus(PythonScriptPtr script);
+	void addDiagnosticStatus(string name, string hid, int8_t level, string message);
+	void checkTimers();
 
 	PythonScriptPtr getScript(string scriptName);
 	bool scriptExists(string scriptName);

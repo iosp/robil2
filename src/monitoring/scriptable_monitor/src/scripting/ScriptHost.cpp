@@ -48,6 +48,10 @@ bool ScriptHost::typeAnalization(string sourceCode, AddScriptResponse& response)
 					modulename = p["module"];
 					PlpModule::add_script(predicat_script.str());
 				}
+				parser.plp().repeat_frequency = "1.0";
+				if(parser.plp().repeat_frequency.empty()==false){
+					PlpModule::set_repeated_freq(modulename, boost::lexical_cast<double>(parser.plp().repeat_frequency));
+				}
 				PlpModule::start(modulename);
 
 			}else{
@@ -164,6 +168,7 @@ bool ScriptHost::prepareScript(PythonScript& script)
 void ScriptHost::run()
 {
 	while (!_workThread->interruption_requested()) {
+		boost::system_time wait_time = get_system_time() + boost::posix_time::milliseconds(1000.0 * _executionInterval);
 
 		{
 			lock_recursive(_scriptsMutex);
@@ -186,7 +191,9 @@ void ScriptHost::run()
 			}
 		}
 
-		boost::this_thread::sleep(boost::posix_time::milliseconds(1000.0 * _executionInterval));
+		checkTimers();
+
+		boost::this_thread::sleep(wait_time);
 	}
 }
 
@@ -238,7 +245,6 @@ void ScriptHost::deleteScript(string scriptName)
 		return;
 	}
 
-	cout<<"[d] deleteScript: "<<__LINE__<<": name="<<scriptName<<endl;
 	_scripts.erase(script);
 	cout << "[-] Script removed [" << scriptName << "]" << endl;
 
@@ -262,6 +268,42 @@ void ScriptHost::addDiagnosticStatus(PythonScriptPtr script)
 	status->message = script->isValidationFailed() ? "Validation failed: " + script->getFailedValidation() : "Fine";;
 
 	_diagnosticStatuses.push_back(status);
+}
+
+void ScriptHost::addDiagnosticStatus(string name, string hid, int8_t level, string message)
+{
+	cout<<"[i] DIAGNOSTIC("<<name<<","<<hid<<","<<level<<","<<message<<")"<<endl;
+	lock_recursive(_statusesMutex);
+
+	DiagnosticStatusPtr status(new diagnostic_msgs::DiagnosticStatus());
+
+	status->name = name;
+	status->hardware_id = hid;
+
+	status->level = level;
+
+	status->message = message;
+
+	_diagnosticStatuses.push_back(status);
+}
+
+void ScriptHost::checkTimers(){
+	static double time_from_start = system_time_seconds();
+
+	vector<PlpModule::Timer> timers = PlpModule::check_timers_for_timeout(true);
+	cout<<"[i] system time = "<<system_time_seconds()-time_from_start<<" sec"<<endl;
+	BOOST_FOREACH(PlpModule::Timer t, timers){
+		cout<<"[i] .... timer = "<<t.name<<": "<<t.start-time_from_start<<" , timeout="<<t.timeout-time_from_start<<""<<endl;
+		if(boost::starts_with(t.action,"report ")){
+			int8_t level = -1; size_t plen=0;
+			if(boost::starts_with(t.action,"report error ")){ level = diagnostic_msgs::DiagnosticStatus::ERROR; plen = string("report error ").length(); }
+			if(boost::starts_with(t.action,"report warning ")){ level = diagnostic_msgs::DiagnosticStatus::WARN; plen = string("report warning ").length(); }
+			if(boost::starts_with(t.action,"report info ")){ level = diagnostic_msgs::DiagnosticStatus::OK; plen = string("report info ").length(); }
+			if(level>=0){
+				addDiagnosticStatus(t.name,"",level,t.action.substr(plen));
+			}
+		}
+	}
 }
 
 vector<DiagnosticStatusPtr> ScriptHost::getDiagnosticStatusesAndClear()

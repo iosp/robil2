@@ -28,6 +28,14 @@ using namespace boost::posix_time;
 
 #include "ScriptParameters.h"
 
+inline double system_time_seconds(){
+	ptime time_t_epoch(boost::gregorian::date(1970,1,1));
+	ptime now = microsec_clock::local_time();
+	time_duration diff = now - time_t_epoch;
+	long x = diff.total_milliseconds();
+	return (x*0.001);
+}
+
 class ScriptHost;
 
 class PlpModule {
@@ -38,8 +46,30 @@ private:
 		ScriptParameters params;
 		string source;
 	};
+	string _module_name;
 	string _status;
+	string _internal_status;
 	vector<Info> _scripts;
+	double _repeated_time;
+
+public:
+	struct Timer{
+		string name;
+		double start;
+		double timeout;
+		string action;
+		void restart(){
+			timeout = (timeout-start)+system_time_seconds();
+		}
+		Timer(string name="", double duration=-1.0, string action="")
+		:name(name),start(system_time_seconds()),timeout(start+duration),action(action)
+		{
+
+		}
+	};
+private:
+	static map<string, Timer> _timers;
+
 public:
 	static ScriptHost* sh;
 public:
@@ -61,6 +91,21 @@ public:
 		return status;
 	}
 
+	bool is_repeated()const{ return _repeated_time>0; }
+	static bool is_repeated(string name){
+		PlpModuleLock
+		if(get_all_modules().count(name))
+			return get_all_modules().at(name).is_repeated();
+		return false;
+	}
+
+	void set_repeated_time(double t_sec){  _repeated_time=t_sec; }
+	static void set_repeated_freq(string name, double t_hz){
+		PlpModuleLock
+		if(get_all_modules().count(name))
+			return get_all_modules().at(name).set_repeated_time(t_hz<=0?-1:1.0/t_hz);
+	}
+
 	void set_status(string st){ _status = st; }
 	static void status(string name, string st){
 		PlpModuleLock
@@ -74,6 +119,7 @@ public:
 		string modulename = info.params["module"];
 		string scriptname = info.params["name"];
 		PlpModuleLock
+		get_all_modules()[modulename]._module_name = modulename;
 		get_all_modules()[modulename].add_script(info);
 	}
 
@@ -134,15 +180,57 @@ public:
 		cout<<"[i] pause module : "<<name<<endl;
 		get_all_modules()[name].pause();
 	}
+
+	static void start_timer(string name, double timeout, string action){
+		PlpModuleLock
+		Timer t(name, timeout, action);
+		_timers[name] = t;
+	}
+	static void stop_timer(string name){
+		PlpModuleLock
+		map<string,Timer>::iterator i = _timers.find(name);
+		if(i!=_timers.end()){
+			_timers.erase(i);
+		}
+	}
+	static void stop_timer_by_prefix(string name_pref){
+		PlpModuleLock
+		for(map<string,Timer>::iterator i=_timers.begin();i!=_timers.end();i++){
+			if(boost::starts_with(i->second.name, name_pref)){
+				_timers.erase(i);
+				return;
+			}
+		}
+	}
+	static void restart_timer_by_prefix(string name_pref){
+		PlpModuleLock
+		double now = system_time_seconds();
+		for(map<string,Timer>::iterator i=_timers.begin();i!=_timers.end();i++){
+			if(boost::starts_with(i->second.name, name_pref)){
+				double duration = (i->second.timeout-i->second.start);
+				i->second.start = now;
+				i->second.timeout = duration+i->second.start;
+				return;
+			}
+		}
+	}
+	static vector<Timer> check_timers_for_timeout(bool restart){
+		vector<Timer> res;
+		double now = system_time_seconds();
+		for(map<string,Timer>::iterator i=_timers.begin();i!=_timers.end();i++){
+			if(now >= i->second.timeout){
+				res.push_back(i->second);
+				if(restart){
+					double duration = (i->second.timeout-i->second.start);
+					i->second.start = now;
+					i->second.timeout = duration+i->second.start;
+				}
+			}
+		}
+		return res;
+	}
 };
 
 
-inline double system_time_seconds(){
-	ptime time_t_epoch(boost::gregorian::date(1970,1,1));
-	ptime now = microsec_clock::local_time();
-	time_duration diff = now - time_t_epoch;
-	long x = diff.total_milliseconds();
-	return (x*0.001);
-}
 
 #endif /* PLPMODULE_H_ */
