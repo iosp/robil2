@@ -179,7 +179,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 		// Gazebo PID */
 	    ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
 	    gazebo_msgs::GetModelState getmodelstate;
-	    getmodelstate.request.model_name ="Sahar";
+	    getmodelstate.request.model_name ="bobcat";
 	    gmscl.call(getmodelstate);
 	    /*
 	    cout << "X speed measured by PER" << COMPONENT->Per_measured_speed.twist.linear.x << endl;
@@ -197,7 +197,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	    cur_error.twist.linear.x =
 	    	(COMPONENT->WPD_desired_speed.twist.linear.x - t.linear.x);
 	    cur_error.twist.angular.z =
-	    	(COMPONENT->WPD_desired_speed.twist.angular.z - t.angular.z);
+	    	(COMPONENT->WPD_desired_speed.twist.angular.z - COMPONENT->Per_measured_speed.twist.angular.z);
 
 	/* calculate integral and derivatives */
 	integral[0] += ((cur_error.twist.linear.x )* dt);
@@ -219,10 +219,13 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	cout << "Speed to wheels: " <<  t.linear.x << endl ;
 	cout<< "Linear x error:" << cur_error.twist.linear.x << endl;
 	cout<< "Linear x speed published:" << Steering_rate.data << endl;
+	cout << "And oded's work says:" << endl ;
+	cout << COMPONENT->Per_measured_speed.twist.linear.x << endl ;
 	cout << "========================= Angular Z===================================" << endl;
 	cout << "Angular z by control:" << getmodelstate.response.twist.angular.z << endl;
+	cout << "Angular Z by PER" << COMPONENT->Per_measured_speed.twist.angular.z << endl;
 	cout << "Reference : " <<  COMPONENT->WPD_desired_speed.twist.angular.z << endl ;
-	cout << "Angular z speed published:: " <<  Steering_rate.data << endl ;
+	cout << "Angular z speed published:: " <<  Steering_rate.data  << endl ;
 	cout << "Angular z error:" << cur_error.twist.angular.z << endl;
 	cout << "======================================================================" << endl;
 */
