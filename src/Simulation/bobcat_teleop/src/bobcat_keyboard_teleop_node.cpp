@@ -2,12 +2,11 @@
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/Vector3.h"
 #include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
-
+#include <stdlib.h>
 int main(int argc, char **argv)
 {
   //Initialize the node and connect to master
@@ -44,17 +43,18 @@ int main(int argc, char **argv)
   stdio.c_iflag=0;
   stdio.c_oflag=0;
   stdio.c_cflag=0;
-  stdio.c_lflag=0;
+  stdio.c_lflag=ISIG;
   stdio.c_cc[VMIN]=1;
   stdio.c_cc[VTIME]=0;
+  //stdio.c_cc[VINTR]=1;
   tcsetattr(STDOUT_FILENO,TCSANOW,&stdio);
   tcsetattr(STDOUT_FILENO,TCSAFLUSH,&stdio);
   fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);       // make the reads non-blocking
 
 
   geometry_msgs::Vector3 vectorMsg;
-
-  while (ros::ok() && c!='q')
+  bool stop=false;
+  while (ros::ok() && c!='q' && !stop)
   {
     /**
      * This is a message object. You stuff it with data, and then publish it.
@@ -65,6 +65,10 @@ int main(int argc, char **argv)
 
 
     if (c!='q' && c!=' ') {
+	int i=c;
+	if(i==3)
+	  stop=true;
+	
     	switch(c){
     		case 'i':
     			twistMsg.linear.x=0.5;
