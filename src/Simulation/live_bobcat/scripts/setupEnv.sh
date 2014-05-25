@@ -59,7 +59,6 @@ fi
 $($gazebo_prefix/bin/gzsdf "print" $bobcat_dir/urdf/BOBCAT.URDF 1> $HOME/.gazebo/models/bobcat/modelTemp.sdf 2>/dev/null)
 
 
-
 #add the sensors and joints to the model
 while read line
 do
