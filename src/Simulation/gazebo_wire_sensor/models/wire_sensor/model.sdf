@@ -13,9 +13,10 @@
 			</geometry>
 		</visual>
 	</link>
-	<plugin name="WIRE_SENSOR" filename="libwire_sensor.so"> 
+	<!--plugin name="WIRE_SENSOR" filename="libwire_sensor.so">
+		<mount_name>wire_sensor_mount</mount_name> 
 		<noise>0.1</noise>	
-	</plugin>
+	</plugin-->
 	</model>       
 </sdf>
 

@@ -11,7 +11,7 @@
 
 
 using std::string;
-void rdbg(const char* str)
+inline void rdbg(const char* str)
 {
   string ip = "127.0.0.1";
   int port = 28005;

@@ -56,28 +56,28 @@ class Quaternion
 };
 
 
-Vec3D GetUpVector(double x, double y, double z, double w) 
+inline Vec3D GetUpVector(double x, double y, double z, double w) 
 {
   return Vec3D( 2 * (x * z + w * y),
 		  2 * (y * z - w * x),
 		  1 - 2 * (x * x + y * y));
 }
  
-Vec3D GetRightVector(double x, double y, double z, double w) 
+inline Vec3D GetRightVector(double x, double y, double z, double w) 
 {
     return Vec3D( 2 * (x * y - w * z),
                     1 - 2 * (x * x + z * z),
                     2 * (y * z + w * x));
 }
  
-Vec3D GetFrontVector(double x, double y, double z, double w) 
+inline Vec3D GetFrontVector(double x, double y, double z, double w) 
 {
     return Vec3D( 1 - 2 * (y * y + z * z),
                     2 * (x * y + w * z),
                     2 * (x * z - w * y));
 }
 
-Quaternion GetFromRPY(Rotation rot)
+inline Quaternion GetFromRPY(Rotation rot)
 {
   double phi, the, psi;
 
@@ -93,7 +93,7 @@ Quaternion GetFromRPY(Rotation rot)
   
 }
 
-Rotation GetRotation(Quaternion q)
+inline Rotation GetRotation(Quaternion q)
 {
   Rotation rot;
   

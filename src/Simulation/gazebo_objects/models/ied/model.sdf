@@ -1,44 +1,44 @@
 <?xml version="1.0" ?>
 <sdf version="1.4">
   <model name="ied">
- <pose>0 0 0 1.57 0 0</pose>
+ <pose>0 0 0 0 1.57 1</pose>
     <link name="link1">
       <inertial>
         <pose>0 0 0 1.57 0 0</pose>
         <mass>5</mass>
         <inertia>
-          <ixx>0.028705</ixx>
-          <ixy>0.0000</ixy><iyy>0.073708</iyy>
-          <ixz>0.0000</ixz><iyz>0.0000</iyz><izz>0.06908</izz>
+          <ixx>1</ixx>
+          <ixy>0.5</ixy><iyy>1</iyy>
+          <ixz>0.5</ixz><iyz>0.5</iyz><izz>1</izz>
         </inertia>
       </inertial>
 
 
       <visual name="visual">
         <geometry>
-	<cylinder>
-          <radius>.2</radius>
-          <length>.3</length>
-        </cylinder>
+        <mesh>
+                        <uri>model://ied/meshes/bullet.dae</uri>
+		<scale>0.8 0.2 0.8</scale>      
+                </mesh>
+	
         </geometry>
-                <material>
+<material>
                     <script>
                         <uri>model://ied/materials/scripts</uri>
                         <uri>model://ied/materials/textures</uri>
                         <name>ied/ied1</name>
                     </script>
-                </material>
+</material>
+
       </visual>
-
-
-
       <collision name="collision">
         <pose>0 0 0 0 0 0</pose>
- 	<geometry>
-	<cylinder>
-          <radius>.2</radius>
-          <length>.3</length>
-        </cylinder>
+ 	        <geometry>
+        <mesh>
+                        <uri>model://ied/meshes/bullet.dae</uri>
+<scale>0.8 0.2 0.8</scale>      
+                </mesh>
+	
         </geometry>
         <surface>
           <contact>
@@ -49,131 +49,6 @@
           </contact>
         </surface>
       </collision>
-
-
     </link>
-
-<link name="link2">
-<pose>0 0 0.2 0 0 0</pose>
-      <inertial>
-        <mass>3</mass>
-        <inertia>
-          <ixx>0.028705</ixx>
-          <ixy>0.0000</ixy><iyy>0.073708</iyy>
-          <ixz>0.0000</ixz><iyz>0.0000</iyz><izz>0.06908</izz>
-        </inertia>
-      </inertial>
-
-      <visual name="visual2">
-        <geometry>
-         <sphere>
-          <radius>.2</radius>
-        </sphere>
-        </geometry>
-                <material>
-                    <script>
-                        <uri>model://ied/materials/scripts</uri>
-                        <uri>model://ied/materials/textures</uri>
-                        <name>ied/ied1</name>
-                    </script>
-                </material>
-      </visual>
-
-
-
-      <collision name="collision2">
- 	<geometry>
-         <sphere>
-          <radius>.2</radius>
-        </sphere>
-        </geometry>
-        <surface>
-          <contact>
-            <ode>
-              <max_vel>0.1</max_vel>
-              <min_depth>0.001</min_depth>
-            </ode>
-          </contact>
-        </surface>
-      </collision>
-</link>
-
-
-<link name="link3">
-      <inertial>
-        <pose>0 0 0 1.57 0 0</pose>
-        <mass>2</mass>
-        <inertia>
-          <ixx>0.028705</ixx>
-          <ixy>0.0000</ixy><iyy>0.073708</iyy>
-          <ixz>0.0000</ixz><iyz>0.0000</iyz><izz>0.06908</izz>
-        </inertia>
-      </inertial>
-
-
-      <visual name="visual3">
-        <geometry>
-	<box>
-          <size>.3 0.34 0.34</size>
-        </box>
-        </geometry>
-                <material>
-                    <script>
-                        <uri>model://ied/materials/scripts</uri>
-                        <uri>model://ied/materials/textures</uri>
-                        <name>ied/ied1</name>
-                    </script>
-                </material>
-      </visual>
-
-
-
-      <collision name="collision3">
- 	<geometry>
-	<box>
-          <size>.3 0.34 0.34</size>
-        </box>
-        </geometry>
-        <surface>
-          <contact>
-            <ode>
-              <max_vel>0.1</max_vel>
-              <min_depth>0.001</min_depth>
-            </ode>
-          </contact>
-        </surface>
-      </collision>
-
-
-    </link>
-
-
-
-    <joint name='joint1' type='revolute'>
-      <child>link1</child>
-      <parent>link2</parent>
-      <axis>
-        <xyz>0 1 0</xyz>
-        <limit>
-          <lower>0</lower>
-          <upper>0</upper>
-        </limit>
-        <dynamics/>
-      </axis>
-    </joint>
-
-    <joint name='joint2' type='revolute'>
-      <child>link1</child>
-      <parent>link3</parent>
-      <axis>
-        <xyz>0 1 0</xyz>
-        <limit>
-          <lower>0</lower>
-          <upper>0</upper>
-        </limit>
-        <dynamics/>
-      </axis>
-    </joint>
-
   </model>
 </sdf>

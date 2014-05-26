@@ -20,19 +20,12 @@ void ComponentMain::handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg)
 
 	this->WPD_desired_speed.twist.linear.x = msg.twist.linear.x ;
 	this->WPD_desired_speed.twist.angular.z = msg.twist.angular.z ;
-	std::cout<< "LLC say:" << this->WPD_desired_speed << std::endl;
+
+	//std::cout<< "LLC say:" << this->WPD_desired_speed << std::endl;
 }
 	
 void ComponentMain::handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg)
 {
-	/* This callback is used for easier Pid controller
-	this->PID_CONSTANTS.twist.linear.x = msg.twist.linear.x; // Kp for linear x
-	this->PID_CONSTANTS.twist.linear.y = msg.twist.linear.y; // Ki for linear x
-	this->PID_CONSTANTS.twist.linear.z = msg.twist.linear.z; // Kd for linear x
-	this->PID_CONSTANTS.twist.angular.x = msg.twist.angular.x; // Kp for angular z
-	this->PID_CONSTANTS.twist.angular.y = msg.twist.angular.x; // Ki for angular z
-	this->PID_CONSTANTS.twist.angular.z = msg.twist.angular.x; // Kd for angular z
-	*/
 
 	//std::cout<< "LLC say:" << msg << std::endl;
 }
@@ -56,7 +49,7 @@ void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
 	Per_measured_speed.twist.linear.x = msg.twist.linear.x ;
 	Per_measured_speed.twist.angular.z = msg.twist.angular.z ;
 
-	//std::cout<< "LLC say:" << msg << std::endl;
+	std::cout<< "LLC say:" << msg << std::endl;
 }
 	
 

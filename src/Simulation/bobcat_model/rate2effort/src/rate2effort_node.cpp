@@ -13,7 +13,9 @@
 
   ros::Publisher supporter_pub_;
   ros::Publisher loader_pub_;
+  ros::Publisher brackets_pub_;
   geometry_msgs::Twist::Ptr wheels (new geometry_msgs::Twist()) ;
+
 /*
 void pricecall(const std_msgs::Float64::ConstPtr& price){
 	x.data = price->data ;
@@ -22,13 +24,28 @@ void pricecall(const std_msgs::Float64::ConstPtr& price){
 
 void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 {
-	std_msgs::Float64 pub;    
-	
-    	pub.data = (msg->linear.x + 0.15*msg->angular.x )*(100/(1+0.15));
-    	front_left_pub_.publish(pub);
-	back_left_pub_.publish(pub);
 
-    	pub.data = (msg->linear.x - 0.15*msg->angular.x )*(100/(1+0.15));
+	std_msgs::Float64 lin;
+	std_msgs::Float64 ang;
+
+	std_msgs::Float64 pub;
+	lin.data = msg->linear.x ;
+	ang.data = msg->angular.x ;
+
+	if(msg->linear.x > 1)
+		lin.data = 1 ;
+	if(msg->angular.x > 1)
+		ang.data = 1 ;
+	if(msg->linear.x < -1)
+		lin.data = -1 ;
+	if(msg->angular.x < -1)
+		ang.data = -1 ;
+
+    	pub.data = (2.5*lin.data + ang.data);
+    	front_left_pub_.publish(pub);
+    	back_left_pub_.publish(pub);
+
+    	pub.data = (2.5*lin.data - ang.data);
 	front_right_pub_.publish(pub);
 	back_right_pub_.publish(pub);
 }
@@ -42,6 +59,9 @@ void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
 
     	pub.data = msg->y;
     	loader_pub_.publish(pub);
+
+    	pub.data = msg->z;
+    	brackets_pub_.publish(pub);
 }
 void ThCallback (const std_msgs::Float64ConstPtr &msg){
 
@@ -74,12 +94,13 @@ int main(int argc, char **argv)
 
   supporter_pub_ = n.advertise<std_msgs::Float64>("/Sahar/supporter_position_controller/command", 100);
   loader_pub_ = n.advertise<std_msgs::Float64>("/Sahar/loader_position_controller/command", 100);
+  brackets_pub_ = n.advertise<std_msgs::Float64>("/Sahar/brackets_position_controller/command", 100);
 
   ros::Subscriber twist_sub_ = n.subscribe("/wheelsrate", 1000, wheelsCallback );
   ros::Subscriber arm_sub_ = n.subscribe("/armrate", 1000, armCallback );
   ros::Subscriber Throttle_rate_sub = n.subscribe("/LLC/EFFORTS/Throttle" , 1000, ThCallback);
   ros::Subscriber Steering_rate_sub = n.subscribe("/LLC/EFFORTS/Steering" , 1000, StCallback);
-  //ros::Subscriber debug_sub = n.subscribe("/price", 1000, pricecall);
+//  ros::Subscriber debug_sub = n.subscribe("/price", 1000, pricecall);
 
   ros::Rate loop_rate(10);	
   ros::spin();

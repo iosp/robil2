@@ -29,9 +29,25 @@ namespace gazebo
 	void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
 	{
 	  // Store the pointer to the model
-		this->_model = _parent;
+		
 
 		this->_frequency = 10;
+		if(_sdf->HasElement("sensor_name"))
+		{
+			sdf::ElementPtr elem = _sdf->GetElement("sensor_name");
+			string val;
+			elem->GetValue()->Get(val);
+			_sensor_name = val;
+		} else _sensor_name = "wire_sensor";
+
+		if(_sdf->HasElement("mount_name"))
+		{
+			sdf::ElementPtr elem = _sdf->GetElement("mount_name");
+			string val;
+			elem->GetValue()->Get(val);
+			_mount_name = val;
+		} else _mount_name = "wire_sensor_mount";
+
 
 		if(_sdf->HasElement("noise"))
 		{
@@ -41,10 +57,17 @@ namespace gazebo
 			_noise = val;
 		} else _noise = 0;
 
-		this->_model2 = _model->GetWorld()->GetModel("wire_sensor_mount");
-		if(this->_model2 == NULL) 
+		_link1=_parent->GetLink(_sensor_name);
+		if(!_link1)
 		{
-		gzthrow("Wire Sensor Load Error: Cannot find the model \"wire_sensor_mount\" in the world. Please make sure it is loaded.");
+		gzthrow(string("Wire Sensor Load Error: Cannot find the model \"")+_sensor_name+"\" in the sdf. Please make sure it is loaded.");
+		return;
+		}
+
+		_link2=_parent->GetLink(_mount_name);
+		if(!_link2)
+		{
+		gzthrow(string("Wire Sensor Load Error: Cannot find the model \"")+_mount_name+"\" in the sdf. Please make sure it is loaded.");
 		return;
 		}
 
@@ -61,8 +84,8 @@ namespace gazebo
 		if(simTime.Double()-_lastTime.Double() < 1.0/_frequency) return;
 		_lastTime = simTime;
 	  	
- 		math::Pose mainPose = this->_model->GetWorldPose();
-		math::Pose mountPose = this->_model2->GetWorldPose();
+ 		math::Pose mainPose = this->_link1->GetWorldPose();
+		math::Pose mountPose = this->_link2->GetWorldPose();
 		
 		math::Vector3 d_pos = mainPose.pos - mountPose.pos;
 		double dist = d_pos.Distance(0,0,0);
@@ -79,15 +102,17 @@ namespace gazebo
 
 
   private:
-    physics::ModelPtr 		_model; // Pointer to the model
-    physics::ModelPtr 		_model2; // Pointer to the attachment model (the mount part)
+    physics::LinkPtr 		_link1; // Pointer to the model
+    physics::LinkPtr 		_link2; // Pointer to the attachment model (the mount part)
     event::ConnectionPtr 	_updateConnection; // Pointer to the update event connection
 
     ros::NodeHandle		_nodeHandle;
     ros::Publisher 		_publisher;
   
-    int  				_frequency;
-	double 				_noise;
+    int  			_frequency;
+    double 			_noise;
+    string 			_mount_name;
+    string 			_sensor_name;
     common::Time		_lastTime;
   };
 

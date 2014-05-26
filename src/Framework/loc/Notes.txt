@@ -1,15 +1,14 @@
-Localization module
--------------------
+Localization module - version 2.1
+---------------------------------
 
 This module gets as an input data from GPS/INS, visual odometry and other inputs.
-The module outputs the location of the bobcat with relation to the starting point of the bobcat.
+The module outputs the location of the bobcat with relation to the starting point of the bobcat as well as the speed of the bobcat.
 
-In order to run the framework do:
+In order to run the framework run:
 
 	$ roslaunch robil2conf frameworkInit.launch
 
 The launch will run all of the modules in the framework. They are all required.
-You will see alot of gibrish in the terminal... it's OK.
 
 once you run all of the modules you can subscribe to the LOC topics
 
@@ -17,10 +16,38 @@ once you run all of the modules you can subscribe to the LOC topics
 	$ rostopic echo /LOC/Velocity
 
 
-NOTE - For now the module is 100% accurate since there are is no noise.
+You should edit the userHeader.h file which is located at Framework/Loc/src/component folder.
+There you can decide if you wish to work with or without system noise.
+In addition, if you wish to work with noise you will have to uncomment the model.sdf file of the gps_ins folder which is located at
+~/.gazebo/models/GPS_INS/model.sdf
+
+<!--<noise>
+	<gps>2.5</gps>
+	<rollpitch>0.2</rollpitch>
+	<yaw>0.8</yaw>
+	<acc_bias>0.0005886</acc_bias>
+	<gyro_bias>0.000833333</gyro_bias>
+	<acc_noise>0.000465329</acc_noise>
+	<gyro_noise>0.000252982</gyro_noise>
+      </noise>-->
+      
+ remove the starting and ending <!-- ...... --> to add the noise.
+
+Testing
+-------
+You can test the Localization by running,
+python WORKSPACE/src/Framework/loc/test/graph_tracker.py
+
+Press 3 - to get the defualt 2 graphs of location (x and y) and speed (x and y).
+The graphs consists of the estimated position (in green) and the real position (in blue).
+
+In case the real location is biased from the estimation, you can add this bias by pressing 4.
 	
+
 TODO
 ----
+Add thread for the estimation process.
+Add GPS speed data to estimation.
+Add bobcat input to the estimation.
+Add visual odometry.
 
-add tests.
-Add Noise to sensors and implement KF.	

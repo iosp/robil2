@@ -22,28 +22,69 @@ class HeightMap
         HeightMap(int width, int height);
         ~HeightMap();
         
-        void    importFromArray(double* arr);
+        /**
+	 * These functions were planned to be implemented for packing & unpacking the map. But since
+	 * we are working with the usual ROS messages for map we do not need these anymore.
+	 */
+	void    importFromArray(double* arr);
         void    exportToArray(double* arr);
         
-        void    setHeightAt(int x, int y, double height);
-        double  getHeightAt(int x, int y);
+	/**
+	 * These are used to assign and query heights on the map given an absolute global position with
+	 * coordinates transformed to cell coordinates.
+	 * This is useful for working with the map from the outside world.
+	 */
+        void    setAbsoluteHeightAt(int x, int y, double height);
+        double  getAbsoluteHeightAt(int x, int y);
+	
+	/**
+	 * These are used to assign and query heights on the map given a relative position
+	 * on the map itself. (0,0) would be the map center, regardless of what (0,0) is in the real world.
+	 * This is useful for working with map data.
+	 */
+        void    setRelativeHeightAt(int x, int y, double height);
+        double  getRelativeHeightAt(int x, int y);
         
+	/**
+	 * This function attempts to (for now) classify each map cell as
+	 * passable, obstacle or unknown. Expected to work at lightning speed.
+	 */
         void 	calculateTypes();
 	
-	HeightMap getRelativeMap(int px, int py, Rotation rot);
+	/**
+	 * These functions receive the bobcat x and y coordinates (as real world coordinates)
+	 * and it's rotation, and chop off a map according to IAI specs relative to the bobcat's front direction.
+	 */
+	HeightMap deriveMap(int px, int py, Rotation rot);
+	HeightMap deriveMiniMap(int px, int py, Rotation rot);
 	
-	void 	grow();
-        
+	/**
+	 * These functions are tools for a visual representation of the heightmap. 
+	 * 3D is not yet implemented, and console representation is only partial.
+	 * Bobcat position is in represented in absolute global coordinates.
+	 */
         void displayConsole();
         void displayGUI(int, int, int);
         void displayTypesGUI();
         void display3D();
 	
+	/**
+	 * These are getters for the internal data structures of the map. 
+	 */
 	vector<double>& getHeights();
         vector<int>& getTypes();
         
     private:
-        double&                 _at(int x, int y);
+        
+	/**
+	 * These functions are used when the bobcat left far away from the combat area and we need to allocate 
+	 * space for the new map data and forget some of the old map data (the one that is the farthest from us)
+	 */
+	void shiftLeft(); void shiftRight(); void shiftUp(); void shiftDown(); 
+        
+      
+      
+	double&                 _at(int x, int y);
         
         vector<double>          _heights;  
         vector<int>		 _types;
@@ -52,7 +93,8 @@ class HeightMap
         double                  _min, _max;
         Mat			 _compass;
         Mat			 _arrow;
-	bool 			 _mayGrow;
+	
+	Vec2D			 _refPoint; //(0,0) in heightmap is refPoint(x*5,y*5) on the real world.
 };
     
     

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot
-  name="bobcat">
+  name="Sahar">
   <link
     name="body">
     <inertial>
@@ -63,7 +63,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/front_left_wheel.STL" />
+          filename="package://bobcat/meshes/front_left_wheel.stl" />
       </geometry>
       <material
         name="">
@@ -116,7 +116,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/front_right_wheel.STL" />
+          filename="package://bobcat/meshes/front_right_wheel.stl" />
       </geometry>
       <material
         name="">
@@ -169,7 +169,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/back_left_wheel.STL" />
+          filename="package://bobcat/meshes/back_left_wheel.stl" />
       </geometry>
       <material
         name="">
@@ -222,7 +222,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobcat/meshes/back_right_wheel.STL" />
+          filename="package://bobcat/meshes/back_right_wheel.stl" />
       </geometry>
       <material
         name="">
@@ -306,8 +306,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="0"
-      upper="0"
+      lower="-1.57"
+      upper="1.57"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -364,8 +364,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="0"
-      upper="0"
+      lower="-1.57"
+      upper="1.57"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -422,8 +422,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="0"
-      upper="0"
+      lower="-0.2"
+      upper="1"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -538,8 +538,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="0"
-      upper="0"
+      lower="-0.1"
+      upper="0.6"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -597,7 +597,7 @@
       xyz="0 1 0" />
     <limit
       lower="0"
-      upper="0"
+      upper="1.57"
       effort="1000000"
       velocity="100" />
   </joint>
@@ -829,7 +829,7 @@
       xyz="0 1 0" />
   </joint>
   <link
-    name="Ibeo">
+    name="Ibeo_link">
     <inertial>
       <origin
         xyz="-0.50455 -0.03223 -1.3338"
@@ -877,12 +877,12 @@
     <parent
       link="cabin" />
     <child
-      link="Ibeo" />
+      link="Ibeo_link" />
     <axis
       xyz="0 0 0" />
   </joint>
   <link
-    name="left_sick">
+    name="left_sick_link">
     <inertial>
       <origin
         xyz="-0.89565 0.58058 -0.24712"
@@ -930,12 +930,12 @@
     <parent
       link="body" />
     <child
-      link="left_sick" />
+      link="left_sick_link" />
     <axis
       xyz="0 -1 0" />
   </joint>
   <link
-    name="right_sick">
+    name="right_sick_link">
     <inertial>
       <origin
         xyz="-0.89568 -0.58119 -0.24712"
@@ -983,12 +983,12 @@
     <parent
       link="body" />
     <child
-      link="right_sick" />
+      link="right_sick_link" />
     <axis
       xyz="0 -1 0" />
   </joint>
   <link
-    name="front_sick">
+    name="front_sick_link">
     <inertial>
       <origin
         xyz="-0.89885 0.00019572 0.43638"
@@ -1036,7 +1036,7 @@
     <parent
       link="body" />
     <child
-      link="front_sick" />
+      link="front_sick_link" />
     <axis
       xyz="0 1 0" />
   </joint>
