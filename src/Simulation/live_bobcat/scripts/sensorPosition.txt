@@ -1,4 +1,4 @@
-    <include>
+<include>
       <uri>model://sick</uri>
       <pose>-0.2187 0.85 0.631 0 0 1.57</pose>
       <name>left_sick</name>
@@ -32,6 +32,34 @@
       <pose>-0.30 0.23 1.93 0 0 0</pose>
       <name>right_flea3</name>
     </include>
+
+
+
+
+    <include>
+      <uri>model://wire_sensor</uri>
+      <pose>-1.42 0.56 1.05 -1.6 2.3 0</pose>
+      <name>arm_wire_sensor</name>
+    </include>
+
+    <include>
+      <uri>model://wire_sensor_mount</uri>
+      <pose>-1.31 0.56 1.28 -1.6 0 0</pose>
+      <name>arm_wire_sensor_mount</name>
+    </include>
+
+    <include>
+      <uri>model://wire_sensor</uri>
+      <pose>0.3 0.3 0.85 0 -0.83 3.14</pose>
+      <name>blade_wire_sensor</name>
+    </include>
+
+    <include>
+      <uri>model://wire_sensor_mount</uri>
+      <pose>0.59 0.3 0.52 0 -1 0</pose>
+      <name>blade_wire_sensor_mount</name>
+    </include>
+
 
 
     <joint name='left_sick_joint' type='revolute'>
@@ -109,6 +137,70 @@
       </axis>
     </joint>
 
+    <joint name='arm_wire_sensor_joint' type='revolute'>
+      <child>arm_wire_sensor::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+    <joint name='arm_wire_sensor_mount_joint' type='revolute'>
+      <child>arm_wire_sensor_mount::link</child>
+      <parent>main_arm</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+
+    <joint name='blade_wire_sensor_mount_joint' type='revolute'>
+      <child>blade_wire_sensor_mount::link</child>
+      <parent>loader</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+    <joint name='blade_wire_sensor_joint' type='revolute'>
+      <child>blade_wire_sensor::link</child>
+      <parent>main_arm</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+    <plugin name="arm_wire_sensor_plugin" filename="libwire_sensor.so">
+    <sensor_name>Sahar::arm_wire_sensor::link</sensor_name>
+    <mount_name>Sahar::arm_wire_sensor_mount::link</mount_name>
+    <noise>0.1</noise>
+    </plugin>
+
+    <plugin name="blade_wire_sensor_plugin" filename="libwire_sensor.so">
+    <sensor_name>Sahar::blade_wire_sensor::link</sensor_name>
+    <mount_name>Sahar::blade_wire_sensor_mount::link</mount_name>
+    <noise>0.1</noise>
+    </plugin>
 
 <plugin name='TFpublish' filename='libTFpublisher.so'>
 
