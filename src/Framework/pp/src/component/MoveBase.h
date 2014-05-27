@@ -24,9 +24,11 @@
 
 using namespace std;
 
+class ComponentMain;
+
 class MoveBase {
 public:
-	MoveBase();
+	MoveBase(ComponentMain* comp);
 	virtual ~MoveBase();
 
 	void on_position_update(const config::PP::sub::Location& location);
@@ -51,6 +53,7 @@ protected:
 	ros::Publisher goalPublisher;
 	ros::Publisher mapPublisher;
 	boost::recursive_mutex mtx;
+	ComponentMain* comp;
 
 //FOR TEST ONLY
 public:
