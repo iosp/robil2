@@ -215,7 +215,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	COMPONENT->publishEffortsTh(Throttle_rate);
 	COMPONENT->publishEffortsSt(Steering_rate);
-
+/*
 	cout << "========================= Linear x ===============================" << endl;
 //	cout << "Reference : " <<  COMPONENT->WPD_desired_speed.twist.linear.x << endl ;
 	cout << "Linear x speed:" << t.linear.x << endl;
@@ -227,7 +227,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 //	cout << "Angular z efforts published: " <<  Steering_rate.data  << endl ;
 //	cout << "measured speed:" << getmodelstate.response.twist.angular.z << endl;
 	cout << "======================================================================" << endl;
-
+*/
 
 	/* calibrate the error */
 	old_error.twist.angular.z = cur_error.twist.angular.z ;
