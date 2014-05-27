@@ -145,12 +145,13 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	ROS_INFO("LLC Ready");
 
-	double Kp = 20 , Kd = 0 , Ki = 0 ; 					/* PID constants of linear x */
-	double Kpz = 0 , Kdz = 0, Kiz = 0 ;					/* PID constants of angular z */
+	double Kp = 0.3 , Kd = 0 , Ki = 5   ; 					/* PID constants of linear x */
+	double Kpz = -0.5 , Kdz = 0  , Kiz = -0.5   ;					/* PID constants of angular z */
  	double dt = 0.001 ; 									/* control time interval */
 	double integral [2] = {} ; 							/* integration part */
 	double der [2] = {} ;  								/* the derivative of the error */
 	int E_stop = 1; 									/* emergency stop */
+
 
 	config::LLC::pub::EffortsSt Steering_rate ; 		/* steering rate percentage +- 100 % */
 	config::LLC::pub::EffortsJn Joints_rate ; 			/* Joint rate percentage +- 100 % */
@@ -172,32 +173,22 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 			return TaskResult::TERMINATED();
 		}
 
-	/* get measurements and calculate error signal *
-		ROS_INFO("curr error z: %f, per: %f", COMPONENT->WPD_desired_speed.twist.angular.z, COMPONENT->Per_measured_speed.twist.angular.z);
-		ROS_INFO("curr error x: %f, per: %f", COMPONENT->WPD_desired_speed.twist.linear.x, COMPONENT->Per_measured_speed.twist.linear.x);
-	*/
+	/* get measurements and calculate error signal */
+
 		// Gazebo PID */
 	    ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
 	    gazebo_msgs::GetModelState getmodelstate;
-	    getmodelstate.request.model_name ="bobcat";
+	    getmodelstate.request.model_name ="Sahar";
 	    gmscl.call(getmodelstate);
-	    /*
-	    cout << "X speed measured by PER" << COMPONENT->Per_measured_speed.twist.linear.x << endl;
-	    cout << "Z speed measured by PER" << COMPONENT->Per_measured_speed.twist.angular.z << endl;
-*/
-	    t = Translate(getmodelstate);
-	
-	    /*
-	    COMPONENT->WPD_desired_speed.twist.linear.x = getmodelstate.response.twist.linear.x;
-	    COMPONENT->WPD_desired_speed.twist.angular.z = getmodelstate.response.twist.angular.z;
-	    */
 
-	    //Gazebo PID//
+	    t = Translate(getmodelstate);
+
+	   	 //Gazebo PID//
 
 	    cur_error.twist.linear.x =
 	    	(COMPONENT->WPD_desired_speed.twist.linear.x - t.linear.x);
 	    cur_error.twist.angular.z =
-	    	(COMPONENT->WPD_desired_speed.twist.angular.z - COMPONENT->Per_measured_speed.twist.angular.z);
+	    	(COMPONENT->WPD_desired_speed.twist.angular.z - getmodelstate.response.twist.angular.z);
 
 	/* calculate integral and derivatives */
 	integral[0] += ((cur_error.twist.linear.x )* dt);
@@ -206,29 +197,37 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	der[1] = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt);
 
 	/*Calculating the published data */
+	/*
+	Kp = COMPONENT->PID_CONSTANTS.twist.linear.x ;
+	Kd = COMPONENT->PID_CONSTANTS.twist.linear.y ;
+	Ki = COMPONENT->PID_CONSTANTS.twist.linear.z ;
+
+	Kpz = COMPONENT->PID_CONSTANTS.twist.angular.x ;
+	Kdz = COMPONENT->PID_CONSTANTS.twist.angular.y ;
+	Kiz = COMPONENT->PID_CONSTANTS.twist.angular.z ;
+*/
+
 	Throttle_rate.data = (Kp*cur_error.twist.linear.x + Ki*integral[0] - Kd*der[0]) ;
 	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
+
 
 	/* publish */
 
 	COMPONENT->publishEffortsTh(Throttle_rate);
 	COMPONENT->publishEffortsSt(Steering_rate);
-/*
+
 	cout << "========================= Linear x ===============================" << endl;
-	cout << "Reference : " <<  COMPONENT->WPD_desired_speed.twist.linear.x << endl ;
-	cout << "Speed to wheels: " <<  t.linear.x << endl ;
-	cout<< "Linear x error:" << cur_error.twist.linear.x << endl;
-	cout<< "Linear x speed published:" << Steering_rate.data << endl;
-	cout << "And oded's work says:" << endl ;
-	cout << COMPONENT->Per_measured_speed.twist.linear.x << endl ;
+//	cout << "Reference : " <<  COMPONENT->WPD_desired_speed.twist.linear.x << endl ;
+	cout << "Linear x speed:" << t.linear.x << endl;
+//	cout << "measured speed:" << getmodelstate.response.twist.linear.x << endl ;
+	cout << "The error for linear x:" <<  cur_error.twist.linear.x << endl;
 	cout << "========================= Angular Z===================================" << endl;
-	cout << "Angular z by control:" << getmodelstate.response.twist.angular.z << endl;
-	cout << "Angular Z by PER" << COMPONENT->Per_measured_speed.twist.angular.z << endl;
-	cout << "Reference : " <<  COMPONENT->WPD_desired_speed.twist.angular.z << endl ;
-	cout << "Angular z speed published:: " <<  Steering_rate.data  << endl ;
-	cout << "Angular z error:" << cur_error.twist.angular.z << endl;
+	cout << "The error for angular z:" <<  cur_error.twist.angular.z << endl;
+//	cout << "Reference : " <<  COMPONENT->WPD_desired_speed.twist.angular.z << endl ;
+//	cout << "Angular z efforts published: " <<  Steering_rate.data  << endl ;
+//	cout << "measured speed:" << getmodelstate.response.twist.angular.z << endl;
 	cout << "======================================================================" << endl;
-*/
+
 
 	/* calibrate the error */
 	old_error.twist.angular.z = cur_error.twist.angular.z ;
