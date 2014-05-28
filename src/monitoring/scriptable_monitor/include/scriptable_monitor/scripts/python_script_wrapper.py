@@ -100,22 +100,5 @@ def topic(topic_name):
 # User code goes below ###
 # ########################
 
-# Simple CPU usage monitor example
-
-# core1 = robil_lib.topic("/diagnostic/cpu/usage/core1")
-# core2 = robil_lib.topic("/diagnostic/cpu/usage/core2")
-# core3 = robil_lib.topic("/diagnostic/cpu/usage/core3")
-# core4 = robil_lib.topic("/diagnostic/cpu/usage/core4")
-
-# cpu_threshold = robil_lib.topic("/robot/config/cpu_threshold")
-# core_threshold = robil_lib.topic("/robot/config/core_threshold")
-
-# average = f('average_algorithm', core1, core2, core3, core4)
-
-# validate.is_true(average < cpu_threshold, "Cpu usage too high!")
-# validate.is_true(core1 < core_threshold, "Core1 usage too high")
-# validate.is_true(core2 < core_threshold, "Core2 usage too high")
-# validate.is_true(core3 < core_threshold, "Core3 usage too high")
-# validate.is_true(core4 < core_threshold, "Core4 usage too high")
 
 

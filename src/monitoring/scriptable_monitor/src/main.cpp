@@ -9,6 +9,7 @@
 #include <python2.7/Python.h>
 #include <scriptable_monitor/scriptable_monitor.h>
 #include <iostream>
+#include <fstream>
 
 #include <scriptable_monitor/ScriptHost.h>
 #include <scriptable_monitor/SomeInternalFunctionExample.h>
@@ -101,6 +102,23 @@ void scriptingTest() {
 //	pe.execute(py, topics);
 }
 
+namespace{
+
+	string read_file(string file_name){
+		ifstream file(file_name.c_str());
+		if(file){
+			char c; stringstream s;
+			while(file.eof()==false){
+				file.read(&c,1);
+				s<<c;
+			}
+			return s.str();
+		}
+		return "";
+	}
+
+}
+
 void scriptHostTest() {
 
 	ScriptHost host;
@@ -137,12 +155,27 @@ void scriptHostTest() {
 				"core3 > core_th\n"
 				"core4 < core_th\n";
 
-	string plp ="#! type plp\n"
-				"#! name plp_script1\n"
-				"#! interval 3\n"
+	string plp_header = "#! type plp\n"
+						"#! name plp_test4\n"
+						"#! interval 3\n";
+	string plp = plp_header +
 				"PLP: module1\n"
 				"Type: Achieve module\n"
 				"";
+
+	string plp1 =
+			"#! type predicate\n"
+			"#! name Module_1_Resource_precondition\n"
+			"#! module Module_1\n"
+			"#! time on_start\n"
+			"Power_source = {/scan/ranges[3]}\n"
+			"_tmp = set_global_var('InitSourceData_Module_1_Power',Power_source)\n"
+			"20 <= Power_source\n"
+			"print 'on time script ', 'Module_1_Resource_precondition'\n"
+			"_tmp = remove_script('Module_1','Module_1_Resource_precondition')\nprint 'End'\n";
+
+	string plp_test4 = plp_header + read_file("test4.plp");
+	//cout<<"TEST4"<<endl<<plp_test4<<endl;
 
 	host.start();
 	cout << "Running scripts" << endl;
@@ -151,7 +184,9 @@ void scriptHostTest() {
 
 //	host.addScript(s1);
 //	host.addScript(s2);
-	host.addScript(plp);
+//	host.addScript(plp);
+	host.addScript(plp_test4);
+//	host.addScript(plp1);
 
 	sleep(5);
 

@@ -29,6 +29,7 @@ bool is_delimiter(char c){
 	if('A'<=c and c<='Z') return false;
 	if('0'<=c and c<='9') return false;
 	if(c=='_' or c=='-' or c=='/') return false;
+	if(c=='[' or c==']') return false;
 	return true;
 }
 bool isNumeric(const std::string& s){
@@ -37,6 +38,13 @@ bool isNumeric(const std::string& s){
 	bool n=false;
 	for(size_t i=st;i<s.size();i++){ if( s[i]<'0' or '9'<s[i] ) return false; n=true; }
 	return n;
+}
+
+string tr(const string& src, char d, char t){
+	string dst = src;
+	size_t i=dst.find(d);
+	while( i!=string::npos ){ dst[i]=t; i=dst.find(d); }
+	return dst;
 }
 
 vector<Token> tokenizer(istream& text){
@@ -176,7 +184,7 @@ bool parse_item_name(std::string& name, OutTokenStream& tokens){
 				return false;
 			}else{
 				Token tt = combine(name_of," ");
-				name = tt.name;
+				name = tr(tt.name,' ','_');
 				return true;
 			}
 		}else{
@@ -201,7 +209,7 @@ bool parse_plp_params_goal_repeat(PLP& plp, OutTokenStream& tokens){
 	READ_ANY(t)
 	string tp = t.name;
 	READ(t, " ");
-	set(plp , goal_repeat , tp);
+	PLP_set(plp , goal_repeat , tp);
 	return true;
 }
 bool parse_plp_params_repeat_freq(PLP& plp, OutTokenStream& tokens){
@@ -210,7 +218,7 @@ bool parse_plp_params_repeat_freq(PLP& plp, OutTokenStream& tokens){
 	READ_ANY(t) if(t.name!="frequencey" and t.name!="frequency"){tokens.set_error(__LINE__); return false;}
 	READ(t, ":")
 	READ_VALUE(t)
-	set(plp, repeat_frequency, t.name);
+	PLP_set(plp, repeat_frequency, t.name);
 	return true;
 }
 bool parse_plp_params_variables(PLP& plp, OutTokenStream& tokens, int& stage){

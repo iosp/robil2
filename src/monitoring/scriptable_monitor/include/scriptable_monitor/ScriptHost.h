@@ -44,6 +44,8 @@ public:
 	vector<DiagnosticStatusPtr> getDiagnosticStatusesAndClear();
 	set<PythonScriptPtr> getScripts();
 	void deleteScript(string scriptName);
+	void pauseModule(string scriptName);
+	void resumeModule(string scriptName);
 
 private:
 
@@ -64,12 +66,15 @@ private:
 	bool isExecutionTime(PythonScriptPtr script);
 	bool hasAllTopicValues(PythonScriptPtr script);
 	void addDiagnosticStatus(PythonScriptPtr script);
+	void addDiagnosticStatus(string name, string hid, int8_t level, string message);
+	void checkTimers();
 
 	PythonScriptPtr getScript(string scriptName);
 	bool scriptExists(string scriptName);
 
 
 	bool typeAnalization(string sourceCode, AddScriptResponse& response);
+	bool typeAnalizationForRemove(string sourceCode);
 	AddScriptResponse addScript(string sourceCode, AddScriptResponse& response);
 };
 

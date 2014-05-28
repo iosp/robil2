@@ -13,6 +13,7 @@
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <boost/foreach.hpp>
 
 using namespace std;
 
@@ -49,6 +50,30 @@ public:
 			lines.push_back(s.lines[i]);
 		}
 		return *this;
+	}
+
+	vector<string> assignments()const{
+		vector<string> ass;
+		static const string comp_char = "<>=!";
+		BOOST_FOREACH(string line, lines){
+			size_t i = line.find('=');
+			if(i==string::npos or i==0 or i==line.size()-1){ continue; }
+			if(comp_char.find(line[i-1])!=string::npos or comp_char.find(line[i+1])!=string::npos){ continue; }
+			ass.push_back(line);
+		}
+		return ass;
+	}
+	vector<string> comparisons()const{
+		vector<string> com;
+		static const string comp_char = "<>=";
+		BOOST_FOREACH(string line, lines){
+			bool res = false;
+			size_t i = line.find('=');
+			if(i==string::npos or i==0 or i==line.size()-1) res=true;
+			if(comp_char.find(line[i-1])!=string::npos or comp_char.find(line[i+1])!=string::npos) res=true;
+			if(res) com.push_back(line);
+		}
+		return com;
 	}
 };
 inline

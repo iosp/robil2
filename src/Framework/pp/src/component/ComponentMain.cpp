@@ -11,7 +11,7 @@
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
-	_move_base = new MoveBase();
+	_move_base = new MoveBase(this);
 }
 ComponentMain::~ComponentMain() {
 	if(_move_base) delete _move_base; _move_base=0;

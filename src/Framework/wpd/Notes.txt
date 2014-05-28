@@ -1,0 +1,23 @@
+****************************************************************************************
+27/05/2014 SHA: f35a4e8698c08705e3206a1b55e1e629eb914983
+What's new:
+===========
+Robil map translated to PointCloud format.
+
+Module Implemented Functionality:
+===============
+navigation
+
+Interfaces changed:
+=========
+External Interface : NOT
+Internal Interface : Yes (type of internal navigation map)
+
+
+Tests:
+=============
+full system run.
+
+
+Known Bugs and Limitations:
+=========================

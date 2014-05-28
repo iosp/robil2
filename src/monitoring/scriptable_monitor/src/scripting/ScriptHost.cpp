@@ -8,10 +8,12 @@
 #include <scriptable_monitor/ScriptHost.h>
 #include <scriptable_monitor/ScriptParameters.h>
 #include "plp/PLP.h"
+#include <scriptable_monitor/PlpModule.h>
 
 ScriptHost::ScriptHost()
 {
 	_executionInterval = 0.1;
+	PlpModule::sh = this;
 	RosTopicListener::start();
 }
 
@@ -34,21 +36,24 @@ bool ScriptHost::typeAnalization(string sourceCode, AddScriptResponse& response)
 		parser.read_all();
 		bool res = parser.create_structures();
 		if(res){
-			cout<<"PLP SCRIPT\n"<<parser.plp();cout<<endl;
+			//cout<<"PLP SCRIPT\n"<<parser.plp();cout<<endl;
 			PLPCompiler compiler;
 			int error_code=0;
-			//vector<MonitorningScript> ms = compiler.compile(parser.plp(), error_code);
-			vector<MonitorningScript> ms = compiler.compile_testing(parser.plp(), error_code);
+			vector<MonitorningScript> ms = compiler.compile(parser.plp(), error_code);
 			if(not error_code){
+				string modulename="";
 				for(size_t i=0;i<ms.size();i++){
 					stringstream predicat_script; predicat_script<<ms[i];
-					std::cout<<"-------------\n"<<predicat_script.str()<<endl;
-					addScript(predicat_script.str(), response);
-					if(not response.success){
-						cout<<"[i] some problem during script add"<<endl;
-						break;
-					}
+					ScriptParameters p(predicat_script.str());
+					modulename = p["module"];
+					PlpModule::add_script(predicat_script.str());
 				}
+				parser.plp().repeat_frequency = "1.0";
+				if(parser.plp().repeat_frequency.empty()==false){
+					PlpModule::set_repeated_freq(modulename, boost::lexical_cast<double>(parser.plp().repeat_frequency));
+				}
+				PlpModule::start(modulename);
+
 			}else{
 				cerr << "[e] PLP script compilation problem, cannot add to ScriptHost" << endl;
 				response.message = "[e] PLP script compilation problem, cannot add to ScriptHost";
@@ -79,6 +84,18 @@ AddScriptResponse ScriptHost::addScript(string sourceCode, AddScriptResponse& re
 
 	lock_recursive(_scriptsMutex);
 
+
+	cout<<"======== add script ================="<<endl;
+	cout<<sourceCode<<endl;
+	cout<<"======== ========== ================="<<endl;
+
+//	cout << "[+] Script added [ DEBUG ]" << endl;
+//	response.message = "[+] Script added";
+//	response.success = true;
+//	return response;
+
+	ScriptParameters params(sourceCode);
+
 	set<string> internalFunctions;
 	foreach (string functionName, InternalFunctionsManager::getFunctionNames()) {
 		internalFunctions.insert(functionName);
@@ -106,6 +123,7 @@ AddScriptResponse ScriptHost::addScript(string sourceCode, AddScriptResponse& re
 	 * Convert to python script, simulate execution to extract used topic names
 	 */
 	PythonScript* pythonScript = new PythonScript(predicateScript.getPythonScript());
+	//cout<<"=== PYTHON SCRIPT ================================ \n"<<pythonScript->getSourceCode()<<"\n=============================="<<endl;
 	bool validScript = prepareScript(*pythonScript);
 
 	if (validScript)
@@ -150,6 +168,7 @@ bool ScriptHost::prepareScript(PythonScript& script)
 void ScriptHost::run()
 {
 	while (!_workThread->interruption_requested()) {
+		boost::system_time wait_time = get_system_time() + boost::posix_time::milliseconds(1000.0 * _executionInterval);
 
 		{
 			lock_recursive(_scriptsMutex);
@@ -172,7 +191,9 @@ void ScriptHost::run()
 			}
 		}
 
-		boost::this_thread::sleep(boost::posix_time::milliseconds(1000.0 * _executionInterval));
+		checkTimers();
+
+		boost::this_thread::sleep(wait_time);
 	}
 }
 
@@ -201,16 +222,32 @@ bool ScriptHost::isExecutionTime(PythonScriptPtr script)
 	return nowTime > nextExecutionTime;
 }
 
+bool ScriptHost::typeAnalizationForRemove(string name)
+{
+	lock_recursive(_scriptsMutex);
+	if(PlpModule::contains(name)){
+		PlpModule::stop(name);
+		true;
+	}
+	return false;
+}
 void ScriptHost::deleteScript(string scriptName)
 {
 	lock_recursive(_scriptsMutex);
+	if(typeAnalizationForRemove(scriptName)){
+		return;
+	}
 
 	PythonScriptPtr script = getScript(scriptName);
 
-	if (!scriptExists(scriptName))
+	if (!scriptExists(scriptName)){
+		cout<<"[e] Script "<<scriptName<<" cann't be deleted, it doesn't exists."<<endl;
 		return;
+	}
 
 	_scripts.erase(script);
+	cout << "[-] Script removed [" << scriptName << "]" << endl;
+
 }
 
 void ScriptHost::addDiagnosticStatus(PythonScriptPtr script)
@@ -231,6 +268,42 @@ void ScriptHost::addDiagnosticStatus(PythonScriptPtr script)
 	status->message = script->isValidationFailed() ? "Validation failed: " + script->getFailedValidation() : "Fine";;
 
 	_diagnosticStatuses.push_back(status);
+}
+
+void ScriptHost::addDiagnosticStatus(string name, string hid, int8_t level, string message)
+{
+	cout<<"[i] DIAGNOSTIC("<<name<<","<<hid<<","<<level<<","<<message<<")"<<endl;
+	lock_recursive(_statusesMutex);
+
+	DiagnosticStatusPtr status(new diagnostic_msgs::DiagnosticStatus());
+
+	status->name = name;
+	status->hardware_id = hid;
+
+	status->level = level;
+
+	status->message = message;
+
+	_diagnosticStatuses.push_back(status);
+}
+
+void ScriptHost::checkTimers(){
+	static double time_from_start = system_time_seconds();
+
+	vector<PlpModule::Timer> timers = PlpModule::check_timers_for_timeout(true);
+	cout<<"[i] system time = "<<system_time_seconds()-time_from_start<<" sec"<<endl;
+	BOOST_FOREACH(PlpModule::Timer t, timers){
+		cout<<"[i] .... timer = "<<t.name<<": "<<t.start-time_from_start<<" , timeout="<<t.timeout-time_from_start<<""<<endl;
+		if(boost::starts_with(t.action,"report ")){
+			int8_t level = -1; size_t plen=0;
+			if(boost::starts_with(t.action,"report error ")){ level = diagnostic_msgs::DiagnosticStatus::ERROR; plen = string("report error ").length(); }
+			if(boost::starts_with(t.action,"report warning ")){ level = diagnostic_msgs::DiagnosticStatus::WARN; plen = string("report warning ").length(); }
+			if(boost::starts_with(t.action,"report info ")){ level = diagnostic_msgs::DiagnosticStatus::OK; plen = string("report info ").length(); }
+			if(level>=0){
+				addDiagnosticStatus(t.name,"",level,t.action.substr(plen));
+			}
+		}
+	}
 }
 
 vector<DiagnosticStatusPtr> ScriptHost::getDiagnosticStatusesAndClear()
@@ -275,3 +348,22 @@ bool ScriptHost::scriptExists(string scriptName)
 	lock_recursive(_scriptsMutex);
 	return !(!getScript(scriptName));
 }
+
+
+void ScriptHost::pauseModule(string scriptName)
+{
+	PlpModule::pause(scriptName);
+}
+
+void ScriptHost::resumeModule(string scriptName)
+{
+	PlpModule::resume(scriptName);
+
+}
+
+
+
+
+
+
+

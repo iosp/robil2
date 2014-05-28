@@ -33,11 +33,19 @@ private:
 	ros::ServiceServer _getScriptsService;
 	ros::ServiceServer _addScriptService;
 
+	ros::Subscriber _pauseModuleSubscriber;
+	ros::Subscriber _resumeModuleSubscriber;
+
 	bool addScript(scriptable_monitor::AddScriptRequest& request, scriptable_monitor::AddScriptResponse& response);
 	bool getScripts(scriptable_monitor::GetScriptsRequest& request, scriptable_monitor::GetScriptsResponse& response);
 
 	void onAddScriptMessage(const std_msgs::String::ConstPtr script);
 	void onDeleteScriptMessage(const std_msgs::String::ConstPtr scriptName);
+
+	void onStopModule(const std_msgs::String::ConstPtr script);
+	void onPauseModule(const std_msgs::String::ConstPtr script);
+	void onResumeModule(const std_msgs::String::ConstPtr script);
+
 };
 
 #endif /* SCRIPTABLEANALYZERNODE_H_ */

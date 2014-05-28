@@ -51,6 +51,7 @@ public:
 	}
 
 	string operator[](string name){ return getParameter(name); }
+	string operator[](string name)const{ return (_parameters.count(name) > 0) ? _parameters.at(name) : ""; }
 
 private:
 

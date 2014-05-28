@@ -18,7 +18,6 @@ public:
 	virtual ~PLPCompiler();
 
 	vector<MonitorningScript> compile(const PLP& plp, int& error_code);
-	vector<MonitorningScript> compile_testing(const PLP& plp, int& error_code);
 
 };
 
