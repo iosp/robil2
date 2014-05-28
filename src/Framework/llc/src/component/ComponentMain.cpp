@@ -27,6 +27,7 @@ void ComponentMain::handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg)
 void ComponentMain::handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg)
 {
 
+
 	//std::cout<< "LLC say:" << msg << std::endl;
 }
 	
