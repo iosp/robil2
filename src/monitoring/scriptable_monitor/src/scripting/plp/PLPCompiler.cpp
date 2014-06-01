@@ -172,8 +172,8 @@ string time_to_seconds(string src){
 #define PLP_exists( SET, PROP, VALUE, RET ) { RET=false; for(size_t i=0;i<plp.SET.size();i++) if(plp.SET[i].vars[#PROP]==VALUE){ RET=true; break; } }
 #define PLP_find( SET, PROP, VALUE, RET ) { for(size_t i=0;i<plp.SET.size();i++) if(plp.SET[i].vars[#PROP]==VALUE){ RET=plp.SET[i]; break; } }
 #define PLP_get( PROP, OBJ, RET ) { RET = OBJ.PROP; }
-#define GET_GLOBAL_VAR(V) (string()<<"get_global_var(\""<<V<<"\")")
-#define SET_GLOBAL_VAR(V, D) (string()<<"_tmp = set_global_var(\""<<V<<"\","<<D<<")")
+#define GET_GLOBAL_VAR(V) (string()<<"get_global_var_float(\""<<V<<"\")")
+#define SET_GLOBAL_VAR(V, D) (string()<<"set_global_var_float(\""<<V<<"\","<<D<<")")
 
 #define CHECK_VALUE(var,source) (var.source==""?std::string()+"UNKNOWN_"#source"_OF_"+var.name:var.source)
 #define PREDICATE(X) res << ( string() << X )

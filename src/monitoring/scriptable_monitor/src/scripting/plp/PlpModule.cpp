@@ -51,16 +51,17 @@ void PlpModule::start(){
 			string sname = i->params["name"];
 			string s = i->source;
 			//s = s + "\n" +"print 'one time script ', '"+sname+"'";
-			s = boost::str(boost::format("%s\n_tmp = remove_script('%s','%s')\n") %s %mname %sname );
+			s = boost::str(boost::format("%s\nremove_script('%s','%s')\n") %s %mname %sname );
 			sh->addScript(s);
 		}else
 		if(i->params["time"]=="on_stop"){
 
 		}else{
-			sh->addScript(i->source+"\nprint 'check "+i->params["name"]+"'\n");
+			sh->addScript(i->source);//+"\nprint 'check "+i->params["name"]+"'\n");
 		}
 	}
 	if(_repeated_time>0){
+		//cout<<"_repeated_time = "<<_repeated_time<<endl;
 		start_timer(_module_name+"_"+"repeat", _repeated_time, "report error module "+_module_name+" is timed out.");
 	}
 	_status = "run";
@@ -77,7 +78,7 @@ void PlpModule::stop(){
 			string sname = i->params["name"];
 			string s = i->source;
 			//s = s + "\n" +"print 'one time script ', '"+sname+"'";
-			s = boost::str(boost::format("%s\n_tmp = remove_script('%s','%s')\n") %s %mname %sname );
+			s = boost::str(boost::format("%s\nremove_script('%s','%s')\n") %s %mname %sname );
 			sh->addScript(s);
 		}else{
 			stop_script(i->params["name"]);
@@ -95,7 +96,7 @@ void PlpModule::resume(){
 			string sname = i->params["name"];
 			string s = i->source;
 			//s = s + "\n" +"print 'one time script ', '"+sname+"'";
-			s = boost::str(boost::format("%s\n_tmp = remove_script('%s','%s')\n") %s %mname %sname );
+			s = boost::str(boost::format("%s\nremove_script('%s','%s')\n") %s %mname %sname );
 			sh->addScript(s);
 		}else
 		if(i->params["time"]=="on_stop"){
@@ -119,7 +120,7 @@ void PlpModule::pause(){
 			string sname = i->params["name"];
 			string s = i->source;
 			//s = s + "\n" +"print 'one time script ', '"+sname+"'";
-			s = boost::str(boost::format("%s\n_tmp = remove_script('%s','%s')\n") %s %mname %sname );
+			s = boost::str(boost::format("%s\nremove_script('%s','%s')\n") %s %mname %sname );
 			sh->addScript(s);
 		}else{
 			stop_script(i->params["name"]);

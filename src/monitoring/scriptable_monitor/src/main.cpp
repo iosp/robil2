@@ -190,6 +190,12 @@ void scriptHostTest() {
 
 	sleep(5);
 
+	cout<<"-------------------------------------------------"<<endl;
+	host.deleteScript("Module_1");
+
+	sleep(5);
+	cout<<"Finish..."<<endl;
+
 	host.stop();
 
 	cout << "Done" << endl;
