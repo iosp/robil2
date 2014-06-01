@@ -1,4 +1,26 @@
 ****************************************************************************************
+1/06/2014 SHA: a4bb2bd46a2dd82b0a21bd257d59027532d97630
+What's new:
+===========
+1. Improved PID controller algorithem.
+2. Changed the LLC input, to accept global coordinates.
+
+Tests:
+=============
+In order to test our LLC node, please take these follwing steps:
+
+1. Run the Gazebo Simulation - In *any* world enviorment.
+2. Run robil2conf frameworkInit.launch 
+3. Make sure that RateToEffort node is alive and running via "rqt_graph".
+4. Pull the model's Loader by publishing 1 to the topic:
+	/Sahar/supporter_position_controller/command	
+5. Publish a referenced speed with the Topic "WPD/velocity" - a good reasonable speed is between 0 - 2 (in magnitude).
+
+=========================
+1. We checked the bobcat's functioning @ testTerrian world, available in 'live_bobcat' package.
+2. If you wish to use Teleoperation for manual driving, please change the LLC node to standby mode.
+
+***************************************************************************************
 27/05/2014 SHA: a028967230bc1ffff891dd676262537edb8f6711
 What's new:
 ===========
