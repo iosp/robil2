@@ -43,7 +43,8 @@ ScriptableMonitorNode::~ScriptableMonitorNode()
 
 bool ScriptableMonitorNode::addScript(
 		scriptable_monitor::AddScriptRequest& request,
-		scriptable_monitor::AddScriptResponse& response)
+		scriptable_monitor::AddScriptResponse& response
+)
 {
 	cout << "================================================" << endl;
 	cout << request.script.data << endl;
@@ -59,7 +60,8 @@ bool ScriptableMonitorNode::addScript(
 
 bool ScriptableMonitorNode::getScripts(
 		scriptable_monitor::GetScriptsRequest& request,
-		scriptable_monitor::GetScriptsResponse& response)
+		scriptable_monitor::GetScriptsResponse& response
+)
 {
 	set<PythonScriptPtr> scripts = _scriptHost.getScripts();
 
@@ -85,14 +87,13 @@ bool ScriptableMonitorNode::getScripts(
 	return true;
 }
 
-void ScriptableMonitorNode::onAddScriptMessage(
-		const std_msgs::String::ConstPtr script)
+void ScriptableMonitorNode::onAddScriptMessage(const std_msgs::String::ConstPtr script)
 {
+	// /*DEBUG*/cout<<"[i] request for add script"<<endl<<script->data<<endl;
 	_scriptHost.addScript(script->data);
 }
 
-void ScriptableMonitorNode::onDeleteScriptMessage(
-		const std_msgs::String::ConstPtr scriptName)
+void ScriptableMonitorNode::onDeleteScriptMessage(const std_msgs::String::ConstPtr scriptName)
 {
 	_scriptHost.deleteScript(scriptName->data);
 }

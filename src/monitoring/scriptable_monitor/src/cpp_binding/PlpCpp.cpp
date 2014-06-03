@@ -1,6 +1,6 @@
 
 
-#include "PlpModule.h"
+#include "PlpCpp.h"
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -22,7 +22,7 @@ using namespace std;
 using namespace boost;
 //using namespace boost::posix_time;
 
-ostream& operator<<(ostream& out, const PlpModule& m){
+ostream& operator<<(ostream& out, const Plp& m){
 //	out<<m._plp_text<<endl;
 	for(map<string,string>::const_iterator i=m._plp_map.begin();i!=m._plp_map.end();i++){
 		out<<i->first<<" = "<<i->second<<endl;
@@ -31,7 +31,7 @@ ostream& operator<<(ostream& out, const PlpModule& m){
 }
 
 
-PlpModule::PlpModule(string filename){
+Plp::Plp(string filename){
 	ifstream file(filename.c_str());
 	if(not file){
 		throw Exception_FileLoadProblem();
@@ -39,26 +39,26 @@ PlpModule::PlpModule(string filename){
 	load_plp(file);
 	raise(EVENT_MODULE_START, this);
 }
-PlpModule::PlpModule(istream& stream){
+Plp::Plp(istream& stream){
 	load_plp(stream);
 	raise(EVENT_MODULE_START, this);
 }
 
-PlpModule::~PlpModule(){
+Plp::~Plp(){
 	raise(EVENT_MODULE_STOP, this);
 }
 
-PlpModule::Goal::Goal(PlpModule* plp):plp(plp){
+Plp::Iteration::Iteration(Plp* plp):plp(plp){
 	for(map<string,string>::const_iterator i=plp->_plp_map.begin();i!=plp->_plp_map.end();i++){
 		if(starts_with(i->first, "Goals:")) _goal_map[i->first.substr(i->first.find(":")+1)] = (i->second);
 	}
 	plp->raise(EVENT_GOAL_ACHIEV_START, plp);
 }
-PlpModule::Goal::~Goal(){
+Plp::Iteration::~Iteration(){
 	plp->raise(EVENT_GOAL_ACHIEV_STOP, plp);
 }
 
-void PlpModule::load_plp(istream& stream){
+void Plp::load_plp(istream& stream){
 	stringstream text;
 	while(stream.eof()==false){
 		char c; stream.read(&c,1);
@@ -71,20 +71,20 @@ void PlpModule::load_plp(istream& stream){
 	}
 }
 
-string PlpModule::plp_name()const{
+string Plp::plp_name()const{
 	if(_plp_map.find("PLP:Name")==_plp_map.end()) return "";
 	return _plp_map.at("PLP:Name");
 }
-string PlpModule::plp_type()const{
+string Plp::plp_type()const{
 	if(_plp_map.find("PLP:Type")==_plp_map.end()) return "";
 	return _plp_map.at("PLP:Type");
 }
-bool PlpModule::plp_is_repeated()const{
+bool Plp::plp_is_repeated()const{
 	if(_plp_map.find("Goals:Repeat")==_plp_map.end()) return false;
 	return to_upper_copy(_plp_map.at("Goals:Repeat")) == "TRUE";
 }
 
-list<PlpModule::EventCallback> PlpModule::events;
+list<Plp::EventCallback> Plp::events;
 
 
 struct KeyValue{
@@ -184,7 +184,7 @@ void check_if_plp_section(KeyValue& kv){
 	}
 }
 
-void PlpModule::parse(){
+void Plp::parse(){
 	vector<string> lines;
 	split( lines, _plp_text, boost::is_any_of("\n"));
 	KeyValue kv;

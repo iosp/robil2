@@ -152,14 +152,14 @@ public:
 	void stop_script(string scr);
 	static void stop_script(string name, string scr){
 		PlpModuleLock
-		//out<<"[i] stop script : "<<name<<" , "<<scr<<endl;
+		//out<<"\t[i] stop script : "<<name<<" , "<<scr<<endl;
 		get_all_modules()[name].stop_script(scr);
 	}
 
 	void start();
 	static void start(string name){
 		PlpModuleLock
-		cout<<"[i] Start module : "<<name<<endl;
+		cout<<"[i] start module : "<<name<<endl;
 		get_all_modules()[name].start();
 	}
 	void stop();
@@ -167,6 +167,7 @@ public:
 		PlpModuleLock
 		cout<<"[i] stop module : "<<name<<endl;
 		get_all_modules()[name].stop();
+		get_all_modules().erase(name);
 	}
 	void resume();
 	static void resume(string name){
@@ -182,11 +183,13 @@ public:
 	}
 
 	static void start_timer(string name, double timeout, string action){
+		cout<<"\t[i] timer: start "<<name<<" for "<<action<<endl;
 		PlpModuleLock
 		Timer t(name, timeout, action);
 		_timers[name] = t;
 	}
 	static void stop_timer(string name){
+		cout<<"\t[i] timer: stop "<<name<<endl;
 		PlpModuleLock
 		map<string,Timer>::iterator i = _timers.find(name);
 		if(i!=_timers.end()){
@@ -197,6 +200,7 @@ public:
 		PlpModuleLock
 		for(map<string,Timer>::iterator i=_timers.begin();i!=_timers.end();i++){
 			if(boost::starts_with(i->second.name, name_pref)){
+				cout<<"\t[i] timer: stop "<<i->second.name<<endl;
 				_timers.erase(i);
 				return;
 			}
@@ -207,6 +211,7 @@ public:
 		double now = system_time_seconds();
 		for(map<string,Timer>::iterator i=_timers.begin();i!=_timers.end();i++){
 			if(boost::starts_with(i->second.name, name_pref)){
+				cout<<"\t[i] timer: restart "<<i->second.name<<endl;
 				double duration = (i->second.timeout-i->second.start);
 				i->second.start = now;
 				i->second.timeout = duration+i->second.start;

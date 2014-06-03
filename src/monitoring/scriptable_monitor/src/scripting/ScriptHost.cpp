@@ -25,6 +25,7 @@ ScriptHost::~ScriptHost()
 
 bool ScriptHost::typeAnalization(string sourceCode, AddScriptResponse& response){
 	ScriptParameters params(sourceCode);
+	// /*DEBUG]*/ cout<<"[i] type of script is [" << params["type"] <<"]"<< endl;
 	if(params["type"] == "predicate" or params["type"] == "" or params["type"] == "python"){
 		// /*DEBUG]*/ cout<<"[i] predicate or python script is detected"<<endl;
 		return true;
@@ -48,7 +49,7 @@ bool ScriptHost::typeAnalization(string sourceCode, AddScriptResponse& response)
 					modulename = p["module"];
 					PlpModule::add_script(predicat_script.str());
 				}
-				// /*DEBUG]*/ parser.plp().repeat_frequency = "1.0";
+				// /*DEBUG]*/ parser.plp().repeat_frequency = "0.5";
 				if(parser.plp().repeat_frequency.empty()==false){
 					PlpModule::set_repeated_freq(modulename, boost::lexical_cast<double>(parser.plp().repeat_frequency));
 				}
@@ -73,6 +74,7 @@ bool ScriptHost::typeAnalization(string sourceCode, AddScriptResponse& response)
 }
 
 AddScriptResponse ScriptHost::addScript(string sourceCode){
+	///*DEBUG*/cout<<"[i] request for add script"<<endl;
 	AddScriptResponse response;
 	response.message = "";
 	return addScript(sourceCode, response);
@@ -91,7 +93,7 @@ AddScriptResponse ScriptHost::addScript(string sourceCode, AddScriptResponse& re
 		cout<<"======== ========== ================="<<endl;
 	}
 
-	// /*DEBUG]*/ cout << "[+] Script added [ DEBUG ]" << endl;
+	// /*DEBUG]*/ cout << "\t[+] Script added [ DEBUG ]" << endl;
 	// /*DEBUG]*/ response.message = "[+] Script added";
 	// /*DEBUG]*/ response.success = true;
 	// /*DEBUG]*/ return response;
@@ -115,7 +117,7 @@ AddScriptResponse ScriptHost::addScript(string sourceCode, AddScriptResponse& re
 	}
 
 	if (scriptExists(predicateScript.getName())) {
-		cerr << "[e] Script with the same name already exists" << endl;
+		cerr << "[e] Script with the same name already exists ["<<predicateScript.getName()<<"]" << endl;
 		response.message = "[e] Script with the same name already exists";
 		response.success = false;
 		return response;
@@ -131,7 +133,7 @@ AddScriptResponse ScriptHost::addScript(string sourceCode, AddScriptResponse& re
 	if (validScript)
 		_scripts.insert(boost::shared_ptr<PythonScript>(pythonScript));
 	else {
-		cerr << "[e] Invalid script" << endl;
+		cerr << "[e] Invalid script ["<<predicateScript.getName()<<"]" << endl;
 		response.message = "[e] Invalid script";
 		response.success = false;
 		return response;
@@ -144,7 +146,7 @@ AddScriptResponse ScriptHost::addScript(string sourceCode, AddScriptResponse& re
 		RosTopicListener::addTopic(topicName);
 	}
 
-	cout << "[+] Script added [" << pythonScript->getName() << "]" << endl;
+	cout << "\t[+] Script added [" << pythonScript->getName() << "]" << endl;
 	response.message = "[+] Script added";
 	response.success = true;
 	return response;
@@ -252,7 +254,7 @@ void ScriptHost::deleteScript(string scriptName)
 	}
 
 	_scripts.erase(script);
-	cout << "[-] Script removed [" << scriptName << "]" << endl;
+	cout << "\t[-] Script removed [" << scriptName << "]" << endl;
 
 }
 
@@ -299,11 +301,12 @@ void ScriptHost::addDiagnosticStatus(string name, string hid, int8_t level, stri
 void ScriptHost::checkTimers(){
 	static double time_from_start = system_time_seconds();
 	//GET ALL TIMER READY FOR EXECUTION
-	vector<PlpModule::Timer> timers = PlpModule::check_timers_for_timeout(true);
+	const double restart = true;
+	vector<PlpModule::Timer> timers = PlpModule::check_timers_for_timeout(restart);
 	// /*DEBUG]*/ cout<<"[i] system time = "<<system_time_seconds()-time_from_start<<" sec"<<endl;
 	//EXECUTE COMMANDS OR ALL READY TIMERS
 	BOOST_FOREACH(PlpModule::Timer t, timers){
-		/*DEBUG]*/ cout<<"[i] .... timer = "<<t.name<<": "<<t.start-time_from_start<<" , timeout="<<t.timeout-time_from_start<<""<<endl;
+		/*DEBUG]*/ cout<<"\t[i] timer: run "<<t.name<<" ( started="<<t.start-time_from_start<<" , timeout="<<t.timeout-time_from_start<<" )"<<endl;
 		//REPORT COMMAND
 		if(boost::starts_with(t.action,"report ")){
 			int8_t level = -1; size_t plen=0;

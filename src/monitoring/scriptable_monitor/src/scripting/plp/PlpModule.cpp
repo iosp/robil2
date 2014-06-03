@@ -44,6 +44,8 @@ PlpModule::~PlpModule() {
 
 
 void PlpModule::start(){
+	if(_status == "run") return;
+
 	for(vector<Info>::iterator i=_scripts.begin();i!=_scripts.end();i++){
 		if(i->params["time"]=="on_start"){
 			string source = i->source;
@@ -69,6 +71,14 @@ void PlpModule::start(){
 }
 
 void PlpModule::stop(){
+	if(_status == "stop") return;
+	if(_internal_status == "standby"){
+		stop_timer_by_prefix(_module_name);
+		_status = "stop";
+		_internal_status = "stop";
+		return;
+	}
+
 	for(vector<Info>::iterator i=_scripts.begin();i!=_scripts.end();i++){
 		if(i->params["time"]=="on_start"){
 		}else
@@ -89,6 +99,9 @@ void PlpModule::stop(){
 	_internal_status = "stop";
 }
 void PlpModule::resume(){
+	if(_status == "stop") return;
+	if(_internal_status == "run") return;
+
 	for(vector<Info>::iterator i=_scripts.begin();i!=_scripts.end();i++){
 		if(i->params["time"]=="on_start"){
 			string source = i->source;
@@ -111,6 +124,9 @@ void PlpModule::resume(){
 	_internal_status = "run";
 }
 void PlpModule::pause(){
+	if(_status == "stop") return;
+	if(_internal_status == "standby") return;
+
 	for(vector<Info>::iterator i=_scripts.begin();i!=_scripts.end();i++){
 		if(i->params["time"]=="on_start"){
 		}else

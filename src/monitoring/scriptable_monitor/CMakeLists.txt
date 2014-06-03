@@ -95,12 +95,14 @@ add_library(${PROJECT_NAME} ${CPP_FILES})
 add_executable(monitor_test src/main.cpp ${CPP_FILES})
 add_executable(scriptable_monitor_node src/scriptable_monitor_node.cpp ${CPP_FILES})
 add_executable(plp_test src/scripting/plp/main.cpp ${CPP_PLP_FILES})
+add_executable(node_test src/node_tester/node_tester.cpp src/cpp_binding/PlpMonitorServer.cpp src/cpp_binding/PlpCpp.cpp)
 
 
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencpp)
 add_dependencies(monitor_test ${PROJECT_NAME}_gencpp)
 add_dependencies(scriptable_monitor_node ${PROJECT_NAME}_gencpp)
 add_dependencies(plp_test ${PROJECT_NAME}_gencpp)
+add_dependencies(node_test ${PROJECT_NAME}_gencpp)
 
 
 ## Specify libraries to link a library or executable target against
@@ -123,6 +125,12 @@ target_link_libraries(scriptable_monitor_node
 )
 
 target_link_libraries(plp_test
+  ${catkin_LIBRARIES}
+  python2.7
+  yaml-cpp
+)
+
+target_link_libraries(node_test
   ${catkin_LIBRARIES}
   python2.7
   yaml-cpp

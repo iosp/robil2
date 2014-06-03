@@ -1,12 +1,12 @@
 /*
- * PlpModule.h
+ * Plp.h
  *
  *  Created on: May 29, 2014
  *      Author: dan
  */
 
-#ifndef PLPMODULE_H_
-#define PLPMODULE_H_
+#ifndef PlpCpp_H_
+#define PlpCpp_H_
 
 #include <iostream>
 #include <sstream>
@@ -28,8 +28,8 @@ using namespace std;
 using namespace boost;
 //using namespace boost::posix_time;
 
-class PlpModule{
-	friend ostream& operator<<(ostream& out, const PlpModule& m);
+class Plp{
+	friend ostream& operator<<(ostream& out, const Plp& m);
 public:
 	class Exception{
 	public:
@@ -47,16 +47,16 @@ public:
 	};
 
 private:
-	typedef boost::function<void(EVENT,const PlpModule*)> EventCallback;
+	typedef boost::function<void(EVENT,const Plp*)> EventCallback;
 
 public:
-	class Goal{
-		friend class PlpModule;
-		Goal(PlpModule* plp);
-		PlpModule* plp;
+	class Iteration{
+		friend class Plp;
+		Iteration(Plp* plp);
+		Plp* plp;
 		map<string,string> _goal_map;
 	public:
-		virtual ~Goal();
+		virtual ~Iteration();
 		string operator[](string key)const{
 			if(_goal_map.find(key)==_goal_map.end()) return "";
 			return _goal_map.at(key);
@@ -71,9 +71,9 @@ public:
 	};
 
 public:
-	PlpModule(string filename);
-	PlpModule(istream& stream);
-	virtual ~PlpModule();
+	Plp(string filename);
+	Plp(istream& stream);
+	virtual ~Plp();
 
 	void load_plp(istream& stream);
 	void parse();
@@ -84,17 +84,18 @@ public:
 	static void subscribe(EventCallback event){
 		events.push_back(event);
 	}
-	static void raise(EVENT type, const PlpModule* _this){
+	static void raise(EVENT type, const Plp* _this){
 		BOOST_FOREACH(EventCallback e, events){
 			e(type, _this);
 		}
 	}
 
-	Goal goal_achievement(){
-//		if(plp_is_repeated()==false){
-//			throw Exception_PlpIsNotRepeatable();
-//		}
-		return Goal(this);
+	Iteration goal_achievement(){
+		if(plp_is_repeated()==false){
+			throw Exception_PlpIsNotRepeatable();
+		}
+		iterations_counter++;
+		return Iteration(this);
 	}
 
 	string get_script()const{ return _plp_text; }
@@ -111,15 +112,18 @@ public:
 		return _plp_map.at(key);
 	}
 
+	size_t iterations()const{ return iterations_counter; }
+
 private:
 	string _plp_text;
 	map<string,string> _plp_map;
 	static list<EventCallback> events;
+	size_t iterations_counter;
 };
 
-ostream& operator<<(ostream& out, const PlpModule& m);
+ostream& operator<<(ostream& out, const Plp& m);
 
 
 
 
-#endif /* PLPMODULE_H_ */
+#endif /* PlpCpp_H_ */
