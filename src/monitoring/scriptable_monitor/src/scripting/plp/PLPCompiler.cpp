@@ -39,14 +39,15 @@ std::string operator<<(const std::string& in, const T& t){
 typedef vector<MonitorningScript> ScriptCollection;
 typedef MonitorningScript Script;
 
-#define TRANSForM_COLLECTION(ELEMENT)\
-	Script transform(const PLP& plp, const vector<ELEMENT>& ELEMENT_##_collection, int& error_code){\
+#define TRANSFORM_COLLECTION(ELEMENT)\
+	Script TRANSFORM(const PLP& plp, const vector<ELEMENT>& ELEMENT_##_collection, int& error_code){\
 		Script res;\
 		res.properties<<(string()<<"type predicate");\
 		res.properties<<(string()<<"name "<<plp.name<<"_"<<#ELEMENT);\
 		res.properties<<(string()<<"module "<<plp.name);\
+		res.properties<<(string()<<"interval 1");\
 		for(size_t i=0;i<ELEMENT_##_collection.size() and not error_code;i++)\
-			res << transform(plp, ELEMENT_##_collection[i], error_code);\
+			res << TRANSFORM(plp, ELEMENT_##_collection[i], error_code);\
 		return res;\
 	}
 
@@ -180,9 +181,9 @@ string time_to_seconds(string src){
 
 #define VARIABLES_SET "variables,parameters,resources"
 
-//============= SINGLE TRANSForMATIONS ===================================================
+//============= SINGLE TRANSFORMATIONS ===================================================
 
-Script transform(const PLP& plp, const Variable& var, int& error_code){
+Script TRANSFORM(const PLP& plp, const Variable& var, int& error_code){
 	Script res;
 	string source_name = string()+var.name+"_source";
 	bool pl=isnum(var.lower), pu=isnum(var.upper);
@@ -198,7 +199,7 @@ Script transform(const PLP& plp, const Variable& var, int& error_code){
 	return res;
 }
 
-Script transform(const PLP& plp, const Parameter& par, int& error_code){
+Script TRANSFORM(const PLP& plp, const Parameter& par, int& error_code){
 	Script res;
 	string source_name = string()+par.name+"_source";
 	bool pl=isnum(par.lower), pu=isnum(par.upper),pf=isnum(par.frequency);
@@ -218,7 +219,7 @@ Script transform(const PLP& plp, const Parameter& par, int& error_code){
 template<class T>
 string name_of_gloval_var(string pref,const PLP& plp, const T& p){ return string()<<pref<<plp.name<<"_"<<p.name; }
 
-Script transform_preconditions(const PLP& plp, const Resource& par, int& error_code){
+Script TRANSFORM_preconditions(const PLP& plp, const Resource& par, int& error_code){
 	Script res;
 	string source_name = string()+par.name+"_source";
 	PREDICATE( source_name <<" = {" <<CHECK_VALUE(par,source)<<"}" );
@@ -228,7 +229,7 @@ Script transform_preconditions(const PLP& plp, const Resource& par, int& error_c
 	}
 	return res;
 }
-Script transform_consumption(const PLP& plp, const Resource& par, int& error_code){
+Script TRANSFORM_consumption(const PLP& plp, const Resource& par, int& error_code){
 	Script res;
 	string source_name = string()+par.name+"_source";
 	bool m=isnum(par.maximal_consumption),c=isnum(par.consumption_speed);
@@ -245,7 +246,7 @@ Script transform_consumption(const PLP& plp, const Resource& par, int& error_cod
 	}
 	return res;
 }
-Script transform_effects(const PLP& plp, const Resource& par, int& error_code){
+Script TRANSFORM_effects(const PLP& plp, const Resource& par, int& error_code){
 	Script res;
 	string source_name = string()+par.name+"_source";
 	if( isnum(par.maximal_consumption) ){
@@ -256,7 +257,7 @@ Script transform_effects(const PLP& plp, const Resource& par, int& error_code){
 	return res;
 }
 
-Script transform(const PLP& plp, const Precondition& par, int& error_code){
+Script TRANSFORM(const PLP& plp, const Precondition& par, int& error_code){
 	Script res;
 	string source_name = string()+par.name+"_"+par.parameter+"_source";
 	if(plp_exists(plp, VARIABLES_SET, "name", par.parameter)){
@@ -274,7 +275,7 @@ Script transform(const PLP& plp, const Precondition& par, int& error_code){
 	return res;
 }
 
-Script transform(const PLP& plp, const ConcurentCondition& par, int& error_code){
+Script TRANSFORM(const PLP& plp, const ConcurentCondition& par, int& error_code){
 	Script res;
 	string source_name = string()+par.name+"_"+par.parameter+"_source";
 	if(plp_exists(plp, VARIABLES_SET, "name", par.parameter)){
@@ -292,7 +293,7 @@ Script transform(const PLP& plp, const ConcurentCondition& par, int& error_code)
 	return res;
 }
 
-Script transform(const PLP& plp, const ConcurentModule& par, int& error_code){
+Script TRANSFORM(const PLP& plp, const ConcurentModule& par, int& error_code){
 	Script res;
 	string state_name = "_state_" + par.name;
 	PREDICATE( state_name << " = " <<  "get_module_status( '" << par.name <<"' )");
@@ -304,7 +305,7 @@ Script transform(const PLP& plp, const ConcurentModule& par, int& error_code){
 	return res;
 }
 
-Script transform(const PLP& plp, const SideEffect& par, int& error_code){
+Script TRANSFORM(const PLP& plp, const SideEffect& par, int& error_code){
 	Script res;
 	string source_name = string()+"side_effect"+"_"+par.parameter+"_source";
 	if(plp_exists(plp, VARIABLES_SET, "name", par.parameter)){
@@ -322,14 +323,14 @@ Script transform(const PLP& plp, const SideEffect& par, int& error_code){
 	return res;
 }
 
-Script transform_start(const PLP& plp, const Goal& par, int& error_code){
+Script TRANSFORM_start(const PLP& plp, const Goal& par, int& error_code){
 	Script res;
 	string source_name = string()+par.name+"_source";
 	PREDICATE( "_now = Now()");
 	PREDICATE( SET_GLOBAL_VAR(name_of_gloval_var("StartTime_",plp,par), "_now") );
 	return res;
 }
-Script transform_goal(const PLP& plp, const Goal& par, int& error_code){
+Script TRANSFORM_goal(const PLP& plp, const Goal& par, int& error_code){
 	Script res;
 	string source_name = string()+par.name+"_source";
 	if(plp_exists(plp, VARIABLES_SET, "name", par.parameter)) {
@@ -346,14 +347,14 @@ Script transform_goal(const PLP& plp, const Goal& par, int& error_code){
 	}
 	return res;
 }
-Script transform_time(const PLP& plp, const Goal& par, int& error_code){
+Script TRANSFORM_time(const PLP& plp, const Goal& par, int& error_code){
 	Script res;
 	string source_name = string()+par.name+"_source";
 	if(plp_exists(plp, VARIABLES_SET, "name", par.parameter) and isnum(par.max_time_to_complete)){
 		PREDICATE( "_now = Now()");
 		PREDICATE( "_st = " << GET_GLOBAL_VAR(name_of_gloval_var("StartTime_",plp,par)) );
 		PREDICATE( "_duration = _now - _st");
-		Script tmp = transform_goal(plp,par,error_code);
+		Script tmp = TRANSFORM_goal(plp,par,error_code);
 		if(error_code) return res;
 		res << predicate_to_variable( "_goal",tmp );
 		PREDICATE( "_goal or ( not( _goal ) and _duration < " + time_to_seconds(par.max_time_to_complete) << " )" );
@@ -362,21 +363,22 @@ Script transform_time(const PLP& plp, const Goal& par, int& error_code){
 }
 
 
-//=============== COLLECTIONS OF TRANSForMATIONS ========================================
+//=============== COLLECTIONS OF TRANSFORMATIONS ========================================
 
-TRANSForM_COLLECTION(Variable)
-TRANSForM_COLLECTION(Parameter)
+TRANSFORM_COLLECTION(Variable)
+TRANSFORM_COLLECTION(Parameter)
 
-ScriptCollection transform(const PLP& plp, const vector<Resource>& coll, int& error_code){
+ScriptCollection TRANSFORM(const PLP& plp, const vector<Resource>& coll, int& error_code){
 	ScriptCollection res_coll;
 	{
 		Script res;
 		res.properties<<(string()<<"type predicate");
 		res.properties<<(string()<<"name "<<plp.name<<"_"<<"Resource_precondition");
 		res.properties<<(string()<<"module "<<plp.name);
+		res.properties<<(string()<<"interval 1");
 		res.properties<<(string()<<"time on_start");
 		for(size_t i=0;i<coll.size() and not error_code;i++)
-			res << transform_preconditions(plp, coll[i], error_code);
+			res << TRANSFORM_preconditions(plp, coll[i], error_code);
 		res_coll<<res;
 	}
 	{
@@ -384,8 +386,9 @@ ScriptCollection transform(const PLP& plp, const vector<Resource>& coll, int& er
 		res.properties<<(string()<<"type predicate");
 		res.properties<<(string()<<"name "<<plp.name<<"_"<<"Resource_consumption");
 		res.properties<<(string()<<"module "<<plp.name);
+		res.properties<<(string()<<"interval 1");
 		for(size_t i=0;i<coll.size() and not error_code;i++)
-			res << transform_consumption(plp, coll[i], error_code);
+			res << TRANSFORM_consumption(plp, coll[i], error_code);
 		res_coll<<res;
 	}
 	{
@@ -393,30 +396,32 @@ ScriptCollection transform(const PLP& plp, const vector<Resource>& coll, int& er
 		res.properties<<(string()<<"type predicate");
 		res.properties<<(string()<<"name "<<plp.name<<"_"<<"Resource_effects");
 		res.properties<<(string()<<"module "<<plp.name);
+		res.properties<<(string()<<"interval 1");
 		res.properties<<(string()<<"time on_stop");
 		for(size_t i=0;i<coll.size() and not error_code;i++)
-			res << transform_effects(plp, coll[i], error_code);
+			res << TRANSFORM_effects(plp, coll[i], error_code);
 		res_coll<<res;
 	}
 	return res_coll;
 }
 
-TRANSForM_COLLECTION(Precondition)
-TRANSForM_COLLECTION(ConcurentCondition)
-TRANSForM_COLLECTION(ConcurentModule)
-TRANSForM_COLLECTION(SideEffect)
+TRANSFORM_COLLECTION(Precondition)
+TRANSFORM_COLLECTION(ConcurentCondition)
+TRANSFORM_COLLECTION(ConcurentModule)
+TRANSFORM_COLLECTION(SideEffect)
 
 
-ScriptCollection transform(const PLP& plp, const vector<Goal>& coll, int& error_code){
+ScriptCollection TRANSFORM(const PLP& plp, const vector<Goal>& coll, int& error_code){
 	ScriptCollection res_coll;
 	{
 		Script res;
 		res.properties<<(string()<<"type predicate");
 		res.properties<<(string()<<"name "<<plp.name<<"_"<<"Goal_start");
 		res.properties<<(string()<<"module "<<plp.name);
+		res.properties<<(string()<<"interval 1");
 		res.properties<<(string()<<"time on_start");
 		for(size_t i=0;i<coll.size() and not error_code;i++)
-			res << transform_start(plp, coll[i], error_code);
+			res << TRANSFORM_start(plp, coll[i], error_code);
 		res_coll<<res;
 	}
 	{
@@ -424,8 +429,9 @@ ScriptCollection transform(const PLP& plp, const vector<Goal>& coll, int& error_
 		res.properties<<(string()<<"type predicate");
 		res.properties<<(string()<<"name "<<plp.name<<"_"<<"Goal_time_check");
 		res.properties<<(string()<<"module "<<plp.name);
+		res.properties<<(string()<<"interval 1");
 		for(size_t i=0;i<coll.size() and not error_code;i++)
-			res << transform_time(plp, coll[i], error_code);
+			res << TRANSFORM_time(plp, coll[i], error_code);
 		res_coll<<res;
 	}
 	{
@@ -433,9 +439,10 @@ ScriptCollection transform(const PLP& plp, const vector<Goal>& coll, int& error_
 		res.properties<<(string()<<"type predicate");
 		res.properties<<(string()<<"name "<<plp.name<<"_"<<"Goal_stop");
 		res.properties<<(string()<<"module "<<plp.name);
+		res.properties<<(string()<<"interval 1");
 		res.properties<<(string()<<"time on_stop");
 		for(size_t i=0;i<coll.size() and not error_code;i++)
-			res << transform_goal(plp, coll[i], error_code);
+			res << TRANSFORM_goal(plp, coll[i], error_code);
 		res_coll<<res;
 	}
 	return res_coll;
@@ -444,16 +451,16 @@ ScriptCollection transform(const PLP& plp, const vector<Goal>& coll, int& error_
 //============================================================================
 
 
-ScriptCollection transform(const PLP& plp, int& error_code){
+ScriptCollection TRANSFORM(const PLP& plp, int& error_code){
 	ScriptCollection res;
-	res << transform(plp, plp.variables, error_code); 					if(error_code) return res;
-	res << transform(plp, plp.parameters, error_code); 					if(error_code) return res;
-	res << transform(plp, plp.resources, error_code); 					if(error_code) return res;
-	res << transform(plp, plp.preconditions, error_code); 				if(error_code) return res;
-	res << transform(plp, plp.concurent_conditions, error_code); 		if(error_code) return res;
-	res << transform(plp, plp.concurent_modules, error_code); 			if(error_code) return res;
-	res << transform(plp, plp.side_effects, error_code); 				if(error_code) return res;
-	res << transform(plp, plp.goals, error_code); 						if(error_code) return res;
+	res << TRANSFORM(plp, plp.variables, error_code); 					if(error_code) return res;
+	res << TRANSFORM(plp, plp.parameters, error_code); 					if(error_code) return res;
+	res << TRANSFORM(plp, plp.resources, error_code); 					if(error_code) return res;
+	res << TRANSFORM(plp, plp.preconditions, error_code); 				if(error_code) return res;
+	res << TRANSFORM(plp, plp.concurent_conditions, error_code); 		if(error_code) return res;
+	res << TRANSFORM(plp, plp.concurent_modules, error_code); 			if(error_code) return res;
+	res << TRANSFORM(plp, plp.side_effects, error_code); 				if(error_code) return res;
+	res << TRANSFORM(plp, plp.goals, error_code); 						if(error_code) return res;
 	return res;
 }
 
@@ -462,7 +469,7 @@ ScriptCollection transform(const PLP& plp, int& error_code){
 vector<MonitorningScript> PLPCompiler::compile(const PLP& plp, int& error_code){
 	vector<MonitorningScript> results;
 
-	results << transform(plp, error_code);
+	results << TRANSFORM(plp, error_code);
 
 	return results;
 }

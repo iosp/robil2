@@ -13,20 +13,12 @@
 #include <vector>
 #include <map>
 #include <list>
-//#include <set>
-//#include <algorithm>
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
-//#include <boost/shared_ptr.hpp>
-//#include <boost/function.hpp>
-//#include <boost/bind.hpp>
-//#include <boost/thread.hpp>
-//#include <boost/thread/recursive_mutex.hpp>
 
 using namespace std;
 using namespace boost;
-//using namespace boost::posix_time;
 
 class Plp{
 	friend ostream& operator<<(ostream& out, const Plp& m);

@@ -5,7 +5,7 @@
  *      Author: dan
  */
 
-#include "PlpMonitorServer.h"
+#include <plpcpp/PlpMonitorServer.h>
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -22,7 +22,15 @@ std_msgs::String to_msg(const string& s){
 }
 }
 
-PlpMonitorServer::PlpMonitorServer(ros::NodeHandle& n):node(n) {
+PlpMonitorServer::PlpMonitorServer(ros::NodeHandle& n):_simulate(false), node(n) {
+	p_add = node.advertise<std_msgs::String>(node_ws+"add_script",10);
+	p_remove = node.advertise<std_msgs::String>(node_ws+"delete_script",10);
+	p_pause = node.advertise<std_msgs::String>(node_ws+"pause_module",10);
+	p_resume = node.advertise<std_msgs::String>(node_ws+"resume_module",10);
+}
+
+PlpMonitorServer::PlpMonitorServer(ros::NodeHandle& n, bool _sim):_simulate(_sim),node(n) {
+	if(_simulate) return;
 	p_add = node.advertise<std_msgs::String>(node_ws+"add_script",10);
 	p_remove = node.advertise<std_msgs::String>(node_ws+"delete_script",10);
 	p_pause = node.advertise<std_msgs::String>(node_ws+"pause_module",10);
@@ -72,15 +80,19 @@ void PlpMonitorServer::on_event_for_repeated(Plp::EVENT event,const Plp* plp){
 }
 
 void PlpMonitorServer::start_module(std::string script){
+	if(_simulate){size_t i=script.find("PLP:");std::cout<<"start_module "<<script.substr(i+4,script.find('\n',i))<<endl;return;}
 	p_add.publish(to_msg(script));
 }
 void PlpMonitorServer::stop_module(std::string module_name){
+	if(_simulate){cout<<"stop_module "<< module_name<<endl;return;}
 	p_remove.publish(to_msg(module_name));
 }
 void PlpMonitorServer::pause_module(std::string module_name){
+	if(_simulate){cout<<"pause_module "<< module_name<<endl;return;}
 	p_pause.publish(to_msg(module_name));
 }
 void PlpMonitorServer::resume_module(std::string module_name){
+	if(_simulate){cout<<"resume_module "<< module_name<<endl;return;}
 	p_resume.publish(to_msg(module_name));
 }
 

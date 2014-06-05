@@ -220,6 +220,7 @@ public:
 		}
 	}
 	static vector<Timer> check_timers_for_timeout(bool restart){
+		PlpModuleLock
 		vector<Timer> res;
 		double now = system_time_seconds();
 		for(map<string,Timer>::iterator i=_timers.begin();i!=_timers.end();i++){

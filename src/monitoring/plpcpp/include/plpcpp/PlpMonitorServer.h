@@ -14,6 +14,7 @@
 class PlpMonitorServer {
 public:
 	PlpMonitorServer(ros::NodeHandle& n);
+	PlpMonitorServer(ros::NodeHandle& n, bool _simulate);
 	virtual ~PlpMonitorServer();
 
 	void on_event(Plp::EVENT,const Plp* plp);
@@ -25,6 +26,7 @@ public:
 	void resume_module(std::string module_name);
 
 private:
+	bool _simulate;
 	ros::NodeHandle& node;
 	ros::Publisher p_add;
 	ros::Publisher p_remove;

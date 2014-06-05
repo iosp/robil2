@@ -1,29 +1,18 @@
 
 
-#include "PlpCpp.h"
+#include <plpcpp/PlpCpp.h>
 #include <iostream>
 #include <sstream>
 #include <vector>
-//#include <map>
-//#include <list>
-//#include <set>
-//#include <algorithm>
 #include <fstream>
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
-//#include <boost/shared_ptr.hpp>
-//#include <boost/function.hpp>
-//#include <boost/bind.hpp>
-//#include <boost/thread.hpp>
-//#include <boost/thread/recursive_mutex.hpp>
 
 using namespace std;
 using namespace boost;
-//using namespace boost::posix_time;
 
 ostream& operator<<(ostream& out, const Plp& m){
-//	out<<m._plp_text<<endl;
 	for(map<string,string>::const_iterator i=m._plp_map.begin();i!=m._plp_map.end();i++){
 		out<<i->first<<" = "<<i->second<<endl;
 	}
@@ -62,6 +51,7 @@ void Plp::load_plp(istream& stream){
 	stringstream text;
 	while(stream.eof()==false){
 		char c; stream.read(&c,1);
+		if(c=='\r')continue;
 		text<<c;
 	}
 	_plp_text = text.str();
@@ -193,7 +183,6 @@ void Plp::parse(){
 		::parse(kv,line);
 		if(kv.key.empty())continue;
 		check_if_plp_section(kv);
-		//cout<<line<<" : "<< pref+">"+kv.key << " = "<<kv.value<<endl;
 		_plp_map[kv.full_key()]=kv.value;
 	}
 }

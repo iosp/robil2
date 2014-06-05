@@ -1,16 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(scriptable_monitor)
+project(plpcpp)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  std_msgs
-  diagnostic_aggregator
-  diagnostic_msgs
-  pluginlib
   roscpp
-  message_generation
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -22,27 +18,56 @@ find_package(catkin REQUIRED COMPONENTS
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
 # catkin_python_setup()
 
-#######################################
-## Declare ROS messages and services ##
-#######################################
+################################################
+## Declare ROS messages, services and actions ##
+################################################
 
-add_message_files(
-    FILES
-    Script.msg
-)
+## To declare and build messages, services or actions from within this
+## package, follow these steps:
+## * Let MSG_DEP_SET be the set of packages whose message types you use in
+##   your messages/services/actions (e.g. std_msgs, actionlib_msgs, ...).
+## * In the file package.xml:
+##   * add a build_depend and a run_depend tag for each package in MSG_DEP_SET
+##   * If MSG_DEP_SET isn't empty the following dependencies might have been
+##     pulled in transitively but can be declared for certainty nonetheless:
+##     * add a build_depend tag for "message_generation"
+##     * add a run_depend tag for "message_runtime"
+## * In this file (CMakeLists.txt):
+##   * add "message_generation" and every package in MSG_DEP_SET to
+##     find_package(catkin REQUIRED COMPONENTS ...)
+##   * add "message_runtime" and every package in MSG_DEP_SET to
+##     catkin_package(CATKIN_DEPENDS ...)
+##   * uncomment the add_*_files sections below as needed
+##     and list every .msg/.srv/.action file to be processed
+##   * uncomment the generate_messages entry below
+##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
+
+## Generate messages in the 'msg' folder
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-    FILES
-    GetScripts.srv
-    AddScript.srv
-)
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
+
+## Generate actions in the 'action' folder
+# add_action_files(
+#   FILES
+#   Action1.action
+#   Action2.action
+# )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-   DEPENDENCIES
-   std_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -54,9 +79,9 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-   INCLUDE_DIRS include
-   LIBRARIES ${PROJECT_NAME}
-   CATKIN_DEPENDS message_runtime diagnostic_aggregator diagnostic_msgs pluginlib roscpp
+  INCLUDE_DIRS include
+  LIBRARIES plpcpp
+  CATKIN_DEPENDS roscpp std_msgs
 #  DEPENDS system_lib
 )
 
@@ -64,54 +89,34 @@ catkin_package(
 ## Build ##
 ###########
 
-
-include_directories(include)
+## Specify additional locations of header files
+## Your package locations should be listed before other locations
+# include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
-)
-set(CPP_PLP_FILES 
-	src/scripting/plp/PLPCompiler.cpp
-	src/scripting/plp/PLPParser.cpp
-)
-set(CPP_FILES 
-    src/scriptable_monitor.cpp
-	src/scripting/Parameters.cpp
-	src/scripting/InternalFunction.cpp
-	src/scripting/PredicatesScript.cpp
-	src/scripting/ScriptExecuter.cpp
-	src/scripting/PythonExecuter.cpp
-	src/scripting/RosTopicListener.cpp
-	src/scripting/ScriptHost.cpp
-	src/scripting/ScriptableMonitorNode.cpp
-	src/scripting/SomeInternalFunctionExample.cpp
-	
-	src/scripting/ScriptParameters.cpp
-	src/scripting/plp/PlpFunctions.cpp
-	src/scripting/plp/PlpModule.cpp
-	${CPP_PLP_FILES}
+  include
 )
 
-add_library(${PROJECT_NAME} ${CPP_FILES})
+set( PLPCPP_CPP
+    src/PlpCpp.cpp
+    src/PlpMonitorServer.cpp
+)
 
+## Declare a cpp library
+ add_library(plpcpp
+   ${PLPCPP_CPP}
+ )
 
-add_executable(monitor_test src/main.cpp ${CPP_FILES})
-add_executable(scriptable_monitor_node src/scriptable_monitor_node.cpp ${CPP_FILES})
-add_executable(plp_test src/scripting/plp/main.cpp ${CPP_PLP_FILES})
-add_executable(node_test src/node_tester/node_tester.cpp)
+## Declare a cpp executable
 
+## Add cmake target dependencies of the executable/library
+## as an example, message headers may need to be generated before nodes
+# add_dependencies(plpcpp_node plpcpp_generate_messages_cpp)
 
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencpp)
-add_dependencies(monitor_test ${PROJECT_NAME}_gencpp)
-add_dependencies(scriptable_monitor_node ${PROJECT_NAME}_gencpp)
-add_dependencies(plp_test ${PROJECT_NAME}_gencpp)
-add_dependencies(node_test ${PROJECT_NAME}_gencpp)
-
-
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} python2.7 yaml-cpp )
-target_link_libraries(monitor_test ${catkin_LIBRARIES} python2.7 yaml-cpp )
-target_link_libraries(scriptable_monitor_node ${catkin_LIBRARIES} python2.7 yaml-cpp)
-target_link_libraries(plp_test ${catkin_LIBRARIES} python2.7 yaml-cpp)
-target_link_libraries(node_test ${catkin_LIBRARIES} python2.7 yaml-cpp)
+## Specify libraries to link a library or executable target against
+ add_executable(cpp_test src/cpp_test.cpp)
+ add_dependencies(cpp_test plpcpp)
+ target_link_libraries(cpp_test ${catkin_LIBRARIES} plpcpp )
 
 #############
 ## Install ##
@@ -128,7 +133,7 @@ target_link_libraries(node_test ${catkin_LIBRARIES} python2.7 yaml-cpp)
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS scriptable_analyzer scriptable_analyzer_node
+# install(TARGETS plpcpp plpcpp_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -153,7 +158,7 @@ target_link_libraries(node_test ${catkin_LIBRARIES} python2.7 yaml-cpp)
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_scriptable_analyzer.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_plpcpp.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

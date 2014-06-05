@@ -82,9 +82,9 @@ AddScriptResponse ScriptHost::addScript(string sourceCode){
 
 AddScriptResponse ScriptHost::addScript(string sourceCode, AddScriptResponse& response)
 {
-	if(not typeAnalization(sourceCode,response)) return response;
-
 	lock_recursive(_scriptsMutex);
+
+	if(not typeAnalization(sourceCode,response)) return response;
 
 	/*DEBUG]*/ if(false)
 	{
@@ -366,11 +366,13 @@ bool ScriptHost::scriptExists(string scriptName)
 
 void ScriptHost::pauseModule(string scriptName)
 {
+	lock_recursive(_scriptsMutex);
 	PlpModule::pause(scriptName);
 }
 
 void ScriptHost::resumeModule(string scriptName)
 {
+	lock_recursive(_scriptsMutex);
 	PlpModule::resume(scriptName);
 
 }
