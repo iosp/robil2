@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -101,22 +101,17 @@ set( PLPCPP_CPP
     src/PlpCpp.cpp
     src/PlpMonitorServer.cpp
 )
+set( ALL_LIBS
+    ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+)
 
-## Declare a cpp library
- add_library(plpcpp
-   ${PLPCPP_CPP}
- )
-
-## Declare a cpp executable
-
-## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
-# add_dependencies(plpcpp_node plpcpp_generate_messages_cpp)
-
-## Specify libraries to link a library or executable target against
- add_executable(cpp_test src/cpp_test.cpp)
- add_dependencies(cpp_test plpcpp)
- target_link_libraries(cpp_test ${catkin_LIBRARIES} plpcpp )
+#------------------------------------
+add_library(plpcpp ${PLPCPP_CPP} )
+target_link_libraries(plpcpp ${ALL_LIBS} )
+#------------------------------------ 
+add_executable(cpp_test src/cpp_test.cpp)
+add_dependencies(cpp_test plpcpp)
+target_link_libraries(cpp_test ${ALL_LIBS} plpcpp )
 
 #############
 ## Install ##

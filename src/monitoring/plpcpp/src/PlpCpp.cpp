@@ -8,19 +8,39 @@
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/thread.hpp>
+#include <boost/date_time/posix_time/time_formatters.hpp>
 
 using namespace std;
 using namespace boost;
 
-ostream& operator<<(ostream& out, const Plp& m){
+namespace plp{
+
+ostream& operator<<(ostream& out, const Module& m){
 	for(map<string,string>::const_iterator i=m._plp_map.begin();i!=m._plp_map.end();i++){
 		out<<i->first<<" = "<<i->second<<endl;
 	}
 	return out;
 }
+string create_header(){
+	stringstream s_name;
+	boost::posix_time::ptime stime = boost::posix_time::microsec_clock::local_time();
+	s_name << boost::posix_time::to_iso_string(stime);
+	string s = string()+
+		"#! type plp\n"
+		"#! name plp_script_"+s_name.str()+"\n"
+		"#! interval 1\n";
+	;
+	//cout<<"HEADER: "<<s<<endl;
+	return s;
+}
 
 
-Plp::Plp(string filename){
+Module::Module(string filename)
+	:iterations_counter(0)
+{
+	cout<<"load file : "<<filename<<endl;
+	_header=create_header();
 	ifstream file(filename.c_str());
 	if(not file){
 		throw Exception_FileLoadProblem();
@@ -28,26 +48,29 @@ Plp::Plp(string filename){
 	load_plp(file);
 	raise(EVENT_MODULE_START, this);
 }
-Plp::Plp(istream& stream){
+Module::Module(istream& stream)
+	:iterations_counter(0)
+{
+	_header=create_header();
 	load_plp(stream);
 	raise(EVENT_MODULE_START, this);
 }
 
-Plp::~Plp(){
+Module::~Module(){
 	raise(EVENT_MODULE_STOP, this);
 }
 
-Plp::Iteration::Iteration(Plp* plp):plp(plp){
+Module::Iteration::Iteration(Module* plp):plp(plp){
 	for(map<string,string>::const_iterator i=plp->_plp_map.begin();i!=plp->_plp_map.end();i++){
 		if(starts_with(i->first, "Goals:")) _goal_map[i->first.substr(i->first.find(":")+1)] = (i->second);
 	}
 	plp->raise(EVENT_GOAL_ACHIEV_START, plp);
 }
-Plp::Iteration::~Iteration(){
+Module::Iteration::~Iteration(){
 	plp->raise(EVENT_GOAL_ACHIEV_STOP, plp);
 }
 
-void Plp::load_plp(istream& stream){
+void Module::load_plp(istream& stream){
 	stringstream text;
 	while(stream.eof()==false){
 		char c; stream.read(&c,1);
@@ -61,20 +84,20 @@ void Plp::load_plp(istream& stream){
 	}
 }
 
-string Plp::plp_name()const{
+string Module::plp_name()const{
 	if(_plp_map.find("PLP:Name")==_plp_map.end()) return "";
-	return _plp_map.at("PLP:Name");
+	return boost::replace_all_copy(_plp_map.at("PLP:Name")," ","_");
 }
-string Plp::plp_type()const{
+string Module::plp_type()const{
 	if(_plp_map.find("PLP:Type")==_plp_map.end()) return "";
 	return _plp_map.at("PLP:Type");
 }
-bool Plp::plp_is_repeated()const{
+bool Module::plp_is_repeated()const{
 	if(_plp_map.find("Goals:Repeat")==_plp_map.end()) return false;
 	return to_upper_copy(_plp_map.at("Goals:Repeat")) == "TRUE";
 }
 
-list<Plp::EventCallback> Plp::events;
+list<Module::EventCallback> Module::events;
 
 
 struct KeyValue{
@@ -174,17 +197,24 @@ void check_if_plp_section(KeyValue& kv){
 	}
 }
 
-void Plp::parse(){
+void Module::parse(){
 	vector<string> lines;
 	split( lines, _plp_text, boost::is_any_of("\n"));
 	KeyValue kv;
 	BOOST_FOREACH(string line, lines){
 		trim(line);
-		::parse(kv,line);
+		plp::parse(kv,line);
 		if(kv.key.empty())continue;
 		check_if_plp_section(kv);
 		_plp_map[kv.full_key()]=kv.value;
 	}
+}
+bool Module::is_need_header()const{
+	if(starts_with(_plp_text, "#! type plp")) return false;
+	return true;
+}
+
+
 }
 
 

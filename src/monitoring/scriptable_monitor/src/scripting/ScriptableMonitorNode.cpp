@@ -14,10 +14,10 @@ ScriptableMonitorNode::ScriptableMonitorNode()
 	ros::NodeHandle node("~");
 
 	_addScriptSubscriber =
-			node.subscribe("/scriptable_monitor/add_script", 0, &ScriptableMonitorNode::onAddScriptMessage, this);
+			node.subscribe("/scriptable_monitor/add_script", 10, &ScriptableMonitorNode::onAddScriptMessage, this);
 
 	_deleteScriptSubscriber =
-			node.subscribe("/scriptable_monitor/delete_script", 0, &ScriptableMonitorNode::onDeleteScriptMessage, this);
+			node.subscribe("/scriptable_monitor/delete_script", 10, &ScriptableMonitorNode::onDeleteScriptMessage, this);
 
 	_getScriptsService =
 			node.advertiseService("/scriptable_monitor/get_scripts", &ScriptableMonitorNode::getScripts, this);
@@ -27,10 +27,10 @@ ScriptableMonitorNode::ScriptableMonitorNode()
 
 
 	_pauseModuleSubscriber =
-			node.subscribe("/scriptable_monitor/pause_module", 0, &ScriptableMonitorNode::onPauseModule, this);
+			node.subscribe("/scriptable_monitor/pause_module", 10, &ScriptableMonitorNode::onPauseModule, this);
 
 	_resumeModuleSubscriber =
-			node.subscribe("/scriptable_monitor/resume_module", 0, &ScriptableMonitorNode::onResumeModule, this);
+			node.subscribe("/scriptable_monitor/resume_module", 10, &ScriptableMonitorNode::onResumeModule, this);
 
 }
 

@@ -22,15 +22,17 @@ std_msgs::String to_msg(const string& s){
 }
 }
 
-PlpMonitorServer::PlpMonitorServer(ros::NodeHandle& n):_simulate(false), node(n) {
+namespace plp{
+
+PlpMonitorServer::PlpMonitorServer(ros::NodeHandle& n):_simulate(0), node(n) {
 	p_add = node.advertise<std_msgs::String>(node_ws+"add_script",10);
 	p_remove = node.advertise<std_msgs::String>(node_ws+"delete_script",10);
 	p_pause = node.advertise<std_msgs::String>(node_ws+"pause_module",10);
 	p_resume = node.advertise<std_msgs::String>(node_ws+"resume_module",10);
 }
 
-PlpMonitorServer::PlpMonitorServer(ros::NodeHandle& n, bool _sim):_simulate(_sim),node(n) {
-	if(_simulate) return;
+PlpMonitorServer::PlpMonitorServer(ros::NodeHandle& n, int _sim):_simulate(_sim),node(n) {
+	if(_simulate>1) return;
 	p_add = node.advertise<std_msgs::String>(node_ws+"add_script",10);
 	p_remove = node.advertise<std_msgs::String>(node_ws+"delete_script",10);
 	p_pause = node.advertise<std_msgs::String>(node_ws+"pause_module",10);
@@ -40,62 +42,64 @@ PlpMonitorServer::PlpMonitorServer(ros::NodeHandle& n, bool _sim):_simulate(_sim
 PlpMonitorServer::~PlpMonitorServer() {
 }
 
-void PlpMonitorServer::on_event(Plp::EVENT event,const Plp* plp){
+void PlpMonitorServer::on_event(Module::EVENT event,const Module* plp){
 	if(plp->plp_is_repeated()){
 		on_event_for_repeated(event, plp);
+		return;
 	}
 	switch(event){
-	case Plp::EVENT_MODULE_START:
+	case Module::EVENT_MODULE_START:
 		start_module(plp->get_script());
 		break;
-	case Plp::EVENT_MODULE_STOP:
+	case Module::EVENT_MODULE_STOP:
 		stop_module(plp->plp_name());
 		break;
-	case Plp::EVENT_GOAL_ACHIEV_START:
-		//resume_module(plp->plp_name());
+	case Module::EVENT_GOAL_ACHIEV_START:
+		resume_module(plp->plp_name());
 		break;
-	case Plp::EVENT_GOAL_ACHIEV_STOP:
-		//pause_module(plp->plp_name());
+	case Module::EVENT_GOAL_ACHIEV_STOP:
+		pause_module(plp->plp_name());
 		break;
 	}
 }
-void PlpMonitorServer::on_event_for_repeated(Plp::EVENT event,const Plp* plp){
+void PlpMonitorServer::on_event_for_repeated(Module::EVENT event,const Module* plp){
 	switch(event){
-	case Plp::EVENT_MODULE_START:
+	case Module::EVENT_MODULE_START:
+		//start_module(plp->get_script());
 		break;
-	case Plp::EVENT_MODULE_STOP:
+	case Module::EVENT_MODULE_STOP:
 		stop_module(plp->plp_name());
 		break;
-	case Plp::EVENT_GOAL_ACHIEV_START:
+	case Module::EVENT_GOAL_ACHIEV_START:
 		if(plp->iterations()==1){
 			start_module(plp->get_script());
 		}else{
 			resume_module(plp->plp_name());
 		}
 		break;
-	case Plp::EVENT_GOAL_ACHIEV_STOP:
+	case Module::EVENT_GOAL_ACHIEV_STOP:
 		pause_module(plp->plp_name());
 		break;
 	}
 }
 
-void PlpMonitorServer::start_module(std::string script){
-	if(_simulate){size_t i=script.find("PLP:");std::cout<<"start_module "<<script.substr(i+4,script.find('\n',i))<<endl;return;}
+void PlpMonitorServer::start_module(const std::string& script){
+	if(_simulate){size_t i=script.find("PLP:");std::cout<<"start_module "<<replace_all_copy(script.substr(i+5,script.find('\n',i)-i-5)," ","_")<<endl; if(_simulate>1) return;}
 	p_add.publish(to_msg(script));
 }
-void PlpMonitorServer::stop_module(std::string module_name){
-	if(_simulate){cout<<"stop_module "<< module_name<<endl;return;}
+void PlpMonitorServer::stop_module(const std::string& module_name){
+	if(_simulate){cout<<"stop_module "<< module_name<<endl;if(_simulate>1)return;}
 	p_remove.publish(to_msg(module_name));
 }
-void PlpMonitorServer::pause_module(std::string module_name){
-	if(_simulate){cout<<"pause_module "<< module_name<<endl;return;}
+void PlpMonitorServer::pause_module(const std::string& module_name){
+	if(_simulate){cout<<"pause_module "<< module_name<<endl;if(_simulate>1)return;}
 	p_pause.publish(to_msg(module_name));
 }
-void PlpMonitorServer::resume_module(std::string module_name){
-	if(_simulate){cout<<"resume_module "<< module_name<<endl;return;}
+void PlpMonitorServer::resume_module(const std::string& module_name){
+	if(_simulate){cout<<"resume_module "<< module_name<<endl;if(_simulate>1)return;}
 	p_resume.publish(to_msg(module_name));
 }
 
-
+}
 
 

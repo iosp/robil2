@@ -20,8 +20,10 @@
 using namespace std;
 using namespace boost;
 
-class Plp{
-	friend ostream& operator<<(ostream& out, const Plp& m);
+namespace plp{
+
+class Module{
+	friend ostream& operator<<(ostream& out, const Module& m);
 public:
 	class Exception{
 	public:
@@ -39,13 +41,13 @@ public:
 	};
 
 private:
-	typedef boost::function<void(EVENT,const Plp*)> EventCallback;
+	typedef boost::function<void(EVENT,const Module*)> EventCallback;
 
 public:
 	class Iteration{
-		friend class Plp;
-		Iteration(Plp* plp);
-		Plp* plp;
+		friend class Module;
+		Iteration(Module* plp);
+		Module* plp;
 		map<string,string> _goal_map;
 	public:
 		virtual ~Iteration();
@@ -63,9 +65,9 @@ public:
 	};
 
 public:
-	Plp(string filename);
-	Plp(istream& stream);
-	virtual ~Plp();
+	Module(string filename);
+	Module(istream& stream);
+	virtual ~Module();
 
 	void load_plp(istream& stream);
 	void parse();
@@ -76,7 +78,7 @@ public:
 	static void subscribe(EventCallback event){
 		events.push_back(event);
 	}
-	static void raise(EVENT type, const Plp* _this){
+	static void raise(EVENT type, const Module* _this){
 		BOOST_FOREACH(EventCallback e, events){
 			e(type, _this);
 		}
@@ -86,11 +88,12 @@ public:
 		if(plp_is_repeated()==false){
 			throw Exception_PlpIsNotRepeatable();
 		}
-		iterations_counter++;
+		iterations_counter++; //cout<<"[i] "<<plp_name()<<" : iteration #"<<iterations_counter<<endl;
 		return Iteration(this);
 	}
 
-	string get_script()const{ return _plp_text; }
+	string get_script()const{ stringstream s; s<<(is_need_header()?_header:"") << "\n" <<_plp_text; return s.str();}
+	bool is_need_header()const;
 
 	vector<string> search(string key)const{
 		vector<string> res;
@@ -109,13 +112,16 @@ public:
 private:
 	string _plp_text;
 	map<string,string> _plp_map;
-	static list<EventCallback> events;
 	size_t iterations_counter;
+	string _header;
+	static list<EventCallback> events;
+
 };
 
-ostream& operator<<(ostream& out, const Plp& m);
 
+ostream& operator<<(ostream& out, const Module& m);
 
+}
 
 
 #endif /* PlpCpp_H_ */
