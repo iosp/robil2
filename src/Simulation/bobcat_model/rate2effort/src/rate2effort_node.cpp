@@ -3,6 +3,8 @@
 #include "std_msgs/String.h"
 #include "geometry_msgs/Twist.h"
 #include <sstream>
+#include <iostream>
+#include <time.h>
 
  // std_msgs::Float64 x ;
 
@@ -15,6 +17,8 @@
   ros::Publisher loader_pub_;
   ros::Publisher brackets_pub_;
   geometry_msgs::Twist::Ptr wheels (new geometry_msgs::Twist()) ;
+
+  ros::Time e_stop;
 
 /*
 void pricecall(const std_msgs::Float64::ConstPtr& price){
@@ -41,18 +45,19 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 	if(msg->angular.x < -1)
 		ang.data = -1 ;
 
-    	pub.data = (2.5*lin.data + ang.data);
+    	pub.data = (0.5*lin.data + ang.data)*15;
     	front_left_pub_.publish(pub);
     	back_left_pub_.publish(pub);
 
-    	pub.data = (2.5*lin.data - ang.data);
+    	pub.data = (0.5*lin.data - ang.data)*15;
 	front_right_pub_.publish(pub);
 	back_right_pub_.publish(pub);
 }
 
 void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
 {
-	std_msgs::Float64 pub;    
+	std_msgs::Float64 pub;
+	e_stop = ros::Time::now();
 	
     	pub.data = msg->x;
     	supporter_pub_.publish(pub);
@@ -65,6 +70,7 @@ void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
 }
 void ThCallback (const std_msgs::Float64ConstPtr &msg){
 
+	e_stop = ros::Time::now();
 	wheels->linear.x = msg->data ;
 
 }
@@ -100,10 +106,28 @@ int main(int argc, char **argv)
   ros::Subscriber arm_sub_ = n.subscribe("/armrate", 1000, armCallback );
   ros::Subscriber Throttle_rate_sub = n.subscribe("/LLC/EFFORTS/Throttle" , 1000, ThCallback);
   ros::Subscriber Steering_rate_sub = n.subscribe("/LLC/EFFORTS/Steering" , 1000, StCallback);
-//  ros::Subscriber debug_sub = n.subscribe("/price", 1000, pricecall);
 
-  ros::Rate loop_rate(10);	
-  ros::spin();
 
+  ros::Rate loop_rate(10);
+  ros::Duration t_out;
+
+   while (ros::ok())
+     {
+   /* implementing E-stop, if LLC-node is offline, or doesn't publish any new messages for 1 second */
+	  t_out = (ros::Time::now().operator -(e_stop));
+	   	 if((t_out.sec)>=1) {
+	   		   	   wheels->linear.x = 0 ;
+	   		   	   wheels->angular.z = 0 ;
+	   		   	   wheelsCallback(wheels);
+	   	   }
+       ros::spinOnce();
+       loop_rate.sleep();
+     }
   return 0;
 }
+
+
+
+
+
+

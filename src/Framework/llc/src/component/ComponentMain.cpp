@@ -27,6 +27,7 @@ void ComponentMain::handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg)
 void ComponentMain::handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg)
 {
 
+
 	//std::cout<< "LLC say:" << msg << std::endl;
 }
 	
@@ -49,7 +50,7 @@ void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
 	Per_measured_speed.twist.linear.x = msg.twist.linear.x ;
 	Per_measured_speed.twist.angular.z = msg.twist.angular.z ;
 
-	std::cout<< "LLC say:" << msg << std::endl;
+//	std::cout<< "LLC say:" << msg << std::endl;
 }
 	
 
