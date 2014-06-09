@@ -54,6 +54,10 @@ void ComponentMain::publishSensorSICK2(config::SENSORS::pub::SensorSICK2& msg)
 {
 	_roscomm->publishSensorSICK2(msg);
 }
+void ComponentMain::publishSensorGPSSpeed(config::SENSORS::pub::SensorGpsSpeed& msg)
+{
+	_roscomm->publishSensorGPSSpeed(msg);
+}
 	
 
 void ComponentMain::publishSensorIBEO(config::SENSORS::pub::SensorIBEO& msg)

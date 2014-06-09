@@ -35,12 +35,14 @@ class RosComm {
 	ros::Subscriber _sub_EffortsTh;
 	ros::Subscriber _sub_EffortsSt;
 	ros::Subscriber _sub_EffortsJn;
+	ros::Subscriber _sub_GpsSpeed;
 	ros::Publisher  _pub_GPS;
 	ros::Publisher  _pub_INS;
 	ros::Publisher  _pub_BladePosition;
 	ros::Publisher  _pub_Map;
 	ros::Publisher  _pub_MiniMap;
 	ros::Publisher  _pub_VOOdometry;
+	ros::Publisher  _pub_GpsSpeed;
 
   bool init(int argc,char** argv);
 public:
@@ -59,12 +61,14 @@ public:
 	void EffortsThCallback(const config::PER::sub::EffortsTh::ConstPtr &msg);
 	void EffortsStCallback(const config::PER::sub::EffortsSt::ConstPtr &msg);
 	void EffortsJnCallback(const config::PER::sub::EffortsJn::ConstPtr &msg);
+	void GpsSpeedCallback(const config::PER::sub::SensorGpsSpeed::ConstPtr &msg);
 	void publishGPS( config::PER::pub::GPS &msg);
 	void publishINS( config::PER::pub::INS &msg);
 	void publishBladePosition( config::PER::pub::BladePosition &msg);
 	void publishMap( config::PER::pub::Map &msg);
 	void publishMiniMap( config::PER::pub::MiniMap &msg);
 	void publishVOOdometry( config::PER::pub::VOOdometry &msg);
+	void publishGpsSpeed( config::PER::pub::PerGpsSpeed &msg);
 
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);

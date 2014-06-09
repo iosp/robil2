@@ -21,6 +21,7 @@ DEF_PUB( PER, BladePosition, types::BladPose )
 DEF_PUB( PER, Map, types::Map )
 DEF_PUB( PER, MiniMap, types::Map )
 DEF_PUB( PER, VOOdometry, types::Odometry )
+DEF_PUB( PER, PerGpsSpeed, types::GpsSpeed )
 
 DEF_PUB( PP, LocalPath, types::Path )
 
@@ -45,6 +46,7 @@ DEF_PUB( SENSORS, SensorWire, types::WireLength )
 DEF_PUB( SENSORS, SensorSICK1, types::Laser )
 DEF_PUB( SENSORS, SensorSICK2, types::Laser )
 DEF_PUB( SENSORS, SensorIBEO, types::MultiLaser )
+DEF_PUB( SENSORS, SensorGpsSpeed, types::GpsSpeed )
 
 
 //SUBSCRIPTIONS
@@ -75,6 +77,7 @@ DEF_SUB( PER, SensorWire, SENSORS )
 DEF_SUB( PER, SensorSICK1, SENSORS )
 DEF_SUB( PER, SensorSICK2, SENSORS )
 DEF_SUB( PER, SensorIBEO, SENSORS )
+DEF_SUB( PER, SensorGpsSpeed, SENSORS )
 DEF_SUB( PER, EffortsTh, LLC )
 DEF_SUB( PER, EffortsSt, LLC )
 DEF_SUB( PER, EffortsJn, LLC )
@@ -105,6 +108,7 @@ DEF_SUB( LOC, PositionUpdate, OCU )
 DEF_SUB( LOC, GPS, PER )
 DEF_SUB( LOC, INS, PER )
 DEF_SUB( LOC, VOOdometry, PER )
+DEF_SUB( LOC, PerGpsSpeed, PER )
 
 
 DEF_SUB( PLATFORM, EffortsTh, LLC )

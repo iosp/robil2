@@ -22,6 +22,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_sub_GPS=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","GPS","sub"), 10, &RosComm::GPSCallback,this));
 	_sub_INS=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","INS","sub"), 10, &RosComm::INSCallback,this));
 	_sub_VOOdometry=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","VOOdometry","sub"), 10, &RosComm::VOOdometryCallback,this));
+	_sub_GpsSpeed=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","PerGpsSpeed","sub"), 10, &RosComm::GpsSpeedCallback,this));
 	_pub_Location=ros::Publisher(_nh.advertise<config::LOC::pub::Location>(fetchParam(&_nh,"LOC","Location","pub"),10));
 	_pub_PerVelocity=ros::Publisher(_nh.advertise<config::LOC::pub::PerVelocity>(fetchParam(&_nh,"LOC","PerVelocity","pub"),10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
@@ -57,6 +58,10 @@ void RosComm::INSCallback(const config::LOC::sub::INS::ConstPtr &msg)
 void RosComm::VOOdometryCallback(const config::LOC::sub::VOOdometry::ConstPtr &msg)
 {
 	_comp->handleVOOdometry(*msg);
+}
+void RosComm::GpsSpeedCallback(const config::LOC::sub::PerGpsSpeed::ConstPtr &msg)
+{
+	_comp->handleGpsSpeed(*msg);
 }
 	
 

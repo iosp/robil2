@@ -31,6 +31,7 @@ class RosComm {
 	ros::Publisher  _pub_SensorSICK1;
 	ros::Publisher  _pub_SensorSICK2;
 	ros::Publisher  _pub_SensorIBEO;
+	ros::Publisher  _pub_SensorGpsSpeed;
 
   bool init(int argc,char** argv);
 public:
@@ -45,6 +46,7 @@ public:
 	void publishSensorSICK1( config::SENSORS::pub::SensorSICK1 &msg);
 	void publishSensorSICK2( config::SENSORS::pub::SensorSICK2 &msg);
 	void publishSensorIBEO( config::SENSORS::pub::SensorIBEO &msg);
+	void publishSensorGPSSpeed( config::SENSORS::pub::SensorGpsSpeed &msg);
 
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);

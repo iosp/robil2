@@ -26,6 +26,7 @@ class RosComm {
 	ros::Subscriber _sub_GPS;
 	ros::Subscriber _sub_INS;
 	ros::Subscriber _sub_VOOdometry;
+	ros::Subscriber _sub_GpsSpeed;
 	ros::Publisher  _pub_Location;
 	ros::Publisher  _pub_PerVelocity;
 
@@ -37,6 +38,7 @@ public:
 	void GPSCallback(const config::LOC::sub::GPS::ConstPtr &msg);
 	void INSCallback(const config::LOC::sub::INS::ConstPtr &msg);
 	void VOOdometryCallback(const config::LOC::sub::VOOdometry::ConstPtr &msg);
+	void GpsSpeedCallback(const config::LOC::sub::PerGpsSpeed::ConstPtr &msg);
 	void publishLocation( config::LOC::pub::Location &msg);
 	void publishPerVelocity( config::LOC::pub::PerVelocity &msg);
 

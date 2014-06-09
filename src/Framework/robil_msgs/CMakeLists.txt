@@ -64,6 +64,7 @@ add_message_files(
         AssignNavTaskList.msg
         MissionAcceptance.msg
         MultiLaserScan.msg
+        GpsSpeed.msg
 )
 
 ## Generate services in the 'srv' folder
