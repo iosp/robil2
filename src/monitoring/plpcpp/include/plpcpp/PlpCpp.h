@@ -8,6 +8,8 @@
 #ifndef PlpCpp_H_
 #define PlpCpp_H_
 
+#include "PlpLoader.h"
+
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -25,16 +27,14 @@ namespace plp{
 class Module{
 	friend ostream& operator<<(ostream& out, const Module& m);
 public:
-	class Exception{
-	public:
-		virtual ~Exception(){}
-	};
-	class Exception_FileLoadProblem:public Exception{};
-	class Exception_PlpHasNoName:public Exception{};
-	class Exception_PlpIsNotRepeatable:public Exception{};
+	typedef PlpLoader::Exception Exception;
+	typedef PlpLoader::Exception_FileLoadProblem Exception_FileLoadProblem;
+	typedef PlpLoader::Exception_PlpHasNoName Exception_PlpHasNoName;
+	typedef PlpLoader::Exception_PlpIsNotRepeatable Exception_PlpIsNotRepeatable;
 
 	enum EVENT{
-		EVENT_MODULE_START,
+		EVENT_UNKNOWN=0,
+		EVENT_MODULE_START=1,
 		EVENT_MODULE_STOP,
 		EVENT_GOAL_ACHIEV_START,
 		EVENT_GOAL_ACHIEV_STOP
@@ -70,7 +70,7 @@ public:
 	virtual ~Module();
 
 	void load_plp(istream& stream);
-	void parse();
+	void load_plp(string filename);
 	string plp_name()const;
 	string plp_type()const;
 	bool plp_is_repeated()const;
@@ -92,28 +92,20 @@ public:
 		return Iteration(this);
 	}
 
-	string get_script()const{ stringstream s; s<<(is_need_header()?_header:"") << "\n" <<_plp_text; return s.str();}
-	bool is_need_header()const;
+	string get_script()const{ return loader.get_script(); }
 
 	vector<string> search(string key)const{
-		vector<string> res;
-		for(map<string,string>::const_iterator i=_plp_map.begin();i!=_plp_map.end();i++){
-			if(starts_with(i->first, key)) res.push_back(i->second);
-		}
-		return res;
+		return loader.search(key);
 	}
 	string operator[](string key)const{
-		if(_plp_map.find(key)==_plp_map.end()) return "";
-		return _plp_map.at(key);
+		return loader[key];
 	}
 
 	size_t iterations()const{ return iterations_counter; }
 
 private:
-	string _plp_text;
-	map<string,string> _plp_map;
+	PlpLoader loader;
 	size_t iterations_counter;
-	string _header;
 	static list<EventCallback> events;
 
 };

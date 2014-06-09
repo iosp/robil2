@@ -100,6 +100,7 @@ include_directories(
 set( PLPCPP_CPP
     src/PlpCpp.cpp
     src/PlpMonitorServer.cpp
+    src/PlpLoader.cpp
 )
 set( ALL_LIBS
     ${catkin_LIBRARIES} ${Boost_LIBRARIES}

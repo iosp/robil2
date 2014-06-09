@@ -15,6 +15,8 @@ namespace plp{
 
 class PlpMonitorServer {
 public:
+	typedef Module::EVENT EVENT;
+
 	PlpMonitorServer(ros::NodeHandle& n);
 	PlpMonitorServer(ros::NodeHandle& n, int _simulate);
 	virtual ~PlpMonitorServer();
@@ -35,6 +37,7 @@ private:
 	ros::Publisher p_pause;
 	ros::Publisher p_resume;
 };
+
 
 }
 
