@@ -2,12 +2,14 @@
 
 <sdf version="1.4">
   <world name="default">
-    <include>
-      <uri>model://ground_plane</uri>
-    </include>
+
 
     <include>
       <uri>model://sun</uri>
+    </include>
+
+    <include>
+      <uri>model://ground_plane</uri>
     </include>
 
     <include>
@@ -17,8 +19,7 @@
     </include>
 
 
-<!-- -->
-
+<!-- 
     <include>
       <uri>model://barrel1</uri>
       <name>target_barrel_1</name>
@@ -49,7 +50,7 @@
       <pose>200 200 3 0 0 0</pose>
    </include>
 
-<!-- -->
+ -->
 
   </world>
 </sdf>

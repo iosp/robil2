@@ -516,8 +516,8 @@ int main(int argc, char **argv)
   else if(std::string(argv[1]).compare("-file")==0)
 		{
 		std::cout << "!! file !!"<<std::endl;
-		std::string dir_path = "/home/userws3/srvss/devel/lib/SRVSS/";
-		std::string file_path = dir_path + argv[2];
+		//std::string dir_path = "/home/userws3/srvss/devel/lib/SRVSS/";
+		std::string file_path = argv[2];
 
 		std::fstream mfile(file_path.data() ,std::ios_base::in);
 		//std::fstream mfile("/home/userws3/srvss/devel/lib/SRVSS/myMission.txt",std::ios_base::in);
@@ -539,10 +539,15 @@ int main(int argc, char **argv)
 		int i = 1;
 		while (!mfile.eof())
 		{
-			mfile >> t_lat[i];
-			mfile >> t_lon[i];
-			mfile >> t_vel[i];
-      	i++;
+			float temp_lat, temp_lon, temp_vel;
+			mfile >> temp_lat;
+			mfile >> temp_lon;
+			mfile >> temp_vel;
+
+			t_lat[i] = temp_lat - t_lat[0];
+			t_lon[i] = temp_lon - t_lon[0];
+			t_vel[i] = temp_vel;
+      	    i++;
 		}
 		 wp_num = --i;
 		}

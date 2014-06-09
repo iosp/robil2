@@ -4,16 +4,31 @@
     <include>
       <uri>model://sun</uri>
     </include>
- 
+
+           <scene>
+            <sky>
+                <time>10</time>
+                <clouds>
+                    <speed>5</speed>
+                    <direction>1.14</direction>
+                    <humidity>0.3</humidity>
+                </clouds>
+            </sky>
+        </scene>
+
+
+    <include>
+      <uri>model://srvss_terrain2</uri>
+    </include>
+
+
   <include>
       <uri>model://bobcat</uri>
       <name>SRVSS_BobCat</name>
       <pose>50 50 4 0 0 0</pose>
     </include>
 
-          <include>
-            <uri>model://srvss_terrain2</uri>
-        </include>
+
         <include>
             <uri>model://tree1</uri>
             <pose>53.1913 27.4259 0.903203 -0.0787134 0.0310457 -0.588899</pose>

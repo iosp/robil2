@@ -5,6 +5,21 @@
       <uri>model://sun</uri>
     </include>
  
+        <scene>
+            <sky>
+                <time>10</time>
+                <clouds>
+                    <speed>5</speed>
+                    <direction>1.14</direction>
+                    <humidity>0.3</humidity>
+                </clouds>
+            </sky>
+        </scene>
+
+  <include>
+     <uri>model://srvss_terrain1</uri>
+  </include>
+
   <include>
       <uri>model://bobcat</uri>
       <name>SRVSS_BobCat</name>
@@ -53,9 +68,6 @@
 
  -->
 
-         <include>
-            <uri>model://srvss_terrain1</uri>
-        </include>
         <include>
             <uri>model://rock1</uri>
             <pose>51.1455 71.4138 0.200329 -0.0184248 0.222311 0.507678</pose>

@@ -9,6 +9,8 @@
 
 //#include "rate2effort/WheelsRate_msg.h"
 #include <sstream>
+#include <iostream>
+#include <fstream>
 
 
   ros::Publisher front_left_pub_;
@@ -62,6 +64,8 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
    
    //     float FL_com_derection =  FL_rot_vel*left_com;
   
+
+
         if  ( (std::abs(FL_rot_vel) < 0.2) || (FL_com_der < 0) ) {
             FL_mom_limit = rot_pow_limit;
 	     }
@@ -157,18 +161,17 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
                }
            back_right_pub_.publish(pub_BR); 
 
-
+/*
      ROS_INFO(" ------ " );
      ROS_INFO(" left_com = %f ,  right_com = %f ",  left_com ,  right_com );
      ROS_INFO(" FL_com_der = %d,   BL_com_der = %d,   FR_com_der = %d,   BR_com_der = %d ",   FL_com_der,   BL_com_der,   FR_com_der,   BR_com_der);
      ROS_INFO(" FL_mom_limit = %f, BL_mom_limit = %f, FR_mom_limit = %f, BR_mom_limit = %f ", FL_mom_limit, BL_mom_limit, FR_mom_limit, BR_mom_limit );
      ROS_INFO(" FL_com = %f,       BL_com = %f,       FR_com = %f,       BR_com = %f ",       pub_FL.data , pub_BL.data , pub_FR.data,  pub_BR.data );
-
+*/
 
     ros::Rate rate(100);
     rate.sleep();
 }
-
 
 
 void joint_statesCallback(sensor_msgs::JointState msg)
@@ -178,31 +181,15 @@ void joint_statesCallback(sensor_msgs::JointState msg)
       FL_rot_vel =   msg.velocity[2];
       FR_rot_vel =   msg.velocity[3];
       
-    ROS_INFO(" FL_rot_vel = %f , BL_rot_vel = %f , FR_rot_vel = %f , BR_rot_vel = %f ", FL_rot_vel , BL_rot_vel , FR_rot_vel , BR_rot_vel );
+ //   ROS_INFO(" FL_rot_vel = %f , BL_rot_vel = %f , FR_rot_vel = %f , BR_rot_vel = %f ", FL_rot_vel , BL_rot_vel , FR_rot_vel , BR_rot_vel );
 
 	ros::Rate rate(100);
     	rate.sleep();
 }
 
 
-
-
-/*
-void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
-{
-	std_msgs::Float64 pub;    
-	
-    	pub.data = msg->x;
-    	supporter_pub_.publish(pub);
-
-    	pub.data = msg->y;
-	loader_pub_.publish(pub);
-}
-*/
-
 int main(int argc, char **argv)
 {
-  
   ros::init(argc, argv, "rate2effort");
 
   ros::NodeHandle n;
@@ -212,15 +199,12 @@ int main(int argc, char **argv)
   back_left_pub_ = n.advertise<std_msgs::Float64>("/bobcat/back_left_wheel_velocity_controller/command", 100);
   back_right_pub_ = n.advertise<std_msgs::Float64>("/bobcat/back_right_wheel_velocity_controller/command", 100);
 
-  
-
 
 //  supporter_pub_ = n.advertise<std_msgs::Float64>("/bobcat/supporter_position_controller/command", 100);
 //  loader_pub_ = n.advertise<std_msgs::Float64>("/bobcat/loader_position_controller/command", 100);
 
     ros::Subscriber twist_sub_ = n.subscribe("/wheelsrate", 100, wheelsCallback );   
     ros::Subscriber JointStates_sub_ = n.subscribe("/bobcat/joint_states", 100, joint_statesCallback );
-
 
 //  ros::Subscriber arm_sub_ = n.subscribe("/armrate", 1000, armCallback );
 
