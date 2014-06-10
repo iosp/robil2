@@ -1,8 +1,8 @@
 <launch>
 
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
-  <arg name="paused" default="false"/>
-  <arg name="use_sim_time" default="true"/>
+  <arg name="paused" default="true"/>
+  <arg name="use_sim_time" default="false"/>
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
@@ -14,7 +14,8 @@
     <arg name="paused" value="$(arg paused)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
-    <arg name="world_name" value="$(find live_bobcat)/worlds/empty.world"/>
+    <!-- <arg name="world_name" value="$(find live_bobcat)/worlds/empty.world"/> -->
+    <arg name="world_name" value="/home/dan/robil_test.world"/>
   </include>
 
  <param name="robot_description" command="cat $(find bobcat)/urdf/BOBCAT.URDF" />
