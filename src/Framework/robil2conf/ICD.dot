@@ -42,6 +42,8 @@ SensorWire [label="/SENSORS/WIRE [types::WireLength]"]
 SensorSICK1 [label="/SENSORS/SICK/1 [types::Laser]"]
 SensorSICK2 [label="/SENSORS/SICK/2 [types::Laser]"]
 SensorIBEO [label="/SENSORS/IBEO/1 [types::MultiLaser]"]
+SensorGpsSpeed [label="/SENSORS/GPS/Speed [types::GpsSpeed]"]
+PerGpsSpeed [label="/PER/GPS/Speed [types::GpsSpeed]"]
 
 }
 
@@ -89,11 +91,14 @@ PER -> MiniMap -> WPD
 
 PER -> VOOdometry -> LOC
 
+PER -> PerGpsSpeed -> LOC
+
 LOC -> Location -> {PER SSM LLC OCU PP WPD SMME IEDSIM}
 
 LOC -> PerVelocity -> {PER SSM LLC OCU}
 
-SENSORS -> {SensorINS SensorGPS SensorCamL SensorCamR SensorWire SensorSICK1 SensorSICK2 SensorIBEO} -> PER
+
+SENSORS -> {SensorINS SensorGPS SensorCamL SensorCamR SensorWire SensorSICK1 SensorSICK2 SensorIBEO SensorGpsSpeed} -> PER
 
 LLC -> {EffortsTh EffortsSt EffortsJn} -> {PLATFORM PER}
 

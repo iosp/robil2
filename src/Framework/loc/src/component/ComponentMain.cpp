@@ -60,6 +60,11 @@ void ComponentMain::handleVOOdometry(const config::LOC::sub::VOOdometry& msg)
 	//std::cout<< "LOC say:" << msg << std::endl;
 }
 	
+void ComponentMain::handleGpsSpeed(const config::LOC::sub::PerGpsSpeed& msg)
+{
+	//std::cout<< "LOC say:" << msg << std::endl;
+}
+	
 
 void ComponentMain::publishLocation(config::LOC::pub::Location& msg)
 {

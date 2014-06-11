@@ -42,6 +42,7 @@
 #include <robil_msgs/MissionAcceptance.h>
 #include <sensor_msgs/JointState.h>
 #include <robil_msgs/MultiLaserScan.h>
+#include <robil_msgs/GpsSpeed.h>
 
 #define DEF_PUB( COMP, TOPIC, TYPE )\
 	namespace config{ namespace COMP{ namespace pub{ typedef TYPE TOPIC; } } }
@@ -77,6 +78,7 @@ namespace types{
 	typedef robil_msgs::AssignManipulatorTask 			WSMData;
 	typedef sensor_msgs::JointState 					Joints;
 	typedef sensor_msgs::JointState 					BladPose; //??? JointState?
+	typedef robil_msgs::GpsSpeed 						GpsSpeed;
 }
 
 #define COMPONENT context.parameters<Params>().comp

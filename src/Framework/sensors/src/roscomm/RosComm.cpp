@@ -27,6 +27,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_pub_SensorSICK1=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorSICK1>(fetchParam(&_nh,"SENSORS","SensorSICK1","pub"),10));
 	_pub_SensorSICK2=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorSICK2>(fetchParam(&_nh,"SENSORS","SensorSICK2","pub"),10));
 	_pub_SensorIBEO=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorIBEO>(fetchParam(&_nh,"SENSORS","SensorIBEO","pub"),10));
+	_pub_SensorGpsSpeed=ros::Publisher(_nh.advertise<config::SENSORS::pub::SensorGpsSpeed>(fetchParam(&_nh,"SENSORS","SensorGpsSpeed","pub"),10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
 }
@@ -83,6 +84,11 @@ void RosComm::publishSensorSICK2( config::SENSORS::pub::SensorSICK2 &msg)
 void RosComm::publishSensorIBEO( config::SENSORS::pub::SensorIBEO &msg)
 {
 	_pub_SensorIBEO.publish(msg);
+}
+
+void RosComm::publishSensorGPSSpeed( config::SENSORS::pub::SensorGpsSpeed &msg)
+{
+	_pub_SensorGpsSpeed.publish(msg);
 }
 		
 void RosComm::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){

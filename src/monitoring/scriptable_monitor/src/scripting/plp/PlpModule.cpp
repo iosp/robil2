@@ -44,6 +44,8 @@ PlpModule::~PlpModule() {
 
 
 void PlpModule::start(){
+	if(_status == "run") return;
+
 	for(vector<Info>::iterator i=_scripts.begin();i!=_scripts.end();i++){
 		if(i->params["time"]=="on_start"){
 			string source = i->source;
@@ -51,16 +53,17 @@ void PlpModule::start(){
 			string sname = i->params["name"];
 			string s = i->source;
 			//s = s + "\n" +"print 'one time script ', '"+sname+"'";
-			s = boost::str(boost::format("%s\n_tmp = remove_script('%s','%s')\n") %s %mname %sname );
+			s = boost::str(boost::format("%s\nremove_script('%s','%s')\n") %s %mname %sname );
 			sh->addScript(s);
 		}else
 		if(i->params["time"]=="on_stop"){
 
 		}else{
-			sh->addScript(i->source+"\nprint 'check "+i->params["name"]+"'\n");
+			sh->addScript(i->source);//+"\nprint 'check "+i->params["name"]+"'\n");
 		}
 	}
 	if(_repeated_time>0){
+		//cout<<"_repeated_time = "<<_repeated_time<<endl;
 		start_timer(_module_name+"_"+"repeat", _repeated_time, "report error module "+_module_name+" is timed out.");
 	}
 	_status = "run";
@@ -68,6 +71,14 @@ void PlpModule::start(){
 }
 
 void PlpModule::stop(){
+	if(_status == "stop") return;
+	if(_internal_status == "standby"){
+		stop_timer_by_prefix(_module_name);
+		_status = "stop";
+		_internal_status = "stop";
+		return;
+	}
+
 	for(vector<Info>::iterator i=_scripts.begin();i!=_scripts.end();i++){
 		if(i->params["time"]=="on_start"){
 		}else
@@ -77,7 +88,7 @@ void PlpModule::stop(){
 			string sname = i->params["name"];
 			string s = i->source;
 			//s = s + "\n" +"print 'one time script ', '"+sname+"'";
-			s = boost::str(boost::format("%s\n_tmp = remove_script('%s','%s')\n") %s %mname %sname );
+			s = boost::str(boost::format("%s\nremove_script('%s','%s')\n") %s %mname %sname );
 			sh->addScript(s);
 		}else{
 			stop_script(i->params["name"]);
@@ -88,6 +99,9 @@ void PlpModule::stop(){
 	_internal_status = "stop";
 }
 void PlpModule::resume(){
+	if(_status == "stop") return;
+	if(_internal_status == "run") return;
+
 	for(vector<Info>::iterator i=_scripts.begin();i!=_scripts.end();i++){
 		if(i->params["time"]=="on_start"){
 			string source = i->source;
@@ -95,7 +109,7 @@ void PlpModule::resume(){
 			string sname = i->params["name"];
 			string s = i->source;
 			//s = s + "\n" +"print 'one time script ', '"+sname+"'";
-			s = boost::str(boost::format("%s\n_tmp = remove_script('%s','%s')\n") %s %mname %sname );
+			s = boost::str(boost::format("%s\nremove_script('%s','%s')\n") %s %mname %sname );
 			sh->addScript(s);
 		}else
 		if(i->params["time"]=="on_stop"){
@@ -110,6 +124,9 @@ void PlpModule::resume(){
 	_internal_status = "run";
 }
 void PlpModule::pause(){
+	if(_status == "stop") return;
+	if(_internal_status == "standby") return;
+
 	for(vector<Info>::iterator i=_scripts.begin();i!=_scripts.end();i++){
 		if(i->params["time"]=="on_start"){
 		}else
@@ -119,7 +136,7 @@ void PlpModule::pause(){
 			string sname = i->params["name"];
 			string s = i->source;
 			//s = s + "\n" +"print 'one time script ', '"+sname+"'";
-			s = boost::str(boost::format("%s\n_tmp = remove_script('%s','%s')\n") %s %mname %sname );
+			s = boost::str(boost::format("%s\nremove_script('%s','%s')\n") %s %mname %sname );
 			sh->addScript(s);
 		}else{
 			stop_script(i->params["name"]);

@@ -31,12 +31,14 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_sub_EffortsTh=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsTh","sub"), 10, &RosComm::EffortsThCallback,this));
 	_sub_EffortsSt=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsSt","sub"), 10, &RosComm::EffortsStCallback,this));
 	_sub_EffortsJn=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsJn","sub"), 10, &RosComm::EffortsJnCallback,this));
+	_sub_GpsSpeed=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorGpsSpeed","sub"), 10, &RosComm::GpsSpeedCallback,this));
 	_pub_GPS=ros::Publisher(_nh.advertise<config::PER::pub::GPS>(fetchParam(&_nh,"PER","GPS","pub"),10));
 	_pub_INS=ros::Publisher(_nh.advertise<config::PER::pub::INS>(fetchParam(&_nh,"PER","INS","pub"),10));
 	_pub_BladePosition=ros::Publisher(_nh.advertise<config::PER::pub::BladePosition>(fetchParam(&_nh,"PER","BladePosition","pub"),10));
 	_pub_Map=ros::Publisher(_nh.advertise<config::PER::pub::Map>(fetchParam(&_nh,"PER","Map","pub"),10));
 	_pub_MiniMap=ros::Publisher(_nh.advertise<config::PER::pub::MiniMap>(fetchParam(&_nh,"PER","MiniMap","pub"),10));
 	_pub_VOOdometry=ros::Publisher(_nh.advertise<config::PER::pub::VOOdometry>(fetchParam(&_nh,"PER","VOOdometry","pub"),10));
+	_pub_GpsSpeed=ros::Publisher(_nh.advertise<config::PER::pub::PerGpsSpeed>(fetchParam(&_nh,"PER","PerGpsSpeed","pub"),10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
 }
@@ -123,6 +125,10 @@ void RosComm::EffortsJnCallback(const config::PER::sub::EffortsJn::ConstPtr &msg
 	_comp->handleEffortsJn(*msg);
 }
 	
+void RosComm::GpsSpeedCallback(const config::PER::sub::SensorGpsSpeed::ConstPtr &msg)
+{
+	_comp->handleGpsSpeed(*msg);
+}
 
 void RosComm::publishGPS( config::PER::pub::GPS &msg)
 {
@@ -157,6 +163,11 @@ void RosComm::publishMiniMap( config::PER::pub::MiniMap &msg)
 void RosComm::publishVOOdometry( config::PER::pub::VOOdometry &msg)
 {
 	_pub_VOOdometry.publish(msg);
+}
+	
+void RosComm::publishGpsSpeed( config::PER::pub::PerGpsSpeed &msg)
+{
+	_pub_GpsSpeed.publish(msg);
 }
 	
 void RosComm::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){

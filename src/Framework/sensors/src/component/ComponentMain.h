@@ -25,6 +25,7 @@ public:
 	void publishSensorSICK1(config::SENSORS::pub::SensorSICK1& msg);
 	void publishSensorSICK2(config::SENSORS::pub::SensorSICK2& msg);
 	void publishSensorIBEO(config::SENSORS::pub::SensorIBEO& msg);
+	void publishSensorGPSSpeed(config::SENSORS::pub::SensorGpsSpeed& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);

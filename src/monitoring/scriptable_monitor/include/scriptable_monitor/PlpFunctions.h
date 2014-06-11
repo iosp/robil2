@@ -9,8 +9,8 @@
 #define PLPFUNCTIONS_H_
 #include <scriptable_monitor/CustomFunctionsHeader.h>
 
-FUNCTION(get_global_var)
-FUNCTION(set_global_var)
+FUNCTION(get_global_var_float)
+FUNCTION(set_global_var_float)
 
 FUNCTION(get_global_var_str)
 FUNCTION(set_global_var_str)

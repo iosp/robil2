@@ -298,6 +298,11 @@ void ComponentMain::handleEffortsJn(const config::PER::sub::EffortsJn& msg)
 	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
+void ComponentMain::handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg)
+{
+	//std::cout<< "PER say:" << msg << std::endl;
+}
+	
 
 void ComponentMain::publishGPS(config::PER::pub::GPS& msg)
 {
@@ -400,6 +405,11 @@ void ComponentMain::publishMiniMap(config::PER::pub::MiniMap& msg)
 void ComponentMain::publishVOOdometry(config::PER::pub::VOOdometry& msg)
 {
 	_roscomm->publishVOOdometry(msg);
+}
+
+void ComponentMain::publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg)
+{
+	_roscomm->publishGpsSpeed(msg);
 }
 	
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){

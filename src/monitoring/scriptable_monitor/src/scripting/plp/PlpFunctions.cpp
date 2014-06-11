@@ -19,7 +19,7 @@ namespace {
 	map<string,int> global_int;
 }
 
-FUNCTION(get_global_var)
+FUNCTION(get_global_var_float)
 {
 	lock_global
 	string name = input.get<string>(0);
@@ -30,7 +30,7 @@ FUNCTION(get_global_var)
 	output.set<double>(global_double.at(name));
 }
 
-FUNCTION(set_global_var)
+FUNCTION(set_global_var_float)
 {
 	lock_global
 	string name = input.get<string>(0);

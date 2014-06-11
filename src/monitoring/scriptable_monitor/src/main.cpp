@@ -188,7 +188,17 @@ void scriptHostTest() {
 	host.addScript(plp_test4);
 //	host.addScript(plp1);
 
+	sleep(1);
+	host.pauseModule("Module_1");
+	sleep(1);
+	host.resumeModule("Module_1");
+	sleep(1);
+
+	cout<<"-------------------------------------------------"<<endl;
+	host.deleteScript("Module_1");
+
 	sleep(5);
+	cout<<"Finish..."<<endl;
 
 	host.stop();
 
