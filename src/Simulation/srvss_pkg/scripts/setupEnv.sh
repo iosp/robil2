@@ -36,11 +36,24 @@ else
 fi
 
 
+############################################################
+#Generate a model of the gpu_sick in the gazebo environment#
+############################################################
+printf "setting the gpu_sick model as an sdf model in the gazebo --- "
+
+#create the model dir if it doesn't exist
+if [ ! -d $HOME/.gazebo/models/gpu_sick/meshes ]; then
+	$(mkdir -p $HOME/.gazebo/models/gpu_sick/meshes)
+fi	
+
+$(cp -u $srvss_pkg_dir/gpu_sick/* $HOME/.gazebo/models/gpu_sick)
+$(cp -u $srvss_pkg_dir/gpu_sick/meshes/* $HOME/.gazebo/models/gpu_sick/meshes)
+
 ##########################################################
 #Generate a model of the bobcat in the gazebo environment#
 ##########################################################
 
-printf "setting the sahar model as an sdf model in the gazebo --- "
+printf "setting the bobcat model as an sdf model in the gazebo --- "
 #create the model dir if it doesn't exist
 if [ ! -d $HOME/.gazebo/models/bobcat ]; then
 	$(mkdir -p $HOME/.gazebo/models/bobcat/meshes)
