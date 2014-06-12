@@ -8,8 +8,10 @@
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
 #include "MoveBase.h"
+
 ComponentMain::ComponentMain(int argc,char** argv)
 {
+	_events = 0;
 	_roscomm = new RosComm(this,argc, argv);
 	_move_base = new MoveBase(this);
 }
@@ -60,3 +62,26 @@ void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
 	_roscomm->publishDiagnostic(header, _report);
 }
+
+#include <decision_making/ROSTask.h>
+void ComponentMain::set_events(decision_making::EventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->raiseEvent("/CompleteTask");
+}
+void ComponentMain::rise_taskStarted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->raiseEvent("/TaskIsStarted");
+}
+void ComponentMain::rise_taskPaused(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->raiseEvent("/TaskIsPaused");
+}
+
+

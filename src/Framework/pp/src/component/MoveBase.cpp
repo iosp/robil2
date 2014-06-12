@@ -19,6 +19,8 @@
 #define CREATE_POINTCLOUD2_FOR_NAV 0
 #define CREATE_POINTCLOUD_FOR_NAV 1
 
+#define TH_NEARBY 0.5 //m
+
 #define SYNCH 	boost::recursive_mutex::scoped_lock locker(mtx);
 
 namespace{
@@ -56,9 +58,20 @@ namespace{
 		}
 		return min_idx;
 	}
-	geometry_msgs::PoseStamped search_next_waypoint(const nav_msgs::Path& path, const geometry_msgs::PoseWithCovarianceStamped& pos){
-		if(path.poses.size()==0) return getPoseStamped( pos );
-		if(path.poses.size()==1) return getPoseStamped( path.poses[0] );
+
+	geometry_msgs::PoseStamped search_next_waypoint(const nav_msgs::Path& path, const geometry_msgs::PoseWithCovarianceStamped& pos, bool& path_is_finished){
+		cout<<"search_next_waypoint for: "<<pos.pose.pose.position.x<<","<<pos.pose.pose.position.y<<endl;
+		if(path.poses.size()==0){
+			path_is_finished = true;
+			return getPoseStamped( pos );
+		}
+		if(path.poses.size()==1){
+			geometry_msgs::PoseStamped my_pose = getPoseStamped( pos );
+			geometry_msgs::PoseStamped path_pose = getPoseStamped( path.poses[0] );
+			path_is_finished = toVector(path_pose.pose).distance(toVector(my_pose.pose)) <= TH_NEARBY;
+			return path_pose;
+		}
+		path_is_finished = false;
 		size_t ni = search_nearest_waypoint_index(path , pos);
 		cout<<"[i] nearest index = "<<ni<<endl;
 		const geometry_msgs::Pose& c = getPose( pos );
@@ -80,10 +93,16 @@ namespace{
 			double angle_deg = calcTriangle_deg(a,b,c);
 			if(angle_deg<90){
 				cout<<"[i] return index = "<< i <<endl;
+				if(i==path.poses.size()-1){
+					geometry_msgs::PoseStamped my_pose = getPoseStamped( pos );
+					geometry_msgs::PoseStamped path_pose = getPoseStamped( path.poses[i] );
+					path_is_finished = toVector(path_pose.pose).distance(toVector(my_pose.pose)) <= TH_NEARBY;
+				}
 				return getPoseStamped( path.poses[i] );
 			}
 		}
 		//PATH IS FINISHED
+		path_is_finished = true;
 		return getPoseStamped( pos );
 		//return getPoseStamped( path.poses[path.poses.size()-1] );
 	}
@@ -163,6 +182,10 @@ bool MoveBase::all_data_defined()const{
 	return gl_defined and (gp_defined or gnp_defined);
 }
 
+void MoveBase::notify_path_is_finished()const{
+	comp->rise_taskFinished();
+}
+
 void MoveBase::on_position_update(const config::PP::sub::Location& location){
 SYNCH
 	ROS_INFO_STREAM("\t on_position_update( "<<location.pose.pose.position.x<<","<<location.pose.pose.position.y<<" )");
@@ -187,11 +210,13 @@ SYNCH
 
 void MoveBase::calculate_goal(){
 	geometry_msgs::PoseStamped goal;
+	bool is_path_finished;
 	if(gp_defined){
-		goal = search_next_waypoint(gotten_path.waypoints, gotten_location);
+		goal = search_next_waypoint(gotten_path.waypoints, gotten_location, is_path_finished);
 	}else{
-		goal = search_next_waypoint(gotten_nav_path, gotten_location);
+		goal = search_next_waypoint(gotten_nav_path, gotten_location, is_path_finished);
 	}
+	if(is_path_finished) notify_path_is_finished();
 	on_goal(goal);
 }
 

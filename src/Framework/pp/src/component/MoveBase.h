@@ -40,6 +40,7 @@ public:
 
 	void calculate_goal();
 	bool all_data_defined()const;
+	void notify_path_is_finished()const;
 
 protected:
 	config::PP::sub::GlobalPath gotten_path;

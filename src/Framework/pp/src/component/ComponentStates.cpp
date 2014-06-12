@@ -121,16 +121,16 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 	return TaskResult::SUCCESS();
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	PAUSE(1000);
 	events.raiseEvent(Event("EndOfInit",context));
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	COMPONENT->rise_taskStarted();
 	return TaskResult::SUCCESS();
 }
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	COMPONENT->rise_taskPaused();
 	return TaskResult::SUCCESS();
 }
 
@@ -138,6 +138,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros_decision_making_init(argc, argv);
 	RosEventQueue events;
+	component.set_events(&events);
 	CallContext context;
 	context.createParameters(new Params(&component));
 	//events.async_spin();
@@ -148,7 +149,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ROS_INFO("Starting pp (PathPlanner)...");
 	Fsmpp(&context, &events);
-
+	component.set_events(NULL);
 }
 
 

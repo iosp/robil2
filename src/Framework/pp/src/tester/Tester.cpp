@@ -76,6 +76,7 @@ Path createPath(){
 	path.poses.push_back(createPose(-12.1595077515,14.9751663208));
 	path.poses.push_back(createPose(-23.5211334229,28.2392272949));
 	path.poses.push_back(createPose(-32.2888793945,44.5931091309));
+	path.poses.push_back(createPose(-37.8151,51.3665));
 	return path;
 }
 Path createMove(){
@@ -124,7 +125,7 @@ void Tester::test1_init(){
 int move_index=0 ;
 void Tester::test1_step(){
 	static int dir = -1;
-	pub_map.publish(map);
+	//pub_map.publish(map);
 	pub_path.publish(path);
 	int size = move.poses.size();
 	if(move_index>=size-1 or move_index<=0)dir*=-1;
