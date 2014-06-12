@@ -87,9 +87,70 @@ void AblManager::deactivate(const std::string& compliment){
 		}
 	}
 }
+/**
+Comm. Fail
+	SSM External communication failure for more than 10 seconds.
+		1. Continue mission autonomously
+		2. Pause mission until recovery
+		3. Drive back to last comm. point and wait for commands (reverse route)
+Obstacle detected
+	WPD/PP? Obstacle detected in path
+		1. Avoid obstacle
+		2. Start predefined W.S to remove obstacle
+		3. Pause and wait for operator
+Road detected
+	WPD/PP(?) Road shoulders detected in path
+		1.Correct path and drive along it
+		2.Ignore detection
+No autonomous solution/ road blocked
+	WPD/PP(?) When the UGV cannot calculate route due to lack of information, data inconsistency or path blocked. 5m ahead
+		1.(optional) stop and reset map/go back one step/recalculate mission
+		2. Abort mission and go back (reverse route)
+		3. Pause and wait for operator
+Turn-over
+	SSM Stopping at critical pitch/roll values. 5 degrees under max allowed
+		1.Recalculate and continue mission
+		2. Pause and wait for operator
+Collision
+	LLC Vehicle not moving despite receiving speed from WPD
+		1.Recalculate and continue mission
+		2. Pause and wait for operator
+No GPS signal
+	Localization No GPS signal for more than 10 seconds
+		1. Navigate without GPS
+		2. Navigate without GPS for X meters
+		3. Pause and wait for operator
+**/
+#define switch_str(NAME) string& _sw_=NAME; bool _t_=true; if(false)
+#define case_str(VAL) }else if(VAL==_sw_){
 
 void AblManager::on_activation(const Activated& act){
+	switch_str(act.trigger.name){
+		case_str( "AssistanceRequired" ){
 
+		}
+		case_str( "NoPathFound" ){
+
+		}
+		case_str( "CommFail" ){
+
+		}
+		case_str( "ObstacleDetected" ){
+
+		}
+		case_str( "RoadDetected" ){
+
+		}
+		case_str( "Turn-over" ){
+
+		}
+		case_str( "Collision" ){
+
+		}
+		case_str( "NoGPS" ){
+
+		}
+	}
 }
 void AblManager::on_deactivation(const Activated& act){
 
