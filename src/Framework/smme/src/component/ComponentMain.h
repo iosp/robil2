@@ -13,10 +13,12 @@
 #include <boost/thread.hpp>
 class RosComm;
 class MissionManager;
+namespace decision_making{ class EventQueue; }
 class ComponentMain {
 	RosComm* _roscomm;
 	MissionManager* _mission_manager;
 	boost::thread_group threads;
+	decision_making::EventQueue _events;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -34,5 +36,8 @@ public:
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 
 	MissionManager * const mission_manager(){return _mission_manager;}
+
+	void set_events(decision_making::EventQueue* e){ _events = e; }
+	decision_making::EventQueue* events()const{ return _events; }
 };
 #endif /* COMPONENTMAIN_H_ */

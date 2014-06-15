@@ -30,7 +30,7 @@ class AblManager {
 
 	struct Activated{
 		Trigger trigger;
-		std::string polyci;
+		std::string policy;
 	};
 	std::list<Activated> activated;
 
