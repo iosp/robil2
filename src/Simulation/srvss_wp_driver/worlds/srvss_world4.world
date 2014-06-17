@@ -23,7 +23,7 @@
 
 
   <include>
-      <uri>model://bobcat</uri>
+      <uri>model://srvss_bobcat</uri>
       <name>SRVSS_BobCat</name>
       <pose>50 50 4 0 0 0</pose>
     </include>

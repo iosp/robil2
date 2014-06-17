@@ -1,0 +1,13 @@
+<!-- -*- mode: XML -*- -->
+<launch>
+
+  <param name="robot_description" command="cat $(find srvss_bobcat)/urdf/BOBCAT.URDF" />
+ 
+  <!-- ros_control clam launch file -->
+  <include file="$(find srvss_bobcat)/launch/srvss_bobcat_controllers.launch" />
+
+  <!--  -->
+  <node name="srvss_bobcat_RateToEffort_node" pkg="srvss_bobcat" type="srvss_bobcat_rate2effort_node" cwd="node" output="screen" />
+
+
+</launch>

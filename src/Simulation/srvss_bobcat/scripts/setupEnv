@@ -3,7 +3,7 @@
 
 import subprocess
 
-path=subprocess.check_output(["rospack","find","srvss_pkg"])
+path=subprocess.check_output(["rospack","find","srvss_bobcat"])
 path= path[:-1]+"/scripts/setupEnv.sh"
 print path
 subprocess.call(["bash",path])

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(srvss_pkg)
+project(srvss_bobcat)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -11,11 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS 
-   thread 
-   system 
-   python
-)
+# find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -54,7 +50,6 @@ find_package(Boost REQUIRED COMPONENTS
 #   Message2.msg
 # )
 
-
 ## Generate services in the 'srv' folder
 # add_service_files(
 #   FILES
@@ -86,7 +81,7 @@ find_package(Boost REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES srvss_pkg
+#  LIBRARIES srvss_bobcat
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
@@ -103,50 +98,26 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(srvss_pkg
-#   src/${PROJECT_NAME}/srvss_pkg.cpp
+# add_library(srvss_bobcat
+#   src/${PROJECT_NAME}/srvss_bobcat.cpp
 # )
 
 ## Declare a cpp executable
-add_executable(srvss_wp_driver_node src/srvss_wp_driver_node.cpp)
-target_link_libraries(srvss_wp_driver_node
-  ${catkin_LIBRARIES}  
-  ${Boost_LIBRARIES} 
-)
-
-add_executable(srvss_rate2effort_node src/srvss_rate2effort_node.cpp)
-target_link_libraries(srvss_rate2effort_node
-   ${catkin_LIBRARIES}
- )
-
-add_executable(srvss_wp_keyboard_commander_node src/srvss_wp_keyboard_commander_node.cpp)
-target_link_libraries(srvss_wp_keyboard_commander_node
-   ${catkin_LIBRARIES}
- )
-
-add_executable(srvss_greader_node src/srvss_greader_node.cpp)
-target_link_libraries(srvss_greader_node
-   ${catkin_LIBRARIES}
- )
-
-
-#
-#add_executable(test_node src/test_node.cpp)
-#target_link_libraries(test_node
-#   ${catkin_LIBRARIES}
-#   ${Boost_LIBRARIES} 
-# )
+# add_executable(srvss_bobcat_node src/srvss_bobcat_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(srvss_pkg_node srvss_pkg_generate_messages_cpp)
+# add_dependencies(srvss_bobcat_node srvss_bobcat_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
+# target_link_libraries(srvss_bobcat_node
+#   ${catkin_LIBRARIES}
+# )
 
-
-
-
-
+add_executable(srvss_bobcat_rate2effort_node src/srvss_bobcat_rate2effort_node.cpp)
+target_link_libraries(srvss_bobcat_rate2effort_node
+   ${catkin_LIBRARIES}
+ )
 
 #############
 ## Install ##
@@ -163,7 +134,7 @@ target_link_libraries(srvss_greader_node
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS srvss_pkg srvss_pkg_node
+# install(TARGETS srvss_bobcat srvss_bobcat_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -188,7 +159,7 @@ target_link_libraries(srvss_greader_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_srvss_pkg.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_srvss_bobcat.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

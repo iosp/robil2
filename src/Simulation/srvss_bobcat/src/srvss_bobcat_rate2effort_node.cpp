@@ -194,17 +194,17 @@ int main(int argc, char **argv)
 
   ros::NodeHandle n;
 
-  front_left_pub_ = n.advertise<std_msgs::Float64>("/bobcat/front_left_wheel_velocity_controller/command", 100);
-  front_right_pub_ = n.advertise<std_msgs::Float64>("/bobcat/front_right_wheel_velocity_controller/command", 100);
-  back_left_pub_ = n.advertise<std_msgs::Float64>("/bobcat/back_left_wheel_velocity_controller/command", 100);
-  back_right_pub_ = n.advertise<std_msgs::Float64>("/bobcat/back_right_wheel_velocity_controller/command", 100);
+  front_left_pub_ = n.advertise<std_msgs::Float64>("/srvss_bobcat/front_left_wheel_velocity_controller/command", 100);
+  front_right_pub_ = n.advertise<std_msgs::Float64>("/srvss_bobcat/front_right_wheel_velocity_controller/command", 100);
+  back_left_pub_ = n.advertise<std_msgs::Float64>("/srvss_bobcat/back_left_wheel_velocity_controller/command", 100);
+  back_right_pub_ = n.advertise<std_msgs::Float64>("/srvss_bobcat/back_right_wheel_velocity_controller/command", 100);
 
 
 //  supporter_pub_ = n.advertise<std_msgs::Float64>("/bobcat/supporter_position_controller/command", 100);
 //  loader_pub_ = n.advertise<std_msgs::Float64>("/bobcat/loader_position_controller/command", 100);
 
     ros::Subscriber twist_sub_ = n.subscribe("/wheelsrate", 100, wheelsCallback );   
-    ros::Subscriber JointStates_sub_ = n.subscribe("/bobcat/joint_states", 100, joint_statesCallback );
+    ros::Subscriber JointStates_sub_ = n.subscribe("/srvss_bobcat/joint_states", 100, joint_statesCallback );
 
 //  ros::Subscriber arm_sub_ = n.subscribe("/armrate", 1000, armCallback );
 
