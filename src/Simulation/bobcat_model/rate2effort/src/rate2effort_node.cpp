@@ -8,6 +8,7 @@
 
  // std_msgs::Float64 x ;
 
+  int emergancy = 1 ;
   ros::Publisher front_left_pub_;
   ros::Publisher front_right_pub_;
   ros::Publisher back_left_pub_;
@@ -45,11 +46,11 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 	if(msg->angular.x < -1)
 		ang.data = -1 ;
 
-    	pub.data = (0.5*lin.data + ang.data)*15;
+    	pub.data = (0.5*lin.data + ang.data)*30*emergancy;
     	front_left_pub_.publish(pub);
     	back_left_pub_.publish(pub);
 
-    	pub.data = (0.5*lin.data - ang.data)*15;
+    	pub.data = (0.5*lin.data - ang.data)*30*emergancy;
 	front_right_pub_.publish(pub);
 	back_right_pub_.publish(pub);
 }
@@ -77,6 +78,7 @@ void ThCallback (const std_msgs::Float64ConstPtr &msg){
 
 void StCallback	(const std_msgs::Float64ConstPtr &msg){
 
+	e_stop = ros::Time::now();
 	geometry_msgs::Twist::ConstPtr pub;
 	wheels->angular.x = msg->data ;
 	pub = wheels;
@@ -110,16 +112,19 @@ int main(int argc, char **argv)
 
   ros::Rate loop_rate(10);
   ros::Duration t_out;
+  e_stop = ros::Time::now();
 
    while (ros::ok())
      {
    /* implementing E-stop, if LLC-node is offline, or doesn't publish any new messages for 1 second */
 	  t_out = (ros::Time::now().operator -(e_stop));
 	   	 if((t_out.sec)>=1) {
-	   		   	   wheels->linear.x = 0 ;
-	   		   	   wheels->angular.z = 0 ;
-	   		   	   wheelsCallback(wheels);
+	   		emergancy = 0 ;
+	   		   	   std::cout << "stopped the wheels" << std::endl;
 	   	   }
+	   	 else{
+	   		 emergancy = 1 ;
+	   	 }
        ros::spinOnce();
        loop_rate.sleep();
      }

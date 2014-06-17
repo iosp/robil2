@@ -26,6 +26,8 @@ class RosComm {
 	ros::Subscriber _sub_BladePosition;
 	ros::Publisher  _pub_WSMVelocity;
 	ros::Publisher  _pub_BladePositionCommand;
+	ros::Subscriber _sub_Location;
+	ros::Subscriber _sub_PerVelocity;
 
   bool init(int argc,char** argv);
 public:
@@ -35,6 +37,8 @@ public:
 	void BladePositionCallback(const config::WSM::sub::BladePosition::ConstPtr &msg);
 	void publishWSMVelocity( config::WSM::pub::WSMVelocity &msg);
 	void publishBladePositionCommand( config::WSM::pub::BladePositionCommand &msg);
+	void LocationCallback(const config::LLC::sub::Location::ConstPtr &msg);
+	void PerVelocityCallback(const config::LLC::sub::PerVelocity::ConstPtr &msg);
 
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
