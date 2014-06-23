@@ -60,7 +60,7 @@ namespace{
 	}
 
 	geometry_msgs::PoseStamped search_next_waypoint(const nav_msgs::Path& path, const geometry_msgs::PoseWithCovarianceStamped& pos, bool& path_is_finished){
-		cout<<"search_next_waypoint for: "<<pos.pose.pose.position.x<<","<<pos.pose.pose.position.y<<endl;
+		//cout<<"search_next_waypoint for: "<<pos.pose.pose.position.x<<","<<pos.pose.pose.position.y<<endl;
 		if(path.poses.size()==0){
 			path_is_finished = true;
 			return getPoseStamped( pos );
@@ -73,7 +73,7 @@ namespace{
 		}
 		path_is_finished = false;
 		size_t ni = search_nearest_waypoint_index(path , pos);
-		cout<<"[i] nearest index = "<<ni<<endl;
+		//cout<<"[i] nearest index = "<<ni<<endl;
 		const geometry_msgs::Pose& c = getPose( pos );
 		//FIRST POINT
 		if(ni==0){
@@ -81,7 +81,7 @@ namespace{
 			const geometry_msgs::Pose& d = getPose( path.poses[1] );
 			double angle_deg = calcTriangle_deg(d,b,c);
 			if(angle_deg>90){
-				cout<<"[i] return index = 0"<<endl;
+				//cout<<"[i] return index = 0"<<endl;
 				return getPoseStamped( path.poses[0] );
 			}
 			ni+=1;
@@ -92,7 +92,7 @@ namespace{
 			const geometry_msgs::Pose& b = getPose( path.poses[i] );
 			double angle_deg = calcTriangle_deg(a,b,c);
 			if(angle_deg<90){
-				cout<<"[i] return index = "<< i <<endl;
+				//cout<<"[i] return index = "<< i <<endl;
 				if(i==path.poses.size()-1){
 					geometry_msgs::PoseStamped my_pose = getPoseStamped( pos );
 					geometry_msgs::PoseStamped path_pose = getPoseStamped( path.poses[i] );
@@ -115,6 +115,7 @@ MoveBase::MoveBase(ComponentMain* comp)
 	ros::NodeHandle node;
 
 	goalPublisher = node.advertise<move_base_msgs::MoveBaseActionGoal>("/move_base/goal", 5, false);
+	pathSubscriber = node.subscribe("/move_base/NavfnROS/plan", 10, &MoveBase::on_nav_path, this);
 
 #if CREATE_MAP_FOR_NAV == 1
 	mapPublisher = node.advertise<nav_msgs::OccupancyGrid>("/map", 5, false);
@@ -206,6 +207,15 @@ SYNCH
 	gotten_nav_path = goal_path;
 	gnp_defined=true;
 	if(all_data_defined()) calculate_goal();
+}
+
+void MoveBase::on_nav_path(const nav_msgs::Path& nav_path){
+	//SYNCH
+	config::PP::pub::LocalPath lpath;
+	lpath.is_heading_defined=false;
+	lpath.is_ip_defined=false;
+	lpath.waypoints = nav_path;
+	comp->publishLocalPath(lpath);
 }
 
 void MoveBase::calculate_goal(){

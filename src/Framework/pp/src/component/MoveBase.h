@@ -38,6 +38,8 @@ public:
 	void on_map(const config::PP::sub::Map& map);
 	void on_map(const nav_msgs::OccupancyGrid& map);
 
+	void on_nav_path(const nav_msgs::Path& goal_pat);
+
 	void calculate_goal();
 	bool all_data_defined()const;
 	void notify_path_is_finished()const;
@@ -53,6 +55,7 @@ protected:
 protected:
 	ros::Publisher goalPublisher;
 	ros::Publisher mapPublisher;
+	ros::Subscriber pathSubscriber;
 	boost::recursive_mutex mtx;
 	ComponentMain* comp;
 
