@@ -1,0 +1,5 @@
+<launch>
+
+  <node pkg="bobcat_teleop" type="bobcat_keyboard_teleop_node" name="bobcat_teleop"/>
+
+</launch>
