@@ -128,7 +128,7 @@ No GPS signal
 		2. Navigate without GPS for X meters
 		3. Pause and wait for operator
 **/
-#define switch_str(NAME) string& _sw_=NAME; bool _t_=true; if(false)
+#define switch_str(NAME) const string& _sw_=NAME; bool _t_=true; if(false)
 #define case_str(VAL) }else if(VAL==_sw_){
 static const string POLICY_AUTONOMY=std::string("1");
 static const string POLICY_MEDIUM=std::string("2");

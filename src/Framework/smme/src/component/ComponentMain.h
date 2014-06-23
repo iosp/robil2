@@ -11,14 +11,16 @@
 #include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <boost/thread.hpp>
+
 class RosComm;
 class MissionManager;
 namespace decision_making{ class EventQueue; }
+
 class ComponentMain {
 	RosComm* _roscomm;
 	MissionManager* _mission_manager;
 	boost::thread_group threads;
-	decision_making::EventQueue _events;
+	decision_making::EventQueue* _events;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
