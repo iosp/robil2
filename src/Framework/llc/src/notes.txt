@@ -1,3 +1,21 @@
+24/06/2014 SHA: 4c5c3566fef0c44baf84776ccfd6d34345bd4a01
+What's new:
+===========
+1. Fixed negative speeds bug , 
+2. Working with supporter position commands from WSM.
+3. Verified Standby mode Implementation. 
+
+Tests:
+=============
+In order to test our LLC node, please take these follwing steps:
+
+1. Run the Gazebo Simulation - In *any* world enviorment.
+2. Run robil2conf frameworkInit.launch 
+3. Make sure that RateToEffort node is alive and running via "rqt_graph".
+4. Pull the model's Loader by publishing [1,0,0] to the topic:
+	WSM/BladePosition/position/[1,0,0]	
+5. Publish a referenced speed with the Topic "WPD/velocity" - a good reasonable speed is between 0 - 2 (in magnitude).
+
 ****************************************************************************************
 17/06/2014 SHA: 56522f5efe7fd736291e055b2d013a40a9293547
 What's new:
