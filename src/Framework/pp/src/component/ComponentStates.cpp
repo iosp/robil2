@@ -30,7 +30,7 @@ FSM(pp_WORK)
 		STANDBY,
 		READY
 	}
-	FSM_START(STANDBY);
+	FSM_START(READY);
 	FSM_BGN
 	{
 		FSM_STATE(STANDBY)
@@ -126,10 +126,12 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
+	COMPONENT->resume_navigation();
 	COMPONENT->rise_taskStarted();
 	return TaskResult::SUCCESS();
 }
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
+	COMPONENT->cancel_navigation();
 	COMPONENT->rise_taskPaused();
 	return TaskResult::SUCCESS();
 }

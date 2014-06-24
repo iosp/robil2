@@ -35,5 +35,9 @@ public:
 	void rise_taskFinished();
 	void rise_taskStarted();
 	void rise_taskPaused();
+
+	void cancel_navigation();
+	void pause_navigation();
+	void resume_navigation();
 };
 #endif /* COMPONENTMAIN_H_ */

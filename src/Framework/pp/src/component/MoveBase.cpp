@@ -14,6 +14,8 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/PointCloud.h>
 
+#include <tf_geometry/tf_geometry.h>
+
 
 #define CREATE_MAP_FOR_NAV 0
 #define CREATE_POINTCLOUD2_FOR_NAV 0
@@ -21,9 +23,14 @@
 
 #define TH_NEARBY 0.5 //m
 
+
+
 #define SYNCH 	boost::recursive_mutex::scoped_lock locker(mtx);
 
 namespace{
+
+	long goal_counter =0;
+
 	void remove_orientation(geometry_msgs::PoseStamped& goal){
 		goal.pose.orientation.x = 0;
 		goal.pose.orientation.y = 0;
@@ -110,11 +117,12 @@ namespace{
 
 
 MoveBase::MoveBase(ComponentMain* comp)
-	:gp_defined(false),gnp_defined(false), gl_defined(false), comp(comp)
+	:is_active(true), gp_defined(false),gnp_defined(false), gl_defined(false), comp(comp), is_canceled(true), is_path_calculated(false)
 {
 	ros::NodeHandle node;
 
 	goalPublisher = node.advertise<move_base_msgs::MoveBaseActionGoal>("/move_base/goal", 5, false);
+	goalCancelPublisher = node.advertise<actionlib_msgs::GoalID>("/move_base/cancel", 5, false);
 	pathSubscriber = node.subscribe("/move_base/NavfnROS/plan", 10, &MoveBase::on_nav_path, this);
 
 #if CREATE_MAP_FOR_NAV == 1
@@ -125,6 +133,7 @@ MoveBase::MoveBase(ComponentMain* comp)
 	mapPublisher = node.advertise<sensor_msgs::PointCloud>("/map_cloud", 5, false);
 #endif
 
+	sub_log = node.subscribe("/rosout", 10, &MoveBase::on_log_message, this);
 
 //	//FOR TEST
 	sub_location = node.subscribe("/test/location", 10, &MoveBase::on_sub_loc, this);
@@ -134,44 +143,57 @@ MoveBase::MoveBase(ComponentMain* comp)
 	sub_commands = node.subscribe("/test/command", 10, &MoveBase::on_sub_commands, this);
 }
 
+
+void MoveBase::on_log_message(const LogMessage::ConstPtr& msg){
+	if(msg->name == "/move_base" and msg->level > LogMessage::DEBUG){
+		on_log_message(msg->level, msg->msg);
+	}
+}
+void MoveBase::on_log_message(int type, string message){
+	if(type == LogMessage::WARN){
+		ROS_DEBUG_STREAM("move base: warning: "<<message);
+	}else
+	if(type == LogMessage::ERROR){
+		ROS_DEBUG_STREAM("move base: error: "<<message);
+	}else
+	if(type == LogMessage::FATAL){
+		ROS_DEBUG_STREAM("move base: fatal: "<<message);
+	}
+}
+
 //================ TEST =================
 void MoveBase::on_sub_map(const nav_msgs::OccupancyGrid::ConstPtr& msg){
-	//ROS_INFO_STREAM("on_sub_map{");
 	this->on_map(*msg);
-	//ROS_INFO_STREAM("}on_sub_map");
 }
 void MoveBase::on_sub_path(const nav_msgs::Path::ConstPtr& msg){
-	//ROS_INFO_STREAM("on_sub_path{");
 	this->on_path(*msg);
-	//ROS_INFO_STREAM("}on_sub_path");
 }
 void MoveBase::on_sub_loc(const geometry_msgs::PoseStamped::ConstPtr& msg){
-	//ROS_INFO_STREAM("on_sub_loc{");
 	geometry_msgs::PoseWithCovarianceStamped p;
 	p.header.frame_id = "/map";//NOTE: check if frame_id not has to be from robil_map.header
 	p.header.stamp = ros::Time::now();
 	p.pose.pose = msg->pose;
 	this->on_position_update(p);
-	//ROS_INFO_STREAM("}on_sub_loc");
 }
 void MoveBase::on_sub_loc_cov(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
-	//ROS_INFO_STREAM("on_sub_loc_cov{");
 	//std::cout<<"path.poses.push_back(createPose("<< msg->pose.pose.position.x<<","<< msg->pose.pose.position.y<<"));"<<std::endl;
 	geometry_msgs::PoseWithCovarianceStamped p = *msg;
 	p.header.frame_id = "/map";//NOTE: check if frame_id not has to be from robil_map.header
 	this->on_position_update(p);
-	//ROS_INFO_STREAM("}on_sub_loc_cov");
 }
 void MoveBase::on_sub_commands(const std_msgs::String::ConstPtr& msg){
-	//ROS_INFO_STREAM("on_sub_commands{");
+	SYNCH
 	std::string command = msg->data;
 	if(command == "clear"){
-		ROS_INFO_STREAM("\t on command CLEAR");
+		ROS_INFO_STREAM("Navigation: on command CLEAR");
 		this->gl_defined = false;
 		this->gnp_defined= false;
 		this->gp_defined = false;
 	}
-	//ROS_INFO_STREAM("on_sub_commands{");
+	if(command == "cancel"){
+		ROS_INFO_STREAM("Navigation: on command CANCEL");
+		this->cancel();
+	}
 }
 //=======================================
 
@@ -180,16 +202,17 @@ MoveBase::~MoveBase() {
 }
 
 bool MoveBase::all_data_defined()const{
-	return gl_defined and (gp_defined or gnp_defined);
+	return gl_defined and (gp_defined or gnp_defined) and is_active and not is_canceled;
 }
 
 void MoveBase::notify_path_is_finished()const{
 	comp->rise_taskFinished();
 }
 
+
 void MoveBase::on_position_update(const config::PP::sub::Location& location){
 SYNCH
-	ROS_INFO_STREAM("\t on_position_update( "<<location.pose.pose.position.x<<","<<location.pose.pose.position.y<<" )");
+	//ROS_INFO_STREAM("\t on_position_update( "<<location.pose.pose.position.x<<","<<location.pose.pose.position.y<<" )");
 	gotten_location = location;
 	gl_defined=true;
 	if(all_data_defined()) calculate_goal();
@@ -197,25 +220,95 @@ SYNCH
 
 void MoveBase::on_path(const config::PP::sub::GlobalPath& goal_path){
 SYNCH
-	ROS_INFO_STREAM("\t on_path( "<<goal_path.waypoints.poses.size()<<" )");
+
+	ROS_INFO_STREAM("Navigation: Global path gotten. Number of way points is "<<goal_path.waypoints.poses.size()<<" ");
 	gotten_path = goal_path;
 	gp_defined=true;
+
+	if(not is_active){
+		ROS_WARN_STREAM("New Global Path is rejected, because navigation is deactivated");
+		return;
+	}
 	if(all_data_defined()) calculate_goal();
 }
 void MoveBase::on_path(const nav_msgs::Path& goal_path){
 SYNCH
+
+	ROS_INFO_STREAM("Navigation: Global path gotten. Number of way points is "<<goal_path.poses.size()<<" ");
 	gotten_nav_path = goal_path;
 	gnp_defined=true;
+
+	if(not is_active){
+		ROS_WARN_STREAM("New Global Path is rejected, because navigation is deactivated");
+		return;
+	}
 	if(all_data_defined()) calculate_goal();
 }
 
+boost::thread_group threads;
+actionlib_msgs::GoalID last_nav_goal_id;
+nav_msgs::Path curr_nav_path;
+bool clear_path_on_activate=true;
+
+void MoveBase::cancel(bool clear_last_goals){
+	SYNCH
+	is_canceled = true;
+	this->gl_defined = false;
+	if(clear_last_goals){
+		this->gnp_defined= false;
+		this->gp_defined = false;
+	}
+	this->is_path_calculated = false;
+	goalCancelPublisher.publish(last_nav_goal_id);
+	goal_counter++;
+}
+void MoveBase::activate(){
+	SYNCH
+	is_active=true;
+	is_canceled=false;
+	ROS_INFO("Navigation is active. you can send Global Path.");
+	if(clear_path_on_activate){
+		this->gnp_defined= false;
+		this->gp_defined = false;
+		ROS_INFO("  the previous path is deleted");
+	}else{
+		ROS_INFO("  the previous path is restored.");
+	}
+}
+void MoveBase::deactivate(bool clear_last_goals){
+	SYNCH
+	is_active=false;
+	clear_path_on_activate = clear_last_goals;
+	cancel();
+	ROS_INFO("Navigation is deactivated. The driver is stopped and each new Global Path will rejected up to activation.");
+}
+
+void path_publishing(ComponentMain* comp, boost::recursive_mutex* mtx, bool* is_canceled, bool* is_path_calculated){
+	double fr = 10; double time =1.0/fr*1000.0;
+	while(not boost::this_thread::interruption_requested() and ros::ok()){
+		boost::posix_time::ptime t = boost::get_system_time();
+		{
+			boost::recursive_mutex::scoped_lock locker(*mtx);
+			if(*is_canceled or not *is_path_calculated) continue;
+
+			config::PP::pub::LocalPath lpath;
+			lpath.is_heading_defined=false;
+			lpath.is_ip_defined=false;
+			lpath.waypoints = curr_nav_path;
+
+			comp->publishLocalPath(lpath);
+		}
+		boost::this_thread::sleep(t+boost::posix_time::millisec(time));
+	}
+}
+
 void MoveBase::on_nav_path(const nav_msgs::Path& nav_path){
-	//SYNCH
-	config::PP::pub::LocalPath lpath;
-	lpath.is_heading_defined=false;
-	lpath.is_ip_defined=false;
-	lpath.waypoints = nav_path;
-	comp->publishLocalPath(lpath);
+	SYNCH
+	if(not is_active) return;
+
+	is_path_calculated = true;
+	curr_nav_path = nav_path;
+	if(threads.size()==0) threads.add_thread(new boost::thread(boost::bind(path_publishing, comp, &mtx, &is_canceled, &is_path_calculated)));
 }
 
 void MoveBase::calculate_goal(){
@@ -242,13 +335,14 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	goal.header.stamp = ros::Time::now();
 	ps_goal.header = goal.header;
 
-	std::stringstream sid ; sid<<"[i] goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y;
+	std::stringstream sid ; sid<<"[i] goal #"<< boost::lexical_cast<std::string>(goal_counter) <<": "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y;
 	goal.goal_id.id = sid.str();
 	goal.goal_id.stamp = goal.header.stamp;
 	
 	goal.goal.target_pose = ps_goal;
 	
-	std::cout<<"goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y<<std::endl;
+	//std::cout<<"goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y<<std::endl;
+	last_nav_goal_id = goal.goal_id;
 	goalPublisher.publish(goal);
 
 }
@@ -429,34 +523,9 @@ SYNCH
 #elif CREATE_POINTCLOUD_FOR_NAV == 1
 
 	sensor_msgs::PointCloud map;
-	tf::Transform tf_map_fit;
-	tf::Transform tf_map_rotation;
-	{
-#define SET(N,X)\
-	tf::Quaternion _q(0,0,0,1);\
-	tf::Quaternion q1; \
-	q1.setRotation(tf::Vector3(0,0,1),M_PI_2); \
-	tf::Vector3 _l(X.position.x-robil_map.info.width*robil_map.info.resolution/3.0*2.0,X.position.y-robil_map.info.height*robil_map.info.resolution/2.0,0);\
-	tf::Transform N(_q,_l);
-	SET( tf_map, robil_map.info.origin )
-#undef SET
-	comp->publishTransform(tf_map,"map_fit_rotation", "map_fit");
-	tf_map_fit = tf_map;
-	}
 
-	{
-#define SET(N,X)\
-	tf::Quaternion _q(0,0,0,1);\
-	tf::Quaternion q1; \
-	q1.setRotation(tf::Vector3(0,0,1),M_PI); _q=q1*_q;\
-	tf::Vector3 _l(0,0,0);\
-	tf::Transform N(_q,_l);
-	SET( tf_map, robil_map.info.origin )
-#undef SET
-	comp->publishTransform(tf_map,"base_link", "map_fit_rotation");
-	tf_map_rotation = tf_map;
-	}
-
+	double x_offset = robil_map.info.width*robil_map.info.resolution * 2.0/3.0;
+	double y_offset = robil_map.info.height*robil_map.info.resolution * 1.0/2.0;
 
 	for(
 			size_t y=0;
@@ -476,7 +545,7 @@ SYNCH
 			float fz = 0;
 
 			if(robil_map.data[i].type==robil_msgs::MapCell::type_obstacle /*or rand()%10>8*/){
-				fz = 0;
+				fz = 1;
 			}else
 			if(robil_map.data[i].type==robil_msgs::MapCell::type_clear){
 				continue;
@@ -487,16 +556,15 @@ SYNCH
 				fz = -1;
 			}
 			geometry_msgs::Point32 point;
-			point.x = fx;
-			point.y = fy;
+			point.x = -fx + x_offset;
+			point.y = -fy + y_offset;
 			point.z = fz;
 			map.points.push_back(point);
 		}
 	}
 
-	map.header.frame_id = "/map_fit";
+	map.header.frame_id = "/base_link";
 	map.header.stamp = ros::Time::now();//robil_map.header.stamp;//
-
 
 	mapPublisher.publish(map);
 #endif

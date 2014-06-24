@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
     decision_making decision_making_parser
 
     geometry_msgs nav_msgs tf
+    tf_geometry
 )
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(

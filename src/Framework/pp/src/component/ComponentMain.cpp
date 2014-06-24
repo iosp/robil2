@@ -9,6 +9,7 @@
 #include "../roscomm/RosComm.h"
 #include "MoveBase.h"
 
+
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_events = 0;
@@ -84,4 +85,15 @@ void ComponentMain::rise_taskPaused(){
 	_events->raiseEvent("/TaskIsPaused");
 }
 
+void ComponentMain::cancel_navigation(){
+	ROS_DEBUG("PP: cancel navigation");
+	_move_base->deactivate(true);
+}
+void ComponentMain::pause_navigation(){
+	ROS_DEBUG("PP: pause navigation");
+	_move_base->deactivate();
+}
+void ComponentMain::resume_navigation(){
+	_move_base -> activate();
+}
 

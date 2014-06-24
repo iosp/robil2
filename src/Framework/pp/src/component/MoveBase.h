@@ -22,6 +22,9 @@
 #include <ParameterHandler.h>
 #include <ParameterTypes.h>
 
+#include <rosgraph_msgs/Log.h>
+typedef rosgraph_msgs::Log LogMessage;
+
 using namespace std;
 
 class ComponentMain;
@@ -44,20 +47,34 @@ public:
 	bool all_data_defined()const;
 	void notify_path_is_finished()const;
 
+	void cancel(bool clear_last_goals = false);
+	void activate();
+	void deactivate(bool clear_last_goals = false);
+
 protected:
+	bool is_active;
 	config::PP::sub::GlobalPath gotten_path;
 	bool gp_defined;
 	nav_msgs::Path gotten_nav_path;
 	bool gnp_defined;
 	config::PP::sub::Location gotten_location;
 	bool gl_defined;
+	bool is_canceled;
+	bool is_path_calculated;
 
 protected:
 	ros::Publisher goalPublisher;
+	ros::Publisher goalCancelPublisher;
 	ros::Publisher mapPublisher;
 	ros::Subscriber pathSubscriber;
+	ros::Subscriber sub_log;
+
 	boost::recursive_mutex mtx;
 	ComponentMain* comp;
+
+
+	void on_log_message(const LogMessage::ConstPtr& msg);
+	void on_log_message(int type, string message);
 
 //FOR TEST ONLY
 public:
