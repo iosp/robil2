@@ -36,7 +36,9 @@ void ComponentMain::handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg)
 
 void ComponentMain::handleBladePositionCommand(const config::LLC::sub::BladePositionCommand& msg)
 {
-	//std::cout<< "LLC say:" << msg << std::endl;
+	this->t_flag = 1 ;
+	this->Blade_angle = msg ;
+	//std::cout<< "Got blade command:" << msg << std::endl;
 }
 	
 

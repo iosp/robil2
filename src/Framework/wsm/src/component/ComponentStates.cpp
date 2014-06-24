@@ -264,7 +264,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 					do {
 						//Set command to LLC
 						bladeCommand = new config::WSM::pub::BladePositionCommand();
-						bladeCommand->velocity.push_back(0.3*sign);
+						bladeCommand-> velocity.push_back(0.3*sign);
+						//bladeCommand->position.push_back(1);
 						COMPONENT->publishBladePositionCommand(*bladeCommand);
 						PAUSE(100);
 

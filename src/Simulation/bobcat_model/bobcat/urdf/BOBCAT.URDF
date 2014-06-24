@@ -73,11 +73,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0.2 0"
+        rpy="1.5708 0 0" />
       <geometry>
-        <mesh
-          filename="package://bobcat/meshes/front_left_wheel_lite.stl" />
+        <cylinder length="0.4" radius="0.4" 
+          />
       </geometry>
     </collision>
   </link>
@@ -126,11 +126,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0.2 0"
+        rpy="1.5708 0 0" />
       <geometry>
-        <mesh
-          filename="package://bobcat/meshes/front_right_wheel_lite.stl" />
+        <cylinder length="0.4" radius="0.4" 
+          />
       </geometry>
     </collision>
   </link>
@@ -179,11 +179,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 -0.2 0"
+        rpy="1.5708 0 0" />
       <geometry>
-        <mesh
-          filename="package://bobcat/meshes/back_left_wheel_lite.stl" />
+        <cylinder length="0.4" radius="0.4" 
+          />
       </geometry>
     </collision>
   </link>
@@ -232,11 +232,11 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 -0.2 0"
+        rpy="1.5708 0 0" />
       <geometry>
-        <mesh
-          filename="package://bobcat/meshes/back_right_wheel_lite.stl" />
+        <cylinder length="0.4" radius="0.4" 
+          />
       </geometry>
     </collision>
   </link>
