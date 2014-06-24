@@ -1,23 +1,44 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/Vector3.h"
+#include "std_msgs/String.h"
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
 #include <stdlib.h>
+#include <signal.h>
+
+ros::Publisher *descisionMaking_pub;
+ros::Rate * rate;
+
+void siginthandler(int param)
+{
+  printf("User pressed Ctrl+C\n");
+  std_msgs::String dm_msg;
+  dm_msg.data="/llc/Resume";
+  descisionMaking_pub->publish(dm_msg);
+  ros::spinOnce();
+  rate->sleep();
+  exit(1);
+}
+
+
 int main(int argc, char **argv)
 {
+  signal(SIGINT, siginthandler);
   //Initialize the node and connect to master
   ros::init(argc, argv, "bobcat_keyboad_node");
 
   //generate a node handler to handle all messages
   ros::NodeHandle n;
-
+  descisionMaking_pub = new ros::Publisher(n.advertise<std_msgs::String>("/decision_making/events", 1000));
   ros::Publisher wheelsrate_pub = n.advertise<geometry_msgs::Twist>("/wheelsrate", 1000);
   ros::Publisher armrate_pub = n.advertise<geometry_msgs::Vector3>("/armrate", 1000);
-
+  ros::Rate * rate=new ros::Rate(5);
+  ros::spinOnce();
+  (*rate).sleep();
   double supporter_max=1.6;
   double supporter_min=0;
 
@@ -31,7 +52,7 @@ int main(int argc, char **argv)
   double loader_val=0;
   double bracket_val=0;
 
-  ros::Rate rate(5);
+
   //structs to hold the shell buffer
   struct termios stdio;
   struct termios old_stdio;
@@ -52,8 +73,15 @@ int main(int argc, char **argv)
   fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);       // make the reads non-blocking
 
 
+
   geometry_msgs::Vector3 vectorMsg;
   bool stop=false;
+
+  std_msgs::String dm_msg;
+  dm_msg.data="/llc/Standby";
+  descisionMaking_pub->publish(dm_msg);
+  ros::spinOnce();
+  (*rate).sleep();
   while (ros::ok() && c!='q' && !stop)
   {
     /**
@@ -120,7 +148,7 @@ int main(int argc, char **argv)
     			break;
     	}
         ros::spinOnce();
-        rate.sleep();
+        (*rate).sleep();
         c=' ';
     }else{
     	  //stop all activity
@@ -128,10 +156,14 @@ int main(int argc, char **argv)
     	twistMsg.angular.x=0;
 		wheelsrate_pub.publish(twistMsg);
 	    ros::spinOnce();
-        rate.sleep();
+    	(*rate).sleep();
     }
-
   }
+
+  dm_msg.data="/llc/Resume";
+  descisionMaking_pub->publish(dm_msg);
+  ros::spinOnce();
+  (*rate).sleep();
   tcsetattr(STDOUT_FILENO,TCSANOW,&old_stdio);
 
   return 0;

@@ -105,7 +105,7 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 	events.raiseEvent(e);
 	return TaskResult::SUCCESS();
 }
-geometry_msgs::Twist Translate(gazebo_msgs::GetModelState model_state){
+geometry_msgs::Twist Translate(geometry_msgs::PoseWithCovarianceStamped model_state , geometry_msgs::Twist model_speed){
 
 	std_msgs::Float64 x[3] ;
 	std_msgs::Float64 z[3] ;
@@ -118,10 +118,10 @@ geometry_msgs::Twist Translate(gazebo_msgs::GetModelState model_state){
 	double model_coordinates_angular_speed ;
 
 
-	a.data = model_state.response.pose.orientation.w ;
-	b.data = model_state.response.pose.orientation.x ;
-	c.data = model_state.response.pose.orientation.y ;
-	d.data = model_state.response.pose.orientation.z ;
+	a.data = model_state.pose.pose.orientation.w ;
+	b.data = model_state.pose.pose.orientation.x ;
+	c.data = model_state.pose.pose.orientation.y ;
+	d.data = model_state.pose.pose.orientation.z ;
 
 	x[0].data = (pow(a.data,2) + pow(b.data,2) - pow(c.data,2) - pow(d.data,2));
 	x[1].data = 2*b.data*c.data + 2*a.data*d.data ;
@@ -131,13 +131,13 @@ geometry_msgs::Twist Translate(gazebo_msgs::GetModelState model_state){
 	z[1].data = 2*c.data*d.data - 2*a.data*b.data ;
 	z[2].data = (pow(a.data,2)-pow(b.data,2) - pow(c.data,2)+pow(d.data,2));
 
-	v[0].data = model_state.response.twist.linear.x;
-	v[1].data = model_state.response.twist.linear.y;
-	v[2].data = model_state.response.twist.linear.z;
+	v[0].data = model_speed.linear.x;
+	v[1].data = model_speed.linear.y;
+	v[2].data = model_speed.linear.z;
 
-	w[0].data = model_state.response.twist.angular.x;
-	w[1].data = model_state.response.twist.angular.y;
-	w[2].data = model_state.response.twist.angular.z;
+	w[0].data = model_speed.angular.x;
+	w[1].data = model_speed.angular.y;
+	w[2].data = model_speed.angular.z;
 
 	model_coordinates_linear_speed = (dot_prod(x,v,3) / norm(x,3));
 	model_coordinates_angular_speed = (dot_prod(z , w , 3) / norm(z ,3));
@@ -164,13 +164,14 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	ROS_INFO("LLC Ready");
 
-	double Kp = 0.3 , Kd = 0 , Ki = 10   ; 					/* PID constants of linear x */
-	double Kpz = -0.5 , Kdz = 0  , Kiz = -8   ;					/* PID constants of angular z */
+	double Kp = 0.3 , Kd = 0 , Ki = 0   ; 					/* PID constants of linear x */
+	double Kpz = -0.5 , Kdz = 0  , Kiz = 0   ;					/* PID constants of angular z */
  	double dt = 0.001 ; 									/* control time interval */
 	double integral [2] = {} ; 							/* integration part */
 	double der [2] = {} ;  								/* the derivative of the error */
 	double integral_limit [2] = {0.1,0.05};
 	int E_stop = 1; 									/* emergency stop */
+	double angular_filter[5];
 
 
 	config::LLC::pub::EffortsSt Steering_rate ; 		/* steering rate percentage +- 100 % */
@@ -195,8 +196,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	/* get measurements and calculate error signal */
 
-		// Gazebo PID */
 
+/*
 	    ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
 	    gazebo_msgs::GetModelState getmodelstate;
 	    getmodelstate.request.model_name ="Sahar";
@@ -205,12 +206,12 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	    	/* printing */
 
-	   	 //Gazebo PID//
-
+		t = Translate(COMPONENT->Per_pose , COMPONENT->Per_measured_speed.twist) ;
+		Joints_rate.data = t.angular.z ;
 	    cur_error.twist.linear.x =
-	    	(COMPONENT->WPD_desired_speed.twist.linear.x - t.linear.x);
+	    	(std::max<double>(COMPONENT->WPD_desired_speed.twist.linear.x, COMPONENT->WSM_desired_speed.twist.linear.x) - t.linear.x);
 	    cur_error.twist.angular.z =
-	    	(COMPONENT->WPD_desired_speed.twist.angular.z - getmodelstate.response.twist.angular.z);
+	    	(std::max<double>(COMPONENT->WPD_desired_speed.twist.angular.z, COMPONENT->WSM_desired_speed.twist.angular.z) - t.linear.z);
 
 	/* calculate integral and derivatives */
 	integral[0] += ((cur_error.twist.linear.x )* dt);
@@ -224,18 +225,6 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				integral[k] = -integral_limit[k] ;
 	}
 
-
-	/*Calculating the published data */
-	/*
-	Kp = COMPONENT->PID_CONSTANTS.twist.linear.x ;
-	Kd = COMPONENT->PID_CONSTANTS.twist.linear.y ;
-	Ki = COMPONENT->PID_CONSTANTS.twist.linear.z ;
-
-	Kpz = COMPONENT->PID_CONSTANTS.twist.angular.x ;
-	Kdz = COMPONENT->PID_CONSTANTS.twist.angular.y ;
-	Kiz = COMPONENT->PID_CONSTANTS.twist.angular.z ;
-*/
-
 	Throttle_rate.data = (Kp*cur_error.twist.linear.x + Ki*integral[0] - Kd*der[0]) ;
 	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
 
@@ -244,21 +233,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	COMPONENT->publishEffortsTh(Throttle_rate);
 	COMPONENT->publishEffortsSt(Steering_rate);
-/*
-	cout << "========================= Linear x ===============================" << endl;
-	cout << "Reference : " <<  COMPONENT->WPD_desired_speed.twist.linear.x << endl ;
-	cout << "Linear x speed:" << t.linear.x << endl;
-	cout << "measured speed:" << COMPONENT->Per_measured_speed.twist.linear.x << endl ;
-	cout << "The error for linear x:" <<  cur_error.twist.linear.x << endl;
-	cout << "Current integeral's value:" << integral[0] << endl;
-	cout << "========================= Angular Z===================================" << endl;
-	cout << "Reference : " <<  COMPONENT->WPD_desired_speed.twist.angular.z << endl ;
-	cout << "Linear Z speed:" << t.angular.z << endl;
-	cout << "measured speed:" << COMPONENT->Per_measured_speed.twist.angular.z << endl;
-	cout << "The error for angular z:" <<  cur_error.twist.angular.z << endl;
-	cout << "Current integeral's value:" << integral[1] << endl;
-	cout << "======================================================================" << endl;
-*/
+	COMPONENT->publishEffortsJn(Joints_rate);
 
 	/* calibrate the error */
 	old_error.twist.angular.z = cur_error.twist.angular.z ;

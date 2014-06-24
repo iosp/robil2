@@ -37,7 +37,7 @@ MACRO (QT4_WRAP_UI2 outfiles )
 ENDMACRO (QT4_WRAP_UI2)
 
 
-find_package(catkin REQUIRED COMPONENTS rqt_gui rqt_gui_cpp)
+find_package(catkin REQUIRED COMPONENTS rqt_gui rqt_gui_cpp scriptable_monitor)
 find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 include(${QT_USE_FILE})
 set(rqt_image_view_SRCS

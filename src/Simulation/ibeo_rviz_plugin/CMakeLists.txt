@@ -5,10 +5,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ibeo_rviz_plugin)
 
-find_package(catkin REQUIRED COMPONENTS rviz)
+find_package(catkin REQUIRED COMPONENTS rviz gazebo_ibeo_gpu)
 catkin_package(
   DEPENDS 
-    gazebo_ibeo_gpu 
+   gazebo_ibeo_gpu
    CATKIN_DEPENDS message_runtime
 )
 
@@ -43,7 +43,7 @@ set(SOURCE_FILES
 ## is called) and specify the list of source files we collected above
 ## in ``${SOURCE_FILES}``.
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
-
+add_dependencies(${PROJECT_NAME} gazebo_ibeo_gpu_generate_messages_cpp)
 ## Link the library with whatever Qt libraries have been defined by
 ## the ``find_package(Qt4 ...)`` line above, and with whatever libraries
 ## catkin has included.

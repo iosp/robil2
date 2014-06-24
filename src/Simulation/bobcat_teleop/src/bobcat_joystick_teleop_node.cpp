@@ -1,10 +1,27 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/Vector3.h"
+#include "std_msgs/String.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sensor_msgs/Joy.h>
+#include <signal.h>
+
+ros::Publisher *descisionMaking_pub;
+ros::Rate * rate;
+
+void siginthandler(int param)
+{
+  printf("User pressed Ctrl+C\n");
+  std_msgs::String dm_msg;
+  dm_msg.data="/llc/Resume";
+  descisionMaking_pub->publish(dm_msg);
+  ros::spinOnce();
+  rate->sleep();
+  exit(1);
+}
+
 
 
 sensor_msgs::Joy lastmsg;
@@ -22,6 +39,9 @@ int indexTilt=-1;
 int indexHold=0;
 int main(int argc, char **argv)
 {
+  signal(SIGINT, siginthandler);
+  signal(SIGTERM, siginthandler);
+  signal(SIGKILL, siginthandler);
   //Initialize the node and connect to master
   ros::init(argc, argv, "bobcat_joystick_node");
 
@@ -34,13 +54,16 @@ int main(int argc, char **argv)
   n.param("axis_tilt",indexTilt,indexTilt);
   n.param("button_hold",indexHold,indexHold);
 
+ descisionMaking_pub = new ros::Publisher(n.advertise<std_msgs::String>("/decision_making/events", 1000));
+
   ros::Subscriber joystick_sub=n.subscribe("/joy", 1, &joystickCallback);
 
 
   ros::Publisher wheelsrate_pub = n.advertise<geometry_msgs::Twist>("/wheelsrate", 1000);
   ros::Publisher armrate_pub = n.advertise<geometry_msgs::Vector3>("/armrate", 1000);
-  ros::Rate rate(5);
-
+  ros::Rate * rate=new ros::Rate(5);
+  ros::spinOnce();
+  (*rate).sleep();
 
   double supporter_max=1.6;
   double supporter_min=0;
@@ -55,7 +78,11 @@ int main(int argc, char **argv)
   double loader_val=0;
   double bracket_val=0;
 
-
+  std_msgs::String dm_msg;
+  dm_msg.data="/llc/Standby";
+  descisionMaking_pub->publish(dm_msg);
+  ros::spinOnce();
+  (*rate).sleep();
   geometry_msgs::Vector3 vectorMsg;
   while (ros::ok())
   {
@@ -104,5 +131,9 @@ int main(int argc, char **argv)
 
   }
  
+  dm_msg.data="/llc/Resume";
+  descisionMaking_pub->publish(dm_msg);
+  ros::spinOnce();
+  (*rate).sleep();
   return 0;
 }

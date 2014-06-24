@@ -14,12 +14,20 @@ class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;
 public:
+
+	config::WSM::sub::WorkSeqData * receivedWorkSeqData;
+	config::WSM::sub::BladePosition * receivedBladePosition;
+	config::LLC::sub::Location * receivedLocation;
+	config::LLC::sub::PerVelocity * receivedPerVelocity;
+
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 	void handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg);
 	void handleBladePosition(const config::WSM::sub::BladePosition& msg);
 	void publishWSMVelocity(config::WSM::pub::WSMVelocity& msg);
 	void publishBladePositionCommand(config::WSM::pub::BladePositionCommand& msg);
+	void handleLocation(const config::LLC::sub::Location& msg);
+	void handlePerVelocity(const config::LLC::sub::PerVelocity& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
