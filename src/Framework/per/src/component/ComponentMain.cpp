@@ -300,7 +300,10 @@ void ComponentMain::handleEffortsJn(const config::PER::sub::EffortsJn& msg)
 	
 void ComponentMain::handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg)
 {
-	//std::cout<< "PER say:" << msg << std::endl;
+	config::PER::pub::PerGpsSpeed msg2;
+		
+	msg2 = msg;
+	publishGpsSpeed(msg2);
 }
 	
 

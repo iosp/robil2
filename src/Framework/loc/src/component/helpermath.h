@@ -3,7 +3,7 @@
 #include <string>
 #include "ros/ros.h"
 using std::string;
-#define M_PI 3.14159
+#define v_PI 3.14159
 class Vec3D
 {
     public:
@@ -114,7 +114,7 @@ inline Rotation GetRotation(Quaternion q)
 
   // Pitch
   double sarg = -2 * (q.x*q.z - q.w * q.y);
-  rot.pitch = sarg <= -1.0 ? -0.5*M_PI : (sarg >= 1.0 ? 0.5*M_PI : asin(sarg));
+  rot.pitch = sarg <= -1.0 ? -0.5*v_PI : (sarg >= 1.0 ? 0.5*v_PI : asin(sarg));
   
   // Yaw
   rot.yaw = atan2(2 * (q.x*q.y + q.w*q.z), squ + sqx - sqy - sqz);
