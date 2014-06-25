@@ -15,7 +15,7 @@
  * NOTE - Any change in this file requires a complete make of the workspace (catkin_make)
  */
 
-#define _added_noise true //Is there noise added to the sensors
+#define _added_noise false //Is there noise added to the sensors
 /* Added noise
  * You can check if there is noise added by going to ~/.gazebo/models/GPS_INS/model.sdf and check if the <noise> .... </noise> is on.
  * If you wish to work in a more realistic environment which consists of noise, make sure the <noise> tab is not commented and that the _added_noise variable above is set to true.
