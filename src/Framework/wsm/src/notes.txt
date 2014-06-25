@@ -1,6 +1,6 @@
 
 ****************************************************************************************
-25/06/2014 SHA: 57b714bdd7185d95daf336624cde51d4b632f49d
+25/06/2014 SHA: 5a5c7cd92d84c2eaded8f5000083303caa701fb6
 What's new:
 ===========
 1. Fixed 'turn' command and preparing blade commands
