@@ -12,9 +12,12 @@
 #include <tf/tf.h>
 class RosComm;
 class MoveBase;
+namespace decision_making{ class EventQueue; }
 class ComponentMain {
 	RosComm* _roscomm;
 	MoveBase* _move_base;
+	decision_making::EventQueue* _events;
+	boost::mutex _mt;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -27,5 +30,14 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+
+	void set_events(decision_making::EventQueue* events);
+	void rise_taskFinished();
+	void rise_taskStarted();
+	void rise_taskPaused();
+
+	void cancel_navigation();
+	void pause_navigation();
+	void resume_navigation();
 };
 #endif /* COMPONENTMAIN_H_ */

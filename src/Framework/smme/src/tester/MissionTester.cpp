@@ -35,8 +35,8 @@ NavTask createTask(int n){
 	v.header = task.header;
 
 	#	define PUSH(N) \
-		v.pose.pose.position.x=1;\
-		v.pose.pose.position.y=1;\
+		v.pose.pose.position.x=N;\
+		v.pose.pose.position.y=N+0.1;\
 		task.waypoints.push_back(v);
 
 		PUSH(1+n)

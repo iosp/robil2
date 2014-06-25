@@ -132,6 +132,7 @@ void startSystem(ComponentMain* component){
 	CallContext context;
 	context.createParameters(new Params(component));
 	//events.async_spin();
+	component->set_events(&events);
 	LocalTasks::registration("SYS_OFF",state_OFF);
 	LocalTasks::registration("SYS_INIT",state_INIT);
 	LocalTasks::registration("SYS_READY",state_READY);
