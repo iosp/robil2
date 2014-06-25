@@ -11,11 +11,12 @@
 #include <std_msgs/Bool.h>
 #include "../roscomm/RosComm.h"
 #include "heightmap.h"
-#include "heightmap_projection.h"
+//#include "heightmap_projection.h"
 #include "helpermath.h"
+#include "mapper/mapper.h"
 #include "stereo.h"
 #include "rdbg.h"
-
+ 
 #define DEGREE_TO_M		111000
 
 using namespace std; 
@@ -29,16 +30,18 @@ bool loc_received = false;
 bool camL = false;
 bool camR = false;
 Mat camLImg, camRImg;
-bool visualize = false;
+bool visualize = true;
 
 
 
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
-	 height_map = new HeightMap(500,500);
-	 
-	
+	 //height_map = new HeightMap(500,500);
+	 Mapper::roscomm = _roscomm;
+	 boost::thread mapper(Mapper::MainLoop);
+	 boost::this_thread::sleep(boost::posix_time::milliseconds(300));
+	 boost::thread mapper2(Mapper::VisualizeLoop);
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -46,6 +49,9 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleLocation(const config::PER::sub::Location& msg)
 {
+  Mapper::handleLocation(msg);
+  return;
+  
   geometry_msgs::Pose pose = msg.pose.pose;
   position = Vec3D(pose.position.x, pose.position.y, pose.position.z);
   myQuat = Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
@@ -72,42 +78,39 @@ void ComponentMain::handleLocation(const config::PER::sub::Location& msg)
 }
 
 
-void ComponentMain::setVisualize(bool flag)
+void ComponentMain::setVisualize(char flags)
 {
-  visualize = flag;
+  Mapper::setVisualize((unsigned char)flags);
 }
 
 void ComponentMain::handlePerVelocity(const config::PER::sub::PerVelocity& msg)
 {
-	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleSensorINS(const config::PER::sub::SensorINS& msg)
 {
 	_imuData = msg;
-	//std::cout<< "PER say:" << msg << std::endl;
 	config::PER::pub::INS msg2;
 	msg2 = msg;
-	publishINS(msg2);
-	
+	publishINS(msg2);	
 }
 	
 
 void ComponentMain::handleSensorGPS(const config::PER::sub::SensorGPS& msg)
 {
-	//std::cout<< "PER say:" << msg << std::endl;
 	_gpsData = msg;
 	config::PER::pub::GPS msg2;
 	msg2 = msg;
-	publishGPS(msg2);	
-	//rdbg("gps");
+	publishGPS(msg2);
 }
 	
 
 void ComponentMain::handleSensorCamL(const config::PER::sub::SensorCamL& msg)
 {
-  //rdbg("leftcam");
+  Mapper::handleCamL(msg);
+  return; 
+  
   cv_bridge::CvImagePtr cv_ptr;
   try
   {
@@ -118,19 +121,26 @@ void ComponentMain::handleSensorCamL(const config::PER::sub::SensorCamL& msg)
     ROS_ERROR("cv_bridge exception: %s", e.what());
     return;
   }
+  //rdbg("leftcam");
   camLImg = cv_ptr->image;
   camL = true;
   if(camL && camR)
   {
       camL = camR = false;
-      handleStereo(camLImg, camRImg);
+      //handleStereo(camLImg, camRImg);
   }
+  config::PER::pub::Map msg2;
+  config::PER::pub::Map msg3;
+  publishMap(msg2);
+  publishMiniMap(msg3);
 }
 	
 
 void ComponentMain::handleSensorCamR(const config::PER::sub::SensorCamR& msg)
 {
-  //rdbg("rightcam");
+  Mapper::handleCamL(msg);
+  return; 
+  
   cv_bridge::CvImagePtr cv_ptr;
   try
   {
@@ -141,15 +151,28 @@ void ComponentMain::handleSensorCamR(const config::PER::sub::SensorCamR& msg)
     ROS_ERROR("cv_bridge exception: %s", e.what());
     return;
   }
+  //rdbg("rightcam");
   camRImg = cv_ptr->image;
   camR = true;
   if(camL && camR)
   {
+      /*
       camL = camR = false;
-      handleStereo(camLImg, camRImg);
-      
+      Mat m = handleStereo(camLImg, camRImg);
+      Quaternion q = GetFromRPY(ibeoRot);
+      Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
+      Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
+      Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
+      Vec3D pos = position.add(front.multiply(-0.2187)).add(right.multiply(0.85)).add(up.multiply(0.631));
+      ProjectDepthImage(height_map, m, right, front, up, pos);
+      height_map->displayGUI(myRot.yaw*180/3.14159, position.x, position.y);
+      waitKey(1);
+      */
   }
-  
+    config::PER::pub::Map msg2;
+    config::PER::pub::Map msg3;
+    publishMap(msg2);
+    publishMiniMap(msg3);
 }
 	
 
@@ -161,6 +184,9 @@ void ComponentMain::handleSensorWire(const config::PER::sub::SensorWire& msg)
 
 void ComponentMain::handleSensorSICK1(const config::PER::sub::SensorSICK1& msg)
 {
+  Mapper::handleSickR(msg);
+  return; 
+  
   if(!loc_received) return;
   Quaternion q = GetFromRPY(leftSickRot);
   Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
@@ -181,6 +207,9 @@ void ComponentMain::handleSensorSICK1(const config::PER::sub::SensorSICK1& msg)
 }
 void ComponentMain::handleSensorSICK2(const config::PER::sub::SensorSICK2& msg)
 {
+  Mapper::handleSickL(msg);
+  return; 
+  
   if(!loc_received) return;
   Quaternion q = GetFromRPY(rightSickRot);
   Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
@@ -203,6 +232,9 @@ void ComponentMain::handleSensorSICK2(const config::PER::sub::SensorSICK2& msg)
 
 void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msg)
 {
+  Mapper::handleIBEO(msg);
+  return; 
+  
   if(!loc_received) return;
   Rotation t2 = ibeoRot.add(Rotation(0, -msg.angle_t2, 0));
   Rotation t1 = ibeoRot.add(Rotation(0, -msg.angle_t1, 0));
@@ -294,11 +326,6 @@ void ComponentMain::handleEffortsSt(const config::PER::sub::EffortsSt& msg)
 	
 
 void ComponentMain::handleEffortsJn(const config::PER::sub::EffortsJn& msg)
-{
-	//std::cout<< "PER say:" << msg << std::endl;
-}
-	
-void ComponentMain::handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg)
 {
 	//std::cout<< "PER say:" << msg << std::endl;
 }
@@ -406,11 +433,6 @@ void ComponentMain::publishVOOdometry(config::PER::pub::VOOdometry& msg)
 {
 	_roscomm->publishVOOdometry(msg);
 }
-
-void ComponentMain::publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg)
-{
-	_roscomm->publishGpsSpeed(msg);
-}
 	
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	_roscomm->publishTransform(_tf, srcFrame, distFrame);
@@ -424,3 +446,14 @@ void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
 	_roscomm->publishDiagnostic(header, _report);
 }
+
+void ComponentMain::handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg)
+{
+	//std::cout<< "PER say:" << msg << std::endl;
+}
+
+void ComponentMain::publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg)
+{
+	_roscomm->publishGpsSpeed(msg);
+}
+
