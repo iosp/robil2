@@ -243,19 +243,11 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 			case robil_msgs::AssignManipulatorTaskStep::type_blade_height:
 				value = step->value; //height in meters
 
-				if(step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_absolute){
-
-				}else{
-
-				}
-
-				break;
-			case robil_msgs::AssignManipulatorTaskStep::type_blade_angle:
-				value = step->value; //angle in degrees (or rads??? conflict in documentation)
 
 				body2loaderInit = COMPONENT->getLastTrasform("body", "loader");
 
 				if(step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_absolute){
+
 
 					double toc;
 					double posdiff;
@@ -264,7 +256,17 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 					do {
 						//Set command to LLC
 						bladeCommand = new config::WSM::pub::BladePositionCommand();
-						bladeCommand-> velocity.push_back(0.3*sign);
+						bladeCommand->name.push_back("back_arm_joint");
+						bladeCommand->name.push_back("main_arm_joint");
+						bladeCommand->name.push_back("supporter_joint");
+						bladeCommand->name.push_back("front_cylinder_joint");
+						/***
+						 * TODO:Calulate inverse kinematics here
+						 */
+						bladeCommand->position.push_back(0.0*sign);
+						bladeCommand->position.push_back(0.0*sign);
+						bladeCommand->position.push_back(0.0*sign);
+						bladeCommand->position.push_back(0.0*sign);
 						//bladeCommand->position.push_back(1);
 						COMPONENT->publishBladePositionCommand(*bladeCommand);
 						PAUSE(100);
@@ -275,6 +277,42 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 						posdiff = body2loaderCurrent.getOrigin().z() - body2loaderInit.getOrigin().z();
 						delete bladeCommand;
 					}while(toc < step->success_timeout && ( fabs(value) - fabs(posdiff) > 0));
+
+				}else{
+
+				}
+
+				break;
+			case robil_msgs::AssignManipulatorTaskStep::type_blade_angle:
+				value = step->value; //angle in degrees (or rads??? conflict in documentation)
+
+
+				if(step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_absolute){
+
+
+					double toc;
+					double posdiff;
+					config::WSM::pub::BladePositionCommand * bladeCommand;
+					int sign = (value > 0) ? 1 : -1;
+					unsigned int loaderIndex;
+					do {
+						//Set command to LLC
+						bladeCommand = new config::WSM::pub::BladePositionCommand();
+						bladeCommand->name.push_back("loader_joint");
+						bladeCommand->position.push_back(0.3*sign);
+						//bladeCommand->position.push_back(1);
+						COMPONENT->publishBladePositionCommand(*bladeCommand);
+						PAUSE(100);
+
+						//Get difference
+						toc = (ros::Time::now() - stepTic).toSec();
+						for(loaderIndex = 0; loaderIndex < COMPONENT->receivedBladePosition->name.size(); loaderIndex++)
+							if(COMPONENT->receivedBladePosition->name[loaderIndex] == "loader_joint")
+								break;
+						posdiff = COMPONENT->receivedBladePosition->position[loaderIndex] - value;
+						delete bladeCommand;
+					}while(toc < step->success_timeout && ( fabs(posdiff) > 0.1));
+
 				}else{
 
 				}
@@ -344,13 +382,14 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 #else
 					initial_position = COMPONENT->receivedLocation->pose.pose;
 #endif
-
 					initq = tf::Quaternion(initial_position.orientation.x, initial_position.orientation.y, initial_position.orientation.z, initial_position.orientation.w);
 					tf::Matrix3x3(initq).getRPY(initrpy[0], initrpy[1], initrpy[2]);
 
+
 					//Location difference
+					double target_yaw = fmod(initrpy[2] + value + M_PI, 2 * M_PI) - M_PI;
 					int sign = ((value > 0) ? 1 : -1);
-					double yawdiff;
+					//double yawdiff;
 					do{
 						twist.twist.angular.z = 0.5 * sign; //Speed is should be up to 0.3 radians per sec
 						COMPONENT->publishWSMVelocity(twist);
@@ -362,13 +401,14 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 #else
 						t = COMPONENT->receivedLocation->pose.pose;
 #endif
-						//Calculate algular changes in RPY
+						//Calculate angular changes in RPY
 						q = tf::Quaternion(t.orientation.x, t.orientation.y, t.orientation.z, t.orientation.w);
 						tf::Matrix3x3(q).getRPY(rpy[0], rpy[1], rpy[2]);
 
-						yawdiff = rpy[2] - initrpy[2];
+						//ROS_INFO("Target: %f; current: %f", target_yaw, rpy[2]);
+						//yawdiff = rpy[2] - initrpy[2];
 					}
-					while(ros::Time::now() - stepTic < ros::Duration(step->success_timeout) && ( fabs(value) > fabs(yawdiff)));
+					while(ros::Time::now() - stepTic < ros::Duration(step->success_timeout) && ( fabs(target_yaw - rpy[2]) > 0.1));
 
 					twist.twist.angular.z = 0; //Set speed to 0
 					COMPONENT->publishWSMVelocity(twist);
