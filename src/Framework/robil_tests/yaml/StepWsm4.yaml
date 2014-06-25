@@ -1,0 +1,24 @@
+header: 
+  seq: 2
+  stamp: 
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+task_id: '33'
+task_description: WS4-5 Advance
+steps: 
+  - 
+    id: 1
+    type: 4
+    value: 2
+    blade_relativity: 0
+    success_timeout: 20
+    duration_at_end: 120
+  - 
+    id: 2
+    type: 4
+    value: 3
+    blade_relativity: 0
+    success_timeout: 20
+    duration_at_end: 1
+ 

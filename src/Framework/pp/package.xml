@@ -23,6 +23,10 @@
 	<run_depend>nav_msgs</run_depend>
 	<run_depend>tf</run_depend>
 	
+	<!-- for tf -->
+	<build_depend>tf_geometry</build_depend>
+	<run_depend>tf_geometry</run_depend>
+	
 	
   <export>
   </export>

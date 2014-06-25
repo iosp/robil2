@@ -21,4 +21,40 @@ full system run.
 
 Known Bugs and Limitations:
 =========================
+****************************************************************************************
+commit 44298ba9503acc04fb7ecb707a5292ffa9e32118
+Author: Dan Erusalimchik <danerde@gmail.com>
+Date:   Tue Jun 24 18:31:49 2014 +0300
+
+What's new:
+===========
+Navigation updated
+- tf_geometry package added (is a lib for comfortable work with transformations)
+- robil path publishing updated (fixed: FSM states Standby/Resume support)
+- robil map transformation updated
+
+
+Module Implemented Functionality:
+===============
+navigation
+
+Interfaces changed:
+=========
+External Interface : NOT
+Internal Interface : NOT
+
+
+Tests:
+=============
+- obstacle avoidance tested in Simulation
+-- some problems with LLC found
+--- no turns.
+-- reaction to obstacles:OK
+-- replanning:OK
+-- planning:OK
+-- way point driving:OK
+
+
+Known Bugs and Limitations:
+=========================
 

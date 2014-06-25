@@ -138,6 +138,24 @@ FSM(Mission)
 		ComponentMain* comp = context.parameters<MissionParams>().comp;
 #define MM comp->mission_manager()
 
+bool extend_events_names(Event& e, std::string mid_pref, EventQueue& events){
+#		define EXTEND(NAME) \
+		if(e == Event(NAME)){\
+			events.raiseEvent(Event(mid_pref+NAME));\
+			return true;\
+		}
+		//----------- TASK GLOBAL EVENT -------------
+		EXTEND("/CompleteTask")
+		EXTEND("/AbortTask")
+		//----------- MISSION GLOBAL EVENT ----------
+		EXTEND("/CompleteMission")
+		EXTEND("/PauseMission")
+		EXTEND("/AbortMission")
+		EXTEND("/ResumeMission")
+		return false;
+#		undef EXTEND
+}
+
 TaskResult state_MissionUnloaded(string id, const CallContext& context, EventQueue& events){
 	PARAMS
 	MM->remove(mid);
@@ -159,12 +177,7 @@ TaskResult state_MissionSpooling(string id, const CallContext& context, EventQue
 	MM->mission_state("spooling");
 	while(events.isTerminated()==false and ros::ok()){
 		Event e = events.waitEvent();
-		if(e == Event("/CompleteTask")){
-			events.raiseEvent(Event(MID_PREF(mid)+"/CompleteTask"));
-		}
-		if(e == Event("/AbortTask")){
-			events.raiseEvent(Event(MID_PREF(mid)+"/AbortTask"));
-		}
+		extend_events_names(e, MID_PREF(mid), events);
 		if(e == Event(MID_PREF(mid)+"/CompleteTask")){
 			if( MM->next_task() ){
 				this_thread::sleep(milliseconds(100));
@@ -179,6 +192,10 @@ TaskResult state_MissionSpooling(string id, const CallContext& context, EventQue
 TaskResult state_MissionPaused(string id, const CallContext& context, EventQueue& events){
 	PARAMS
 	MM->mission_state("paused");
+	while(events.isTerminated()==false and ros::ok()){
+		Event e = events.waitEvent();
+		//extend_events_names(e, MID_PREF(mid), events);
+	}
 	return TaskResult::SUCCESS();
 }
 TaskResult state_MissionAborted(string id, const CallContext& context, EventQueue& events){

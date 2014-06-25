@@ -44,11 +44,18 @@ bool AblManager::is_trigger(std::string event_name)const{
 }
 
 bool AblManager::on_trigger(std::string event_name){
+#define USE_DEFAULT 1
+#if(USE_DEFAULT==1)
+	std::string bydefault="1";
+#else
 	std::string bydefault="_UNKNOWN_";
+#endif
 	std::string trigger_policy;
 	std::string trigger_name = "/ABL/Events"+event_name;
 	ros::param::param(trigger_name,trigger_policy,bydefault);
+#if(USE_DEFAULT==0)
 	if(trigger_policy==bydefault) return false;
+#endif
 	activate(all_triggers[trigger_name],trigger_policy);
 	return true;
 }
@@ -73,7 +80,7 @@ void AblManager::listen(decision_making::EventQueue* events){
 
 void AblManager::activate(const Trigger& trigger,const std::string& polyci){
 	BOOST_FOREACH(Activated act, activated){
-		if(act.polyci == polyci) return;
+		if(act.policy == polyci) return;
 	}
 	Activated act={trigger,polyci};
 	activated.push_back(act);
@@ -87,12 +94,173 @@ void AblManager::deactivate(const std::string& compliment){
 		}
 	}
 }
+/**
+Comm. Fail
+	SSM External communication failure for more than 10 seconds.
+		1. Continue mission autonomously
+		2. Pause mission until recovery
+		3. Drive back to last comm. point and wait for commands (reverse route)
+Obstacle detected
+	WPD/PP? Obstacle detected in path
+		1. Avoid obstacle
+		2. Start predefined W.S to remove obstacle
+		3. Pause and wait for operator
+Road detected
+	WPD/PP(?) Road shoulders detected in path
+		1.Correct path and drive along it
+		2.Ignore detection
+No autonomous solution/ road blocked
+	WPD/PP(?) When the UGV cannot calculate route due to lack of information, data inconsistency or path blocked. 5m ahead
+		1.(optional) stop and reset map/go back one step/recalculate mission
+		2. Abort mission and go back (reverse route)
+		3. Pause and wait for operator
+Turn-over
+	SSM Stopping at critical pitch/roll values. 5 degrees under max allowed
+		1.Recalculate and continue mission
+		2. Pause and wait for operator
+Collision
+	LLC Vehicle not moving despite receiving speed from WPD
+		1.Recalculate and continue mission
+		2. Pause and wait for operator
+No GPS signal
+	Localization No GPS signal for more than 10 seconds
+		1. Navigate without GPS
+		2. Navigate without GPS for X meters
+		3. Pause and wait for operator
+**/
+#define switch_str(NAME) const string& _sw_=NAME; bool _t_=true; if(false)
+#define case_str(VAL) }else if(VAL==_sw_){
+static const string POLICY_AUTONOMY=std::string("1");
+static const string POLICY_MEDIUM=std::string("2");
+static const string POLICY_TELEOPERATION=std::string("3");
 
 void AblManager::on_activation(const Activated& act){
+	decision_making::EventQueue* events = this->component->events();
+	if(!events) return;
+	switch_str(act.trigger.name){
+		case_str( "CommFail" ){
+			switch_str(act.policy){
+				case_str(POLICY_AUTONOMY){
+				}
+				case_str(POLICY_MEDIUM){
+					events->raiseEvent("/pauseMission");
+				}
+				case_str(POLICY_TELEOPERATION){
+					events->raiseEvent("/goBack");
+				}
+			}
+		}
+		case_str( "NoPathFound" ){
+			switch_str(act.policy){
+				case_str(POLICY_AUTONOMY){
 
+				}
+				case_str(POLICY_MEDIUM){
+
+				}
+				case_str(POLICY_TELEOPERATION){
+
+				}
+			}
+		}
+
+		case_str( "ObstacleDetected" ){
+			switch_str(act.policy){
+				case_str(POLICY_AUTONOMY){
+
+				}
+				case_str(POLICY_MEDIUM){
+
+				}
+				case_str(POLICY_TELEOPERATION){
+
+				}
+			}
+		}
+		case_str( "RoadDetected" ){
+			switch_str(act.policy){
+				case_str(POLICY_AUTONOMY){
+
+				}
+				case_str(POLICY_MEDIUM){
+
+				}
+				case_str(POLICY_TELEOPERATION){
+
+				}
+			}
+		}
+		case_str( "Turn-over" ){
+			switch_str(act.policy){
+				case_str(POLICY_AUTONOMY){
+
+				}
+				case_str(POLICY_MEDIUM){
+
+				}
+				case_str(POLICY_TELEOPERATION){
+
+				}
+			}
+		}
+		case_str( "Collision" ){
+			switch_str(act.policy){
+				case_str(POLICY_AUTONOMY){
+
+				}
+				case_str(POLICY_MEDIUM){
+
+				}
+				case_str(POLICY_TELEOPERATION){
+
+				}
+			}
+		}
+		case_str( "NoGPS" ){
+			switch_str(act.policy){
+				case_str(POLICY_AUTONOMY){
+
+				}
+				case_str(POLICY_MEDIUM){
+
+				}
+				case_str(POLICY_TELEOPERATION){
+
+				}
+			}
+		}
+		case_str( "AssistanceRequired" ){
+			switch_str(act.policy){
+				case_str(POLICY_AUTONOMY){
+
+				}
+				case_str(POLICY_MEDIUM){
+
+				}
+				case_str(POLICY_TELEOPERATION){
+
+				}
+			}
+		}
+	}
 }
 void AblManager::on_deactivation(const Activated& act){
+	decision_making::EventQueue* events = this->component->events();
+	switch_str(act.trigger.name){
+		case_str( "CommFail" ){
+			switch_str(act.policy){
+				case_str(POLICY_AUTONOMY){
 
+				}
+				case_str(POLICY_MEDIUM){
+						events->raiseEvent("/resumeMission");
+				}
+				case_str(POLICY_TELEOPERATION){
+
+				}
+			}
+		}
+	}
 }
 
 
