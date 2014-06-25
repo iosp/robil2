@@ -1,0 +1,17 @@
+header: 
+  seq: 2
+  stamp: 
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+task_id: '33'
+task_description: WS1 Blade Height
+steps: 
+  - 
+    id: 1
+    type: 1
+    value: 1
+    blade_relativity: 0
+    success_timeout: 10
+    duration_at_end: 1
+
