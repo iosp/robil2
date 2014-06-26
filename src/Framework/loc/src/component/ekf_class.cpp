@@ -1,6 +1,6 @@
 #include "ekf_class.h"
 #include "helpermath.h"
-#include "std_msgs/Float64.h"
+//#include "std_msgs/Float64.h"
 #include "boost/assign.hpp"
 #include "gps_calculator.h"
 ekf::ekf() : _Egps(100),_Eimu(100)
@@ -35,7 +35,7 @@ ekf::~ekf()
 
 void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 {
-	if (_init_latitude != -1 && _init_longitude != -1)
+	if (_init_latitude != -1 && _init_longitude != -1 && first_GPS_flag)
 	{
 		std::cout << "Using Initial coordinates as specified in the userHeader.h file." << std::endl;
 		_Egps.on = false;
@@ -54,8 +54,8 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 		_Egps.set = false;
 		std::cout << "changing the initial GPS coordinates" << std::endl;
 		std::cout << "------------------------------------" << std::endl;
-		printf("lat: %.8f\n",_Egps.getGPScoor().latitude);
-		printf("long: %.8f\n",_Egps.getGPScoor().longitude);
+		printf("lat: %.8f\n",initialGPS.latitude);
+		printf("long: %.8f\n",initialGPS.longitude);
 	}
 	this->GPSmeasurement = measurement;
 
@@ -83,11 +83,19 @@ void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
 	this->IMUmeasurement = measurement;
 	Quaternion qut2(measurement.orientation);
 	Rotation rot2 = GetRotation(qut2);
-	z.at<double>(3,0) = rot2.yaw;
-	z.at<double>(4,0) = measurement.angular_velocity.z;
-	z.at<double>(2,0) = (measurement.linear_acceleration.x - Eacc);
-}
+	z.at<double>(3,0) = (measurement.linear_acceleration.x - Eacc);
+	z.at<double>(4,0) = rot2.roll;
+	z.at<double>(5,0) = rot2.pitch;
+	z.at<double>(6,0) = rot2.yaw;
+	z.at<double>(7,0) = measurement.angular_velocity.x;
+	z.at<double>(8,0) = measurement.angular_velocity.y;
+	z.at<double>(9,0) = measurement.angular_velocity.z;
 
+}
+void ekf::setGPSSpeedMeasurement(robil_msgs::GpsSpeed _speed)
+{
+	z.at<double>(2,0) = _speed.speed;
+}
 void ekf::estimator()
 {
 	if(_Eimu.set || _Egps.set)
@@ -109,24 +117,29 @@ void ekf::estimator()
 		xk.at<double>(3,0) = 0.0;
 	}
 	time_propagation();
-
+	
 	this->last_pose = this->estimatedPose;
-	this->velocity.twist.linear.x = xk.at<double>(2,0) * cos(xk.at<double>(4,0));
-	this->velocity.twist.linear.y = xk.at<double>(2,0) * sin(xk.at<double>(4,0));
+	this->velocity.twist.linear.x = xk.at<double>(3,0) * cos(xk.at<double>(7,0)) * cos(xk.at<double>(6,0));
+	this->velocity.twist.linear.y = xk.at<double>(3,0) * sin(xk.at<double>(7,0)) * cos(xk.at<double>(6,0));
 	this->velocity.header.stamp = time;
 
 	this->estimatedPose.pose.pose.position.x = xk.at<double>(0,0);
 	this->estimatedPose.pose.pose.position.y = xk.at<double>(1,0);
-	this->estimatedPose.pose.pose.position.z = GPSmeasurement.altitude;
-	this->estimatedPose.pose.pose.orientation = IMUmeasurement.orientation;
+	this->estimatedPose.pose.pose.position.z = xk.at<double>(2,0);
+	Rotation rot2(xk.at<double>(5,0), xk.at<double>(6,0), xk.at<double>(7,0));
+	Quaternion quat2 = GetFromRPY(rot2);
+	this->estimatedPose.pose.pose.orientation.x = quat2.x;
+	this->estimatedPose.pose.pose.orientation.y = quat2.y;
+	this->estimatedPose.pose.pose.orientation.z = quat2.z;
+	this->estimatedPose.pose.pose.orientation.w = quat2.w;
 	this->estimatedPose.header.stamp = time;
 
-	this->estimatedPose.pose.covariance = boost::assign::list_of (P.at<double>(0,0)) (P.at<double>(1,0)) (0) (P.at<double>(4,0)) (0) (0)
-		                                                        		 (P.at<double>(0,1)) (P.at<double>(1,1)) (0) (P.at<double>(4,1)) (0) (0)
-		                                                        		 (0) (0) (0) (0) (0) (0)
-		                                                        		 (P.at<double>(0,4)) (P.at<double>(1,4)) (0) (P.at<double>(4,4)) (0) (0)
-		                                                        		 (0) (0) (0) (0) (0) (0)
-		                                                        		 (0) (0) (0) (0) (0) (0);
+	this->estimatedPose.pose.covariance = boost::assign::list_of (P.at<double>(0,0)) (P.at<double>(1,0)) (P.at<double>(2,0)) (P.at<double>(5,0)) (P.at<double>(6,0)) (P.at<double>(7,0))
+																 (P.at<double>(0,1)) (P.at<double>(1,1)) (P.at<double>(2,1)) (P.at<double>(5,1)) (P.at<double>(6,1)) (P.at<double>(7,1))
+																 (P.at<double>(0,2)) (P.at<double>(1,2)) (P.at<double>(2,2)) (P.at<double>(5,2)) (P.at<double>(6,2)) (P.at<double>(7,2))
+																 (P.at<double>(0,5)) (P.at<double>(1,5)) (P.at<double>(2,5)) (P.at<double>(5,5)) (P.at<double>(6,5)) (P.at<double>(7,5))
+																 (P.at<double>(0,6)) (P.at<double>(1,6)) (P.at<double>(2,6)) (P.at<double>(5,6)) (P.at<double>(6,6)) (P.at<double>(7,6))
+																 (P.at<double>(0,7)) (P.at<double>(1,7)) (P.at<double>(2,7)) (P.at<double>(5,7)) (P.at<double>(6,7)) (P.at<double>(7,7));
 }
 
 void ekf::measurement_update()

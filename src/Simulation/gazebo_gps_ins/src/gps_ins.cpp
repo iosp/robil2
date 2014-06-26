@@ -13,6 +13,7 @@
 #include "sensor_msgs/Imu.h"
 #include "sensor_msgs/NavSatFix.h"
 #include "sensor_msgs/NavSatStatus.h"
+#include <ParameterTypes.h>
 #include <ctime>
 #include <sstream>
 #include <string>
@@ -24,6 +25,7 @@
 
 
 #define TOPIC_NAME_GPS 		"/SENSORS/GPS"
+#define TOPIC_NAME_SPEED	"/SENSORS/GPS/Speed"
 #define TOPIC_NAME_IMU 		"/SENSORS/IMU"
 #define SENSOR_GPS_NAME		"gps_component"
 #define SENSOR_IMU_NAME		"imu_component"
@@ -79,12 +81,15 @@ namespace gazebo
 	//cout << "Value: " << str << endl;
       }
       else _start_longitude = 0;
-      _gps_noise=_rp_noise=_yaw_noise=_gy_noise=_acc_noise=_acc_bias=_gy_bias=0;
+      _gps_noise=_rp_noise=_yaw_noise=_gy_noise=_acc_noise=_acc_bias=_gy_bias=_spd_noise=0;
       if(_sdf->HasElement("noise"))
       {
 	sdf::ElementPtr elem = _sdf->GetElement("noise");
 	if (elem->HasElement("gps"))
 	  elem->GetElement("gps")->GetValue()->Get(_gps_noise);
+	cout << "GPS noise=: " << _gps_noise << endl;
+	if (elem->HasElement("gps_speed"))
+	  elem->GetElement("gps_speed")->GetValue()->Get(_spd_noise);
 	if (elem->HasElement("rollpitch"))
 	  elem->GetElement("rollpitch")->GetValue()->Get(_rp_noise);
 	if (elem->HasElement("yaw"))
@@ -105,9 +110,9 @@ namespace gazebo
 	int val;
 	elem->GetValue()->Get(val);
 	_frequency = val;
-	//cout << "Value: " << str << endl;
+	cout << "Value: " << val << endl;
       }
-      else _frequency = 1;
+      else _frequency = 10;
       _lastTime = 0;
       physics::PhysicsEnginePtr engine =  _model->GetWorld()->GetPhysicsEngine();
       
@@ -132,6 +137,7 @@ namespace gazebo
       this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&GPS_INS::OnUpdate, this, _1));
       _publisherGPS = _nodeHandle.advertise<sensor_msgs::NavSatFix>(TOPIC_NAME_GPS, 10);
 	  _publisherIMU = _nodeHandle.advertise<sensor_msgs::Imu>(TOPIC_NAME_IMU, 10);
+ 	_publisherGPSspeed = _nodeHandle.advertise<robil_msgs::GpsSpeed>(TOPIC_NAME_SPEED, 10);
 
     }
     double sampleNormal() 
@@ -157,6 +163,7 @@ namespace gazebo
       
 	  	sensor_msgs::NavSatFix msg_gps;
 		sensor_msgs::Imu msg_imu;
+		robil_msgs::GpsSpeed msg_spd;
 
 		math::Pose pose=_model->GetWorldPose();
 		gazebo::math::Vector3 pos = pose.pos;
@@ -179,14 +186,14 @@ namespace gazebo
 		
 		msg_gps.longitude = _start_longitude + 180/PI*atan2(sin(brng)*sin(dist/R)*cos(_start_latitude*PI/180),cos(dist/R)-sin(_start_latitude*PI/180)*sin(msg_gps.latitude*PI/180));
 		
-		msg_gps.header.seq = _seq++;
-		msg_gps.header.frame_id = 1;
+		msg_gps.header.seq = ++_seq;
+		msg_gps.header.frame_id = "gps_ins";
 		msg_gps.header.stamp = ros::Time::now();
 		msg_gps.status.status = sensor_msgs::NavSatStatus::STATUS_FIX;
 		msg_gps.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
 
 		msg_imu.header.seq = _seq;
-		msg_imu.header.frame_id = 1;
+		msg_imu.header.frame_id = "gps_ins";
 		msg_imu.header.stamp = ros::Time::now();
 		
 		msg_imu.orientation.x = pose.rot.x;
@@ -202,8 +209,14 @@ namespace gazebo
 		msg_imu.linear_acceleration.y = _imu->GetLinearAcceleration().y+_acc_bias+_acc_noise*sampleNormal();
 		msg_imu.linear_acceleration.z = _imu->GetLinearAcceleration().z+_acc_bias+_acc_noise*sampleNormal();
 
+		msg_spd.header.seq = _seq;
+		msg_spd.header.stamp = ros::Time::now();
+		msg_spd.header.frame_id = "gps_ins";
+		msg_spd.speed = sqrt(_model->GetWorldLinearVel().x * _model->GetWorldLinearVel().x + _model->GetWorldLinearVel().y * _model->GetWorldLinearVel().y + _model->GetWorldLinearVel().z * _model->GetWorldLinearVel().z) + _spd_noise*sampleNormal();
+
 		_publisherGPS.publish(msg_gps);
 		_publisherIMU.publish(msg_imu);	
+		_publisherGPSspeed.publish(msg_spd);	
     }
     
 
@@ -231,13 +244,13 @@ namespace gazebo
     event::ConnectionPtr 	_updateConnection; // Pointer to the update event connection
 
     ros::NodeHandle		_nodeHandle;
-    ros::Publisher 		_publisherGPS, _publisherIMU;
+    ros::Publisher 		_publisherGPS, _publisherIMU, _publisherGPSspeed;
     
     //sensors::GpsSensorPtr 	_gps;
     sensors::ImuSensorPtr 	_imu;
     math::Vector3 _init_pos;
     double _start_latitude, _start_longitude;
-    double _gps_noise,_rp_noise, _yaw_noise, _gy_noise, _acc_noise, _acc_bias, _gy_bias;
+    double _gps_noise,_rp_noise, _yaw_noise, _gy_noise, _acc_noise, _acc_bias, _gy_bias, _spd_noise;
     int  _frequency;
     common::Time		_lastTime;
     int 			_seq;

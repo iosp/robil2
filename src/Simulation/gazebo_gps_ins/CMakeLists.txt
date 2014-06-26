@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   gazebo_ros
   roscpp
   message_generation
+  robil2conf
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
@@ -30,8 +31,9 @@ target_link_libraries(gps_ins ${GAZEBO_libraries})
 catkin_package(
   DEPENDS 
     roscpp 
-    gazebo_ros 
-    CATKIN_DEPENDS message_runtime
+    gazebo_ros
+    
+    CATKIN_DEPENDS message_runtime robil2conf 
 )
 
 
