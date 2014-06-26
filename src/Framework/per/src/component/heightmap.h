@@ -15,6 +15,8 @@ using namespace cv;
 #define TYPE_UNSCANNED 0
 #define TYPE_CLEAR 1
 #define TYPE_OBSTACLE 2
+#define FEATURE_UNKNOWN	0
+#define FEATURE_ROAD	1
 
 class HeightMap
 {
@@ -44,6 +46,12 @@ class HeightMap
 	 */
         void    setRelativeHeightAt(int x, int y, double height);
         double  getRelativeHeightAt(int x, int y);
+	
+	void    setRelativeTypeAt(int x, int y, int type);
+        int     getRelativeTypeAt(int x, int y);
+	
+	void    setRelativeFeatureAt(int x, int y, int feature);
+        int     getRelativeFeatureAt(int x, int y);
         
 	/**
 	 * This function attempts to (for now) classify each map cell as
@@ -64,8 +72,8 @@ class HeightMap
 	 * Bobcat position is in represented in absolute global coordinates.
 	 */
         void displayConsole();
-        void displayGUI(int, int, int);
-        void displayTypesGUI();
+        void displayGUI(int, int, int, int enlarger=3);
+        void displayTypesGUI(int enlarger=3);
         void display3D();
 	
 	/**
@@ -73,6 +81,7 @@ class HeightMap
 	 */
 	vector<double>& getHeights();
         vector<int>& getTypes();
+	vector<int>& getFeatures();
         
     private:
         
@@ -85,9 +94,11 @@ class HeightMap
       
       
 	double&                 _at(int x, int y);
+	int&                 	 _typeAt(int x, int y);
+	int&                 	 _featureAt(int x, int y);
         
         vector<double>          _heights;  
-        vector<int>		 _types;
+        vector<int>		 _types, _features;
         int                     _width;
         int                     _height;
         double                  _min, _max;

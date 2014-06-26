@@ -2,6 +2,9 @@
 #define STEREO__H
 
 #include <opencv2/opencv.hpp>
+#include "rdbg.h"
+#define PI 3.14159
+
 using namespace cv;
 
 Mat getDisparity(Mat left_image, Mat right_image)
@@ -43,18 +46,65 @@ Mat getDisparity(Mat left_image, Mat right_image)
     return img;
 }
 
+Mat filterDisparity(Mat img)
+{
+  static const int thresh = 12;
+  for(int i = 0; i < img.rows; i++)
+  {
+    int follow = 0;
+    for(int j = 0; j < img.cols; j++)
+    {
+      //img.at<uchar>(i,j) = 0;
+      uchar depth = img.at<uchar>(i,j);
+      if(depth > 0)
+      {
+	follow++;
+      }
+      else
+      {
+	if(follow > 0 && follow < thresh)
+	{
+	  for(int x = j-1; x >= j-follow; x--)
+	    img.at<uchar>(i,x) = 0;
+	  follow = 0;
+	}
+      }
+    }
+  }
+  return img;
+}
 
 
-void handleStereo(Mat left, Mat right)
+void ProjectDepthImage(HeightMap* map, Mat img, Vec3D myRight, Vec3D myFront, Vec3D myUp, Vec3D myPos)
+{
+  static const double asp = PI/4; //45 deg to each side
+  for(int i = 0; i < img.rows; i++)
+  {
+    for(int j = 0; j < img.cols; j++)
+    {
+      uchar depth = img.at<uchar>(i, j);
+      if(depth < 10 || depth > 220) continue;
+      float depth_m = (255-(int)depth)/20.0f;
+      float right_m = depth_m * tan(asp) * 2*(j - img.cols/2)/img.cols;
+      float up_m = depth_m * tan(asp) * 2*(i - img.rows/2)/img.rows;
+      Vec3D pos = myPos.add(myFront.multiply(depth_m).add(myRight.multiply(right_m).add(myUp.multiply(up_m))));
+      map->setAbsoluteHeightAt((int)(5*pos.x), (int)(5*pos.y), (pos.z));   
+    }
+  }
+  
+}
+
+Mat handleStereo(Mat left, Mat right)
 {
   Mat l,r;
   resize(left, l, Size(left.size().width/2, left.size().height/2), 0, 0, cv::INTER_CUBIC);
   resize(right, r, Size(right.size().width/2, right.size().height/2), 0, 0, cv::INTER_CUBIC);
-  //blur( l, l, Size( 3, 3 ), Point(-1,-1));
-  //blur( r, r, Size( 3, 3 ), Point(-1,-1));
-  //imshow("dispx", getDisparity(r, l)); 
-  //imshow("camz", l); 
+ 
+  Mat stereo = getDisparity(r, l);
+  stereo = filterDisparity(stereo);
+  imshow("dispx", stereo); 
   waitKey(1);
+  return stereo;
 }
 
 

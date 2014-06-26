@@ -32,7 +32,6 @@ public:
 	void handleEffortsTh(const config::PER::sub::EffortsTh& msg);
 	void handleEffortsSt(const config::PER::sub::EffortsSt& msg);
 	void handleEffortsJn(const config::PER::sub::EffortsJn& msg);
-	void handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg);
 	void publishGPS(config::PER::pub::GPS& msg);
 	void publishINS(config::PER::pub::INS& msg);
 	void publishBladePosition(config::PER::pub::BladePosition& msg);
@@ -40,13 +39,14 @@ public:
 	void publishMiniMap(config::PER::pub::MiniMap& msg);
 	void publishVOOdometry(config::PER::pub::VOOdometry& msg);
 	void publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg);
+	void handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 	
 	
-	void setVisualize(bool);
+	void setVisualize(char);
 	
 private:
       sensor_msgs::Imu _imuData;
