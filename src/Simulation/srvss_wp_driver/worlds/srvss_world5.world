@@ -1,0 +1,191 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <world name="default">
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+           <scene>
+            <sky>
+                <time>10</time>
+                <clouds>
+                    <speed>5</speed>
+                    <direction>1.14</direction>
+                    <humidity>0.3</humidity>
+                </clouds>
+            </sky>
+        </scene>
+
+    <include>
+        <uri>model://srvss_terrain3</uri>
+     </include> 
+
+  <include>
+      <uri>model://srvss_bobcat</uri>
+      <name>SRVSS_BobCat</name>
+      <pose>30 10 4 0 0 0</pose>
+    </include>
+
+
+
+
+    <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_1</name>
+      <pose>70 15 7 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_2</name>
+      <pose>90 50 7 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_3</name>
+      <pose>20 50 7 0 0 0</pose>
+    </include>
+
+   <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_4</name>
+      <pose>50 90 7 0 0 0</pose>
+    </include>
+
+   <include>
+      <uri>model://barrel1</uri>
+      <name>target_barrel_5</name>
+      <pose>10 10 7 0 0 0</pose>
+    </include>
+
+
+        <include>
+            <uri>model://tree1</uri>
+            <pose>33.7866 27.4835 2.29013 -0.190981 0.0657644 -0.852162</pose>
+            <scale>1.60137 1.60137 1.60137</scale>
+            <name>object0</name>
+        </include>
+        <include>
+            <uri>model://tree1</uri>
+            <pose>46.9802 75.8888 3.08236 0.0514318 0.0387474 1.22775</pose>
+            <scale>1.34051 1.34051 1.34051</scale>
+            <name>object1</name>
+        </include>
+        <include>
+            <uri>model://tree1</uri>
+            <pose>45.3314 23.363 2.89036 0.182188 0.00240872 -0.6281</pose>
+            <scale>1.54828 1.54828 1.54828</scale>
+            <name>object2</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>68.0202 76.9426 4.24039 -0.269316 -0.0378198 0.0298883</pose>
+            <scale>0.934442 0.934442 0.934442</scale>
+            <name>object3</name>
+        </include>
+        <include>
+            <uri>model://rock1</uri>
+            <pose>68.9544 61.2603 2.14376 0.0389527 -0.274538 -1.26671</pose>
+            <scale>1.08678 1.08678 1.08678</scale>
+            <name>object4</name>
+        </include>
+        <include>
+            <uri>model://rock1</uri>
+            <pose>58.2261 32.7292 3.40605 -0.282739 -0.196427 -1.07291</pose>
+            <scale>1.2434 1.2434 1.2434</scale>
+            <name>object5</name>
+        </include>
+        <include>
+            <uri>model://rock1</uri>
+            <pose>53.1828 29.3484 2.69221 -0.158167 -0.289474 -1.05885</pose>
+            <scale>1.77034 1.77034 1.77034</scale>
+            <name>object6</name>
+        </include>
+        <include>
+            <uri>model://rock1</uri>
+            <pose>52.9078 38.673 3.59551 -0.172465 0.163986 0.654841</pose>
+            <scale>0.593042 0.593042 0.593042</scale>
+            <name>object7</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>50.5481 69.3059 3.07798 -0.178253 0.181917 0.921047</pose>
+            <scale>1.18813 1.18813 1.18813</scale>
+            <name>object8</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>52.9032 43.4908 3.39254 -0.259141 -0.00141275 1.48724</pose>
+            <scale>1.02535 1.02535 1.02535</scale>
+            <name>object9</name>
+        </include>
+        <include>
+            <uri>model://rock1</uri>
+            <pose>33.0027 31.5178 2.9501 0.132768 0.105997 -1.09337</pose>
+            <scale>0.501494 0.501494 0.501494</scale>
+            <name>object10</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>71.9959 78.2619 3.87234 -0.0098875 -0.221342 0.432156</pose>
+            <scale>1.93571 1.93571 1.93571</scale>
+            <name>object11</name>
+        </include>
+        <include>
+            <uri>model://tree1</uri>
+            <pose>38.7472 70.6699 2.4025 0.23591 -0.0739437 0.800834</pose>
+            <scale>1.68396 1.68396 1.68396</scale>
+            <name>object12</name>
+        </include>
+        <include>
+            <uri>model://rock1</uri>
+            <pose>51.5619 62.543 3.51253 0.0254603 0.205151 -0.84858</pose>
+            <scale>1.514 1.514 1.514</scale>
+            <name>object13</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>61.532 24.7481 3.5089 -0.146261 -0.133975 0.28727</pose>
+            <scale>1.32761 1.32761 1.32761</scale>
+            <name>object14</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>59.3675 49.2759 2.73057 0.00457901 0.029014 0.529276</pose>
+            <scale>1.18204 1.18204 1.18204</scale>
+            <name>object15</name>
+        </include>
+        <include>
+            <uri>model://rock1</uri>
+            <pose>73.4593 73.0917 3.94035 -0.173928 0.0398215 0.0743121</pose>
+            <scale>1.96459 1.96459 1.96459</scale>
+            <name>object16</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>79.6606 24.0652 2.56965 -0.24904 0.0688488 1.45899</pose>
+            <scale>1.41842 1.41842 1.41842</scale>
+            <name>object17</name>
+        </include>
+        <include>
+            <uri>model://tree1</uri>
+            <pose>44.2712 79.6749 2.32366 0.0571515 -0.0941605 0.0908257</pose>
+            <scale>1.26274 1.26274 1.26274</scale>
+            <name>object18</name>
+        </include>
+        <include>
+            <uri>model://rock1</uri>
+            <pose>38.2984 48.5619 3.39494 0.0703402 -0.181666 -1.17463</pose>
+            <scale>1.3428 1.3428 1.3428</scale>
+            <name>object19</name>
+        </include>
+        <include>
+            <uri>model://rock1</uri>
+            <pose>33.9442 33.425 2.75727 -0.117764 -0.125456 1.13178</pose>
+            <scale>0.857873 0.857873 0.857873</scale>
+            <name>object20</name>
+        </include>
+
+    </world>
+</sdf>

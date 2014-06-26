@@ -24,12 +24,12 @@
     
     <include>
       <uri>model://FLEA3_L</uri>
-      <pose>-0.35 0.3335 1.93 0 0 0</pose>
+      <pose>-0.35 0.3334 2.02 0 0 0</pose>
       <name>left_flea3</name>
     </include>
     <include>
       <uri>model://FLEA3_R</uri>
-      <pose>-0.30 0.23 1.93 0 0 0</pose>
+      <pose>-0.35 -0.2 2.02 0 0 0</pose>
       <name>right_flea3</name>
     </include>
 
@@ -210,7 +210,7 @@
 
 <tf2frame>ibeo</tf2frame>
 <tf2parent>body</tf2parent>
-<tf2pose>-0.375 0.055 1.89 0 0.284 0.13</tf2pose>
+<tf2pose>-0.35 0.3334 2.02 0 0 0</tf2pose>
 
 <tf3frame>cameraL_frame</tf3frame>
 <tf3parent>body</tf3parent>
@@ -218,7 +218,7 @@
 
 <tf4frame>cameraR_frame</tf4frame>
 <tf4parent>body</tf4parent>
-<tf4pose>-0.30 0.23 1.93 0 0.7 -0.35</tf4pose>
+<tf4pose>-0.35 -0.2 2.02 0 0 0</tf4pose>
 
 <livetf1frame>body</livetf1frame>
 <livetf1parent>world</livetf1parent>

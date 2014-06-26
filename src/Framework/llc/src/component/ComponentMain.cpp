@@ -27,6 +27,8 @@ void ComponentMain::handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg)
 void ComponentMain::handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg)
 {
 
+	this->WSM_desired_speed.twist.linear.x = msg.twist.linear.x ;
+	this->WSM_desired_speed.twist.angular.z = msg.twist.angular.z ;
 
 	//std::cout<< "LLC say:" << msg << std::endl;
 }
@@ -34,12 +36,15 @@ void ComponentMain::handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg)
 
 void ComponentMain::handleBladePositionCommand(const config::LLC::sub::BladePositionCommand& msg)
 {
-	//std::cout<< "LLC say:" << msg << std::endl;
+	this->t_flag = 1 ;
+	this->Blade_angle = msg ;
+	//std::cout<< "Got blade command:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleLocation(const config::LLC::sub::Location& msg)
 {
+	Per_pose = msg ;
 	//std::cout<< "LLC say:" << msg << std::endl;
 }
 	

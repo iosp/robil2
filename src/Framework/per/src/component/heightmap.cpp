@@ -10,6 +10,7 @@ HeightMap::HeightMap(int width, int height)
 {
     _heights.resize(width*height, HEIGHT_UNKNOWN);
     _types.resize(width*height, TYPE_UNSCANNED);
+    _features.resize(width*height, FEATURE_UNKNOWN);
     _width = width;
     _height = height;
     _min = -5;
@@ -31,6 +32,15 @@ double& HeightMap::_at(int x, int y)
     return _heights[y*_width+x];
 }
 
+int& HeightMap::_typeAt(int x, int y)
+{
+    return _types[y*_width+x];
+}
+
+int& HeightMap::_featureAt(int x, int y)
+{
+    return _features[y*_width+x];
+}
 void HeightMap::setRelativeHeightAt(int x, int y, double height)
 {
    
@@ -45,6 +55,36 @@ void HeightMap::setRelativeHeightAt(int x, int y, double height)
     
     if(_at(x,y) < _min) _at(x,y) = height;
     else _at(x,y) = _at(x,y)*0.8 + height*0.2;
+}
+
+void HeightMap::setRelativeTypeAt(int x, int y, int type)
+{
+   
+    if(x >= _width/2) { shiftRight(); return; }
+    else if(x <= -_width/2) { shiftLeft(); return; }
+    
+    if(y >= _height/2) { shiftUp(); return; }
+    else if(y <= -_height/2) {  shiftDown(); return; }
+    
+    x = _width/2 - x;
+    y = _height/2 - y;
+    
+    _typeAt(x,y) = type;
+}
+
+void HeightMap::setRelativeFeatureAt(int x, int y, int feature)
+{
+   
+    if(x >= _width/2) { shiftRight(); return; }
+    else if(x <= -_width/2) { shiftLeft(); return; }
+    
+    if(y >= _height/2) { shiftUp(); return; }
+    else if(y <= -_height/2) {  shiftDown(); return; }
+    
+    x = _width/2 - x;
+    y = _height/2 - y;
+    
+    _featureAt(x,y) = feature;
 }
 
 void HeightMap::setAbsoluteHeightAt(int x, int y, double height)
@@ -64,11 +104,15 @@ void HeightMap::shiftLeft()
     for(int x = _width/2-1; x >= -_width/2+1; x--)
     {
       double h = getRelativeHeightAt(x-_width/2, y);
+      int t = getRelativeTypeAt(x-_width/2, y);
+      int f = getRelativeFeatureAt(x-_width/2, y);
       double x1 = _width/2 - x;
       double y1 = _height/2 - y;
       _at(x1,y1) = h;
+      _featureAt(x1,y1) = f;
+      _typeAt(x1,y1) = t;
     }
-  rdbg("left");
+  //rdbg("left");
 }
 
 void HeightMap::shiftRight()
@@ -78,11 +122,15 @@ void HeightMap::shiftRight()
     for(int x = -_width/2+1; x <= _width/2-1; x++)
     {
       double h = getRelativeHeightAt(x+_width/2, y);
+      int t = getRelativeTypeAt(x+_width/2, y);
+      int f = getRelativeFeatureAt(x+_width/2, y);
       double x1 = _width/2 - x;
       double y1 = _height/2 - y;
       _at(x1,y1) = h;
+      _featureAt(x1,y1) = f;
+      _typeAt(x1,y1) = t;
     }
-  rdbg("left");
+  //rdbg("left");
   
 }
 void HeightMap::shiftUp()
@@ -92,11 +140,15 @@ void HeightMap::shiftUp()
     for(int x = _width/2-1; x >= -_width/2+1; x--)
     {
       double h = getRelativeHeightAt(x, y+_height/2);
+      int t = getRelativeTypeAt(x, y+_height/2);
+      int f = getRelativeFeatureAt(x, y+_height/2);
       double x1 = _width/2 - x;
       double y1 = _height/2 - y;
       _at(x1,y1) = h;
+      _featureAt(x1,y1) = f;
+      _typeAt(x1,y1) = t;
     }
-  rdbg("up");
+  //rdbg("up");
 }
 
 void HeightMap::shiftDown()
@@ -106,11 +158,15 @@ void HeightMap::shiftDown()
     for(int x = _width/2-1; x >= -_width/2+1; x--)
     {
       double h = getRelativeHeightAt(x, y-_height/2);
+      int t = getRelativeTypeAt(x, y-_height/2);
+      int f = getRelativeFeatureAt(x, y-_height/2);
       double x1 = _width/2 - x;
       double y1 = _height/2 - y;
       _at(x1,y1) = h;
+      _featureAt(x1,y1) = f;
+      _typeAt(x1,y1) = t;
     }
-  rdbg("down");
+  //rdbg("down");
 }
 
 double HeightMap::getRelativeHeightAt(int x, int y)
@@ -129,37 +185,23 @@ double HeightMap::getAbsoluteHeightAt(int x, int y)
   return getRelativeHeightAt(x,y);
 }
 
-/*
-void HeightMap::grow()
+int HeightMap::getRelativeTypeAt(int x, int y)
 {
-  if(!_mayGrow) return;
-  //rdbg("grow1");
-  vector<double> heights;
-  vector<int> types;
-  int new_width = _width * 1.25;
-  int new_height = _height * 1.25;
-  heights.resize(new_width*new_height, HEIGHT_UNKNOWN);
-  //rdbg("grow2");
-  types.resize(new_width*new_height, TYPE_UNSCANNED);
-  //rdbg("grow3");
-  for(int i = -_width/2; i < _width/2; i++)
-    for(int j = -_height/2; j < _height/2; j++)
-    {
-      int x = new_width/2 - i;
-      int y = new_height/2 - j;
-      //printf("%d/%d ", y*new_width+x, new_width*new_height);
-      heights[y*new_width+x] = getHeightAt(i,j);
-    }
-  //rdbg("grow4");
-  _width = new_width;
-  _height = new_height;
-  _heights = heights;
-  _types = types;
-  //rdbg("grow5");
-  //calculateTypes();
+  if(x >= _width/2 || x <= -_width/2) return TYPE_UNSCANNED;
+  if(y >= _height/2 || y <= -_height/2) return TYPE_UNSCANNED;
+  x = _width/2 - x;
+  y = _height/2 - y;
+  return _typeAt(x,y);
 }
-*/
 
+int HeightMap::getRelativeFeatureAt(int x, int y)
+{
+  if(x >= _width/2 || x <= -_width/2) return FEATURE_UNKNOWN;
+  if(y >= _height/2 || y <= -_height/2) return FEATURE_UNKNOWN;
+  x = _width/2 - x;
+  y = _height/2 - y;
+  return _featureAt(x,y);
+}
 void HeightMap::displayConsole()
 {
     for(int y = 0; y < _height; y++)
@@ -172,9 +214,8 @@ void HeightMap::displayConsole()
     }
 }
 
-void HeightMap::displayGUI(int rotation, int px, int py)
+void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
 {
-    int enlarger = 1;
    // rdbg("gui enter");
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
     cvtColor(image, image, CV_BGR2HSV);
@@ -215,25 +256,16 @@ void HeightMap::displayGUI(int rotation, int px, int py)
       for(int j = 0; j < _arrow.cols; j++)
 	if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0)) image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
     
-    // cout << "img " << _compass.rows << " " << _compass.cols << endl;
-    /*
-    for(int i = 0; i < _compass.rows; i++)
-      for(int j = 0; j < _compass.cols; j++)
-	if(_compass.at<Vec3b>(i,j) != Vec3b(255,255,255)) image.at<Vec3b>(i/2, j/2) = _compass.at<Vec3b>(i, j);
-    */
+  
     char name[30];
     sprintf(name, "GUI %d", _width);
     imshow(name, image);
-    //printf("min: %g max: %g\n",_min,_max);
-    //printf("error: %g\n", _min-_max);
-// rdbg("gui exit");
- 
-    //cv::waitKey(1);
+   
 }
 
-void HeightMap::displayTypesGUI()
+void HeightMap::displayTypesGUI(int enlarger)
 {
-  int enlarger = 3;
+  //int enlarger = 3;
   Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
   //cvtColor(image, image, CV_BGR2HSV);
   
@@ -244,20 +276,32 @@ void HeightMap::displayTypesGUI()
 	  
 	  if(t == TYPE_CLEAR) image.at<Vec3b>(x,y) = Vec3b(255,255,255);
 	  else if(t == TYPE_OBSTACLE) image.at<Vec3b>(x,y) = Vec3b(255,0,0);
-	  else if(t == TYPE_UNSCANNED) image.at<Vec3b>(x,y) = Vec3b(160,160,255);
+	  else if(t == TYPE_UNSCANNED) image.at<Vec3b>(x,y) = Vec3b(60,160,60);
+	  int f = this->_features[x/enlarger + _width*(y/enlarger)];
+	  if(f == FEATURE_ROAD) image.at<Vec3b>(x,y) = Vec3b(100,100,100);
       }
-  cvtColor(image, image, CV_HSV2BGR);
+  //cvtColor(image, image, CV_HSV2BGR);
+  int px = _width/2+25;
+  int py = _height/2;
+  Mat arrow;
+  cv::Point2f pt(_arrow.rows/2, _arrow.cols/2);
+  cv::Mat r = cv::getRotationMatrix2D(pt, 90, 1.0);
+  cv::warpAffine(_arrow, arrow, r, cv::Size(_arrow.rows, _arrow.rows));
+  for(int i = 0; i < _arrow.rows; i++)
+      for(int j = 0; j < _arrow.cols; j++)
+	if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0)) image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
   imshow("TerrainTypeUI", image);
   cv::waitKey(1);
 }
 
 void HeightMap::calculateTypes()
 {
-  const double obs_thresh = 0.1;
-  
+  const double obs_thresh = 0.2;
+  const int road_thresh = 5;
   for(int i = 1; i < _width-1; i++)
     for(int j = 1; j < _height-1; j++)
     {
+      //if(_types[j*_width+i] != TYPE_UNSCANNED) continue;
       double height = _at(i, j);
       if(height == HEIGHT_UNKNOWN) continue;
       double heightx1 = _at(i-1, j);
@@ -276,9 +320,24 @@ void HeightMap::calculateTypes()
 	if(abs(heightx2-heightx1)/2 > obs_thresh) _types[j*_width+i] = TYPE_OBSTACLE;
 	else _types[j*_width+i] = TYPE_CLEAR;
       }
-      else _types[(j+1)*_width+i] = TYPE_UNSCANNED;
+      else _types[j*_width+i] = TYPE_UNSCANNED;
       //_types[j*_width+i] = TYPE_CLEAR;
-	
+      
+      if(	i - road_thresh >= 0 && 
+		j - road_thresh >= 0 &&
+		i + road_thresh < _width-1 && 
+		j + road_thresh < _height-1)
+      {
+	  bool isClear = true;
+	  for(int x = i - road_thresh; x < i + road_thresh; x++)
+	    for(int y = j - road_thresh; y < j + road_thresh; y++)
+	    {
+		if(_types[y*_width+x] != TYPE_CLEAR) isClear = false;
+	    }
+	  if(isClear) _features[(j*_width+i)] = FEATURE_ROAD;
+	  else _features[(j*_width+i)] = FEATURE_UNKNOWN;
+      }
+      
     }
 }
 
@@ -303,6 +362,8 @@ HeightMap HeightMap::deriveMap(int px, int py, Rotation r)
     {
       Vec2D pt = pos.add(front.multiply(-j+25)).add(right.multiply(i));
       ans.setRelativeHeightAt(-j,i, getRelativeHeightAt(pt.x, pt.y)); 
+      ans.setRelativeTypeAt(-j,i, getRelativeTypeAt(pt.x, pt.y)); 
+      ans.setRelativeFeatureAt(-j,i, getRelativeFeatureAt(pt.x, pt.y)); 
     }
   return ans;
 }
@@ -328,6 +389,8 @@ HeightMap HeightMap::deriveMiniMap(int px, int py, Rotation r)
     {
       Vec2D pt = pos.add(front.multiply(-j+25)).add(right.multiply(i));
       ans.setRelativeHeightAt(-j,i, getRelativeHeightAt(pt.x, pt.y)); 
+      ans.setRelativeTypeAt(-j,i, getRelativeTypeAt(pt.x, pt.y)); 
+      ans.setRelativeFeatureAt(-j,i, getRelativeFeatureAt(pt.x, pt.y)); 
     }
   return ans;
 }
@@ -343,6 +406,15 @@ vector<int>& HeightMap::getTypes()
 {
   return _types;
 }
+
+
+vector<int>& HeightMap::getFeatures()
+{
+  return _features;
+}
+
+
+
 
 
 

@@ -34,9 +34,13 @@ add_library(per_rosComm
 add_library(per_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
+  src/component/heightmap.cpp 
+  src/component/heightmap_projection.cpp 
+  src/component/mapper/mapper.cpp 
+  src/component/helpermath.cpp
 )
 link_directories(${GAZEBO_LIBRARY_DIRS})
-add_executable(per_node src/main.cpp src/component/heightmap.cpp)
+add_executable(per_node src/main.cpp)
 target_link_libraries(per_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(per_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(per_node per_compMain per_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS} ${GAZEBO_libraries} 

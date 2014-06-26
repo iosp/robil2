@@ -8,6 +8,7 @@
 
  // std_msgs::Float64 x ;
 
+  int emergancy = 1 ;
   ros::Publisher front_left_pub_;
   ros::Publisher front_right_pub_;
   ros::Publisher back_left_pub_;
@@ -28,7 +29,6 @@ void pricecall(const std_msgs::Float64::ConstPtr& price){
 
 void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 {
-
 	std_msgs::Float64 lin;
 	std_msgs::Float64 ang;
 
@@ -45,13 +45,13 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 	if(msg->angular.x < -1)
 		ang.data = -1 ;
 
-    	pub.data = (0.5*lin.data + ang.data)*15;
+    	pub.data = (0.5*lin.data + ang.data)*20*emergancy;
     	front_left_pub_.publish(pub);
     	back_left_pub_.publish(pub);
 
-    	pub.data = (0.5*lin.data - ang.data)*15;
-	front_right_pub_.publish(pub);
-	back_right_pub_.publish(pub);
+    	pub.data = (0.5*lin.data - ang.data)*20*emergancy;
+    	front_right_pub_.publish(pub);
+    	back_right_pub_.publish(pub);
 }
 
 void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
@@ -68,20 +68,30 @@ void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
     	pub.data = msg->z;
     	brackets_pub_.publish(pub);
 }
-void ThCallback (const std_msgs::Float64ConstPtr &msg){
-
+void ThCallback (const std_msgs::Float64ConstPtr &msg)
+{
 	e_stop = ros::Time::now();
 	wheels->linear.x = msg->data ;
-
 }
 
-void StCallback	(const std_msgs::Float64ConstPtr &msg){
-
+void StCallback	(const std_msgs::Float64ConstPtr &msg)
+{
+	e_stop = ros::Time::now();
 	geometry_msgs::Twist::ConstPtr pub;
 	wheels->angular.x = msg->data ;
 	pub = wheels;
 	wheelsCallback(pub);
 }
+
+void JoCallback	(const std_msgs::Float64ConstPtr &msg)
+{
+	geometry_msgs::Vector3::Ptr vec (new geometry_msgs::Vector3) ;
+	vec->x = msg->data ;
+	vec->y = 0 ;
+	vec->z = 0 ;
+	armCallback(vec);
+}
+
 
 int main(int argc, char **argv)
 {
@@ -106,20 +116,20 @@ int main(int argc, char **argv)
   ros::Subscriber arm_sub_ = n.subscribe("/armrate", 1000, armCallback );
   ros::Subscriber Throttle_rate_sub = n.subscribe("/LLC/EFFORTS/Throttle" , 1000, ThCallback);
   ros::Subscriber Steering_rate_sub = n.subscribe("/LLC/EFFORTS/Steering" , 1000, StCallback);
-
+  ros::Subscriber Joint_rate_sub = n.subscribe("/LLC/EFFORTS/Joints" , 1000, JoCallback );
 
   ros::Rate loop_rate(10);
   ros::Duration t_out;
+  e_stop = ros::Time::now();
 
    while (ros::ok())
      {
    /* implementing E-stop, if LLC-node is offline, or doesn't publish any new messages for 1 second */
 	  t_out = (ros::Time::now().operator -(e_stop));
-	   	 if((t_out.sec)>=1) {
-	   		   	   wheels->linear.x = 0 ;
-	   		   	   wheels->angular.z = 0 ;
-	   		   	   wheelsCallback(wheels);
-	   	   }
+	   	 if((t_out.sec)>=1)
+	   		emergancy = 0 ;
+	   	 else
+	   		 emergancy = 1 ;
        ros::spinOnce();
        loop_rate.sleep();
      }

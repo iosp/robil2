@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+
+
+import subprocess
+
+path=subprocess.check_output(["rospack","find","live_bobcat"])
+path= path[:-1]+"/scripts/setupEnv2.sh"
+print path
+subprocess.call(["bash",path])

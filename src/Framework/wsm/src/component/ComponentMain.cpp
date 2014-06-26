@@ -10,6 +10,10 @@
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
+	this->receivedBladePosition = NULL;
+	this->receivedWorkSeqData = NULL;
+	this->receivedLocation = NULL;
+	this->receivedPerVelocity = NULL;
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -17,15 +21,41 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
 {
+	ROS_INFO("Got sequence");
+	if(this->receivedWorkSeqData != NULL)
+		delete this->receivedWorkSeqData;
+	this->receivedWorkSeqData = new config::WSM::sub::WorkSeqData(msg);
 	//std::cout<< "WSM say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleBladePosition(const config::WSM::sub::BladePosition& msg)
 {
+	if(this->receivedBladePosition != NULL)
+		delete this->receivedBladePosition;
+	this->receivedBladePosition = new config::WSM::sub::BladePosition(msg);
 	//std::cout<< "WSM say:" << msg << std::endl;
 }
-	
+
+void ComponentMain::handleLocation(const config::LLC::sub::Location& msg)
+{
+
+	if(this->receivedLocation != NULL)
+		delete this->receivedLocation;
+	this->receivedLocation = new config::LLC::sub::Location(msg);
+	//std::cout<< "LLC say:" << msg.pose.pose.position.x << std::endl;
+}
+
+
+void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
+{
+
+	if(this->receivedPerVelocity != NULL)
+		delete this->receivedPerVelocity;
+	this->receivedPerVelocity = new config::LLC::sub::PerVelocity(msg);
+
+//	std::cout<< "LLC say:" << msg << std::endl;
+}
 
 void ComponentMain::publishWSMVelocity(config::WSM::pub::WSMVelocity& msg)
 {
@@ -37,6 +67,8 @@ void ComponentMain::publishBladePositionCommand(config::WSM::pub::BladePositionC
 {
 	_roscomm->publishBladePositionCommand(msg);
 }
+
+
 	
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	_roscomm->publishTransform(_tf, srcFrame, distFrame);

@@ -24,12 +24,13 @@ class AblManager {
 		bool operator<(const Trigger& t)const{ return name<t.name; }
 	};
 	std::map<std::string,Trigger> all_triggers;
+	//--- pre-processed structures
 	std::map<std::string,std::string> all_compliments;
 	std::set<std::string> all_triggers_names;
 
 	struct Activated{
 		Trigger trigger;
-		std::string polyci;
+		std::string policy;
 	};
 	std::list<Activated> activated;
 

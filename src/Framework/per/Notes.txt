@@ -1,30 +1,29 @@
 --The Perception Package--
 
-Features:
+-Updated 25 Jun 2014
+
+Implemented Features:
 1. Build a height map from the data that arrives from the IBEO, SICK and FLEA sensors.
 2. Publish a map and a mini-map with obstacle information and road types.
-3. Provide a visualization tool for the heightmap.
-4. Provide a visualization tool for the stereo vision.
-5. Rely purely on the LOC package for localization info.
-
-Features that work correctly:
-1. The basic height map and mini-map is published with obstacle information.
-2. The visualization tool can be used (see below how to use).
+3. Provide a visualization tool for everything
 
 Problems and unimplemented things:
 1. Stereo vision is not used for mapping due to the poor performance of the stereo matching algorithm, until a new algorithm is found.
-2. Due to (1) creation of a point cloud from the stereo information is unimplemented.
-3. Due to (2) the stereo visualization tool cannot be used (however the implementation is complete)
-(FIXED) 4. The map visualization tool may crash after the map has grown it's size 3-4 times. Do not drive the bobcat further than 100m until this is fixed.
-(FIXED) 5. SICK ranges information is still not passed to the package because the topic names were set incorrectly from above.
-6. When the bobcat is flipped, the heightmap may contain incorrect heights. Do not flip or heavily skew the bobcat!
 
 
 How to use visualization tool:
 Once the framework is running, open a terminal and enter this:
 
-    rostopic pub /PER/VISUAL std_msgs/Bool "data: true" 
+    rostopic pub /PER/VISUAL std_msgs/Char "data: <MASK HERE>" 
 
-And two windows will pop open. The smaller window is the heightmap which is sent on the /MAP topic.
-The large window is the terrain types window for the /MAP topic. Pink color represents unexplored area, 
-black is obstacles and green is passable terrain. The thresholding slope angle chosen is arctan(0.1)
+where '<MASK HERE>'  is to be replaced with your selection of items to visualize. Flags are as follows:
+
+#define VISUALIZE_NONE		0
+#define VISUALIZE_MAP		1
+#define VISUALIZE_MINIMAP 	2
+#define VISUALIZE_STEREO	4
+#define VISUALIZE_TYPES		8
+#define VISUALIZE_FULLMAP	16
+
+You may replace '<MASK HERE>' with any of the above numbers. You may also do a bitwise OR between the numbers to open several
+visualization windows. The number that causes everything to displayed is 255.

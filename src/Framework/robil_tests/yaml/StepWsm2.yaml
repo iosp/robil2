@@ -1,0 +1,16 @@
+header: 
+  seq: 2
+  stamp: 
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+task_id: '33'
+task_description: WS2 Blade Angle
+steps: 
+   - 
+    id: 1
+    type: 2
+    value: 0
+    blade_relativity: 0
+    success_timeout: 10
+    duration_at_end: 1
