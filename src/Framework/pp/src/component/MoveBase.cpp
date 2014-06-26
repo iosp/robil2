@@ -222,7 +222,16 @@ void MoveBase::on_path(const config::PP::sub::GlobalPath& goal_path){
 SYNCH
 
 	ROS_INFO_STREAM("Navigation: Global path gotten. Number of way points is "<<goal_path.waypoints.poses.size()<<" ");
+	if(goal_path.waypoints.poses.size()==0) return;
 	gotten_path = goal_path;
+	if(gl_defined){
+		geometry_msgs::PoseStamped cloc = getPoseStamped(gotten_location);
+		geometry_msgs::Pose f = getPose(gotten_path.waypoints.poses[0]);
+		if(hypot(f.position.x-cloc.pose.position.x, f.position.y-cloc.pose.position.y) > 1){
+			gotten_path.waypoints.poses.insert(gotten_path.waypoints.poses.begin(), cloc);
+			ROS_INFO_STREAM("Navigation: current location("<<cloc.pose.position.x<<","<<cloc.pose.position.y<<") added to global path. size of path is "<<gotten_path.waypoints.poses.size()<<" ");
+		}
+	}
 	gp_defined=true;
 
 	if(not is_active){
@@ -235,7 +244,16 @@ void MoveBase::on_path(const nav_msgs::Path& goal_path){
 SYNCH
 
 	ROS_INFO_STREAM("Navigation: Global path gotten. Number of way points is "<<goal_path.poses.size()<<" ");
+	if(goal_path.poses.size()==0) return;
 	gotten_nav_path = goal_path;
+	if(gl_defined){
+		geometry_msgs::PoseStamped cloc = getPoseStamped(gotten_location);
+		geometry_msgs::Pose f = getPose(gotten_nav_path.poses[0]);
+		if(hypot(f.position.x-cloc.pose.position.x, f.position.y-cloc.pose.position.y) > 1){
+			gotten_nav_path.poses.insert(gotten_nav_path.poses.begin(), cloc);
+			ROS_INFO_STREAM("Navigation: current location("<<cloc.pose.position.x<<","<<cloc.pose.position.y<<") added to global path. size of path is "<<gotten_nav_path.poses.size()<<" ");
+		}
+	}
 	gnp_defined=true;
 
 	if(not is_active){
@@ -319,7 +337,11 @@ void MoveBase::calculate_goal(){
 	}else{
 		goal = search_next_waypoint(gotten_nav_path, gotten_location, is_path_finished);
 	}
-	if(is_path_finished) notify_path_is_finished();
+	if(is_path_finished){
+		ROS_INFO("Navigation: path finished. send event and clear current path.");
+		notify_path_is_finished();
+		gp_defined=gnp_defined=false;
+	}
 	on_goal(goal);
 }
 
