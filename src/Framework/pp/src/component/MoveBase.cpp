@@ -89,7 +89,12 @@ namespace{
 			double angle_deg = calcTriangle_deg(d,b,c);
 			if(angle_deg>90){
 				//cout<<"[i] return index = 0"<<endl;
-				return getPoseStamped( path.poses[0] );
+				tf_geometry::Position p1(path.poses[0].pose.position);
+				tf_geometry::Position p2(path.poses[1].pose.position);
+				tf_geometry::Position res = p1+((p2-p1)*0.1);
+				geometry_msgs::PoseStamped pose_res=path.poses[0];
+				pose_res.pose.position = res.to_msg_Point();
+				return getPoseStamped( pose_res );
 			}
 			ni+=1;
 		}
@@ -105,7 +110,12 @@ namespace{
 					geometry_msgs::PoseStamped path_pose = getPoseStamped( path.poses[i] );
 					path_is_finished = toVector(path_pose.pose).distance(toVector(my_pose.pose)) <= TH_NEARBY;
 				}
-				return getPoseStamped( path.poses[i] );
+				tf_geometry::Position p1(path.poses[i-1].pose.position);
+				tf_geometry::Position p2(path.poses[i].pose.position);
+				tf_geometry::Position res = p2+((p2-p1)*0.1);
+				geometry_msgs::PoseStamped pose_res=path.poses[i];
+				pose_res.pose.position = res.to_msg_Point();
+				return getPoseStamped( pose_res );
 			}
 		}
 		//PATH IS FINISHED
@@ -218,6 +228,8 @@ SYNCH
 	if(all_data_defined()) calculate_goal();
 }
 
+#define STR(P) P.x<<","<<P.y
+
 void MoveBase::on_path(const config::PP::sub::GlobalPath& goal_path){
 SYNCH
 
@@ -226,10 +238,15 @@ SYNCH
 	gotten_path = goal_path;
 	if(gl_defined){
 		geometry_msgs::PoseStamped cloc = getPoseStamped(gotten_location);
-		geometry_msgs::Pose f = getPose(gotten_path.waypoints.poses[0]);
-		if(hypot(f.position.x-cloc.pose.position.x, f.position.y-cloc.pose.position.y) > 1){
-			gotten_path.waypoints.poses.insert(gotten_path.waypoints.poses.begin(), cloc);
-			ROS_INFO_STREAM("Navigation: current location("<<cloc.pose.position.x<<","<<cloc.pose.position.y<<") added to global path. size of path is "<<gotten_path.waypoints.poses.size()<<" ");
+		tf_geometry::Position curr(tf_geometry::getPose(cloc).position);
+		tf_geometry::Position goal(tf_geometry::getPose(gotten_path.waypoints.poses[0]).position);
+		if((goal-curr).len() > 2){
+			//tf_geometry::Position intr = curr+((goal-curr)*0.5);
+			tf_geometry::Position intr = (goal+curr)/2;
+			geometry_msgs::PoseStamped intr_pose; intr_pose.pose.position = intr.to_msg_Point();
+			cout<<"goal="<<STR(goal)<<"; curr="<<STR(curr)<<"; intr="<<STR(intr)<<endl;
+			gotten_path.waypoints.poses.insert(gotten_path.waypoints.poses.begin(), intr_pose);
+			ROS_INFO_STREAM("Navigation: current location("<<STR(cloc.pose.position)<<"), goal("<<STR(goal)<<") => intermediate point("<<STR(intr_pose.pose.position)<<") added to global path.");
 		}
 	}
 	gp_defined=true;
@@ -248,10 +265,15 @@ SYNCH
 	gotten_nav_path = goal_path;
 	if(gl_defined){
 		geometry_msgs::PoseStamped cloc = getPoseStamped(gotten_location);
-		geometry_msgs::Pose f = getPose(gotten_nav_path.poses[0]);
-		if(hypot(f.position.x-cloc.pose.position.x, f.position.y-cloc.pose.position.y) > 1){
-			gotten_nav_path.poses.insert(gotten_nav_path.poses.begin(), cloc);
-			ROS_INFO_STREAM("Navigation: current location("<<cloc.pose.position.x<<","<<cloc.pose.position.y<<") added to global path. size of path is "<<gotten_nav_path.poses.size()<<" ");
+		tf_geometry::Position curr(tf_geometry::getPose(cloc).position);
+		tf_geometry::Position goal(tf_geometry::getPose(gotten_nav_path.poses[0]).position);
+		if((goal-curr).len() > 2){
+			//tf_geometry::Position intr = curr+((goal-curr)*0.5);
+			tf_geometry::Position intr = (goal+curr)/2;
+			geometry_msgs::PoseStamped intr_pose; intr_pose.pose.position = intr.to_msg_Point();
+			//cout<<"goal="<<goal.x<<","<<goal.y<<"; curr="<<curr.x<<","<<curr.y<<"; intr="<<intr.x<<","<<intr.y<<endl;
+			gotten_nav_path.poses.insert(gotten_nav_path.poses.begin(), intr_pose);
+			ROS_INFO_STREAM("Navigation: current location("<<cloc.pose.position.x<<","<<cloc.pose.position.y<<"), goal("<<goal.x<<","<<goal.y<<") => intermediate point("<<intr_pose.pose.position.x<<","<<intr_pose.pose.position.y<<") added to global path.");
 		}
 	}
 	gnp_defined=true;
@@ -341,6 +363,8 @@ void MoveBase::calculate_goal(){
 		ROS_INFO("Navigation: path finished. send event and clear current path.");
 		notify_path_is_finished();
 		gp_defined=gnp_defined=false;
+		this->is_path_calculated = false;
+		goalCancelPublisher.publish(last_nav_goal_id);
 	}
 	on_goal(goal);
 }
