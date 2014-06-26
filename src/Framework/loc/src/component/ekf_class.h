@@ -38,7 +38,13 @@ public:
 	 * set private variable IMUmeasurement
 	 */
 	void setIMUMeasurement(sensor_msgs::Imu measurement);
-
+	/*
+	 * set the speed measurement that the GPS provides
+	 */
+	void setGPSSpeedMeasurement(robil_msgs::GpsSpeed _speed);
+	/**
+	 * Perform the kalman filter estimation process
+	 */
 	void estimator();
 	/**
 	 * return the estimated position
@@ -64,6 +70,7 @@ public:
 	 * Change the mean of the accelerometer.
 	 */
 	void changeEacc(sensor_msgs::Imu _Eacc);
+	
 private:
 	Egps _Egps;
 	Eimu _Eimu;
