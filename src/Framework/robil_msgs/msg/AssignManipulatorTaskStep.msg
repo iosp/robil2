@@ -6,7 +6,7 @@ int8 type_blade_angle=2
 int8 type_clamp=3
 int8 type_advance=4
 int8 type_turn=5
-int32 value
+float64 value
 int8 blade_relativity
 int8 blade_relativity_absolute=0
 int8 blade_relativity_graund=1
