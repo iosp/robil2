@@ -95,7 +95,7 @@ namespace{
 //				geometry_msgs::PoseStamped pose_res=path.poses[0];
 //				pose_res.pose.position = res.to_msg_Point();
 //				return getPoseStamped( pose_res );
-				return path.poses[0];
+				return getPoseStamped( path.poses[0] );
 			}
 			ni+=1;
 		}
@@ -111,7 +111,7 @@ namespace{
 					geometry_msgs::PoseStamped path_pose = getPoseStamped( path.poses[i] );
 					path_is_finished = toVector(path_pose.pose).distance(toVector(my_pose.pose)) <= TH_NEARBY;
 				}
-				if(i==path.poses.size()-1) return path.poses[i];
+				if(i==path.poses.size()-1) return getPoseStamped( path.poses[i] );
 				tf_geometry::Position p1(path.poses[i-1].pose.position);
 				tf_geometry::Position p2(path.poses[i].pose.position);
 				tf_geometry::Position res = p2+((p2-p1)*0.1);
