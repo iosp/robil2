@@ -31,7 +31,7 @@
 
 
      int wp_num = 1;
-     const int max_wp_num = 10;
+     const int max_wp_num = 100;
      int wp = 0;
 
      float t_lat[max_wp_num];   // path lat array 
