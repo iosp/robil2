@@ -149,6 +149,8 @@ bool extend_events_names(Event& e, std::string mid_pref, EventQueue& events){
 		//----------- TASK GLOBAL EVENT -------------
 		EXTEND("/CompleteTask")
 		EXTEND("/AbortTask")
+		EXTEND("/PauseTask")
+		EXTEND("/ResumeTask")
 		//----------- MISSION GLOBAL EVENT ----------
 		EXTEND("/CompleteMission")
 		EXTEND("/PauseMission")

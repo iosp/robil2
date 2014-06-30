@@ -79,7 +79,7 @@ int main(int argc, char **argv)
   double bracket_val=0;
 
   std_msgs::String dm_msg;
-  dm_msg.data="/llc/Standby";
+  dm_msg.data="/Teleoperation";
   descisionMaking_pub->publish(dm_msg);
   ros::spinOnce();
   (*rate).sleep();
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 
   }
  
-  dm_msg.data="/llc/Resume";
+  dm_msg.data="/Autonomy";
   descisionMaking_pub->publish(dm_msg);
   ros::spinOnce();
   (*rate).sleep();

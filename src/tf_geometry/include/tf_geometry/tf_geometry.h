@@ -253,6 +253,8 @@ namespace tf_geometry{
 		double angle()const{ return angleYaw(); }
 		double angleRoll()const{ return atan2(y,z); }
 		double anglePitch()const{ return atan2(z,x); }
+
+		Position changedLen(double l)const{ return normalized()*l; }
 	};
 
 	class Orientation{
