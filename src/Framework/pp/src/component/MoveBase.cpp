@@ -89,13 +89,13 @@ namespace{
 			double angle_deg = calcTriangle_deg(d,b,c);
 			if(angle_deg>90){
 				//cout<<"[i] return index = 0"<<endl;
-//				tf_geometry::Position p1(path.poses[0].pose.position);
-//				tf_geometry::Position p2(path.poses[1].pose.position);
-//				tf_geometry::Position res = p1+((p2-p1)*0.1);
-//				geometry_msgs::PoseStamped pose_res=path.poses[0];
-//				pose_res.pose.position = res.to_msg_Point();
-//				return getPoseStamped( pose_res );
-				return getPoseStamped( path.poses[0] );
+				tf_geometry::Position p1(path.poses[0].pose.position);
+				tf_geometry::Position p2(path.poses[1].pose.position);
+				tf_geometry::Position res = p1+((p2-p1).normalized()*0.5);
+				geometry_msgs::PoseStamped pose_res=path.poses[0];
+				pose_res.pose.position = res.to_msg_Point();
+				return getPoseStamped( pose_res );
+//				return getPoseStamped( path.poses[0] );
 			}
 			ni+=1;
 		}
@@ -114,7 +114,7 @@ namespace{
 				if(i==path.poses.size()-1) return getPoseStamped( path.poses[i] );
 				tf_geometry::Position p1(path.poses[i-1].pose.position);
 				tf_geometry::Position p2(path.poses[i].pose.position);
-				tf_geometry::Position res = p2+((p2-p1)*0.1);
+				tf_geometry::Position res = p2+((p2-p1).normalized()*0.5);
 				geometry_msgs::PoseStamped pose_res=path.poses[i];
 				pose_res.pose.position = res.to_msg_Point();
 				return getPoseStamped( pose_res );
