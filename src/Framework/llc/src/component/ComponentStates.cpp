@@ -164,8 +164,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	ROS_INFO("LLC Ready");
 
-	double Kp = 0.3 , Kd = 0 , Ki = 0   ; 				/* PID constants of linear x */
-	double Kpz = -0.5 , Kdz = 0  , Kiz = 0   ;			/* PID constants of angular z */
+	double Kp = 0.3 , Kd = 0 , Ki = 0.0   ; 				/* PID constants of linear x */
+	double Kpz = -0.5 , Kdz = 0  , Kiz = 0.0   ;			/* PID constants of angular z */
  	double dt = 0.001 ; 								/* control time interval */
 	double integral [2] = {} ; 							/* integration part */
 	double der [2] = {} ;  								/* the derivative of the error */
@@ -175,8 +175,9 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	COMPONENT->t_flag = 0 ;
 
 	config::LLC::pub::EffortsSt Steering_rate ; 		/* steering rate percentage +- 100 % */
-	config::LLC::pub::EffortsJn Joints_rate ; 			/* Joint rate percentage +- 100 % */
+	//config::LLC::pub::EffortsJn Joints_rate ; 			/* Joint rate percentage +- 100 % */
 	config::LLC::pub::EffortsTh Throttle_rate ;			/* Throttle rate percentage +- 100 % */
+	sensor_msgs::JointState Blade_pos;
 
 	geometry_msgs::TwistStamped cur_error ; 			/* stores the current error signal */
 	geometry_msgs::TwistStamped old_error ; 			/* stores the last error signal */
@@ -186,6 +187,10 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	/* set up dynamic reconfig */
 
+	COMPONENT->WPD_desired_speed.twist.linear.x = 0;
+	COMPONENT->WPD_desired_speed.twist.angular.z = 0;
+	COMPONENT->WSM_desired_speed.twist.linear.x = 0;
+	COMPONENT->WSM_desired_speed.twist.angular.z = 0;
 
 	/* PID loop */
 	while(1){
@@ -196,16 +201,22 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	/* get measurements and calculate error signal */
 
-/*
+
 	    ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
 	    gazebo_msgs::GetModelState getmodelstate;
 	    getmodelstate.request.model_name ="Sahar";
 	    gmscl.call(getmodelstate);
-	    	t = Translate(getmodelstate);
+	    geometry_msgs::PoseWithCovarianceStamped gigi;
+	    gigi.pose.pose = getmodelstate.response.pose;
+	    	t = Translate(gigi, getmodelstate.response.twist);
 
 	    	/* printing */
 
-			t = Translate(COMPONENT->Per_pose , COMPONENT->Per_measured_speed.twist) ;
+//			t = Translate(COMPONENT->Per_pose , COMPONENT->Per_measured_speed.twist) ;
+
+			ROS_INFO("@LLC: translate: linear X: %f, angular z: %f; Per: linear x: %f, angular z: %f",
+					t.linear.x, t.linear.z,
+					COMPONENT->Per_measured_speed.twist.linear.x, COMPONENT->Per_measured_speed.twist.angular.z);
 
 			if(COMPONENT->WPD_desired_speed.twist.linear.x ||COMPONENT->WPD_desired_speed.twist.angular.z ){
 				cur_error.twist.linear.x = (COMPONENT->WPD_desired_speed.twist.linear.x) - t.linear.x;
@@ -230,17 +241,23 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	Throttle_rate.data = (Kp*cur_error.twist.linear.x + Ki*integral[0] - Kd*der[0]) ;
 	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
-	if(COMPONENT->t_flag)
-		Joints_rate.data = COMPONENT->Blade_angle.position.front();
-	else
-		Joints_rate.data = 0;
+	/* WSM blade controller */
 
+	ROS_INFO("@LLC: Throttle: %f; Steering: %f", Throttle_rate.data, Steering_rate.data);
 
 	/* publish */
 
 	COMPONENT->publishEffortsTh(Throttle_rate);
 	COMPONENT->publishEffortsSt(Steering_rate);
-	COMPONENT->publishEffortsJn(Joints_rate);
+	if(COMPONENT->t_flag){
+
+		Blade_pos.name.clear();
+		Blade_pos.name = COMPONENT->Blade_angle.name;
+		Blade_pos.position.clear();
+		Blade_pos.position.push_back(COMPONENT->Blade_angle.position.front());
+		COMPONENT->publishEffortsJn(Blade_pos);
+		COMPONENT->t_flag = 0 ;
+	}
 
 	/* calibrate the error */
 	old_error.twist.angular.z = cur_error.twist.angular.z ;

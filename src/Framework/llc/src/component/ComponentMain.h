@@ -29,7 +29,7 @@ public:
 	void handlePerVelocity(const config::LLC::sub::PerVelocity& msg);
 	void publishEffortsTh(config::LLC::pub::EffortsTh& msg);
 	void publishEffortsSt(config::LLC::pub::EffortsSt& msg);
-	void publishEffortsJn(config::LLC::pub::EffortsJn& msg);
+	void publishEffortsJn(sensor_msgs::JointState& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);

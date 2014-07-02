@@ -71,7 +71,7 @@ void ComponentMain::publishEffortsSt(config::LLC::pub::EffortsSt& msg)
 }
 	
 
-void ComponentMain::publishEffortsJn(config::LLC::pub::EffortsJn& msg)
+void ComponentMain::publishEffortsJn(sensor_msgs::JointState& msg)
 {
 	_roscomm->publishEffortsJn(msg);
 }
