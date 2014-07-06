@@ -26,6 +26,11 @@ public:
    * set private variable IMUmeasurement
    */
   void setIMUMeasurement(sensor_msgs::Imu measurement);
+  /*
+  * set the speed measurement that the GPS provides
+  */
+  void setGPSSpeedMeasurement(robil_msgs::GpsSpeed measurement);
+  
   /**
    * This function performs the estimation of location.
    */
@@ -43,6 +48,7 @@ private:
     geometry_msgs::TwistStamped velocity;
     sensor_msgs::NavSatFix initialGPS, GPSmeasurement;
     sensor_msgs::Imu IMUmeasurement;
+    robil_msgs::GpsSpeed speedMeasurement;
     bool first_GPS_flag;
     
     /**

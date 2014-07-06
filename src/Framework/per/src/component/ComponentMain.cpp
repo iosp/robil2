@@ -449,7 +449,9 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 
 void ComponentMain::handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg)
 {
-	//std::cout<< "PER say:" << msg << std::endl;
+	config::PER::pub::PerGpsSpeed msg2;
+	msg2 = msg;
+	publishGpsSpeed(msg2);
 }
 
 void ComponentMain::publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg)

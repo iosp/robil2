@@ -144,9 +144,11 @@ TaskResult state_TaskSpooling(string id, const CallContext& context, EventQueue&
 	if(MM->task_type()==MissionManager::TT_Navigation){
 		MissionManager::NavTask task = MM->get_nav_task();
 		config::SMME::pub::GlobalPath path = extract_path(task);
+		events.raiseEvent("/pp/Resume");
 		comp->publishGlobalPath(path);
 	}else{
 		MissionManager::ManTask task = MM->get_man_task();
+		events.raiseEvent("/wsm/Resume");
 		comp->publishWorkSeqData(task);
 	}
 	return TaskResult::SUCCESS();
@@ -154,16 +156,22 @@ TaskResult state_TaskSpooling(string id, const CallContext& context, EventQueue&
 TaskResult state_TaskPaused(string id, const CallContext& context, EventQueue& events){
 	PARAMS
 	MM->task_state("paused");
+	if(MM->task_type()==MissionManager::TT_Navigation)events.raiseEvent("/pp/Standby");
+	else events.raiseEvent("/wsm/Standby");
 	return TaskResult::SUCCESS();
 }
 TaskResult state_TaskAborted(string id, const CallContext& context, EventQueue& events){
 	PARAMS
 	MM->task_state("aborted");
+	if(MM->task_type()==MissionManager::TT_Navigation)events.raiseEvent("/pp/Standby");
+	else events.raiseEvent("/wsm/Standby");
 	return TaskResult::SUCCESS();
 }
 TaskResult state_TaskFinished(string id, const CallContext& context, EventQueue& events){
 	PARAMS
 	MM->task_state("finished");
+	if(MM->task_type()==MissionManager::TT_Navigation)events.raiseEvent("/pp/Standby");
+	else events.raiseEvent("/wsm/Standby");
 //	if( MM->next_task() ){
 //		events.raiseEvent(Event("restart",context));
 //	}else{

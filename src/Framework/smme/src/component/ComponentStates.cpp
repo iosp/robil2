@@ -7,10 +7,12 @@
 #include <decision_making/DecisionMaking.h>
 #include <decision_making/DebugModeTracker.hpp>
 
+
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
 #include "AblManager.h"
+#include "EventTranslator.h"
 
 class Params: public CallContextParameters{
 public:
@@ -42,6 +44,7 @@ FSM(smme_ON)
 		{
 			FSM_CALL_TASK(SYS_READY)
 			FSM_CALL_TASK(ABL)
+			FSM_CALL_TASK(EventTranslator)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/EStopCommand", FSM_NEXT(Emergency));
@@ -117,6 +120,10 @@ TaskResult tsk_ABL(string id, const CallContext& context, EventQueue& events){
 	abl.listen(&events);
 	return TaskResult::SUCCESS();
 }
+TaskResult tsk_EventTranslator(string id, const CallContext& context, EventQueue& events){
+	EventTranslator(COMPONENT, &events);
+	return TaskResult::SUCCESS();
+}
 
 }
 
@@ -138,6 +145,7 @@ void startSystem(ComponentMain* component){
 	LocalTasks::registration("SYS_READY",state_READY);
 	LocalTasks::registration("SYS_EMERGENCY",state_EMERGENCY);
 	LocalTasks::registration("ABL",tsk_ABL);
+	LocalTasks::registration("EventTranslator",tsk_EventTranslator);
 
 	ROS_INFO("Starting smme (System)...");
 	Fsmsmme(&context, &events);

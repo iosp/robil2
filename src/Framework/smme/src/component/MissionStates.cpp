@@ -141,12 +141,16 @@ FSM(Mission)
 bool extend_events_names(Event& e, std::string mid_pref, EventQueue& events){
 #		define EXTEND(NAME) \
 		if(e == Event(NAME)){\
+			std::string ex=mid_pref+NAME;\
+			ROS_INFO("Extend event: "NAME" to %s",ex.c_str());\
 			events.raiseEvent(Event(mid_pref+NAME));\
 			return true;\
 		}
 		//----------- TASK GLOBAL EVENT -------------
 		EXTEND("/CompleteTask")
 		EXTEND("/AbortTask")
+		EXTEND("/PauseTask")
+		EXTEND("/ResumeTask")
 		//----------- MISSION GLOBAL EVENT ----------
 		EXTEND("/CompleteMission")
 		EXTEND("/PauseMission")
@@ -179,6 +183,8 @@ TaskResult state_MissionSpooling(string id, const CallContext& context, EventQue
 		Event e = events.waitEvent();
 		extend_events_names(e, MID_PREF(mid), events);
 		if(e == Event(MID_PREF(mid)+"/CompleteTask")){
+			std::string ex = MID_PREF(mid)+"/CompleteTask";
+			ROS_INFO("Event %s detected. got next or complete mission");
 			if( MM->next_task() ){
 				this_thread::sleep(milliseconds(100));
 				events.raiseEvent(MID_PREF(mid)+"/StartTask");

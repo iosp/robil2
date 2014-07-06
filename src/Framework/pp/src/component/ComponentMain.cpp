@@ -73,6 +73,7 @@ void ComponentMain::rise_taskFinished(){
 	boost::mutex::scoped_lock l(_mt);
 	if(not _events) return;
 	_events->raiseEvent("/CompleteTask");
+	//_events->raiseEvent("/pp/Standby");
 }
 void ComponentMain::rise_taskStarted(){
 	boost::mutex::scoped_lock l(_mt);
@@ -94,6 +95,6 @@ void ComponentMain::pause_navigation(){
 	_move_base->deactivate();
 }
 void ComponentMain::resume_navigation(){
-	_move_base -> activate();
+	_move_base->activate();
 }
 

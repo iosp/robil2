@@ -49,6 +49,7 @@ class ekfDataLog:
 
     def realLocation(self,obj):
         i = 0
+        val = 1
         for objecti in obj.name:
             if objecti == name:
                 val = i

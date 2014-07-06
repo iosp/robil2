@@ -1,3 +1,36 @@
+
+****************************************************************************************
+25/06/2014 SHA: 5a5c7cd92d84c2eaded8f5000083303caa701fb6
+What's new:
+===========
+1. Fixed 'turn' command and preparing blade commands
+
+Tests:
+=============
+In order to test our WSM node, please take these follwing steps:
+
+1. Run the Gazebo Simulation - In *any* world enviorment.
+2. Make sure that the Gazebo controllers are up, otherwise run:
+	roslaunch bobcat_gazebo bobcat_gazebo_control.launch
+3. Run robil2conf frameworkInit.launch 
+4. Make sure that RateToEffort node is alive and running via "rqt_graph"
+5. Pull the model's Loader by publishing 1 to the topic:
+	/Sahar/supporter_position_controller/command	
+6. Publish a referenced speed with the Topic "/SMME/WSM/Task" - i.e: moving forward 5 meters
+ "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+task_id: '33'
+task_description: 'Moving forward'
+steps:
+- {id: 1, type: 4, value: 5, blade_relativity: 0, success_timeout: 50, duration_at_end: 1}"
+
+=========================
+1. We checked the bobcat's functioning @ testTerrian world, available in 'live_bobcat' package.
+
 ****************************************************************************************
 17/06/2014 SHA: 56522f5efe7fd736291e055b2d013a40a9293547
 What's new:

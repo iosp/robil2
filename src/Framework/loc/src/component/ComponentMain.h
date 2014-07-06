@@ -12,13 +12,15 @@
 #include <tf/tf.h>
 #include "ekf_class.h"
 #include "noiseless_estimator.h"
-
+#include <boost/thread.hpp>
 class RosComm;
+//class ComponentMain;
 class ComponentMain {
 	RosComm* _roscomm;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
+	static void performEstimation();
 	void handlePositionUpdate(const config::LOC::sub::PositionUpdate& msg);
 	void handleGPS(const config::LOC::sub::GPS& msg);
 	void handleINS(const config::LOC::sub::INS& msg);
@@ -33,6 +35,7 @@ public:
 private:
   ekf _estimator;
   Observer _observer;
-  
+  boost::thread* _estimation_thread;
+  static ComponentMain *_this;
 };
 #endif /* COMPONENTMAIN_H_ */
