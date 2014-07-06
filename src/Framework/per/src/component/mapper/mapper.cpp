@@ -45,32 +45,28 @@ void Mapper::VisualizeLoop()
     if(height_map != NULL)// && visualize > 0)
     {
       lock.lock();
-      
-      if(visualize & VISUALIZE_MAP != 0) //map needed
+      if((visualize & VISUALIZE_MAP) != 0) //map needed
       {
 	HeightMap m = height_map->deriveMap(position.x, position.y, myRot);
 	m.displayGUI(0,-5,0);
       }
-      if(visualize & VISUALIZE_MINIMAP != 0 ) //mini-map needed
+      if((visualize & VISUALIZE_MINIMAP) != 0 ) //mini-map needed
       {
 	HeightMap m = height_map->deriveMiniMap(position.x, position.y, myRot);
 	m.displayGUI(0,-4.5,0);
       }
-      if(visualize & VISUALIZE_TYPES != 0) //map types needed
+      if((visualize & VISUALIZE_TYPES) != 0) //map types needed
       {
 	HeightMap m = height_map->deriveMap(position.x, position.y, myRot);
-	//m.calculateTypes();
 	m.displayTypesGUI();
       }
-      if(visualize & VISUALIZE_FULLMAP != 0) //global map needed
+      if((visualize & VISUALIZE_FULLMAP) != 0) //global map needed
       {
 	height_map->displayGUI(myRot.yaw*180/3.14159, position.x, position.y, 2);
       }
       
       lock.unlock();
       waitKey(100);
-      //m.calculateTypes();
-      //m.displayTypesGUI();
     }
   }
 }
