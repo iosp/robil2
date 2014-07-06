@@ -19,7 +19,7 @@ void EventTranslator(ComponentMain* comp, decision_making::EventQueue* events)
 	while(true){
 		TRIGGER
 
-		ON_EVENT("/Teleoperator"){
+		ON_EVENT("/Teleoperation")
 			SEND("/llc/Standby");
 		}
 
