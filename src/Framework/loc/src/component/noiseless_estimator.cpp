@@ -79,7 +79,6 @@ void Observer::estimator()
 	  yaw += 2*PI;
 	while (yaw > 2* PI)
 	  yaw -= 2*PI;
-	std::cout << "speed: " << this->speedMeasurement.speed << "yaw: " << yaw << " || Pitch: " << rot2.pitch << std::endl;
 	this->velocity.twist.linear.x = this->speedMeasurement.speed * cos(yaw) * cos(rot2.pitch);
 	this->velocity.twist.linear.y = this->speedMeasurement.speed * sin(yaw) * cos(rot2.pitch);
 	this->velocity.twist.linear.z = this->speedMeasurement.speed * sin(rot2.pitch);
