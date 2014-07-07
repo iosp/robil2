@@ -31,7 +31,6 @@ DEF_PUB( SMME, MissionAcceptance, types::MissionAcceptance )
 
 
 DEF_PUB( WPD, WPDVelocity, types::Speed )
-
 DEF_PUB( WSM, WSMVelocity, types::Speed )
 DEF_PUB( WSM, BladePositionCommand, types::BladPose )
 

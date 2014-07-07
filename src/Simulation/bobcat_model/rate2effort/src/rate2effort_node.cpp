@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include "std_msgs/Float64.h"
 #include "std_msgs/String.h"
+#include "sensor_msgs/JointState.h"
 #include "geometry_msgs/Twist.h"
 #include <sstream>
 #include <iostream>
@@ -45,13 +46,17 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 	if(msg->angular.x < -1)
 		ang.data = -1 ;
 
-    	pub.data = (0.5*lin.data + ang.data)*20*emergancy;
+    	pub.data = (0.5*lin.data + ang.data)*30*emergancy;
     	front_left_pub_.publish(pub);
     	back_left_pub_.publish(pub);
 
-    	pub.data = (0.5*lin.data - ang.data)*20*emergancy;
+    	ROS_INFO("@R2E: LEFT: %f", pub.data);
+
+    	pub.data = (0.5*lin.data - ang.data)*30*emergancy;
     	front_right_pub_.publish(pub);
     	back_right_pub_.publish(pub);
+
+    	ROS_INFO("@R2E: RIGHT: %f", pub.data);
 }
 
 void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
@@ -68,6 +73,7 @@ void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
     	pub.data = msg->z;
     	brackets_pub_.publish(pub);
 }
+
 void ThCallback (const std_msgs::Float64ConstPtr &msg)
 {
 	e_stop = ros::Time::now();
@@ -83,13 +89,20 @@ void StCallback	(const std_msgs::Float64ConstPtr &msg)
 	wheelsCallback(pub);
 }
 
-void JoCallback	(const std_msgs::Float64ConstPtr &msg)
+void JoCallback	(const sensor_msgs::JointState &msg)
 {
-	geometry_msgs::Vector3::Ptr vec (new geometry_msgs::Vector3) ;
-	vec->x = msg->data ;
-	vec->y = 0 ;
-	vec->z = 0 ;
-	armCallback(vec);
+	std_msgs::Float64 pub;
+	pub.data = msg.position.front();
+
+	if(msg.name[0] == "supporter_joint"){
+		supporter_pub_.publish(pub);
+	}
+	else if (msg.name[0] == "loader_joint"){
+		loader_pub_.publish(pub);
+	}
+	else if(msg.name[0] == "brackets_joint"){
+		brackets_pub_.publish(pub);
+	}
 }
 
 
@@ -125,11 +138,11 @@ int main(int argc, char **argv)
    while (ros::ok())
      {
    /* implementing E-stop, if LLC-node is offline, or doesn't publish any new messages for 1 second */
-	  t_out = (ros::Time::now().operator -(e_stop));
+/*	  t_out = (ros::Time::now().operator -(e_stop));
 	   	 if((t_out.sec)>=1)
 	   		emergancy = 0 ;
 	   	 else
-	   		 emergancy = 1 ;
+	   		 emergancy = 1 ;*/
        ros::spinOnce();
        loop_rate.sleep();
      }

@@ -1,3 +1,21 @@
+07/07/2014 SHA: 6339f6e86ba0e5b82c070a1abfc8d62ffe59804d
+What's new:
+===========
+1. Changed to get position/velocities from Gazebo instead of localization
+
+Tests:
+=============
+In order to test our LLC node, please take these follwing steps:
+
+1. Run the Gazebo Simulation - In *any* world enviorment.
+2. Run robil2conf frameworkInit.launch 
+3. Make sure that RateToEffort node is alive and running via "rqt_graph".
+4. Pull the model's Loader by publishing [1,0,0] to the topic:
+	WSM/BladePosition/position/[1,0,0]	
+5. Publish a referenced speed with the Topic "WPD/velocity" - a good reasonable speed is between 0 - 2 (in magnitude).
+
+
+
 24/06/2014 SHA: 4c5c3566fef0c44baf84776ccfd6d34345bd4a01
 What's new:
 ===========
