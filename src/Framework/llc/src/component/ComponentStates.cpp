@@ -214,9 +214,9 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 //			t = Translate(COMPONENT->Per_pose , COMPONENT->Per_measured_speed.twist) ;
 
-			ROS_INFO("@LLC: translate: linear X: %f, angular z: %f; Per: linear x: %f, angular z: %f",
-					t.linear.x, t.linear.z,
-					COMPONENT->Per_measured_speed.twist.linear.x, COMPONENT->Per_measured_speed.twist.angular.z);
+			//ROS_INFO("@LLC: translate: linear X: %f, angular z: %f; Per: linear x: %f, angular z: %f",
+			//		t.linear.x, t.linear.z,
+			//		COMPONENT->Per_measured_speed.twist.linear.x, COMPONENT->Per_measured_speed.twist.angular.z);
 
 			if(COMPONENT->WPD_desired_speed.twist.linear.x ||COMPONENT->WPD_desired_speed.twist.angular.z ){
 				cur_error.twist.linear.x = (COMPONENT->WPD_desired_speed.twist.linear.x) - t.linear.x;
@@ -243,7 +243,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
 	/* WSM blade controller */
 
-	ROS_INFO("@LLC: Throttle: %f; Steering: %f", Throttle_rate.data, Steering_rate.data);
+	//ROS_INFO("@LLC: Throttle: %f; Steering: %f", Throttle_rate.data, Steering_rate.data);
 
 	/* publish */
 
@@ -254,7 +254,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 		Blade_pos.name.clear();
 		Blade_pos.name = COMPONENT->Blade_angle.name;
 		Blade_pos.position.clear();
-		Blade_pos.position.push_back(COMPONENT->Blade_angle.position.front());
+	for(int i = 0 ; i < COMPONENT->Blade_angle.position.size(); i++)
+		Blade_pos.position.push_back(COMPONENT->Blade_angle.position[i]);
 		COMPONENT->publishEffortsJn(Blade_pos);
 		COMPONENT->t_flag = 0 ;
 	}
