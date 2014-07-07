@@ -11,7 +11,7 @@
 
     <include>
       <uri>model://bobcat</uri>
-      <name>BobCat</name>
+      <name>Sahar</name>
       <pose>50 50 1.2 0 0 0</pose>
     </include>
 
