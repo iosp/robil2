@@ -15,21 +15,21 @@ void EventTranslator(ComponentMain* comp, decision_making::EventQueue* events)
 #	define TRIGGER Event event=events->waitEvent(); if(not event) return; if(false){}
 #	define ON_EVENT(event_name) else if(event==Event(event_name))
 #	define SEND(event_name) events->raiseEvent(Event(event))
+#define X(x) x
 
 	while(true){
-		TRIGGER
 
-		ON_EVENT("/Teleoperation")
+		TRIGGER
+		ON_EVENT("/Teleoperation"){
 			SEND("/llc/Standby");
 		}
-
 		ON_EVENT("/Autonomus"){
 			SEND("/llc/Resume");
 		}
-
 		ON_EVENT("/IEDDetected"){
 			SEND("/PauseTask");
 		}
+
 
 	}
 
