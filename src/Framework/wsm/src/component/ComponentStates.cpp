@@ -254,7 +254,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				value = step->value; //height in meters
 
 
-				body2loaderInit = COMPONENT->getLastTrasform("body", "loader");
+				body2loaderInit = COMPONENT->getLastTrasform("loader", "body");
 
 				if(step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_absolute){
 
@@ -279,6 +279,10 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 						}
 					}
 
+
+
+
+/*
 					//ROS_INFO("Got height: %f; is angle: %f", value, targetJointAngle);
 
 					double startHeight, endHeight, startSuppAngle, endSuppAngle, startLoadAngle, endLoadAngle;
@@ -294,7 +298,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 					sign = (value > startHeight) ? 1 : -1;
 					int N = 100;
 					double dh = (value - startHeight)/N;
-					/* Grisha /\ox */
+					// Grisha /\ox
 					tf::Matrix3x3(COMPONENT->getLastTrasform("loader", "body").getRotation()).getRPY(rpy[0], rpy[1], rpy[2]);
 
 				//	double refval = jointStates.position[loaderStatesIndex] ;
@@ -323,23 +327,45 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 
 					ROS_INFO("@WSM: supp angle: start: %f; end: %f", startSuppAngle, endSuppAngle);
-
+*/
 
 					//Set command to LLC
 
 
 
-/*
+					double initialRPY[3], currentRPY[3];
+					body2loaderInit.getBasis().getRPY(initialRPY[0], initialRPY[1], initialRPY[2]);
+
+					ROS_INFO("Initial: height: %f; pitch: %f", body2loaderInit.getOrigin().z(), initialRPY[1]);
+					ROS_INFO("Indexed: supp: %d; loader: %d", supporterStatesIndex, loaderStatesIndex);
+
 					do {
 						body2loaderCurrent = COMPONENT->getLastTrasform("loader", "body");
+						body2loaderCurrent.getBasis().getRPY(currentRPY[0], currentRPY[1], currentRPY[2]);
 
-						sign = (value - body2loaderCurrent.getOrigin().z() > 0) ? 1 : -1;
 
-						double nextSupporterAngle = jointStates.position[supporterStatesIndex] + 0.01 * sign / InverseKinematics::SupporterInv((double) jointStates.position[supporterStatesIndex]);
+						ROS_INFO("1) Current: height: %f; pitch: %f", body2loaderCurrent.getOrigin().z(), currentRPY[1]);
 
-						double nextLoaderAngle = jointStates.position[loaderStatesIndex] + 0.01 * sign / InverseKinematics::LoaderInv((double) jointStates.position[loaderStatesIndex]);
+						int heightSign = (value - body2loaderCurrent.getOrigin().z() > 0) ? 1 : -1;
+						int pitchSign = (currentRPY[1] > initialRPY[1]) ? -1 : 1;
 
-						ROS_INFO("next angles: supp: %f; loader: %f", nextSupporterAngle, nextLoaderAngle);
+						ROS_INFO("2) Signs: height: %d; pitch: %d", heightSign, pitchSign);
+
+						double supporterJointSpeed = 0.005 * heightSign;
+						double loaderJointSpeed = 0.0017 * heightSign;
+
+						ROS_INFO("3) Current angles: supp: %f; loader: %f", jointStates.position[supporterStatesIndex], jointStates.position[loaderStatesIndex]);
+						double nextSupporterAngle = jointStates.position[supporterStatesIndex] + supporterJointSpeed;
+						double nextLoaderAngle = jointStates.position[loaderStatesIndex] + loaderJointSpeed;
+
+
+
+
+						//double nextSupporterAngle = jointStates.position[supporterStatesIndex] + 0.01 * sign / InverseKinematics::SupporterInv((double) jointStates.position[supporterStatesIndex]);
+
+						//double nextLoaderAngle = jointStates.position[loaderStatesIndex] + 0.01 * sign / InverseKinematics::LoaderInv((double) jointStates.position[loaderStatesIndex]);
+
+						ROS_INFO("4) next angles: supp: %f; loader: %f", nextSupporterAngle, nextLoaderAngle);
 						//double currentSupportAngle = body2loaderCurrent.getOrigin().z() * (2/3.0);
 
 
@@ -367,7 +393,10 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 //						bladeCommand->position.push_back(0.0*sign);
 						//bladeCommand->position.push_back(1);
 						COMPONENT->publishBladePositionCommand(*bladeCommand);
-						PAUSE(100);
+						while(COMPONENT->getLastTrasform("loader", "body").stamp_ == body2loaderCurrent.stamp_){
+							PAUSE(10);
+						}
+						//PAUSE(400);
 
 						//Get difference
 						body2loaderCurrent = COMPONENT->getLastTrasform("loader", "body");
@@ -379,7 +408,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 						//ROS_INFO("Angle diff: %f; sent speed: %f; toc: %f", posdiff, speed, toc);
 					}while(toc < step->success_timeout && ( fabs(posdiff) > 0.01));
 
-				*/
+
 				}else{
 
 				}

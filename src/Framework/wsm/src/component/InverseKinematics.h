@@ -8,6 +8,7 @@
 #ifndef INVERSEKINEMATICS_H_
 #define INVERSEKINEMATICS_H_
 
+#include <stdlib.h>
 #include <cmath>
 
 namespace InverseKinematics{
