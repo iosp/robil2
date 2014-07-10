@@ -7,7 +7,7 @@ DEF_PUB( IEDSIM, IEDLocation, types::IEDLocation )
 
 DEF_PUB( LLC, EffortsTh, types::Effort )
 DEF_PUB( LLC, EffortsSt, types::Effort )
-DEF_PUB( LLC, EffortsJn, types::Effort )
+DEF_PUB( LLC, EffortsJn, types::Joints )
 
 DEF_PUB( OCU, CustomIED, types::IEDLocation )
 DEF_PUB( OCU, PositionUpdate, types::Pose )
@@ -31,7 +31,6 @@ DEF_PUB( SMME, MissionAcceptance, types::MissionAcceptance )
 
 
 DEF_PUB( WPD, WPDVelocity, types::Speed )
-
 DEF_PUB( WSM, WSMVelocity, types::Speed )
 DEF_PUB( WSM, BladePositionCommand, types::BladPose )
 
