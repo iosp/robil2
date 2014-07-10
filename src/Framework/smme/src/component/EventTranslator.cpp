@@ -23,7 +23,7 @@ void EventTranslator(ComponentMain* comp, decision_making::EventQueue* events)
 		ON_EVENT("/Teleoperation"){
 			SEND("/llc/Standby");
 		}
-		ON_EVENT("/Autonomus"){
+		ON_EVENT("/Autonomy"){
 			SEND("/llc/Resume");
 		}
 		ON_EVENT("/IEDDetected"){
