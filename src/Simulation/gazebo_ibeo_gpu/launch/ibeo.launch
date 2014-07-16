@@ -3,5 +3,8 @@
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find gazebo_ibeo_gpu)/worlds/ibeo.world"/>
     <!-- more default parameters can be changed here -->
+    
   </include>
+  <node pkg="tf" type="static_transform_publisher" name="ibeo_broadcaster" args="1 0 2 0 0 0 world ibeo 100" />
+  <node pkg="tf" type="static_transform_publisher" name="real_ibeo_broadcaster" args="1 0 2 0 0 0 world ibeo 100" />
 </launch>
