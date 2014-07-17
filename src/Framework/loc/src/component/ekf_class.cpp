@@ -1,8 +1,8 @@
 #include "ekf_class.h"
 #include "helpermath.h"
-//#include "std_msgs/Float64.h"
 #include "boost/assign.hpp"
 #include "gps_calculator.h"
+#include "GPS2file.h"
 ekf::ekf() : _Egps(100),_Eimu(100)
 {
 	_while_standing = false;
@@ -195,4 +195,5 @@ void ekf::setInitGPS(sensor_msgs::NavSatFix initGPS)
 		this->initialGPS.latitude = _init_latitude;
 		this->initialGPS.longitude = _init_longitude;
 	}
+	gps2file(this->initialGPS.altitude,this->initialGPS.latitude,this->initialGPS.longitude);
 }
