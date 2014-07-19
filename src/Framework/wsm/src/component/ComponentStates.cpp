@@ -302,26 +302,45 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 					tf::Matrix3x3(COMPONENT->getLastTrasform("loader", "body").getRotation()).getRPY(rpy[0], rpy[1], rpy[2]);
 
 				//	double refval = jointStates.position[loaderStatesIndex] ;
-					for(int i = 0; i < N; i++){
-						double F = InverseKinematics::SupporterInv(endSuppAngle);
-						endSuppAngle += dh/F; // q3
 
-						endLoadAngle = InverseKinematics::LoaderInv(endSuppAngle, rpy[1]);
-
-						//endHeight += 0.01 * sign;
-						//endSuppAngle += 0.01 * sign / InverseKinematics::SupporterInv(endSuppAngle);
-
-						ROS_INFO("@WSM: iteration %d: supp angle: start: %f; end: %f; F = %f", i, startSuppAngle, endSuppAngle, F);
-
-						bladeCommand = new config::WSM::pub::BladePositionCommand();
-						bladeCommand->name.push_back("supporter_joint");
-						bladeCommand->name.push_back("loader_joint");
-						bladeCommand->position.push_back(endSuppAngle);
-						bladeCommand->position.push_back(endLoadAngle);
-						COMPONENT->publishBladePositionCommand(*bladeCommand);
-						PAUSE((int)(1000*5.0/N));
-						delete bladeCommand;
+					float dh = (value - startHeight)/N;
+					float J;
+					for(int i=1;i<N;i++) {
+						J = get_J(q3[i-1]);
+						q3[i] = q3[i-1] + pow(J,-1) * dh;
 					}
+					float loader = -get_pitch(q3[N-1],0) +  desiredPitch;
+
+
+					bladeCommand = new config::WSM::pub::BladePositionCommand();
+					bladeCommand->name.push_back("supporter_joint");
+					bladeCommand->name.push_back("loader_joint");
+					bladeCommand->position.push_back(endSuppAngle);
+					bladeCommand->position.push_back(endLoadAngle);
+					COMPONENT->publishBladePositionCommand(*bladeCommand);
+					PAUSE(2000);
+					delete bladeCommand;
+
+//					for(int i = 0; i < N; i++){
+//						double F = InverseKinematics::SupporterInv(endSuppAngle);
+//						endSuppAngle += dh/F; // q3
+//
+//						endLoadAngle = InverseKinematics::LoaderInv(endSuppAngle, rpy[1]);
+//
+//						//endHeight += 0.01 * sign;
+//						//endSuppAngle += 0.01 * sign / InverseKinematics::SupporterInv(endSuppAngle);
+//
+//						ROS_INFO("@WSM: iteration %d: supp angle: start: %f; end: %f; F = %f", i, startSuppAngle, endSuppAngle, F);
+//
+//						bladeCommand = new config::WSM::pub::BladePositionCommand();
+//						bladeCommand->name.push_back("supporter_joint");
+//						bladeCommand->name.push_back("loader_joint");
+//						bladeCommand->position.push_back(endSuppAngle);
+//						bladeCommand->position.push_back(endLoadAngle);
+//						COMPONENT->publishBladePositionCommand(*bladeCommand);
+//						PAUSE((int)(1000*5.0/N));
+//						delete bladeCommand;
+//					}
 
 					//endLoadAngle += 0.01 * sign / InverseKinematics::LoaderInv(endSuppAngle, );
 
@@ -339,24 +358,43 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 					ROS_INFO("Initial: height: %f; pitch: %f", body2loaderInit.getOrigin().z(), initialRPY[1]);
 					ROS_INFO("Indexed: supp: %d; loader: %d", supporterStatesIndex, loaderStatesIndex);
 
+					double prevQ3 = jointStates.position[supporterStatesIndex];
+					double desiredpitch = initrpy[1];
+
 					do {
-						body2loaderCurrent = COMPONENT->getLastTrasform("loader", "body");
-						body2loaderCurrent.getBasis().getRPY(currentRPY[0], currentRPY[1], currentRPY[2]);
 
 
-						ROS_INFO("1) Current: height: %f; pitch: %f", body2loaderCurrent.getOrigin().z(), currentRPY[1]);
+						double dh = 0.01 * ((body2loaderCurrent.getOrigin().z() < value) ? 1 : -1);
+						double j;
+						j = InverseKinematics::get_J(prevQ3);
+						double newq3 = prevQ3 + (1/j) * dh;
+						double loader = -InverseKinematics::get_pitch(newq3, 0) + desiredpitch;
 
-						int heightSign = (value - body2loaderCurrent.getOrigin().z() > 0) ? 1 : -1;
-						int pitchSign = (currentRPY[1] > initialRPY[1]) ? -1 : 1;
+						double nextSupporterAngle = newq3;
+						double nextLoaderAngle = loader;//InverseKinematics::get_pitch(newq3, loader);
 
-						ROS_INFO("2) Signs: height: %d; pitch: %d", heightSign, pitchSign);
+						//ROS_INFO("@WSM: Next Supporter: %f; Next Loader: %f", nextSupporterAngle, nextLoaderAngle);
 
-						double supporterJointSpeed = 0.005 * heightSign;
-						double loaderJointSpeed = 0.0017 * heightSign;
+						prevQ3 = nextSupporterAngle;
 
-						ROS_INFO("3) Current angles: supp: %f; loader: %f", jointStates.position[supporterStatesIndex], jointStates.position[loaderStatesIndex]);
-						double nextSupporterAngle = jointStates.position[supporterStatesIndex] + supporterJointSpeed;
-						double nextLoaderAngle = jointStates.position[loaderStatesIndex] + loaderJointSpeed;
+//
+//						body2loaderCurrent = COMPONENT->getLastTrasform("loader", "body");
+//						body2loaderCurrent.getBasis().getRPY(currentRPY[0], currentRPY[1], currentRPY[2]);
+//
+//
+//						ROS_INFO("1) Current: height: %f; pitch: %f", body2loaderCurrent.getOrigin().z(), currentRPY[1]);
+//
+//						int heightSign = (value - body2loaderCurrent.getOrigin().z() > 0) ? 1 : -1;
+//						int pitchSign = (currentRPY[1] > initialRPY[1]) ? -1 : 1;
+//
+//						ROS_INFO("2) Signs: height: %d; pitch: %d", heightSign, pitchSign);
+//
+//						double supporterJointSpeed = 0.005 * heightSign;
+//						double loaderJointSpeed = 0.0017 * heightSign;
+//
+//						ROS_INFO("3) Current angles: supp: %f; loader: %f", jointStates.position[supporterStatesIndex], jointStates.position[loaderStatesIndex]);
+//						double nextSupporterAngle = jointStates.position[supporterStatesIndex] + supporterJointSpeed;
+//						double nextLoaderAngle = jointStates.position[loaderStatesIndex] + loaderJointSpeed;
 
 
 
@@ -365,7 +403,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 						//double nextLoaderAngle = jointStates.position[loaderStatesIndex] + 0.01 * sign / InverseKinematics::LoaderInv((double) jointStates.position[loaderStatesIndex]);
 
-						ROS_INFO("4) next angles: supp: %f; loader: %f", nextSupporterAngle, nextLoaderAngle);
+						//ROS_INFO("4) next angles: supp: %f; loader: %f", nextSupporterAngle, nextLoaderAngle);
 						//double currentSupportAngle = body2loaderCurrent.getOrigin().z() * (2/3.0);
 
 
@@ -393,6 +431,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 //						bladeCommand->position.push_back(0.0*sign);
 						//bladeCommand->position.push_back(1);
 						COMPONENT->publishBladePositionCommand(*bladeCommand);
+
 						while(COMPONENT->getLastTrasform("loader", "body").stamp_ == body2loaderCurrent.stamp_){
 							PAUSE(10);
 						}

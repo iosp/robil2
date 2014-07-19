@@ -13,8 +13,11 @@
 
 namespace InverseKinematics{
 
-	double SupporterInv(double q3);
-	double LoaderInv(double q3, double q5);
+float get_J(float);
+float get_H(float);
+float get_pitch(float,float);
+double SupporterInv(double q3);
+double LoaderInv(double q3, double q5);
 
 }
 
