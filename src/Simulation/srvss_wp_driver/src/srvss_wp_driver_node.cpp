@@ -118,35 +118,6 @@ void IMU_callback(const sensor_msgs::Imu IMU_msg)
 
 
 
-// receiving the SICK data and extracting the ranges relevant for the obstacle avoidance, also counts the number of readings in each buffer section 
-int samp_num = 150;
-const int buffer_sections = 3;
-int new_SICK_buffer_data[buffer_sections];    // bobcat front buffer
-const int  buffer_threshold = 1500;       // buffer threshold the number of samples in order a certain buffer section will show as active
-float obs_dist = 10;
-
-boost::mutex SICK_buffer_mutex;
-void SICK_callback(const sensor_msgs::LaserScan::ConstPtr& SICK_msg) 
-{    
-  SICK_buffer_mutex.lock(); 
-     for (int i=0 ; i<samp_num ; i++)
-       { 
-         float range =  SICK_msg->ranges[(760-samp_num)/2+i];      // 760 is the total number of range readings in each SICK msg. the relevant samples are are taken from the middle.
-         int buffer_section = (int)(buffer_sections * i/samp_num);
-
-         if  ( (range <= obs_dist) && (  new_SICK_buffer_data[buffer_section] < 2* buffer_threshold ) )
-             {                  
-              new_SICK_buffer_data[buffer_section] = new_SICK_buffer_data[buffer_section] + 3;   // accumulation of readings         
-             }            
-
-         if  ( new_SICK_buffer_data[buffer_section] > 0 ) 
-             {
-              new_SICK_buffer_data[buffer_section] = new_SICK_buffer_data[buffer_section] - 1;   // fading out of readings
-             } 
-        }
-  SICK_buffer_mutex.unlock();
-}
-
 
 //initiation of the navigation variables based on the first received GPS and INS data 
   
@@ -225,6 +196,41 @@ int init_nav_data()
 }
 
 
+// receiving the SICK data and extracting the ranges relevant for the obstacle avoidance, also counts the number of readings in each buffer section
+int samp_num = 150;
+const int buffer_sections = 3;
+int new_SICK_buffer_data[buffer_sections];    // bobcat front buffer
+float new_SICK_obs_dist = 100;
+const int  buffer_threshold = 1500;       // buffer threshold the number of samples in order a certain buffer section will show as active
+float obs_buff_dist = 10;
+float obs_dist=100;
+
+boost::mutex SICK_buffer_mutex;
+void SICK_callback(const sensor_msgs::LaserScan::ConstPtr& SICK_msg)
+{
+  SICK_buffer_mutex.lock();
+  int dis_counter=0;
+  float dis_sum=0;
+     for (int i=0 ; i<samp_num ; i++)
+       {
+         float range =  SICK_msg->ranges[(760-samp_num)/2+i];      // 760 is the total number of range readings in each SICK msg. the relevant samples are are taken from the middle.
+         int buffer_section = (int)(buffer_sections * i/samp_num);
+
+         if  ( (range <= obs_buff_dist) && (range <= dist_error+0.25*obs_buff_dist) && (  new_SICK_buffer_data[buffer_section] < 2* buffer_threshold ) )  // Ignores obstacles farther than obs_buff_dist and behind the WP
+             {
+              new_SICK_buffer_data[buffer_section] = new_SICK_buffer_data[buffer_section] + 3;   // accumulation of readings
+              dis_sum = dis_sum+ range;
+              dis_counter = dis_counter + 1;
+             }
+         if  ( new_SICK_buffer_data[buffer_section] > 0 )
+             {
+              new_SICK_buffer_data[buffer_section] = new_SICK_buffer_data[buffer_section] - 1;   // fading out of readings
+             }
+         new_SICK_obs_dist = dis_sum/(dis_counter+1);
+        }
+  SICK_buffer_mutex.unlock();
+}
+
 
 // wp_driver calculating the required bobcat acceleration and stering commands in order to get to a WP, and publishing them on ROS topic. 
 
@@ -238,6 +244,7 @@ int init_nav_data()
 
 
      int bypass_on = 0;   // flag that shows that the a current WP is a bypass WP (and not a path WP)
+     int bypass_by_jump_to_next_wp = 0;  // flag that shows that the obstacle is located on top the currant WP, the bypass shall be performed by moving to next WP
 
 void wp_driver(const ros::TimerEvent& )
 {  
@@ -343,29 +350,32 @@ void wp_driver(const ros::TimerEvent& )
      ROS_INFO(" bobcat_lat = %f , bobcat_lon = %f , bobcat_lin_vel= %f , bobcat_azi = %f " , bobcat_lat , bobcat_lon , bobcat_lin_vel , bobcat_azi );
      ROS_INFO(" lat_error = %f , lon_error = %f , dist_error = %f , vel_error = %f , azi_error = %f" , lat_error , lon_error , dist_error , vel_error , azi_error );
      ROS_INFO(" bobcat_lin_vel = %f , bobcat_ang_vel = %f ", bobcat_lin_vel , bobcat_ang_vel );
+     ROS_INFO(" distance to obstacle = %f ", obs_dist );
   
     // control loop
      geometry_msgs::Twist twistMsg; 
-     if (dist_error < WP_passing_dist)  // reaching a WP that can be a path WP or a baypass WP
+     if ( (dist_error < WP_passing_dist) || (bypass_by_jump_to_next_wp == 1) )  // reaching a WP that can be a path WP or a bypass WP
           {      
                if ( ((wp+1) <= wp_num) || (bypass_on == 1))
                  { 
                    jt = 0;  jb = 0;  
              
-                   if (bypass_on == 1)   // reacing baypass WP
+                   if (bypass_on == 1)   // racing bypass WP
                     { 
                        bypass_on = 0;
                        ROS_INFO("Reache bypass WP");      
                     }
-                   else if (bypass_on == 0) // reacing path WP
+                   else if (bypass_on == 0) // racing path WP
                     { 
                        wp = wp + 1;
                        ROS_INFO("Reached a wp %d of %d !!! going for to the next..." , wp , wp_num );  
                     }
+
                     WP_mutex.lock();
                       current_lat_t = t_lat[wp];
                       current_lon_t = t_lon[wp];
                     WP_mutex.unlock(); 
+                	bypass_by_jump_to_next_wp = 0;
                  }    
               else   // reaching the final path WP
                 {
@@ -374,7 +384,8 @@ void wp_driver(const ros::TimerEvent& )
                      { twistMsg.linear.x = -0.0001*bobcat_lin_vel; }
                   else if (bobcat_lin_vel <= -0.005 ) 
                      { twistMsg.linear.x = 0.0001*bobcat_lin_vel; }     
-                }                  
+                }
+
           }
       else    // the actual control logic 
           {
@@ -405,6 +416,8 @@ void wp_driver(const ros::TimerEvent& )
 bool buf_act[buffer_sections]; // bobcat front buffer
 float bypass_dist = 1.5;    // scale factor of bypass distance
 
+
+
 void obstacle_avoidance(const ros::TimerEvent&)
 {
      if (nav_data_ready == 0)  // waiting for the GPS and IMU data to be available
@@ -415,11 +428,17 @@ void obstacle_avoidance(const ros::TimerEvent&)
 
 
      int buf[buffer_sections];
+     //float obs_dist;
      SICK_buffer_mutex.lock();           
           for (int k=0 ; k<buffer_sections ; k++) 
               { buf[k] = new_SICK_buffer_data[k]; }
+
+          obs_dist =new_SICK_obs_dist;
      SICK_buffer_mutex.unlock();
     
+
+
+
       // 
        for (int j=0; j<buffer_sections ; j++)  
              {                                
@@ -457,21 +476,29 @@ void obstacle_avoidance(const ros::TimerEvent&)
          if (   ( (! buf_act[0]) && (! buf_act[1]) && (  buf_act[2]) )  )    // 0 0 1  Go right         
               { bypass_dir = -1; begin_bypass = 1; }  
             
-     
-      // if a bypass is needed overrides the calculate new WP and overrides the Current WP 
+
+
+         // if a bypass is needed overrides the calculate new WP and overrides the Current WP
          if (begin_bypass == 1) 
-          {
-         // the bypass WP located <bypass_dist*bypass_dir> to the left of the line between the bobcat and the previous WP, and <0.7*obs_dist> infront of the bobcat on that line. 
-         float bypass_lat_t = bobcat_lat + lat_error/dist_error * 0.7*obs_dist - lon_error/dist_error * bypass_dist * bypass_dir; 
-         float bypass_lon_t = bobcat_lon + lon_error/dist_error * 0.7*obs_dist + lat_error/dist_error * bypass_dist * bypass_dir;   
+         	 {
+        	 if ( std::abs(obs_dist - dist_error) < 0.2*obs_buff_dist  )   // the obstacle is on the WP so moving to the next WP
+        	 	 {
+        		 	 bypass_by_jump_to_next_wp = 1;  // flag that shows that the obstacle is located on top the currant WP, the bypass shall be performed by moving to next WP
+        	 	 }
+        	 else
+        	 	 {
+        	 		 // the bypass WP located <bypass_dist*bypass_dir> to the left of the line between the bobcat and the previous WP, and <0.7*obs_buff_dist> infront of the bobcat on that line.
+        	 		 float bypass_lat_t = bobcat_lat + lat_error/dist_error * 0.7*obs_buff_dist - lon_error/dist_error * bypass_dist * bypass_dir;
+        	 		 float bypass_lon_t = bobcat_lon + lon_error/dist_error * 0.7*obs_buff_dist + lat_error/dist_error * bypass_dist * bypass_dir;
                              
-         current_lat_t = bypass_lat_t;  
-         current_lon_t = bypass_lon_t;
+        	 		 current_lat_t = bypass_lat_t;
+        	 		 current_lon_t = bypass_lon_t;
 
-         bypass_on = 1;   // raising a flag so the wp_driver function will know that it going for a bypass WP 
+        	 		 bypass_on = 1;   // raising a flag so the wp_driver function will know that it going for a bypass WP
 
-         ROS_INFO(" beginning bypass !!! ");
-          } 
+        	 		 ROS_INFO(" beginning bypass !!! ");
+        	 	 }
+         	 }
        
      ROS_INFO(" bypass_on = %d ,  bypass_dir = %f " , bypass_on ,  bypass_dir);
 }

@@ -1,6 +1,12 @@
 Localization module - version 2.1
 ---------------------------------
+=================================
+16.7.2014 commit
+----------------
+Added User function header.
 
+==========================================================================================
+==========================================================================================
 This module gets as an input data from GPS/INS, visual odometry and other inputs.
 The module outputs the location of the bobcat with relation to the starting point of the bobcat as well as the speed of the bobcat.
 
@@ -42,7 +48,8 @@ Press 3 - to get the defualt 2 graphs of location (x and y) and speed (x and y).
 The graphs consists of the estimated position (in green) and the real position (in blue).
 
 In case the real location is biased from the estimation, you can add this bias by pressing 4.
-	
+
+User function	
 
 TODO
 ----
