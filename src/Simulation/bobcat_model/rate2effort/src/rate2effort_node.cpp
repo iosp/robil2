@@ -92,17 +92,21 @@ void StCallback	(const std_msgs::Float64ConstPtr &msg)
 void JoCallback	(const sensor_msgs::JointState &msg)
 {
 	std_msgs::Float64 pub;
-	pub.data = msg.position.front();
 
-	if(msg.name[0] == "supporter_joint"){
+	for(int i = 0 ; i < msg.position.size() ; i++)
+	{
+	pub.data = msg.position[i];
+
+	if(msg.name[i] == "supporter_joint"){
 		supporter_pub_.publish(pub);
 	}
-	else if (msg.name[0] == "loader_joint"){
+	else if (msg.name[i] == "loader_joint"){
 		loader_pub_.publish(pub);
 	}
-	else if(msg.name[0] == "brackets_joint"){
+	else if(msg.name[i] == "brackets_joint"){
 		brackets_pub_.publish(pub);
 	}
+  }
 }
 
 
