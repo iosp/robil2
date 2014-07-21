@@ -25,8 +25,10 @@ add_library(loc_compMain
   src/component/ComponentMain.cpp
   src/component/ekf_class.cpp
   src/component/noiseless_estimator.cpp
+  src/userHelperFunction/example.cpp
 )
 add_executable(loc_node src/main.cpp)
+add_executable(user_example src/userHelperFunction/example.cpp)
 target_link_libraries(loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(loc_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(loc_node loc_compMain loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS}

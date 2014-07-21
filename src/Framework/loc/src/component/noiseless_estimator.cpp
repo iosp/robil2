@@ -1,7 +1,7 @@
 #include "noiseless_estimator.h"
 #include "helpermath.h"
 #include "gps_calculator.h"
-
+#include "GPS2file.h"
 Observer::Observer()
 {
 	this->first_GPS_flag = 1;
@@ -27,6 +27,7 @@ Observer::~Observer()
 void Observer::setInitGPS(sensor_msgs::NavSatFix initGPS)
 {
 	this->initialGPS = initGPS;
+	gps2file(this->initialGPS.altitude,this->initialGPS.latitude,this->initialGPS.longitude);
 }
 
 void Observer::setGPSMeasurement(sensor_msgs::NavSatFix measurement)

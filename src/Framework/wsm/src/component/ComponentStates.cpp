@@ -138,12 +138,12 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 
 	//diagnostic_msgs::DiagnosticStatus status;
 	//COMPONENT->publishDiagnostic(status);
-	ROS_INFO("WSM OFF");
+	//ROS_INFO("WSM OFF");
 	return TaskResult::SUCCESS();
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	//PAUSE(10000);
-	ROS_INFO("WSM INIT");
+	//ROS_INFO("WSM INIT");
 	while(COMPONENT->receivedLocation == NULL){}
 	events.raiseEvent(Event("/wsm/SensorConnected"));
 	return TaskResult::SUCCESS();
@@ -160,11 +160,11 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	uint64_t counter;
 
-	ROS_INFO("WSM At Ready");
+	//ROS_INFO("WSM At Ready");
 
 	while(1){
 		if(events.isTerminated() || !ros::ok()){			/* checks whether the line is empty, or node failed */
-			ROS_INFO("STOPPED");
+			//ROS_INFO("STOPPED");
 			return TaskResult::TERMINATED();
 		}
 
@@ -192,7 +192,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 		//presentWorkSeq->task_id
 		//presentWorkSeq->task_description
 
-		ROS_INFO("Got task %s", presentWorkSeq->task_description.c_str());
+		//ROS_INFO("Got task %s", presentWorkSeq->task_description.c_str());
 		for(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator step = presentWorkSeq->steps.begin(); step != presentWorkSeq->steps.end(); step++){
 
 			/**
@@ -244,7 +244,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 			//config::WSM::sub::BladePosition bladePositionCurrent;
 
 
-			ROS_INFO("Got type %d", step->type);
+			//ROS_INFO("Got type %d", step->type);
 			switch(step->type){
 			case robil_msgs::AssignManipulatorTaskStep::type_unknown:
 
@@ -254,58 +254,199 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				value = step->value; //height in meters
 
 
-				body2loaderInit = COMPONENT->getLastTrasform("body", "loader");
+				body2loaderInit = COMPONENT->getLastTrasform("loader", "body");
 
 				if(step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_absolute){
 
 
 					//Parameter height can be between 0m and 1.5m
 					//Joint varies between 0 and 1 radians correspondingly
-					double targetJointAngle = std::max<double>(std::min<double>(value, 1.5), 0) * (2/3.0);
+					double targetJointAngle = LIMIT(value, 0, 1.5) * (2/3.0);
 
 
 					double toc;
 					double posdiff;
 					config::WSM::pub::BladePositionCommand * bladeCommand;
 					int sign = (value > 0) ? 1 : -1;
-					ROS_INFO("Got height: %f; is angle: %f", value, targetJointAngle);
+
+					int supporterStatesIndex = 0, loaderStatesIndex = 0;
+					for(int i = 0; i < jointStates.name.size(); i++){
+						if(jointStates.name[i] == "supporter_joint"){
+							supporterStatesIndex = i;
+						}
+						if(jointStates.name[i] == "loader_joint"){
+							loaderStatesIndex = i;
+						}
+					}
+
+
+
+
+/*
+					//ROS_INFO("Got height: %f; is angle: %f", value, targetJointAngle);
+
+					double startHeight, endHeight, startSuppAngle, endSuppAngle, startLoadAngle, endLoadAngle;
+					double rpy [3] ;
+					startHeight = COMPONENT->getLastTrasform("loader", "body").getOrigin().z();
+					endHeight = value;
+					startSuppAngle = jointStates.position[supporterStatesIndex];
+					endSuppAngle = startSuppAngle;
+					startLoadAngle = jointStates.position[loaderStatesIndex];
+
+					endLoadAngle = startLoadAngle;
+
+					sign = (value > startHeight) ? 1 : -1;
+					int N = 100;
+					double dh = (value - startHeight)/N;
+					// Grisha /\ox
+					tf::Matrix3x3(COMPONENT->getLastTrasform("loader", "body").getRotation()).getRPY(rpy[0], rpy[1], rpy[2]);
+
+				//	double refval = jointStates.position[loaderStatesIndex] ;
+
+					float dh = (value - startHeight)/N;
+					float J;
+					for(int i=1;i<N;i++) {
+						J = get_J(q3[i-1]);
+						q3[i] = q3[i-1] + pow(J,-1) * dh;
+					}
+					float loader = -get_pitch(q3[N-1],0) +  desiredPitch;
+
+
+					bladeCommand = new config::WSM::pub::BladePositionCommand();
+					bladeCommand->name.push_back("supporter_joint");
+					bladeCommand->name.push_back("loader_joint");
+					bladeCommand->position.push_back(endSuppAngle);
+					bladeCommand->position.push_back(endLoadAngle);
+					COMPONENT->publishBladePositionCommand(*bladeCommand);
+					PAUSE(2000);
+					delete bladeCommand;
+
+//					for(int i = 0; i < N; i++){
+//						double F = InverseKinematics::SupporterInv(endSuppAngle);
+//						endSuppAngle += dh/F; // q3
+//
+//						endLoadAngle = InverseKinematics::LoaderInv(endSuppAngle, rpy[1]);
+//
+//						//endHeight += 0.01 * sign;
+//						//endSuppAngle += 0.01 * sign / InverseKinematics::SupporterInv(endSuppAngle);
+//
+//						ROS_INFO("@WSM: iteration %d: supp angle: start: %f; end: %f; F = %f", i, startSuppAngle, endSuppAngle, F);
+//
+//						bladeCommand = new config::WSM::pub::BladePositionCommand();
+//						bladeCommand->name.push_back("supporter_joint");
+//						bladeCommand->name.push_back("loader_joint");
+//						bladeCommand->position.push_back(endSuppAngle);
+//						bladeCommand->position.push_back(endLoadAngle);
+//						COMPONENT->publishBladePositionCommand(*bladeCommand);
+//						PAUSE((int)(1000*5.0/N));
+//						delete bladeCommand;
+//					}
+
+					//endLoadAngle += 0.01 * sign / InverseKinematics::LoaderInv(endSuppAngle, );
+
+
+					ROS_INFO("@WSM: supp angle: start: %f; end: %f", startSuppAngle, endSuppAngle);
+*/
+
+					//Set command to LLC
+
+
+
+					double initialRPY[3], currentRPY[3];
+					body2loaderInit.getBasis().getRPY(initialRPY[0], initialRPY[1], initialRPY[2]);
+
+					ROS_INFO("Initial: height: %f; pitch: %f", body2loaderInit.getOrigin().z(), initialRPY[1]);
+					ROS_INFO("Indexed: supp: %d; loader: %d", supporterStatesIndex, loaderStatesIndex);
+
+					double prevQ3 = jointStates.position[supporterStatesIndex];
+					double desiredpitch = initrpy[1];
+
 					do {
-						body2loaderCurrent = COMPONENT->getLastTrasform("loader", "body");
-						double currentSupportAngle = body2loaderCurrent.getOrigin().z() * (2/3.0);
-						sign = (currentSupportAngle > targetJointAngle) ? -1 : 1;
-						double speed = LIMIT(0.5 * fabs(currentSupportAngle-targetJointAngle), 0.005, 0.05) * sign;//std::min<double>(0.05, 0.5 * fabs(currentSupportAngle-targetJointAngle)) * sign;
+
+
+						double dh = 0.01 * ((body2loaderCurrent.getOrigin().z() < value) ? 1 : -1);
+						double j;
+						j = InverseKinematics::get_J(prevQ3);
+						double newq3 = prevQ3 + (1/j) * dh;
+						double loader = -InverseKinematics::get_pitch(newq3, 0) + desiredpitch;
+
+						double nextSupporterAngle = newq3;
+						double nextLoaderAngle = loader;//InverseKinematics::get_pitch(newq3, loader);
+
+						//ROS_INFO("@WSM: Next Supporter: %f; Next Loader: %f", nextSupporterAngle, nextLoaderAngle);
+
+						prevQ3 = nextSupporterAngle;
+
+//
+//						body2loaderCurrent = COMPONENT->getLastTrasform("loader", "body");
+//						body2loaderCurrent.getBasis().getRPY(currentRPY[0], currentRPY[1], currentRPY[2]);
+//
+//
+//						ROS_INFO("1) Current: height: %f; pitch: %f", body2loaderCurrent.getOrigin().z(), currentRPY[1]);
+//
+//						int heightSign = (value - body2loaderCurrent.getOrigin().z() > 0) ? 1 : -1;
+//						int pitchSign = (currentRPY[1] > initialRPY[1]) ? -1 : 1;
+//
+//						ROS_INFO("2) Signs: height: %d; pitch: %d", heightSign, pitchSign);
+//
+//						double supporterJointSpeed = 0.005 * heightSign;
+//						double loaderJointSpeed = 0.0017 * heightSign;
+//
+//						ROS_INFO("3) Current angles: supp: %f; loader: %f", jointStates.position[supporterStatesIndex], jointStates.position[loaderStatesIndex]);
+//						double nextSupporterAngle = jointStates.position[supporterStatesIndex] + supporterJointSpeed;
+//						double nextLoaderAngle = jointStates.position[loaderStatesIndex] + loaderJointSpeed;
+
+
+
+
+						//double nextSupporterAngle = jointStates.position[supporterStatesIndex] + 0.01 * sign / InverseKinematics::SupporterInv((double) jointStates.position[supporterStatesIndex]);
+
+						//double nextLoaderAngle = jointStates.position[loaderStatesIndex] + 0.01 * sign / InverseKinematics::LoaderInv((double) jointStates.position[loaderStatesIndex]);
+
+						//ROS_INFO("4) next angles: supp: %f; loader: %f", nextSupporterAngle, nextLoaderAngle);
+						//double currentSupportAngle = body2loaderCurrent.getOrigin().z() * (2/3.0);
+
+
+
+						//sign = (currentSupportAngle > targetJointAngle) ? -1 : 1;
+						//double speed = LIMIT(1.0 * fabs(currentSupportAngle-targetJointAngle), 0.005, 0.05) * sign;//std::min<double>(0.05, 0.5 * fabs(currentSupportAngle-targetJointAngle)) * sign;
+
 
 						//Set command to LLC
 						bladeCommand = new config::WSM::pub::BladePositionCommand();
 						//bladeCommand->name.push_back("back_arm_joint");
 						//bladeCommand->name.push_back("main_arm_joint");
 						bladeCommand->name.push_back("supporter_joint");
+						bladeCommand->name.push_back("loader_joint");
 						//bladeCommand->name.push_back("front_cylinder_joint");
 //						bladeCommand->name.push_back("loader_joint");
 //
 //						brackets_joint
-						/***
-						 * TODO:Calulate inverse kinematics here
-						 */
 
 
-						bladeCommand->position.push_back(currentSupportAngle + speed);
-/*						bladeCommand->position.push_back(0.0*sign);
-						bladeCommand->position.push_back(0.0*sign);
-						bladeCommand->position.push_back(0.0*sign);*/
+						bladeCommand->position.push_back(nextSupporterAngle);
+						bladeCommand->position.push_back(nextLoaderAngle);
+//						bladeCommand->position.push_back(0.0*sign);
+//						bladeCommand->position.push_back(0.0*sign);
+//						bladeCommand->position.push_back(0.0*sign);
 						//bladeCommand->position.push_back(1);
 						COMPONENT->publishBladePositionCommand(*bladeCommand);
-						PAUSE(100);
+
+						while(COMPONENT->getLastTrasform("loader", "body").stamp_ == body2loaderCurrent.stamp_){
+							PAUSE(10);
+						}
+						//PAUSE(400);
 
 						//Get difference
 						body2loaderCurrent = COMPONENT->getLastTrasform("loader", "body");
-						currentSupportAngle = body2loaderCurrent.getOrigin().z() * (2/3.0);
+						//currentSupportAngle = body2loaderCurrent.getOrigin().z() * (2/3.0);
 						toc = (ros::Time::now() - stepTic).toSec();
-						posdiff = currentSupportAngle - targetJointAngle;//body2loaderCurrent.getOrigin().z() - body2loaderInit.getOrigin().z();
+						posdiff = value - body2loaderCurrent.getOrigin().z();//currentSupportAngle - targetJointAngle;//body2loaderCurrent.getOrigin().z() - body2loaderInit.getOrigin().z();
 						delete bladeCommand;
 
-						ROS_INFO("Angle diff: %f; sent speed: %f; toc: %f", posdiff, speed, toc);
+						//ROS_INFO("Angle diff: %f; sent speed: %f; toc: %f", posdiff, speed, toc);
 					}while(toc < step->success_timeout && ( fabs(posdiff) > 0.01));
+
 
 				}else{
 
@@ -327,7 +468,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 					double posdiff;
 					config::WSM::pub::BladePositionCommand * bladeCommand;
 					int sign = (value > 0) ? 1 : -1;
-					ROS_INFO("Got angle: %f; is angle: %f", value, targetJointAngle);
+					//ROS_INFO("Got angle: %f; is angle: %f", value, targetJointAngle);
 					int loaderStatesIndex = 0;
 
 					for(int i = 0; i < jointStates.name.size(); i++)
@@ -354,7 +495,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 						posdiff = currentSupportAngle - targetJointAngle;//body2loaderCurrent.getOrigin().z() - body2loaderInit.getOrigin().z();
 						delete bladeCommand;
 
-						ROS_INFO("Angle diff: %f; sent speed: %f; toc: %f", posdiff, speed, toc);
+						//ROS_INFO("Angle diff: %f; sent speed: %f; toc: %f", posdiff, speed, toc);
 					}while(toc < step->success_timeout && ( fabs(posdiff) > 0.01));
 
 				}else{
@@ -378,7 +519,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 					double posdiff;
 					config::WSM::pub::BladePositionCommand * bladeCommand;
 					int sign = (value > 0) ? 1 : -1;
-					ROS_INFO("Got angle: %f; is angle: %f", value, targetJointAngle);
+					//ROS_INFO("Got angle: %f; is angle: %f", value, targetJointAngle);
 					int bracketStatesIndex = 0;
 
 					for(int i = 0; i < jointStates.name.size(); i++)
@@ -405,7 +546,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 						posdiff = currentSupportAngle - targetJointAngle;//body2loaderCurrent.getOrigin().z() - body2loaderInit.getOrigin().z();
 						delete bladeCommand;
 
-						ROS_INFO("Angle diff: %f; sent speed: %f; toc: %f", posdiff, speed, toc);
+						//ROS_INFO("Angle diff: %f; sent speed: %f; toc: %f", posdiff, speed, toc);
 					}while(toc < step->success_timeout && ( fabs(posdiff) > 0.01));
 
 
@@ -418,10 +559,10 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				break;
 			case robil_msgs::AssignManipulatorTaskStep::type_advance:
 				value = step->value; //advance in meters
-				ROS_INFO("Got advance");
+				//ROS_INFO("Got advance");
 
 				if(step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_absolute){
-					ROS_INFO("WSM: Blade absolute");
+					//ROS_INFO("WSM: Blade absolute");
 #ifndef WSM_USE_LOCALIZATION
 					gmscl.call(getmodelstate);
 					initial_position = getmodelstate.response.pose;
@@ -448,18 +589,18 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 						//Calculate time difference and location difference
 						toc = (ros::Time::now() - stepTic).toSec();
 						posdiff = sqrt(pow(t.position.x - initial_position.position.x, 2) + pow(t.position.y - initial_position.position.y, 2) + pow(t.position.z - initial_position.position.z, 2));
-						ROS_INFO("toc: %f", (float)toc);
-						ROS_INFO("Traveled: %f", (float) posdiff);
+						//ROS_INFO("toc: %f", (float)toc);
+						//ROS_INFO("Traveled: %f", (float) posdiff);
 					}
 					while(toc < step->success_timeout && ( fabs(value) > fabs(posdiff)));
-					ROS_INFO("FINISHED advance");
+					//ROS_INFO("FINISHED advance");
 
 					twist.twist.linear.x = 0; //Set speed to 0
 					//twist.header.frame_id = step->id;
 					COMPONENT->publishWSMVelocity(twist);
 
 				}else{
-					ROS_INFO("WSM: Blade relative");
+					//ROS_INFO("WSM: Blade relative");
 
 				}
 
@@ -504,7 +645,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 						sign = ((value > traveledYaw) ? 1 : -1);
 						twist.twist.angular.z = LIMIT(0.5 * fabs(traveledYaw - value), 0.2, 0.5) * sign; //Speed is should be up to 0.3 radians per sec
 						COMPONENT->publishWSMVelocity(twist);
-						ROS_INFO("@WSM: angular speed z: %f; linear speed x: %f", twist.twist.angular.z, twist.twist.linear.x);
+						//ROS_INFO("@WSM: angular speed z: %f; linear speed x: %f", twist.twist.angular.z, twist.twist.linear.x);
 						PAUSE(dt);	//publish every 100ms
 						//Get current position
 #ifndef WSM_USE_LOCALIZATION
@@ -531,14 +672,14 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 
 						toc = (ros::Time::now() - stepTic).toSec();
-						ROS_INFO("@WSM: Target: %f; current: %f; toc: %f", value, traveledYaw, toc);
+						//ROS_INFO("@WSM: Target: %f; current: %f; toc: %f", value, traveledYaw, toc);
 						//yawdiff = rpy[2] - initrpy[2];
 					}
 					while(toc < step->success_timeout && ( fabs(traveledYaw - value) > 0.01));
 
 					twist.twist.angular.z = 0; //Set speed to 0
 					COMPONENT->publishWSMVelocity(twist);
-					ROS_INFO("@WSM: STOP blatt");
+					//ROS_INFO("@WSM: STOP blatt");
 				}
 
 				break;
@@ -596,7 +737,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 }
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
 	//PAUSE(10000);
-	ROS_INFO("WSM STANDBY");
+	//ROS_INFO("WSM STANDBY");
 	events.raiseEvent(Event("/wsm/Resume",context));
 
 	return TaskResult::SUCCESS();
@@ -617,10 +758,10 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("READY",state_READY);
 	LocalTasks::registration("STANDBY",state_STANDBY);
 
-	ROS_INFO("Starting wsm (WorkSequnceManager)...");
-	ROS_INFO("WSM AT FSM1");
+	//ROS_INFO("Starting wsm (WorkSequnceManager)...");
+	//ROS_INFO("WSM AT FSM1");
 	Fsmwsm(&context, &events);
-	ROS_INFO("WSM AT FSM2");
+	//ROS_INFO("WSM AT FSM2");
 
 }
 

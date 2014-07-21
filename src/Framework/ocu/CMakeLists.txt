@@ -19,6 +19,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
+
 ## Declare a cpp library
 add_library(ocu_rosComm
   src/roscomm/RosComm.cpp
@@ -31,5 +32,10 @@ add_executable(ocu_node src/main.cpp)
 target_link_libraries(ocu_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(ocu_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(ocu_node ocu_compMain ocu_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+)
+
+install(PROGRAMS
+   scripts/ocu.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
