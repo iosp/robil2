@@ -1,6 +1,12 @@
 Localization module - version 2.1
 ---------------------------------
+ Please visit our wiki for more information http://robil.org/trac_robil/wiki/Localization.
 =================================
+22.7.2014 commit
+----------------
+- Added to User function header the ability to transform (x,y) to (latitude,longitude).
+- Bug fixes in reading the gps_init.txt file.
+
 16.7.2014 commit
 ----------------
 Added User function header.
@@ -49,12 +55,20 @@ The graphs consists of the estimated position (in green) and the real position (
 
 In case the real location is biased from the estimation, you can add this bias by pressing 4.
 
-User function	
+User function
+-------------
+There are user function that can transform a GPS latitude longitude point to a x,y point in the localization coordinate system.
+When frameworkInit is run, a gps_init.txt file is written to /.ros folder.
+This file contains the initial latitude longitude data. This data is used for the calculation.
+
+In order to use the function, in your .cpp or .h file:
+ - include the header file (#include "coordinateTransformations.h")
+ - use the function geo2xy(NavSatFix_Variable). This function returns a geometry_msgs Point variable.
+ 
+
 
 TODO
 ----
-Add thread for the estimation process.
-Add GPS speed data to estimation.
 Add bobcat input to the estimation.
 Add visual odometry.
 

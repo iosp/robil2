@@ -17,7 +17,7 @@ sensor_msgs::NavSatFix read_file(char *fname,char *strtim)
   coor.longitude = -1;
   coor.latitude = -1;
   string line;
-  
+  //cout << "trying to open file: " << endl << fname << endl;
   ifstream myfile (fname);//load file
   if (myfile.is_open())
   {
@@ -65,7 +65,7 @@ sensor_msgs::NavSatFix read_file(char *fname,char *strtim)
   return coor;
 }
 
-geometry_msgs::Point geo2xy(sensor_msgs::NavSatFix point, double bearing=0)
+inline geometry_msgs::Point geo2xy(sensor_msgs::NavSatFix point, double bearing=0)
 {
   /*
    * This function receives a NavSatFix point opens the gps_init file and calculates the (x,y) values
@@ -80,15 +80,44 @@ geometry_msgs::Point geo2xy(sensor_msgs::NavSatFix point, double bearing=0)
   var.z = -1;
   
   char strtim[20];
-  sensor_msgs::NavSatFix init_coor = read_file(".ros/gps_init.txt",strtim);
+  
+  char dir[100];
+  sprintf(dir,"%s/.ros/gps_init.txt",getenv("HOME"));
+  sensor_msgs::NavSatFix init_coor = read_file(dir,strtim);
+
   if (init_coor.altitude == -1 || init_coor.longitude == -1 || init_coor.latitude == -1)
     return var; // If coudn't open file return (-1,-1,-1)
 
   double d = calcDistance(point,init_coor);
-  double theta = calcBearing(point,init_coor);
+  double theta = calcBearing(init_coor,point);
   var.x = d * cos(theta);
   var.y = d * sin(theta);
   
   var.z = point.altitude - init_coor.altitude;
+  return var;
+}
+inline sensor_msgs::NavSatFix xy2geo(geometry_msgs::Point point)
+{
+  /*
+   * This function receives an (x,y) point opens the gps_init file and calculates the (latitude,longitude) values
+   * from point.
+   * The return value is a sensor_msgs NavSatFix variable that contains these (latitude,longitude) values.
+   * 
+   * If Couldn't read the file, or if the data is corupted, the variable will return (0,0,0)
+   */
+  
+  sensor_msgs::NavSatFix var;
+  char strtim[20];
+  char dir[100];
+  sprintf(dir,"%s/.ros/gps_init.txt",getenv("HOME"));
+  sensor_msgs::NavSatFix init_coor = read_file(dir,strtim);
+  if (init_coor.altitude == -1 || init_coor.longitude == -1 || init_coor.latitude == -1)
+    return var; // If coudn't open file return (-1,-1,-1)
+
+  double d = sqrt(point.x * point.x + point.y * point.y);
+  double theta = atan2(point.y,point.x);
+  
+  var = calcLatLon(init_coor,d,theta);
+  var.altitude = point.z - init_coor.altitude;
   return var;
 }
