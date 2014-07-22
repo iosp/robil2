@@ -30,6 +30,7 @@ class RosComm {
 	ros::Publisher  _pub_EffortsTh;
 	ros::Publisher  _pub_EffortsSt;
 	ros::Publisher  _pub_EffortsJn;
+	ros::Publisher  _pub_Speed;
 
   bool init(int argc,char** argv);
 public:
@@ -43,7 +44,6 @@ public:
 	void publishEffortsTh( config::LLC::pub::EffortsTh &msg);
 	void publishEffortsSt( config::LLC::pub::EffortsSt &msg);
 	void publishEffortsJn( config::LLC::pub::EffortsJn &msg);
-
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
