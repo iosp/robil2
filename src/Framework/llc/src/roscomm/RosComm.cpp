@@ -84,7 +84,7 @@ void RosComm::publishEffortsJn( config::LLC::pub::EffortsJn &msg)
 {
 	_pub_EffortsJn.publish(msg);
 }
-	
+
 void RosComm::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	static tf::TransformBroadcaster br;
 	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));

@@ -46,17 +46,14 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 	if(msg->angular.x < -1)
 		ang.data = -1 ;
 
-    	pub.data = (0.5*lin.data + ang.data)*30*emergancy;
+    	pub.data = (0.5*lin.data + 0.3*ang.data)*30*emergancy;
     	front_left_pub_.publish(pub);
     	back_left_pub_.publish(pub);
 
-    	ROS_INFO("@R2E: LEFT: %f", pub.data);
-
-    	pub.data = (0.5*lin.data - ang.data)*30*emergancy;
+    	pub.data = (0.5*lin.data - 0.3*ang.data)*30*emergancy;
     	front_right_pub_.publish(pub);
     	back_right_pub_.publish(pub);
 
-    	ROS_INFO("@R2E: RIGHT: %f", pub.data);
 }
 
 void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)

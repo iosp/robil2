@@ -20,6 +20,7 @@ public:
 	config::LLC::sub::BladePositionCommand Blade_angle ; 	/* WSM desired supporter positon */
 	config::LLC::sub::Location Per_pose ; 					/* Per location */
 	int t_flag;
+
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 	void handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg);
