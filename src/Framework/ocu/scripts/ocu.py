@@ -13,6 +13,7 @@ import std_msgs
 import rospy, yaml
 import genpy
 import ttk
+from subprocess import call
 
 def parseYAML(filename):
    yamlfile=None
@@ -44,10 +45,18 @@ class GuiHandler(object):
         ListLabel = LabelFrame(parent, width=40, height=8,  text=title)
         ListLabel.grid(row=list_row,column=list_column)
         List = Listbox(ListLabel,selectmode=SINGLE,width=40)
-        List.grid(row=1,columnspan=3)
-        Button(ListLabel, text="Delete",command=lambda lb=List: lb.delete(ANCHOR)).grid(row=0,column=2)
-        Button(ListLabel, text="AddFromYaml",command=self.genAddToList(List,msg_class)).grid(row=0,column=1)
-        Button(ListLabel, text="Assign",command=self.genAssignMethod(List,msg_class)).grid(row=0,column=0)
+        ButtonLabel = LabelFrame(ListLabel)
+        Button(ButtonLabel, text="Delete",command=lambda lb=List: lb.delete(ANCHOR)).pack(side=RIGHT)
+        Button(ButtonLabel, text="AddFromYaml",command=self.genAddToList(List,msg_class)).pack(side=RIGHT)
+        Button(ButtonLabel, text="Assign",command=self.genAssignMethod(List,msg_class)).pack(side=RIGHT)
+        Button(ButtonLabel, text="Edit",command=lambda lb=List: call(["gedit", lb.get(ANCHOR)]) if len(lb.curselection())>0 else None ).pack(side=LEFT)
+        scrolbar =Scrollbar(ListLabel,orient=HORIZONTAL)
+        scrolbar.config(command=List.xview)
+        List.config(xscrollcommand=scrolbar.set)
+        scrolbar.pack(side=BOTTOM,fill=X)
+        List.pack(side=BOTTOM)
+        ButtonLabel.pack(side=TOP , fill=X)
+
         
     def __init__(self):
         
