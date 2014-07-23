@@ -63,7 +63,7 @@ $($gazebo_prefix/bin/gzsdf "print" $bobcat_dir/urdf/live_BOBCAT.URDF 1> $HOME/.g
 while read line
 do
     if [[ $line == *"</model>"* ]]; then
-	$(cat $live_bobcat_dir/scripts/sensorPosition.txt >> $HOME/.gazebo/models/bobcat/model.sdf)
+	$(cat $live_bobcat_dir/scripts/sensorPosition2.txt >> $HOME/.gazebo/models/bobcat/model.sdf)
     fi
 	echo $line >> $HOME/.gazebo/models/bobcat/model.sdf
 done < $HOME/.gazebo/models/bobcat/modelTemp.sdf

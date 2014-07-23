@@ -25,9 +25,9 @@ inline void gps2file(double altitude,double latitude,double longitude)
 	if (f.is_open())
 	{
 	  f << "Time " << currentDateTime() << "\n";
-	  f << "altitude " << altitude << "\n";
-	  f << "latitude " << latitude << "\n";
-	  f << "longitude " << longitude << "\n";
+	  f << "altitude " << std::setprecision(9) << altitude << "\n";
+	  f << "latitude " << std::setprecision(9) << latitude << "\n";
+	  f << "longitude " << std::setprecision(9) << longitude << "\n";
 	  f.close();
 	  std::cout << "created file with initial GPS values.\n";
 	}

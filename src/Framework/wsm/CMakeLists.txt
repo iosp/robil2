@@ -26,6 +26,7 @@ add_library(wsm_rosComm
 add_library(wsm_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
+  src/component/InverseKinematics.cpp
 )
 add_executable(wsm_node src/main.cpp)
 target_link_libraries(wsm_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})

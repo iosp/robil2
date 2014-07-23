@@ -10,7 +10,30 @@
     <include>
       <uri>model://bobcat</uri>
       <name>Sahar</name>
-      <pose>0.0 0.0 0.3 0 0 1</pose>
+      <pose>0.0 0.0 0.3 0 0 0</pose>
     </include>
+
+
+        <include>
+            <uri>model://wp_mark</uri>
+            <pose>10 10 3 0 0 0</pose>
+            <name>wp_mark1</name>
+        </include>
+
+
+
+        <include>
+            <uri>model://wp_mark</uri>
+            <pose>20 -10 3 0 0 0</pose>
+            <name>wp_mark2</name>
+        </include>
+
+
+        <include>
+            <uri>model://wp_mark</uri>
+            <pose>40 10 3 0 0 0</pose>
+            <name>wp_mark3</name>
+        </include>
+
   </world>
 </sdf>

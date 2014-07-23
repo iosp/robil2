@@ -122,5 +122,4 @@ Rotation GetRotation(Quaternion q)
   return rot;
 }
 
-
 #endif

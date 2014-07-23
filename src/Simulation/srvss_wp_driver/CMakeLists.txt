@@ -133,10 +133,7 @@ target_link_libraries(srvss_wp_keyboard_commander_node
    ${catkin_LIBRARIES}
  )
 
-add_executable(srvss_greader_node src/srvss_greader_node.cpp)
-target_link_libraries(srvss_greader_node
-   ${catkin_LIBRARIES}
- )
+
 
 
 
