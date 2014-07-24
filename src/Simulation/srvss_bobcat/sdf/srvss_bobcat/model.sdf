@@ -1,0 +1,790 @@
+<sdf version='1.4'>
+<model name='bobcat'>
+<link name='body'>
+<pose>0 0 0 0 -0 0</pose>
+<inertial>
+<pose>-0.849719 0.000149152 0.585738 0 -0 0</pose>
+<mass>5932.93</mass>
+<inertia>
+<ixx>1842.12</ixx>
+<ixy>0.345421</ixy>
+<ixz>-2.61801</ixz>
+<iyy>3621.33</iyy>
+<iyz>-0.0538623</iyz>
+<izz>3267.64</izz>
+</inertia>
+</inertial>
+<collision name='body_collision'>
+<pose>0 0 0 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/body_lite.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<collision name='body_collision_back_cylinder'>
+<pose>-1.8135 0 0.2184 0 8.0491e-16 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/back_cylinder.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<collision name='body_collision_back_shaft'>
+<pose>-1.47909 0 1.21653 -5.7722e-16 0.32328 -4.9954e-16</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/back_shaft.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<collision name='body_collision_base_arm'>
+<pose>-1.9776 0 1.1773 0 2.1164e-16 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/base_arm.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<collision name='body_collision_front_cylinder'>
+<pose>-0.01356 0 0.90057 0 8.0491e-16 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/front_cylinder.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<collision name='body_collision_front_shaft'>
+<pose>0.49123 0 0.36048 3.14159 0.75163 3.14159</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/front_shaft.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<collision name='body_collision_loader'>
+<pose>0.34384 0 0.1465 0 2.5362e-15 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/loader.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<collision name='body_collision_main_arm'>
+<pose>-1.75456 0 1.7035 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/main_arm.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<collision name='body_collision_supporter'>
+<pose>-1.35685 0 0.80864 0 8.0491e-16 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/supporter.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<visual name='body_visual'>
+<pose>0 0 0 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/body_lite.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/Wood</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<visual name='body_visual_back_cylinder'>
+<pose>-1.8135 0 0.2184 0 8.0491e-16 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/back_cylinder.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/BlueTransparent</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<visual name='body_visual_back_shaft'>
+<pose>-1.47909 0 1.21653 -5.7722e-16 0.32328 -4.9954e-16</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/back_shaft.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/Black</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<visual name='body_visual_base_arm'>
+<pose>-1.9776 0 1.1773 0 2.1164e-16 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/base_arm.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/Grey</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<visual name='body_visual_front_cylinder'>
+<pose>-0.01356 0 0.90057 0 8.0491e-16 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/front_cylinder.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/BlueTransparent</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<visual name='body_visual_front_shaft'>
+<pose>0.49123 0 0.36048 3.14159 0.75163 3.14159</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/front_shaft.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/Black</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<visual name='body_visual_loader'>
+<pose>0.34384 0 0.1465 0 2.5362e-15 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/loader.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/Gold</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<visual name='body_visual_main_arm'>
+<pose>-1.75456 0 1.7035 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/main_arm.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/PaintedWall</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<visual name='body_visual_supporter'>
+<pose>-1.35685 0 0.80864 0 8.0491e-16 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/supporter.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/GreyTransparent</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<gravity>1</gravity>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<self_collide>1</self_collide>
+</link>
+<link name='back_left_wheel'>
+<pose>-1.227 0.47558 0.14772 0 2.1164e-16 0</pose>
+<inertial>
+<pose>7.7344e-08 0.19645 1.8868e-07 0 -0 0</pose>
+<mass>1113.6</mass>
+<inertia>
+<ixx>57.645</ixx>
+<ixy>-9.3672e-06</ixy>
+<ixz>-0.00022863</ixz>
+<iyy>96.158</iyy>
+<iyz>-0.00013365</iyz>
+<izz>57.645</izz>
+</inertia>
+</inertial>
+<collision name='back_left_wheel_collision'>
+<pose>0 0 0 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/back_left_wheel_lite.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<visual name='back_left_wheel_visual'>
+<pose>0 0 0 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/back_left_wheel.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/Grey</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<gravity>1</gravity>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<self_collide>0</self_collide>
+</link>
+<joint name='back_left_wheel_joint' type='revolute'>
+<child>back_left_wheel</child>
+<parent>body</parent>
+<axis>
+<xyz>0 1 0</xyz>
+<limit>
+<lower>-1e+16</lower>
+<upper>1e+16</upper>
+</limit>
+<dynamics/>
+</axis>
+</joint>
+<link name='back_right_wheel'>
+<pose>-1.227 -0.47558 0.14772 0 2.1164e-16 0</pose>
+<inertial>
+<pose>-1.4894e-07 -0.19645 1.3751e-07 0 -0 0</pose>
+<mass>1113.6</mass>
+<inertia>
+<ixx>57.645</ixx>
+<ixy>-6.7699e-05</ixy>
+<ixz>4.3277e-05</ixz>
+<iyy>96.158</iyy>
+<iyz>0.00011578</iyz>
+<izz>57.645</izz>
+</inertia>
+</inertial>
+<collision name='back_right_wheel_collision'>
+<pose>0 0 0 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/back_right_wheel_lite.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<visual name='back_right_wheel_visual'>
+<pose>0 0 0 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/back_right_wheel.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/Grey</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<gravity>1</gravity>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<self_collide>1</self_collide>
+</link>
+<joint name='back_right_wheel_joint' type='revolute'>
+<child>back_right_wheel</child>
+<parent>body</parent>
+<axis>
+<xyz>0 1 0</xyz>
+<limit>
+<lower>-1e+16</lower>
+<upper>1e+16</upper>
+</limit>
+<dynamics/>
+</axis>
+</joint>
+<link name='front_left_wheel'>
+<pose>-0.22722 0.47558 0.125 0 2.1164e-16 0</pose>
+<inertial>
+<pose>2.0502e-07 0.19645 -3.6566e-09 0 -0 0</pose>
+<mass>1113.6</mass>
+<inertia>
+<ixx>57.645</ixx>
+<ixy>-0.0001268</ixy>
+<ixz>0.00024451</ixz>
+<iyy>96.158</iyy>
+<iyz>-4.2461e-05</iyz>
+<izz>57.645</izz>
+</inertia>
+</inertial>
+<collision name='front_left_wheel_collision'>
+<pose>0 0 0 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/front_left_wheel_lite.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<visual name='front_left_wheel_visual'>
+<pose>0 0 0 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/front_left_wheel.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/Grey</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<gravity>1</gravity>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<self_collide>1</self_collide>
+</link>
+<joint name='front_left_wheel_joint' type='revolute'>
+<child>front_left_wheel</child>
+<parent>body</parent>
+<axis>
+<xyz>0 1 0</xyz>
+<limit>
+<lower>-1e+16</lower>
+<upper>1e+16</upper>
+</limit>
+<dynamics/>
+</axis>
+</joint>
+<link name='front_right_wheel'>
+<pose>-0.22722 -0.47558 0.125 0 2.1164e-16 0</pose>
+<inertial>
+<pose>-2.0519e-07 -0.19645 -4.3198e-09 0 -0 0</pose>
+<mass>1113.6</mass>
+<inertia>
+<ixx>57.645</ixx>
+<ixy>-0.00012695</ixy>
+<ixz>-0.00024494</ixz>
+<iyy>96.158</iyy>
+<iyz>4.2098e-05</iyz>
+<izz>57.645</izz>
+</inertia>
+</inertial>
+<collision name='front_right_wheel_collision'>
+<pose>0 0 0 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/front_right_wheel_lite.STL</uri>
+</mesh>
+</geometry>
+<surface>
+<contact>
+<ode/>
+</contact>
+<friction>
+<ode>
+<mu>1</mu>
+<mu2>1</mu2>
+</ode>
+</friction>
+</surface>
+</collision>
+<visual name='front_right_wheel_visual'>
+<pose>0 0 0 0 -0 0</pose>
+<geometry>
+<mesh>
+<scale>1 1 1</scale>
+<uri>model://srvss_bobcat/meshes/front_right_wheel.STL</uri>
+</mesh>
+</geometry>
+<material>
+<script>
+<name>Gazebo/Grey</name>
+<uri>__default__</uri>
+</script>
+</material>
+</visual>
+<gravity>1</gravity>
+<velocity_decay>
+<linear>0</linear>
+<angular>0</angular>
+</velocity_decay>
+<self_collide>1</self_collide>
+</link>
+<joint name='front_right_wheel_joint' type='revolute'>
+<child>front_right_wheel</child>
+<parent>body</parent>
+<axis>
+<xyz>0 1 0</xyz>
+<limit>
+<lower>-1e+16</lower>
+<upper>1e+16</upper>
+</limit>
+<dynamics/>
+</axis>
+</joint>
+<static>0</static>
+
+<!-- -->
+<plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
+<robotNamespace>/srvss_bobcat</robotNamespace>
+</plugin>
+
+    <include>
+      <uri>model://GPS_INS</uri>
+      <pose>0 0 0.5 0 0 0</pose>
+      <name>gps_ins</name>
+    </include>
+
+    <joint name='gps_ins_joint' type='revolute'>
+      <child>gps_ins::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <include>
+      <uri>model://gpu_sick</uri>
+      <pose>1 0 0.2 0 0 0</pose>
+      <name>front_sick</name>
+    </include>
+
+    <joint name='front_sick_joint' type='revolute'>
+      <child>front_sick::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+
+
+
+<!--
+<plugin name='TFpublish' filename='libTFpublisher.so'>
+
+<tf1frame>front_sick</tf1frame>
+<tf1parent>body</tf1parent>
+<tf1pose>1 0 0.2 0 0 0</tf1pose>
+
+<update_rate>20</update_rate>
+</plugin>
+-->
+
+</model>
+</sdf>
