@@ -166,16 +166,18 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	ROS_INFO("LLC Ready");
 
-	double Kp = 0.6 , Kd = 0 , Ki = 0.0   ; 				/* PID constants of linear x */
+	double Kp = 0.5 , Kd = 0.0 , Ki = 0.0   ; 				/* PID constants of linear x */
 	double Kpz = -1.2 , Kdz = -0.0  , Kiz = -0.0   ;		/* PID constants of angular z */
 	ros::Time tic;											/* control time interval */
 	ros::Time toc;
 	double dt ;
 	double integral [2] = {} ; 								/* integration part */
 	double der [2] = {} ;  									/* the derivative of the error */
-	double integral_limit [2] = {0.1,-0.1};
+	double integral_limit [2] = {1,-0.1};
 	int E_stop = 1; 										/* emergency stop */
 	double angular_filter[201] = {} ;
+	double linear_filter[201] = {} ;
+	double old_err[2] = {};
 	COMPONENT->t_flag = 0 ;
 
 	config::LLC::pub::EffortsSt Steering_rate ; 		/* steering rate percentage +- 100 % */
@@ -205,7 +207,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	/* get measurements and calculate error signal */
 
-		tic = ros::Time::now();
+		//tic = ros::Time::now();
 	    ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
 	    gazebo_msgs::GetModelState getmodelstate;
 	    getmodelstate.request.model_name ="Sahar";
@@ -214,9 +216,6 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	    gigi.pose.pose = getmodelstate.response.pose;
 
 	    	t = Translate(gigi, getmodelstate.response.twist);
-
-	    //	Push_elm(angular_filter,5,t.angular.z);
-	    //	t.angular.z = MedianOfFive(angular_filter);
 
 	    	/* printing */
 
@@ -235,25 +234,36 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				cur_error.twist.angular.z = ((COMPONENT->WSM_desired_speed.twist.angular.z) - t.angular.z);
 			}
 
+		//	cur_error.twist.angular.z = (1-0.125)*old_err[1] + cur_error.twist.angular.z*(0.125);
+		//	old_err[1] = cur_error.twist.angular.z ;
+
 			Push_elm(angular_filter,201,cur_error.twist.angular.z);
 			cur_error.twist.angular.z = _medianfilter(angular_filter,201);
-			//cur_error.twist.angular.z = sg_filter(angular_filter);
+			/* SGfiltering .. */
+			//Push_elm(linear_filter,1023,cur_error.twist.linear.x);
+			//cur_error.twist.linear.x = _medianfilter(linear_filter,1023);
+			cur_error.twist.linear.x = (1-0.125)*old_err[0] + cur_error.twist.linear.x*(0.125);
+			old_err[0] = cur_error.twist.linear.x ;
+			Push_elm(linear_filter,201,cur_error.twist.linear.x);
+			cur_error.twist.linear.x = _medianfilter(linear_filter,201);
+			/* end SG */
 
-			toc =  ros::Time::now();
+		//	toc =  ros::Time::now();
 		//	dt = (toc.toSec() - tic.toSec() );
-			dt = 0.001 ;
+		//	dt = 0.001 ;
 
 	/* calculate integral and derivatives */
-	integral[0] += ((cur_error.twist.linear.x )* dt);
-	der[0] = ((cur_error.twist.linear.x - old_error.twist.linear.x)/dt);
-	integral[1] += ((cur_error.twist.angular.z)* dt);
-	der[1] = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt);
-	for(int k = 0 ; k < 2 ; k++){
-		if(integral[k] > integral_limit[k] )
-				integral[k] = integral_limit[k] ;
-		else if (integral[k] < -integral_limit[k])
-				integral[k] = -integral_limit[k] ;
-	}
+//	integral[0] += ((cur_error.twist.linear.x )* dt);
+//	der[0] = ((cur_error.twist.linear.x - old_error.twist.linear.x)/dt);
+//	integral[1] += ((cur_error.twist.angular.z)* dt);
+//	der[1] = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt);
+//	for(int k = 0 ; k < 2 ; k++){
+//		if(integral[k] > integral_limit[k] )
+//				integral[k] = integral_limit[k] ;
+//		else if (integral[k] < -integral_limit[k])
+//				integral[k] = -integral_limit[k] ;
+//	}
+
 
 	Throttle_rate.data = (Kp*cur_error.twist.linear.x + Ki*integral[0] - Kd*der[0]) ;
 	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
@@ -267,7 +277,6 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	COMPONENT->publishEffortsSt(Steering_rate);
 
 	if(COMPONENT->t_flag){
-
 		Blade_pos.name.clear();
 		Blade_pos.name = COMPONENT->Blade_angle.name;
 		Blade_pos.position.clear();
