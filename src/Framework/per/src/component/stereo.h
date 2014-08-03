@@ -14,11 +14,11 @@ Mat getDisparity(Mat left_image, Mat right_image)
     IplImage temp=left_image;
     IplImage temp2=right_image;
     CvMat *matf= cvCreateMat ( temp.height, temp.width, CV_16S);
-    CvStereoBMState * state=cvCreateStereoBMState(CV_STEREO_BM_NARROW,16*16);
+    CvStereoBMState * state=cvCreateStereoBMState(CV_STEREO_BM_BASIC,16*4);
     cvFindStereoCorrespondenceBM(&temp,&temp2,matf,state);
     CvMat * disp_left_visual= cvCreateMat(temp.height, temp.width, CV_8U);
     cvConvertScale( matf, disp_left_visual, -16 );
-    cvNormalize( matf, matf, 0, 256, CV_MINMAX, NULL );
+    cvNormalize( matf, matf, 0, 255, CV_MINMAX, NULL );
     int i, j;
     uchar *ptr_dst;
     IplImage *cv_image_depth_aux = cvCreateImage (cvGetSize(&temp),IPL_DEPTH_8U, 3);
@@ -38,11 +38,9 @@ Mat getDisparity(Mat left_image, Mat right_image)
     Mat img(cv_image_depth_aux, true);
 	//system("pause");
     cvReleaseImage(&cv_image_depth_aux);
-	cvtColor(img,img, CV_BGR2GRAY);
-    for(int i = 0; i < img.rows; i++)
-	   for(int j = 0; j < img.cols; j++)
-	       if(img.at<uchar>(i, j) > 250) img.at<uchar>(i, j) = 0;
-	       else img.at<uchar>(i, j) = (int)(img.at<uchar>(i, j)*3) ;
+	
+    cvtColor(img,img, CV_BGR2GRAY);
+    
     return img;
 }
 
@@ -101,9 +99,11 @@ Mat handleStereo(Mat left, Mat right)
   resize(right, r, Size(right.size().width/2, right.size().height/2), 0, 0, cv::INTER_CUBIC);
  
   Mat stereo = getDisparity(r, l);
-  stereo = filterDisparity(stereo);
-  imshow("dispx", stereo); 
-  waitKey(1);
+  //stereo = filterDisparity(stereo);
+  //imshow("dispx", stereo); 
+  //imshow("L", l); 
+  //imshow("R", r);
+  //waitKey(1);
   return stereo;
 }
 
