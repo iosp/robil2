@@ -42,10 +42,9 @@ void ComponentMain::handleBladePositionCommand(const config::LLC::sub::BladePosi
 	//std::cout<< "Got blade command:" << msg << std::endl;
 }
 	
-
 void ComponentMain::handleLocation(const config::LLC::sub::Location& msg)
 {
-	Per_pose = msg ;
+	this->Per_pose = msg ;
 	//std::cout<< "LLC say:" << msg << std::endl;
 }
 	
@@ -53,8 +52,8 @@ void ComponentMain::handleLocation(const config::LLC::sub::Location& msg)
 void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
 {
 
-	Per_measured_speed.twist.linear.x = msg.twist.linear.x ;
-	Per_measured_speed.twist.angular.z = msg.twist.angular.z ;
+	this->Per_measured_speed.linear.x = msg.twist.linear.x ;
+	this->Per_measured_speed.angular.z = msg.twist.angular.z ;
 
 //	std::cout<< "LLC say:" << msg << std::endl;
 }
@@ -76,9 +75,6 @@ void ComponentMain::publishEffortsJn(sensor_msgs::JointState& msg)
 {
 	_roscomm->publishEffortsJn(msg);
 }
-
-
-
 
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	_roscomm->publishTransform(_tf, srcFrame, distFrame);

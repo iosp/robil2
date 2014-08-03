@@ -166,7 +166,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	ROS_INFO("LLC Ready");
 
-	double Kp = 0.5 , Kd = 0.0 , Ki = 0.0   ; 				/* PID constants of linear x */
+	double Kp = 0.6 , Kd = 0 , Ki = 0.0   ; 				/* PID constants of linear x */
 	double Kpz = -1.2 , Kdz = -0.0  , Kiz = -0.0   ;		/* PID constants of angular z */
 	ros::Time tic;											/* control time interval */
 	ros::Time toc;
@@ -277,6 +277,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	COMPONENT->publishEffortsSt(Steering_rate);
 
 	if(COMPONENT->t_flag){
+
 		Blade_pos.name.clear();
 		Blade_pos.name = COMPONENT->Blade_angle.name;
 		Blade_pos.position.clear();
