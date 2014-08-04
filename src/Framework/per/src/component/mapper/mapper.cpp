@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <boost/thread.hpp>
+#include "../stereo.h"
 
 #include <sensor_msgs/image_encodings.h>
 
@@ -32,7 +33,11 @@ void Mapper::MainLoop()
     height_map->calculateTypes();
     publishMap();
     publishMiniMap();
-    
+    if(camL && camR) 
+    {
+      handleStereo(camRImg, camRImg);
+      //printf("WORKS\n\n\n\n");
+    }
     lock.unlock();
     boost::this_thread::sleep(boost::posix_time::milliseconds(100)); //10hz cycle
   }
@@ -215,7 +220,7 @@ void Mapper::handleLocation(const config::PER::sub::Location& msg)
 void Mapper::handleCamR(const config::PER::sub::SensorCamR& msg)
 {
   lock.lock();
-  
+  camR = true;
   cv_bridge::CvImagePtr cv_ptr;
   try
   {
@@ -229,7 +234,6 @@ void Mapper::handleCamR(const config::PER::sub::SensorCamR& msg)
   }
   //rdbg("leftcam");
   camRImg = cv_ptr->image;
-  camR = true;
   
   
   lock.unlock();
@@ -238,7 +242,7 @@ void Mapper::handleCamR(const config::PER::sub::SensorCamR& msg)
 void Mapper::handleCamL(const config::PER::sub::SensorCamL& msg)
 {
   lock.lock();
-  
+  camL = true;
   cv_bridge::CvImagePtr cv_ptr;
   try
   {
@@ -252,8 +256,6 @@ void Mapper::handleCamL(const config::PER::sub::SensorCamL& msg)
   }
   //rdbg("leftcam");
   camLImg = cv_ptr->image;
-  camL = true;
-  
   
   lock.unlock();
 }
@@ -262,10 +264,6 @@ void Mapper::publishMap()
 {
   config::PER::pub::Map msg;
   static int seq = 0;
-  //static ros::Time lastSendTime;
-  //if(ros::Time::now().toSec() - lastSendTime.toSec() > 0.5)
-  //  lastSendTime = ros::Time::now();
-  //else return;
   msg.header.seq = seq++;
   msg.header.stamp.sec = ros::Time::now().sec;
   msg.header.stamp.nsec = ros::Time::now().nsec;
@@ -304,7 +302,7 @@ void Mapper::publishMiniMap()
 {
   config::PER::pub::Map msg;
   static int seq = 0;
-  //rdbg("hi");
+ 
   msg.header.seq = seq++;
   msg.header.stamp.sec = ros::Time::now().sec;
   msg.header.stamp.nsec = ros::Time::now().nsec;
