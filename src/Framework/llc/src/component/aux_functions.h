@@ -29,48 +29,7 @@ double dot_prod(std_msgs::Float64 *vec_a ,std_msgs::Float64 *vec_b , int size )
 		}
 	return prod;
 }
-/*
-double MedianOfFive(double* arr)
-{
-	double a = arr[0];
-	double b = arr[1];
-	double c = arr[2];
-	double d = arr[3];
-	double e = arr[4];
-    return b < a ? d < c ? b < d ? a < e ? a < d ? e < d ? e : d
-                                                 : c < a ? c : a
-                                         : e < d ? a < d ? a : d
-                                                 : c < e ? c : e
-                                 : c < e ? b < c ? a < c ? a : c
-                                                 : e < b ? e : b
-                                         : b < e ? a < e ? a : e
-                                                 : c < b ? c : b
-                         : b < c ? a < e ? a < c ? e < c ? e : c
-                                                 : d < a ? d : a
-                                         : e < c ? a < c ? a : c
-                                                 : d < e ? d : e
-                                 : d < e ? b < d ? a < d ? a : d
-                                                 : e < b ? e : b
-                                         : b < e ? a < e ? a : e
-                                                 : d < b ? d : b
-                 : d < c ? a < d ? b < e ? b < d ? e < d ? e : d
-                                                 : c < b ? c : b
-                                         : e < d ? b < d ? b : d
-                                                 : c < e ? c : e
-                                 : c < e ? a < c ? b < c ? b : c
-                                                 : e < a ? e : a
-                                         : a < e ? b < e ? b : e
-                                                 : c < a ? c : a
-                         : a < c ? b < e ? b < c ? e < c ? e : c
-                                                 : d < b ? d : b
-                                         : e < c ? b < c ? b : c
-                                                 : d < e ? d : e
-                                 : d < e ? a < d ? b < d ? b : d
-                                                 : e < a ? e : a
-                                         : a < e ? b < e ? b : e
-                                                 : d < a ? d : a;
-}
-*/
+
 void Push_elm(double* arr , int size , double elm)
 {
 		for(int i = 0 ; i < (size - 1) ; i++ )
@@ -104,7 +63,44 @@ double _medianfilter(const double* signal, int N)
 	return data[N/2 + 1];
 }
 
+double SGfilter(const double* signal)
+{
+	/*
+	double f_coeff[21] = {0.0447204968944098 , -0.0248447204968945 , -0.0500163452108533 , -0.0431513566525009 , -0.0151529719439264 , 0.0245293540757263 , 0.0678999288502586, 0.108416822106417 ,
+						  0.140991865853893  , 0.161990654385324 , 0.169232544276292 , 0.161990654385324 , 0.140991865853893 , 0.108416822106417 , 0.0678999288502586 , 0.0245293540757263 , -0.0151529719439263,
+						  -0.0431513566525009 , -0.0500163452108534 , -0.0248447204968946 , 0.0447204968944096 } ;
+	*/
 
+	double f_coeff[21] = {-0.0270531400966188,
+0.0541062801932374,
+0.0210017798118489,
+-0.0329519450800914,
+-0.0595504105532375,
+-0.0429667519181588,
+0.0113698568672320,
+0.0861847713913943,
+0.160057432584018,
+0.213409910112024,
+0.232784433376707,
+0.213409910112023,
+0.160057432584017,
+0.0861847713913938,
+0.0113698568672317,
+-0.0429667519181586,
+-0.0595504105532372,
+-0.0329519450800911,
+0.0210017798118489,
+0.0541062801932372,
+-0.0270531400966180} ;
+
+	double output;
+
+		for(int i = 0 ; i < 21 ; i++){
+			output += signal[i] * f_coeff[i];
+		}
+
+		return output ; /* return y[0] */
+}
 
 
 

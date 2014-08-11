@@ -1,3 +1,4 @@
+<!-- -*- mode: XML -*- -->
 <launch>
 
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
@@ -9,12 +10,12 @@
 
   <!-- We resume the logic in empty_world.launch -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find gazebo_gps_ins)/worlds/gps_ins.world"/>
     <arg name="debug" value="$(arg debug)" />
     <arg name="gui" value="$(arg gui)" />
     <arg name="paused" value="$(arg paused)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
-    <arg name="world_name" value="worlds/testgroundHighRes.world"/>
   </include>
 
   <!-- Load the URDF into the ROS Parameter Server -->
@@ -26,9 +27,20 @@
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
 	args="-urdf -model Sahar -param robot_description -z 0.3"/>
 
-  <!-- ros_control clam launch file -->
-  <include file="$(find bobcat_gazebo)/launch/bobcat_gazebo_control.launch" />
+ 
+  <param name="robot_description2" command="cat $(find bobcat)/urdf/barile.URDF" />
+
+  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="urdf_spawner2" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	args="-urdf -model barile -param robot_description2 -x 3.3 Yaw 1"/>
+
+
+
+ <!-- ros_control clam launch file 
+  <include file="$(find bobcat_gazebo)/launch/bobcat_gazebo_control.launch" /> -->
 
  <node name="RateToEffort" pkg="rate2effort" type="rate2effort" cwd="node" output="screen" /> 
 
 </launch>
+
+
