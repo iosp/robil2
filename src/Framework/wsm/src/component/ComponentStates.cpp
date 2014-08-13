@@ -190,6 +190,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 			}
 		}
 
+
 		//We should do something with these fields:
 		//presentWorkSeq->task_id
 		//presentWorkSeq->task_description
@@ -483,7 +484,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	/* Type 5 : */
 			case robil_msgs::AssignManipulatorTaskStep::type_turn:
-				value = step->value; //turn in degrees (or rads??? conflict in documentation)
+				value = (step->value)*(M_PI / 180.0);
 
 				if(step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_graund /* <---WTF IS GRAUND?? */){
 
@@ -567,7 +568,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 			}
 
 			if(stepSuccess){
-				PAUSE(step->duration_at_end);
+				unsigned int inter_step_period = step->duration_at_end;
+				sleep(inter_step_period);
 			}
 
 			/**
