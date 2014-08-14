@@ -161,10 +161,20 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	double integral [2] = {} ; 								/* integration part */
 	double der [2] = {} ;  									/* the derivative of the error */
 	double integral_limit [2] = {1,-0.1};					/* emergency stop */
-	double angular_filter[201] = {} ;
+	double angular_filter[1024] = {} ;
 	double old_err = 0;
 	int E_stop = 1;
 	COMPONENT->t_flag = 0 ;
+
+#ifdef LLC_USE_LOCALIZATION
+
+	Kp = 0.12 ; Kd = 0.0 ; Ki = 0.0 ;
+	Kpz = -1.2 ; Kdz = 0.0 ; Kiz = 0.0 ;
+
+	geometry_msgs::Twist per_speed ;
+	geometry_msgs::PoseWithCovarianceStamped per_location ;
+
+#endif
 
 	config::LLC::pub::EffortsSt Steering_rate ; 		/* steering rate  +- 1 */
 	config::LLC::pub::EffortsTh Throttle_rate ;			/* Throttle rate  +- 1 */
@@ -202,10 +212,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	    t = Translate(gigi, getmodelstate.response.twist);
 
 #else
-	    geometry_msgs::PoseWithCovarianceStamped per_location = COMPONENT->Per_pose ;
-	    geometry_msgs::Twist per_speed ;
-	    per_speed.linear.x = COMPONENT->Per_measured_speed.linear.x ;
-	    per_speed.angular.z = COMPONENT->Per_measured_speed.angular.z ;
+	    per_location = COMPONENT->Per_pose ;
+	    per_speed = COMPONENT->Per_measured_speed;
 	    t = Translate(per_location, per_speed);
 
 #endif
@@ -220,8 +228,9 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				cur_error.twist.angular.z = ((COMPONENT->WSM_desired_speed.twist.angular.z) - t.angular.z);
 			}
 
-			Push_elm(angular_filter,201,cur_error.twist.angular.z);
-			cur_error.twist.angular.z = _medianfilter(angular_filter,201);
+			Push_elm(angular_filter,1024,cur_error.twist.angular.z);
+			//cur_error.twist.angular.z = _medianfilter(angular_filter,201);
+			cur_error.twist.angular.z = avg_filter(angular_filter , 1024.0);
 
 			cur_error.twist.linear.x = (1-0.125)*old_err + cur_error.twist.linear.x*(0.125);
 			old_err = cur_error.twist.linear.x ;
@@ -240,14 +249,12 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				integral[k] = -integral_limit[k] ;
 	}
 
-
 	Throttle_rate.data = (Kp*cur_error.twist.linear.x + Ki*integral[0] - Kd*der[0]) ;
 	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
 
 	/* publish */
-
-	COMPONENT->publishEffortsTh(Throttle_rate);
-	COMPONENT->publishEffortsSt(Steering_rate);
+		COMPONENT->publishEffortsTh(Throttle_rate);
+		COMPONENT->publishEffortsSt(Steering_rate);
 
 	/* WSM blade controller */
 
