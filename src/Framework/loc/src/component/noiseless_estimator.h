@@ -44,13 +44,13 @@ public:
    */
   geometry_msgs::TwistStamped getEstimatedSpeed();
 private:
-    geometry_msgs::PoseWithCovarianceStamped estimatedPose;
+    geometry_msgs::PoseWithCovarianceStamped estimatedPose, lastPose;
     geometry_msgs::TwistStamped velocity;
     sensor_msgs::NavSatFix initialGPS, GPSmeasurement;
     sensor_msgs::Imu IMUmeasurement;
     robil_msgs::GpsSpeed speedMeasurement;
     bool first_GPS_flag;
-    
+    double dx, dy;
     /**
     * set GPS coordinates
     */

@@ -83,5 +83,4 @@ private:
 	 * set GPS coordinates
 	 */
 	void setInitGPS(sensor_msgs::NavSatFix initGPS);
-
 };
