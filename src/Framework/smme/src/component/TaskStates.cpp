@@ -116,6 +116,7 @@ FSM(Task)
 			FSM_CALL_FSM(TaskActive)
 			FSM_TRANSITIONS
 			{
+				//FSM_ON_EVENT(MISSION_ID+"/StopTask", FSM_RAISE(MISSION_ID+"/CompleteTask"));
 				FSM_ON_EVENT(MISSION_ID+"/StopTask", FSM_NEXT(TaskPending));
 				FSM_ON_EVENT(MISSION_ID+"/RestartTask", FSM_NEXT(TaskActive));
 			}
