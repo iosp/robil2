@@ -18,6 +18,8 @@
 #include <boost/thread.hpp>
 #include <boost/date_time/posix_time/time_formatters.hpp>
 
+#include <plpcpp/RosPack.h>
+
 using namespace std;
 using namespace boost;
 
@@ -66,7 +68,9 @@ void PlpLoader::load_plp(istream& stream){
 		throw Exception_PlpHasNoName();
 	}
 }
-void PlpLoader::load_plp(string filename){
+void PlpLoader::load_plp(string file_name){
+	std::string filename = RosPack().find_file(file_name)[0];
+	std::cout<<"[i] load plp file: "<<filename<<std::endl;
 	ifstream file(filename.c_str());
 	if(not file){
 		throw Exception_FileLoadProblem();
