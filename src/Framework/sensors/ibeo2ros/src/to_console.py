@@ -5,7 +5,7 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 class to_console:
-  def __init__(self,stdscr,server_address,start_time):
+  def __init__(self,stdscr,server_address,start_time):    
     self.reset_sent = False
     self.size_of_data = 0
     self.status = 0
@@ -66,22 +66,25 @@ class to_console:
     elif self.status == '2030':
       self.error_occured = True
       curses.init_pair(1, 1, curses.COLOR_WHITE)
-      self.stdscr.addstr(11,0,"Status: Received data type 2030. Warning/Error. Check connection and voltage level",curses.color_pair(1) | curses.A_BOLD)
+      self.stdscr.addstr(11,0,"Status: Received data type 2030. Warning/Error.",curses.color_pair(1) | curses.A_BOLD)
       self.status_time[2] = time.time()
+      self.f = open('warning_output.txt','a')
+      self.f.write('warning\n')
+      self.f.close()
     else:
       self.stdscr.addstr(9,0,"Status: Received data type "+dtype,curses.color_pair(4))
       self.stdscr.clrtoeol()
     for i in range(3):
-      if (self.status_time[i] - time.time()) > 1.5:
-	self.clear_line(9+i)
+      if (time.time() - self.status_time[i]) > 1.5:
+        self.clear_line(9+i)
       
   def send_status(self):
     if self.sent_something[0]:
       self.stdscr.addstr(12,0,'Sending status request to IBEO')
       if (time.time() - self.sent_something[1]) > 3:
-	self.clear_line(12)
+	    self.clear_line(12)
       if (time.time() - self.sent_something[1]) > 20:
-	self.sent_something = (False,time.time())
+	    self.sent_something = (False,time.time())
   
   def clear_line(self,line_number):
     self.stdscr.addstr(line_number,0,'')
@@ -93,12 +96,12 @@ class to_console:
       self.generic_message_time[self.line_number] = time.time()
       num = 15 + self.line_number
       if self.line_number == 5:
-	self.line_number = -1
-      self.line_number += 1
-      self.stdscr.addstr(num,0,data)
-      self.stdscr.clrtoeol()
+        self.line_number = -1
+        self.line_number += 1
+        self.stdscr.addstr(num,0,data)
+        self.stdscr.clrtoeol()
     for t in range(5):
       if (time.time() - self.generic_message_time[t]) > 3:
-	self.clear_line(15+t)
+	    self.clear_line(15+t)
 	
     
