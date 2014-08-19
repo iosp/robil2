@@ -215,7 +215,6 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	    per_location = COMPONENT->Per_pose ;
 	    per_speed = COMPONENT->Per_measured_speed;
 	    t = Translate(per_location, per_speed);
-
 #endif
 
 
