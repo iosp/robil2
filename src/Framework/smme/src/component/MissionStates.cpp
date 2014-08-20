@@ -147,6 +147,7 @@ bool extend_events_names(Event& e, std::string mid_pref, EventQueue& events){
 			return true;\
 		}
 		//----------- TASK GLOBAL EVENT -------------
+		EXTEND("/StopTask")
 		EXTEND("/CompleteTask")
 		EXTEND("/AbortTask")
 		EXTEND("/PauseTask")
@@ -182,9 +183,9 @@ TaskResult state_MissionSpooling(string id, const CallContext& context, EventQue
 	while(events.isTerminated()==false and ros::ok()){
 		Event e = events.waitEvent();
 		extend_events_names(e, MID_PREF(mid), events);
-		if(e == Event(MID_PREF(mid)+"/CompleteTask")){
+		if(e == Event(MID_PREF(mid)+"/CompleteTask") or e == Event(MID_PREF(mid)+"/StopTask")){
 			std::string ex = MID_PREF(mid)+"/CompleteTask";
-			ROS_INFO("Event %s detected. got next or complete mission");
+			ROS_INFO("Event %s detected. got next or complete mission", ex.c_str());
 			if( MM->next_task() ){
 				this_thread::sleep(milliseconds(100));
 				events.raiseEvent(MID_PREF(mid)+"/StartTask");
