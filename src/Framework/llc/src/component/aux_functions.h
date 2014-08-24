@@ -101,7 +101,14 @@ double SGfilter(const double* signal)
 
 		return output ; /* return y[0] */
 }
-
+double avg_filter(const double* signal , int size)
+{
+	double data = 0 ;
+	for(int i = 0 ; i < size ; i++){
+		data += signal[i] ;
+	}
+	return (data / size);
+}
 
 
 

@@ -252,7 +252,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	/* Type 1 : */
 			case robil_msgs::AssignManipulatorTaskStep::type_blade_height:
-				 value = step->value;  //height in meters
+				 value = ((step->value) - 0.28748);  //height in meters
+			//	value = (step->value);
 
 			if(step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_absolute){
 
