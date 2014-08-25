@@ -17,11 +17,13 @@
         <include>
             <uri>model://terrainWithRoad</uri>
         </include>
-        <include>
-            <uri>model://srvss_bobcat</uri>
-            <pose>40 10 2.47647 0 0 0.790312</pose>
-            <name>srvss_bobcat</name>
-        </include>
+
+    <include>
+      <uri>model://bobcat</uri>
+      <name>Sahar</name>
+      <pose>50 50 0.6 0 0 0</pose>
+    </include>
+
         <include>
             <uri>model://barrel1</uri>
             <pose>43.2281 24.7015 2.36398 0.0129922 0.0694729 0.0534836</pose>
@@ -58,35 +60,6 @@
             <scale>1.19043 1.19043 1.19043</scale>
             <name>obstacle_on_path2</name>
         </include>
-        <include>
-            <uri>model://wp_mark</uri>
-            <pose>49.8109 23.9306 4.71765 0 0 0</pose>
-            <name>wp_mark0</name>
-        </include>
-        <include>
-            <uri>model://wp_mark</uri>
-            <pose>58.1817 40.5819 4.52941 0 0 0</pose>
-            <name>wp_mark1</name>
-        </include>
-        <include>
-            <uri>model://wp_mark</uri>
-            <pose>58.6973 56.6952 4.74118 0 0 0</pose>
-            <name>wp_mark2</name>
-        </include>
-        <include>
-            <uri>model://wp_mark</uri>
-            <pose>50.4049 72.731 4.75294 0 0 0</pose>
-            <name>wp_mark3</name>
-        </include>
-        <include>
-            <uri>model://wp_mark</uri>
-            <pose>51.8428 91.4724 4.37647 0 0 0</pose>
-            <name>wp_mark4</name>
-        </include>
-        <include>
-            <uri>model://wp_mark</uri>
-            <pose>46.7008 108.118 3.01176 0 0 0</pose>
-            <name>wp_mark5</name>
-        </include>
+ 
     </world>
 </sdf>
