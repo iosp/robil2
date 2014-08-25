@@ -1,0 +1,16 @@
+FLEA 3 - to ROS
+===============
+
+This package converts the FLEA3 GigE camera into a ROS topic.
+The names of the topics will be: /SENSORS/FLEA3/#OFCAMERA.
+The topic will publish at the highest resolution rate of the camera with the highest possible frequency.
+
+This code seperates each camera to a seperated thread.
+
+To run this code you must first install the flycapture api which is included in this package under installations.
+You may also look at the data sheet of the camera.
+
+Once you installed the flycapture API and perform a catkin_make to your workspace you can run this package by
+
+rosrun flea3ros flea3ros
+
