@@ -14,12 +14,14 @@ class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;
 public:
-	config::LLC::sub::PerVelocity Per_measured_speed ;		/* real measured speed */
+	//config::LLC::sub::PerVelocity Per_measured_speed ;	/* real measured speed */
+	geometry_msgs::Twist Per_measured_speed ;
 	config::LLC::sub::WSMVelocity WSM_desired_speed ;		/* WSM desired vel. - on work sequence mode */
 	config::LLC::sub::WPDVelocity WPD_desired_speed ;		/* WPD desired vel. - on driving mode */
 	config::LLC::sub::BladePositionCommand Blade_angle ; 	/* WSM desired supporter positon */
 	config::LLC::sub::Location Per_pose ; 					/* Per location */
 	int t_flag;
+
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 	void handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg);

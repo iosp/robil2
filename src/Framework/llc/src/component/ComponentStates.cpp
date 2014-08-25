@@ -7,7 +7,7 @@
 #include <decision_making/DecisionMaking.h>
 #include <gazebo_msgs/GetModelState.h>
 #include "aux_functions.h"
-#include "helpermath.h"
+
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
@@ -90,13 +90,13 @@ FSM(llc)
 	FSM_END
 }
 
-
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 	ROS_INFO("LLC OFF");
 	//diagnostic_msgs::DiagnosticStatus status;
 	//COMPONENT->publishDiagnostic(status);
 	return TaskResult::SUCCESS();
 }
+
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	//PAUSE(10000);
 
@@ -105,6 +105,7 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 	events.raiseEvent(e);
 	return TaskResult::SUCCESS();
 }
+
 geometry_msgs::Twist Translate(geometry_msgs::PoseWithCovarianceStamped model_state , geometry_msgs::Twist model_speed){
 
 	std_msgs::Float64 x[3] ;
@@ -146,42 +147,42 @@ geometry_msgs::Twist Translate(geometry_msgs::PoseWithCovarianceStamped model_st
 	model_coordinates.angular.z = model_coordinates_angular_speed ;
 
 	return (model_coordinates);
-	/*
-	double sx = model_state.response.twist.linear.x ;
-	double sy = model_state.response.twist.linear.y ;
-	Quaternion qut(model_state.response.pose.orientation);
-	Rotation rot1 = GetRotation(qut);
-	double v =glSpeedloc(sx,sy,rot1.yaw);
-	geometry_msgs::Twist model_coordinates ;
-	model_coordinates.linear.x = v ;
-
-
-	return (model_coordinates);
-	*/
 
 }
+
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
+
+//	#define LLC_USE_LOCALIZATION
 
 	ROS_INFO("LLC Ready");
 
-	double Kp = 0.3 , Kd = 0 , Ki = 0.0   ; 				/* PID constants of linear x */
-	double Kpz = -0.5 , Kdz = 0  , Kiz = 0.0   ;			/* PID constants of angular z */
- 	double dt = 0.001 ; 								/* control time interval */
-	double integral [2] = {} ; 							/* integration part */
-	double der [2] = {} ;  								/* the derivative of the error */
-	double integral_limit [2] = {0.1,0.05};
-	int E_stop = 1; 									/* emergency stop */
-	double angular_filter[5];
+	double Kp = 0.6 , Kd = 0 , Ki = 0.0   ; 				/* PID constants of linear x */
+	double Kpz = -1.2 , Kdz = -0.0  , Kiz = -0.0   ;		/* PID constants of angular z */
+	double integral [2] = {} ; 								/* integration part */
+	double der [2] = {} ;  									/* the derivative of the error */
+	double integral_limit [2] = {1,-0.1};					/* emergency stop */
+	double angular_filter[1024] = {} ;
+	double old_err = 0;
+	int E_stop = 1;
 	COMPONENT->t_flag = 0 ;
 
-	config::LLC::pub::EffortsSt Steering_rate ; 		/* steering rate percentage +- 100 % */
-	//config::LLC::pub::EffortsJn Joints_rate ; 			/* Joint rate percentage +- 100 % */
-	config::LLC::pub::EffortsTh Throttle_rate ;			/* Throttle rate percentage +- 100 % */
+#ifdef LLC_USE_LOCALIZATION
+
+	Kp = 0.12 ; Kd = 0.0 ; Ki = 0.0 ;
+	Kpz = -1.2 ; Kdz = 0.0 ; Kiz = 0.0 ;
+
+	geometry_msgs::Twist per_speed ;
+	geometry_msgs::PoseWithCovarianceStamped per_location ;
+
+#endif
+
+	config::LLC::pub::EffortsSt Steering_rate ; 		/* steering rate  +- 1 */
+	config::LLC::pub::EffortsTh Throttle_rate ;			/* Throttle rate  +- 1 */
 	sensor_msgs::JointState Blade_pos;
 
 	geometry_msgs::TwistStamped cur_error ; 			/* stores the current error signal */
 	geometry_msgs::TwistStamped old_error ; 			/* stores the last error signal */
-	geometry_msgs::Twist t ;
+	geometry_msgs::Twist t ;							/* used for co-ordinates transform */
 
 	ros::NodeHandle n ;
 
@@ -201,31 +202,39 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	/* get measurements and calculate error signal */
 
-
+#ifndef  LLC_USE_LOCALIZATION
 	    ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
 	    gazebo_msgs::GetModelState getmodelstate;
 	    getmodelstate.request.model_name ="Sahar";
 	    gmscl.call(getmodelstate);
 	    geometry_msgs::PoseWithCovarianceStamped gigi;
 	    gigi.pose.pose = getmodelstate.response.pose;
-	    	t = Translate(gigi, getmodelstate.response.twist);
+	    t = Translate(gigi, getmodelstate.response.twist);
 
-	    	/* printing */
+#else
+	    per_location = COMPONENT->Per_pose ;
+	    per_speed = COMPONENT->Per_measured_speed;
+	    t = Translate(per_location, per_speed);
+#endif
 
-//			t = Translate(COMPONENT->Per_pose , COMPONENT->Per_measured_speed.twist) ;
-
-			ROS_INFO("@LLC: translate: linear X: %f, angular z: %f; Per: linear x: %f, angular z: %f",
-					t.linear.x, t.linear.z,
-					COMPONENT->Per_measured_speed.twist.linear.x, COMPONENT->Per_measured_speed.twist.angular.z);
 
 			if(COMPONENT->WPD_desired_speed.twist.linear.x ||COMPONENT->WPD_desired_speed.twist.angular.z ){
 				cur_error.twist.linear.x = (COMPONENT->WPD_desired_speed.twist.linear.x) - t.linear.x;
-				cur_error.twist.angular.z = ((COMPONENT->WPD_desired_speed.twist.angular.z) - t.linear.z);
+				cur_error.twist.angular.z = ((COMPONENT->WPD_desired_speed.twist.angular.z) - t.angular.z);
 			}
 			else{
 				cur_error.twist.linear.x = (COMPONENT->WSM_desired_speed.twist.linear.x) - t.linear.x;
-				cur_error.twist.angular.z = ((COMPONENT->WSM_desired_speed.twist.angular.z) - t.linear.z);
+				cur_error.twist.angular.z = ((COMPONENT->WSM_desired_speed.twist.angular.z) - t.angular.z);
 			}
+
+			Push_elm(angular_filter,1024,cur_error.twist.angular.z);
+			//cur_error.twist.angular.z = _medianfilter(angular_filter,201);
+			cur_error.twist.angular.z = avg_filter(angular_filter , 1024.0);
+
+			cur_error.twist.linear.x = (1-0.125)*old_err + cur_error.twist.linear.x*(0.125);
+			old_err = cur_error.twist.linear.x ;
+
+			double dt = 0.001 ;
 
 	/* calculate integral and derivatives */
 	integral[0] += ((cur_error.twist.linear.x )* dt);
@@ -241,20 +250,20 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	Throttle_rate.data = (Kp*cur_error.twist.linear.x + Ki*integral[0] - Kd*der[0]) ;
 	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
-	/* WSM blade controller */
-
-	ROS_INFO("@LLC: Throttle: %f; Steering: %f", Throttle_rate.data, Steering_rate.data);
 
 	/* publish */
+		COMPONENT->publishEffortsTh(Throttle_rate);
+		COMPONENT->publishEffortsSt(Steering_rate);
 
-	COMPONENT->publishEffortsTh(Throttle_rate);
-	COMPONENT->publishEffortsSt(Steering_rate);
+	/* WSM blade controller */
+
 	if(COMPONENT->t_flag){
 
 		Blade_pos.name.clear();
 		Blade_pos.name = COMPONENT->Blade_angle.name;
 		Blade_pos.position.clear();
-		Blade_pos.position.push_back(COMPONENT->Blade_angle.position.front());
+	for(int i = 0 ; i < COMPONENT->Blade_angle.position.size(); i++)
+		Blade_pos.position.push_back(COMPONENT->Blade_angle.position[i]);
 		COMPONENT->publishEffortsJn(Blade_pos);
 		COMPONENT->t_flag = 0 ;
 	}
@@ -265,7 +274,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 		if(!E_stop)
 			break ;
-		PAUSE(100);		/* wait dt time to recalculate error */
+		PAUSE(10);		/* wait dt time to recalculate error */
 
 		//usleep(100000);
 	}
@@ -280,6 +289,7 @@ TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& even
 
 	return TaskResult::SUCCESS();
 }
+
 void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros_decision_making_init(argc, argv);

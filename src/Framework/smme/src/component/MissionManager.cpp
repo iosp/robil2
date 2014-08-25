@@ -33,6 +33,7 @@ void MissionManager::assign(const ManTask& task) {
 SYNCHRONIZED
 	TaskID tid = id(task);
 	man_tasks[tid] = task;
+	ROS_INFO_STREAM("New manipulation task: "<<task);
 }
 
 void MissionManager::assign(const NavTask& task) {

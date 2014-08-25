@@ -1,4 +1,25 @@
 ****************************************************************************************
+11/08/2014 SHA: 6daab9b421fbd525717f62f86a645571936c2e4e
+What's new:
+===========
+1. Lifting Loader whilst keeping the Blade's pitch (Using Inverse Kinematics).
+2. Change's blade angle between -30 degrees to 56 degrees (Using Inverse Kinematics).
+3. Improved travelling distance for type 4 and type 5 tasks.
+4. added new Inverse kinematics class.
+
+Tests:
+=============
+In order to test our WSM node, please take these follwing steps:
+
+1. Run the Gazebo Simulation - In *any* world enviorment.
+2. Make sure that the Gazebo controllers are up, otherwise run:
+	roslaunch bobcat_gazebo bobcat_gazebo_control.launch
+3. Run robil2conf frameworkInit.launch 
+4. Make sure that RateToEffort node is alive and running via "rqt_graph"
+5. open a Terminal window, and use "rostopic pub /SMME/WSM/Task robil2msgs AssinManipulatorTask " 	
+6. press TAB twice, and fill in the details.
+
+****************************************************************************************
 07/07/2014 SHA: 6339f6e86ba0e5b82c070a1abfc8d62ffe59804d
 What's new:
 ===========

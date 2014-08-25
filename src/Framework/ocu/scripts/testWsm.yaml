@@ -1,0 +1,45 @@
+header: 
+  seq: 2
+  stamp: 
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+task_id: '33'
+task_description: test work sequence
+steps: 
+  - 
+    id: 1
+    type: 3
+    value: 100
+    blade_relativity: 0
+    success_timeout: 10
+    duration_at_end: 1
+  - 
+    id: 2
+    type: 1
+    value: 1.5
+    blade_relativity: 0
+    success_timeout: 10
+    duration_at_end: 1
+  - 
+    id: 3
+    type: 2
+    value: -20
+    blade_relativity: 0
+    success_timeout: 20
+    duration_at_end: 1
+  - 
+    id: 4
+    type: 1
+    value: 1.5
+    blade_relativity: 0
+    success_timeout: 20
+    duration_at_end: 1
+  - 
+    id: 5
+    type: 4
+    value: 13
+    blade_relativity: 0
+    success_timeout: 10
+    duration_at_end: 1
+

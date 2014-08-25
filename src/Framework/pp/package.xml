@@ -27,6 +27,9 @@
 	<build_depend>tf_geometry</build_depend>
 	<run_depend>tf_geometry</run_depend>
 	
+	<!-- for plp -->
+	<build_depend>plpcpp</build_depend>
+	<run_depend>plpcpp</run_depend>
 	
   <export>
   </export>

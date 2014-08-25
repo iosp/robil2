@@ -9,6 +9,7 @@
 
  // std_msgs::Float64 x ;
 
+  int movie = 1 ;
   int emergancy = 1 ;
   ros::Publisher front_left_pub_;
   ros::Publisher front_right_pub_;
@@ -45,18 +46,24 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 		lin.data = -1 ;
 	if(msg->angular.x < -1)
 		ang.data = -1 ;
-
-    	pub.data = (0.5*lin.data + ang.data)*30*emergancy;
+if(!movie){
+    	pub.data = (0.5*lin.data + 0.3*ang.data)*30*emergancy;
     	front_left_pub_.publish(pub);
     	back_left_pub_.publish(pub);
 
-    	ROS_INFO("@R2E: LEFT: %f", pub.data);
-
-    	pub.data = (0.5*lin.data - ang.data)*30*emergancy;
+    	pub.data = (0.5*lin.data - 0.3*ang.data)*30*emergancy;
     	front_right_pub_.publish(pub);
     	back_right_pub_.publish(pub);
+}
+else{
+	pub.data = (0.5*lin.data + 0.3*ang.data)*50*emergancy;
+    	front_left_pub_.publish(pub);
+    	back_left_pub_.publish(pub);
 
-    	ROS_INFO("@R2E: RIGHT: %f", pub.data);
+    	pub.data = (0.5*lin.data - 0.3*ang.data)*50*emergancy;
+    	front_right_pub_.publish(pub);
+    	back_right_pub_.publish(pub);
+}
 }
 
 void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
@@ -92,17 +99,21 @@ void StCallback	(const std_msgs::Float64ConstPtr &msg)
 void JoCallback	(const sensor_msgs::JointState &msg)
 {
 	std_msgs::Float64 pub;
-	pub.data = msg.position.front();
 
-	if(msg.name[0] == "supporter_joint"){
+	for(int i = 0 ; i < msg.position.size() ; i++)
+	{
+	pub.data = msg.position[i];
+
+	if(msg.name[i] == "supporter_joint"){
 		supporter_pub_.publish(pub);
 	}
-	else if (msg.name[0] == "loader_joint"){
+	else if (msg.name[i] == "loader_joint"){
 		loader_pub_.publish(pub);
 	}
-	else if(msg.name[0] == "brackets_joint"){
+	else if(msg.name[i] == "brackets_joint"){
 		brackets_pub_.publish(pub);
 	}
+  }
 }
 
 

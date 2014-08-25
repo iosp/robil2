@@ -10,6 +10,7 @@
 
 #include "ComponentMain.h"
 #include <gazebo_msgs/GetModelState.h>
+#include "InverseKinematics.h"
 #include "helpermath.h"
 #include "aux_functions.h"
 

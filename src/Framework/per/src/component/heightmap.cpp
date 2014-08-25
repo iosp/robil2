@@ -54,7 +54,7 @@ void HeightMap::setRelativeHeightAt(int x, int y, double height)
     y = _height/2 - y;
     
     if(_at(x,y) < _min) _at(x,y) = height;
-    else _at(x,y) = _at(x,y)*0.8 + height*0.2;
+    else _at(x,y) = _at(x,y)*0.95 + height*0.05;
 }
 
 void HeightMap::setRelativeTypeAt(int x, int y, int type)
@@ -303,11 +303,17 @@ void HeightMap::calculateTypes()
     {
       //if(_types[j*_width+i] != TYPE_UNSCANNED) continue;
       double height = _at(i, j);
-      if(height == HEIGHT_UNKNOWN) continue;
       double heightx1 = _at(i-1, j);
       double heightx2 = _at(i+1, j);
       double heighty1 = _at(i, j-1);
       double heighty2 = _at(i, j+1);
+      if(height == HEIGHT_UNKNOWN)
+      {
+	if(heightx1 != HEIGHT_UNKNOWN && heightx2 != HEIGHT_UNKNOWN) height = _at(i,j) = (heightx1 + heightx2)/2;
+	else if(heighty1 != HEIGHT_UNKNOWN && heighty2 != HEIGHT_UNKNOWN) height = _at(i,j) = (heighty1 + heighty2)/2;
+	else continue;
+      }
+      
       
       
       if(heighty2 != HEIGHT_UNKNOWN && heighty1 != HEIGHT_UNKNOWN)

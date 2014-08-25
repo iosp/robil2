@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <world name="default">
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <scene>
+            <sky>
+                <time>10</time>
+                <clouds>
+                    <speed>5</speed>
+                    <direction>1.14</direction>
+                    <humidity>0.3</humidity>
+                </clouds>
+            </sky>
+        </scene>
+        <include>
+            <uri>model://terrainWithRoad</uri>
+        </include>
+
+    <include>
+      <uri>model://bobcat</uri>
+      <name>Sahar</name>
+      <pose>40 10 2.47 0 0 0</pose>
+    </include>
+
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>43.2281 24.7015 2.36398 0.0129922 0.0694729 0.0534836</pose>
+            <scale>3.54435 3.54435 3.54435</scale>
+            <name>object0</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>47.2102 73.6599 1.5187 -0.0776383 -0.0831095 -0.0764702</pose>
+            <scale>4.39043 4.39043 4.39043</scale>
+            <name>object1</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>79.672 21.314 1.82742 -0.0922062 -0.0578 0.0810865</pose>
+            <scale>3.34057 3.34057 3.34057</scale>
+            <name>object2</name>
+        </include>
+        <include>
+            <uri>model://tree1</uri>
+            <pose>57.6673 47.5561 1.15155 0.0987077 0.0749813 0.0526544</pose>
+            <scale>3.66078 3.66078 3.66078</scale>
+            <name>obstacle_on_path0</name>
+        </include>
+        <include>
+            <uri>model://tree1</uri>
+            <pose>52.2241 89.8765 1.25382 0.0154319 0.0780702 0.054534</pose>
+            <scale>1.64914 1.64914 1.64914</scale>
+            <name>obstacle_on_path1</name>
+        </include>
+        <include>
+            <uri>model://cube1</uri>
+            <pose>57.7861 44.1542 1.16326 0.0272364 -0.0484672 0.0125165</pose>
+            <scale>1.19043 1.19043 1.19043</scale>
+            <name>obstacle_on_path2</name>
+        </include>
+ 
+    </world>
+</sdf>

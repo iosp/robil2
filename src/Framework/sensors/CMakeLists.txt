@@ -28,3 +28,7 @@ target_link_libraries(sensors_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(sensors_node sensors_compMain sensors_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
 
+install(PROGRAMS
+   ibeo2ros/src/ibeo_parser.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

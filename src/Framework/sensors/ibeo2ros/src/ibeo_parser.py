@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from parser import *
 import errno
 import socket
@@ -70,7 +71,7 @@ def sendToParser(data):
 #----Opening socket to IBEO sensor -----#
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.settimeout(10)
-server_address = ('192.168.0.6', 12002)
+server_address = ('192.168.0.13', 12002)
 print 'Trying to open connection...'
 sock.connect(server_address)
 #sock.setblocking(1)
