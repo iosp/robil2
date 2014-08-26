@@ -41,7 +41,7 @@ def parseFile(msg_class,myFile):
 
 class GuiHandler(object):
 
-    def setMessageList(self,parent,title,list_row,list_column,msg_class):
+    def setMessageList(self,parent,title,list_row,list_column,msg_class,start=False):
         ListLabel = LabelFrame(parent, width=40, height=8,  text=title)
         ListLabel.grid(row=list_row,column=list_column)
         List = Listbox(ListLabel,selectmode=SINGLE,width=40)
@@ -50,6 +50,9 @@ class GuiHandler(object):
         Button(ButtonLabel, text="AddFromYaml",command=self.genAddToList(List,msg_class)).pack(side=RIGHT)
         Button(ButtonLabel, text="Assign",command=self.genAssignMethod(List,msg_class)).pack(side=RIGHT)
         Button(ButtonLabel, text="Edit",command=lambda lb=List: call(["gedit", lb.get(ANCHOR)]) if len(lb.curselection())>0 else None ).pack(side=LEFT)
+        if start:
+            Button(ButtonLabel, text="Start",command=self.genStartMissionMethod(List,msg_class)).pack(side=RIGHT)
+            
         scrolbar =Scrollbar(ListLabel,orient=HORIZONTAL)
         scrolbar.config(command=List.xview)
         List.config(xscrollcommand=scrolbar.set)
@@ -105,7 +108,7 @@ class GuiHandler(object):
         TaskListLabel.grid(row=1,column=1,rowspan=2)
         self.setMessageList(TaskListLabel,"NavTasks",1,1,AssignNavTask)
         self.setMessageList(TaskListLabel,"ManipulatorTasks",1,0,AssignManipulatorTask)
-        self.setMessageList(TaskListLabel,"Missions",0,0,AssignMission)
+        self.setMessageList(TaskListLabel,"Missions",0,0,AssignMission,True)
         
         #control label
         controlLabel = LabelFrame(TaskListLabel, text="SMME_Control")
@@ -140,6 +143,19 @@ class GuiHandler(object):
             if not len(listTarget.curselection()):
                 tkMessageBox.showinfo("Not assignd", "please choose a value form the list before assigning")
         return assignMethod
+       
+    def genStartMissionMethod(self,listTarget,msg_class):
+        def startMethod():
+            for sel in listTarget.curselection():
+                yamlfile=parseYAML(listTarget.get(sel))
+                missionMsg=messageFromYAML(msg_class,yamlfile)
+                msg=std_msgs.msg.String()
+                msg.data="/mission/"+missionMsg.mission_id+"/StartMission"
+                self.decision_making_publisher.publish(msg)
+            if not len(listTarget.curselection()):
+                tkMessageBox.showinfo("Not assignd", "please choose a value form the list before assigning")
+        return startMethod
+        
         
     def writeToLog(self,msg):
         self.numOfLogLines = self.numOfLogLines+1
@@ -259,4 +275,3 @@ thread1.start()
 top.mainWindow.mainloop()
 thread1.stop()
 exit(0)
-
