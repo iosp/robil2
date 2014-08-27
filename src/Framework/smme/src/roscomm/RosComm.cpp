@@ -23,6 +23,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_sub_AssignMission=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SMME","AssignMission","sub"), 10, &RosComm::AssignMissionCallback,this));
 	_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SMME","BladePosition","sub"), 10, &RosComm::BladePositionCallback,this));
 	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SMME","Location","sub"), 10, &RosComm::LocationCallback,this));
+	_sub_IEDLocation=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"IEDSIM","IEDLocation","pub"), 10, &RosComm::IEDLocationCallback,this));
 	_pub_GlobalPath=ros::Publisher(_nh.advertise<config::SMME::pub::GlobalPath>(fetchParam(&_nh,"SMME","GlobalPath","pub"),10));
 	_pub_WorkSeqData=ros::Publisher(_nh.advertise<config::SMME::pub::WorkSeqData>(fetchParam(&_nh,"SMME","WorkSeqData","pub"),10));
 	_pub_MissionAcceptance=ros::Publisher(_nh.advertise<config::SMME::pub::MissionAcceptance>(fetchParam(&_nh,"SMME","MissionAcceptance","pub"),10));
@@ -67,6 +68,10 @@ void RosComm::LocationCallback(const config::SMME::sub::Location::ConstPtr &msg)
 	_comp->handleLocation(*msg);
 }
 	
+void RosComm::IEDLocationCallback(const config::IEDSIM::pub::IEDLocation::ConstPtr &msg)
+{
+	_comp->handleIEDLocation(*msg);
+}
 
 void RosComm::publishGlobalPath( config::SMME::pub::GlobalPath &msg)
 {

@@ -27,6 +27,7 @@ class RosComm {
 	ros::Subscriber _sub_AssignMission;
 	ros::Subscriber _sub_BladePosition;
 	ros::Subscriber _sub_Location;
+	ros::Subscriber _sub_IEDLocation;
 	ros::Publisher  _pub_GlobalPath;
 	ros::Publisher  _pub_WorkSeqData;
 	ros::Publisher  _pub_MissionAcceptance;
@@ -40,6 +41,7 @@ public:
 	void AssignMissionCallback(const config::SMME::sub::AssignMission::ConstPtr &msg);
 	void BladePositionCallback(const config::SMME::sub::BladePosition::ConstPtr &msg);
 	void LocationCallback(const config::SMME::sub::Location::ConstPtr &msg);
+	void IEDLocationCallback(const config::IEDSIM::pub::IEDLocation::ConstPtr &msg);
 	void publishGlobalPath( config::SMME::pub::GlobalPath &msg);
 	void publishWorkSeqData( config::SMME::pub::WorkSeqData &msg);
 	void publishMissionAcceptance( config::SMME::pub::MissionAcceptance &msg);

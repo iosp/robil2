@@ -29,6 +29,7 @@ public:
 	void handleAssignMission(const config::SMME::sub::AssignMission& msg);
 	void handleBladePosition(const config::SMME::sub::BladePosition& msg);
 	void handleLocation(const config::SMME::sub::Location& msg);
+	void handleIEDLocation(const config::IEDSIM::pub::IEDLocation& msg);
 	void publishGlobalPath(config::SMME::pub::GlobalPath& msg);
 	void publishWorkSeqData(config::SMME::pub::WorkSeqData& msg);
 	void publishMissionAcceptance(config::SMME::pub::MissionAcceptance& msg);
