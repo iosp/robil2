@@ -27,7 +27,7 @@ void EventTranslator(ComponentMain* comp, decision_making::EventQueue* events)
 			SEND("/llc/Resume");
 		}
 		ON_EVENT("/IEDDetected"){
-			SEND("/PauseTask");
+			SEND("/PauseMission");
 		}
 
 
