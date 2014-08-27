@@ -15,6 +15,7 @@ Rotation Mapper::myRot, Mapper::ibeoRot, Mapper::leftSickRot, Mapper::rightSickR
 Vec3D Mapper::position;
 Quaternion Mapper::myQuat;
 Mat Mapper::camLImg, Mapper::camRImg;
+Mat stereo;
 HeightMap* Mapper::height_map;
 RosComm* Mapper::roscomm;
 
@@ -25,21 +26,29 @@ void Mapper::MainLoop()
   loc_received = false;
   visualize = 0x00;
   height_map = new HeightMap(500,500);
-  
+  int i = 0;
   while(1)
   {
+    boost::this_thread::sleep(boost::posix_time::milliseconds(100)); //10hz cycle
+    if(++i < 30) continue;
     //printf("MAPPER\n");
     lock.lock();
     height_map->calculateTypes();
-    publishMap();
-    publishMiniMap();
     if(camL && camR) 
     {
-      handleStereo(camRImg, camRImg);
-      //printf("WORKS\n\n\n\n");
+      stereo = handleStereo(camRImg, camLImg);
+      camL = camR = false;
+      Quaternion& q = myQuat;
+      Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
+      Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
+      Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
+      ProjectDepthImage(height_map, stereo, right, front, up, position.add(up.multiply(1.6)));
     }
+    publishMap();
+    publishMiniMap();
+    
     lock.unlock();
-    boost::this_thread::sleep(boost::posix_time::milliseconds(100)); //10hz cycle
+    
   }
 }
 
@@ -69,7 +78,10 @@ void Mapper::VisualizeLoop()
       {
 	height_map->displayGUI(myRot.yaw*180/3.14159, position.x, position.y, 2);
       }
-      
+      if((visualize & VISUALIZE_STEREO) != 0) //disparity needed
+      {
+	imshow("stereo", stereo);
+      }
       lock.unlock();
       waitKey(100);
     }
@@ -79,6 +91,7 @@ void Mapper::VisualizeLoop()
 void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
 {
   if(!loc_received) return;
+  //return;
   lock.lock();
   Rotation t2 = ibeoRot.add(Rotation(0, -msg.angle_t2, 0));
   Rotation t1 = ibeoRot.add(Rotation(0, -msg.angle_t1, 0));
@@ -98,7 +111,7 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
   Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
   Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
   
-  Vec3D pos = position.add(front.multiply(-0.375)).add(right.multiply(0.055)).add(up.multiply(1.89));
+  Vec3D pos = position.add(front.multiply(-0.375)).add(right.multiply(0.055)).add(up.multiply(1.4));
   
   
   double incrtop = msg.angle_increment;
