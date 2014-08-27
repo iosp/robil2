@@ -41,7 +41,7 @@ def parseFile(msg_class,myFile):
 
 class GuiHandler(object):
 
-    def setMessageList(self,parent,title,list_row,list_column,msg_class,start=False):
+    def setMessageList(self,parent,title,list_row,list_column,msg_class):
         ListLabel = LabelFrame(parent, width=40, height=8,  text=title)
         ListLabel.grid(row=list_row,column=list_column)
         List = Listbox(ListLabel,selectmode=SINGLE,width=40)
@@ -50,8 +50,6 @@ class GuiHandler(object):
         Button(ButtonLabel, text="AddFromYaml",command=self.genAddToList(List,msg_class)).pack(side=RIGHT)
         Button(ButtonLabel, text="Assign",command=self.genAssignMethod(List,msg_class)).pack(side=RIGHT)
         Button(ButtonLabel, text="Edit",command=lambda lb=List: call(["gedit", lb.get(ANCHOR)]) if len(lb.curselection())>0 else None ).pack(side=LEFT)
-        if start:
-            Button(ButtonLabel, text="Start",command=self.genStartMissionMethod(List,msg_class)).pack(side=RIGHT)
             
         scrolbar =Scrollbar(ListLabel,orient=HORIZONTAL)
         scrolbar.config(command=List.xview)
@@ -59,6 +57,7 @@ class GuiHandler(object):
         scrolbar.pack(side=BOTTOM,fill=X)
         List.pack(side=BOTTOM)
         ButtonLabel.pack(side=TOP , fill=X)
+        self.lists[title]=List
 
         
     def __init__(self):
@@ -68,7 +67,7 @@ class GuiHandler(object):
         self.TaskPublishers[AssignMission]=rospy.Publisher('/OCU/SMME/MissionPlan', AssignMission)
         self.TaskPublishers[AssignManipulatorTask]=rospy.Publisher('/OCU/SMME/ManipulationTask', AssignManipulatorTask)
         self.decision_making_publisher=rospy.Publisher('/decision_making/events',std_msgs.msg.String)
-
+        self.lists=dict()
         
         self.mainWindow = Tk()
         Label(self.mainWindow,text="OCU test",font=("Helvetica",20)).grid(row=0,columnspan=3)
@@ -108,17 +107,17 @@ class GuiHandler(object):
         TaskListLabel.grid(row=1,column=1,rowspan=2)
         self.setMessageList(TaskListLabel,"NavTasks",1,1,AssignNavTask)
         self.setMessageList(TaskListLabel,"ManipulatorTasks",1,0,AssignManipulatorTask)
-        self.setMessageList(TaskListLabel,"Missions",0,0,AssignMission,True)
+        self.setMessageList(TaskListLabel,"Missions",0,0,AssignMission)
         
         #control label
-        controlLabel = LabelFrame(TaskListLabel, text="SMME_Control")
+        controlLabel = LabelFrame(TaskListLabel, text="Mission_Control")
         controlLabel.grid(row=0,column=1)
         self.log =Text(controlLabel, state='disabled', width=40, height=6, wrap='none',font=("Purisa",12))
-        self.log.grid(row=1,columnspan=6)
+        self.log.grid(row=1,columnspan=7)
         self.numOfLogLines=0
         i=0
-        for name in ["Start","Pause","Abort","Resume","Complete","Delete"]:
-             Button(controlLabel, text =name, command = self.genCommand(name)).grid(row=0,column=i)
+        for name in ["Start","Complete","Pause","Abort","Resume","Clear","Delete"]:
+             Button(controlLabel, text =name, command = self.genCommand(name,self.lists["Missions"],AssignMission)).grid(row=0,column=i)
              i=i+1
         
 
@@ -143,19 +142,7 @@ class GuiHandler(object):
             if not len(listTarget.curselection()):
                 tkMessageBox.showinfo("Not assignd", "please choose a value form the list before assigning")
         return assignMethod
-       
-    def genStartMissionMethod(self,listTarget,msg_class):
-        def startMethod():
-            for sel in listTarget.curselection():
-                yamlfile=parseYAML(listTarget.get(sel))
-                missionMsg=messageFromYAML(msg_class,yamlfile)
-                msg=std_msgs.msg.String()
-                msg.data="/mission/"+missionMsg.mission_id+"/StartMission"
-                self.decision_making_publisher.publish(msg)
-            if not len(listTarget.curselection()):
-                tkMessageBox.showinfo("Not assignd", "please choose a value form the list before assigning")
-        return startMethod
-        
+         
         
     def writeToLog(self,msg):
         self.numOfLogLines = self.numOfLogLines+1
@@ -184,15 +171,20 @@ class GuiHandler(object):
     
     def writeToIEDStatusLabel(self,msg):
         self.IEDStatus.set(msg)
-        
-    def genCommand(self,name):
+
+    def genCommand(self,name,listTarget,msg_class):
         def commandForName():
-            msg=std_msgs.msg.String()
-            msg.data="/SMME/"+name
-            self.decision_making_publisher.publish(msg)
-            self.writeToLog(name+" sent")
+            for sel in listTarget.curselection():
+                yamlfile=parseYAML(listTarget.get(sel))
+                missionMsg=messageFromYAML(msg_class,yamlfile)
+                msg=std_msgs.msg.String()
+                msg.data="/mission/"+missionMsg.mission_id+"/"+name+"Mission"
+                self.decision_making_publisher.publish(msg)
+                self.writeToLog(name+" sent")
+            if not len(listTarget.curselection()):
+                tkMessageBox.showinfo("Not assignd", "please choose a value form the list before assigning")
         return commandForName
-        
+
         
 
 class IEDDialog(tkSimpleDialog.Dialog):
