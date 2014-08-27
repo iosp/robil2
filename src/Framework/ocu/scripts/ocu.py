@@ -79,11 +79,13 @@ class GuiHandler(object):
         diagnosticsLabel.grid(row=2,column=0)
         scrolbar =Scrollbar(diagnosticsLabel)
         self.diaglog =Text(diagnosticsLabel, state='disabled', width=40, height=20, wrap='none',font=("Helvetica",11))
+        Button(diagnosticsLabel, text="Clear",command=lambda parent=self: parent.clearDiagLog() ).pack(side=TOP)
         scrolbar.config(command=self.diaglog.yview)
         self.diaglog.config(yscrollcommand=scrolbar.set)
         scrolbar.pack(side=RIGHT, fill=Y)
         self.diaglog.pack(side=LEFT, fill=Y)
         self.numOfDiagLogLines=0
+       
         
         
         #status label
@@ -164,7 +166,12 @@ class GuiHandler(object):
         if self.diaglog.index('end-1c')!='1.0':
              self.diaglog.insert('end', '\n')
         self.diaglog.insert('end', msg)
-        self.diaglog['state'] = 'disabled'    
+        self.diaglog['state'] = 'disabled'
+        
+    def clearDiagLog(self):
+        self.diaglog['state'] = 'normal'
+        self.diaglog.delete(1.0, 'end')
+        self.diaglog['state'] = 'disabled'
 
     def writeToStatusLabel(self,msg):
         self.missionStatus.set(msg)
