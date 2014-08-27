@@ -24,12 +24,12 @@
     
     <include>
       <uri>model://FLEA3_L</uri>
-      <pose>-0.35 0.3334 2.02 0 0 0</pose>
+      <pose>0.5 0.2 1.93 0 0 0</pose>
       <name>left_flea3</name>
     </include>
     <include>
       <uri>model://FLEA3_R</uri>
-      <pose>-0.35 -0.2 2.02 0 0 0</pose>
+      <pose>0.5 0.7 1.93 0 0 0</pose>
       <name>right_flea3</name>
     </include>
 
