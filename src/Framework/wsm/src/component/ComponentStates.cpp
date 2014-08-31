@@ -158,6 +158,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	ros::Time toc;
 	config::WSM::sub::BladePosition * presentBladePos = NULL;
 	config::WSM::sub::WorkSeqData * presentWorkSeq = NULL;
+	bool mission_comp = true ;
 	double value;
 
 	uint64_t counter;
@@ -189,13 +190,11 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 			}
 		}
-
-
 		//We should do something with these fields:
 		//presentWorkSeq->task_id
 		//presentWorkSeq->task_description
 
-		//ROS_INFO("Got task %s", presentWorkSeq->task_description.c_str());
+	//	ROS_INFO("Got task: %s , Task id is: %s", presentWorkSeq->task_description.c_str(),presentWorkSeq->task_id.c_str());
 		for(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator step = presentWorkSeq->steps.begin(); step != presentWorkSeq->steps.end(); step++){
 
 			/**
@@ -215,6 +214,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 			//Publish
 			COMPONENT->publishDiagnostic(step_diag);
+
 			/**
 			 * End Diagnostics
 			 */
@@ -562,7 +562,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				break;
 			}
 
-			if(ros::Time::now() - stepTic > ros::Duration(step->success_timeout)){
+ 			if(ros::Time::now() - stepTic > ros::Duration(step->success_timeout)){
 				//Timeout
 				stepTimeout = true;
 				stepSuccess = false;
@@ -574,9 +574,9 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 			}
 
 			/**
-			 * Diagnostics
+			 * Diagnostics:
 			 */
-			step_diag.level = diagnostic_msgs::DiagnosticStatus::OK;	//errors are bad! MMmmmmk....
+			step_diag.level = diagnostic_msgs::DiagnosticStatus::OK;	//errors are bad!
 			step_diag.name = "WSM";										//Module name
 			step_diag.message = "Doing a step";							//Short description
 			step_diag.hardware_id = ""; 								//This is unique, so how to determine this hardware_id?
@@ -589,6 +589,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 			}else{
 				if(stepTimeout) {
 					PUSH_KEYVALUE(step_diag, "status", "Timeout");
+					mission_comp = false ;
 				}else {
 					PUSH_KEYVALUE(step_diag, "status", "Pause");
 				}
@@ -596,14 +597,14 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 			//Publish
 			COMPONENT->publishDiagnostic(step_diag);
-
-			//End of step. Need to sleep here?
 			//PAUSE(10000);
 		}
+			/* Completed mission */
+		if(mission_comp)
+			events.raiseEvent(Event("/mission/"+presentWorkSeq->task_id+"/CompleteTask",context));
 
 		delete presentWorkSeq;
 		presentWorkSeq = NULL;
-		//End of task. Need to sleep here?
 		//PAUSE(10000);
 	}
 
