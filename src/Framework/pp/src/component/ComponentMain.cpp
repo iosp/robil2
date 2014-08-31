@@ -87,14 +87,15 @@ void ComponentMain::rise_taskPaused(){
 }
 
 void ComponentMain::cancel_navigation(){
-	ROS_DEBUG("PP: cancel navigation");
+	ROS_DEBUG("PP: cancel navigation (deactivate and clear goal)");
 	_move_base->deactivate(true);
 }
 void ComponentMain::pause_navigation(){
-	ROS_DEBUG("PP: pause navigation");
+	ROS_DEBUG("PP: pause navigation (deactivate but don't clear goal)");
 	_move_base->deactivate();
 }
 void ComponentMain::resume_navigation(){
+	ROS_DEBUG("PP: resume navigation (activate)");
 	_move_base->activate();
 }
 

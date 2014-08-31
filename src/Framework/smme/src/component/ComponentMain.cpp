@@ -9,10 +9,13 @@
 #include "../roscomm/RosComm.h"
 #include "MissionManager.h"
 #include "ComponentStates.h"
+#include <decision_making/ROSTask.h>
 
 std::map<std::string, boost::shared_ptr<MissionMachine> > machines;
 
 ComponentMain::ComponentMain(int argc,char** argv)
+:
+		_events(0)
 {
 	_roscomm = new RosComm(this,argc, argv);
 	_mission_manager = new MissionManager();
@@ -64,6 +67,13 @@ void ComponentMain::handleLocation(const config::SMME::sub::Location& msg)
 	//std::cout<< "SMME say:" << msg << std::endl;
 }
 	
+void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& msg)
+{
+	//std::cout<< "SMME say:" << msg << std::endl;
+	if(msg.is_detected==1){
+		if(events()) events()->raiseEvent("/IEDDetected");
+	}
+}
 
 void ComponentMain::publishGlobalPath(config::SMME::pub::GlobalPath& msg)
 {

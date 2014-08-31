@@ -113,6 +113,7 @@ FSM(Task)
 		}
 		FSM_STATE(TaskActive)
 		{
+			FSM_CALL_TASK(TaskActive)
 			FSM_CALL_FSM(TaskActive)
 			FSM_TRANSITIONS
 			{
@@ -138,6 +139,15 @@ TaskResult state_TaskPending(string id, const CallContext& context, EventQueue& 
 	MM->change_mission(cmid);
 	return TaskResult::SUCCESS();
 }
+TaskResult state_TaskActive(string id, const CallContext& context, EventQueue& events){
+	PARAMS
+	while(events.isTerminated()==false and ros::ok()){
+		this_thread::sleep(milliseconds(100));
+	}
+	if(MM->task_type()==MissionManager::TT_Navigation)events.raiseEvent("/pp/Standby");
+	else events.raiseEvent("/wsm/Standby");
+	return TaskResult::SUCCESS();
+}
 
 TaskResult state_TaskSpooling(string id, const CallContext& context, EventQueue& events){
 	PARAMS
@@ -146,10 +156,12 @@ TaskResult state_TaskSpooling(string id, const CallContext& context, EventQueue&
 		MissionManager::NavTask task = MM->get_nav_task();
 		config::SMME::pub::GlobalPath path = extract_path(task);
 		events.raiseEvent("/pp/Resume");
+		this_thread::sleep(milliseconds(500));
 		comp->publishGlobalPath(path);
 	}else{
 		MissionManager::ManTask task = MM->get_man_task();
 		events.raiseEvent("/wsm/Resume");
+		this_thread::sleep(milliseconds(500));
 		comp->publishWorkSeqData(task);
 	}
 	return TaskResult::SUCCESS();
@@ -208,6 +220,7 @@ void initTask(){
 	LocalTasks::registration("TaskPaused",state_TaskPaused);
 	LocalTasks::registration("TaskAborted",state_TaskAborted);
 	LocalTasks::registration("TaskFinished",state_TaskFinished);
+	LocalTasks::registration("TaskActive",state_TaskActive);
 }
 
 void TaskMachine::startTask(ComponentMain* component, std::string mission_id){

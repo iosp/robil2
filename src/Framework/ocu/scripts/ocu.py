@@ -50,12 +50,14 @@ class GuiHandler(object):
         Button(ButtonLabel, text="AddFromYaml",command=self.genAddToList(List,msg_class)).pack(side=RIGHT)
         Button(ButtonLabel, text="Assign",command=self.genAssignMethod(List,msg_class)).pack(side=RIGHT)
         Button(ButtonLabel, text="Edit",command=lambda lb=List: call(["gedit", lb.get(ANCHOR)]) if len(lb.curselection())>0 else None ).pack(side=LEFT)
+            
         scrolbar =Scrollbar(ListLabel,orient=HORIZONTAL)
         scrolbar.config(command=List.xview)
         List.config(xscrollcommand=scrolbar.set)
         scrolbar.pack(side=BOTTOM,fill=X)
         List.pack(side=BOTTOM)
         ButtonLabel.pack(side=TOP , fill=X)
+        self.lists[title]=List
 
         
     def __init__(self):
@@ -65,7 +67,7 @@ class GuiHandler(object):
         self.TaskPublishers[AssignMission]=rospy.Publisher('/OCU/SMME/MissionPlan', AssignMission)
         self.TaskPublishers[AssignManipulatorTask]=rospy.Publisher('/OCU/SMME/ManipulationTask', AssignManipulatorTask)
         self.decision_making_publisher=rospy.Publisher('/decision_making/events',std_msgs.msg.String)
-
+        self.lists=dict()
         
         self.mainWindow = Tk()
         Label(self.mainWindow,text="OCU test",font=("Helvetica",20)).grid(row=0,columnspan=3)
@@ -77,11 +79,13 @@ class GuiHandler(object):
         diagnosticsLabel.grid(row=2,column=0)
         scrolbar =Scrollbar(diagnosticsLabel)
         self.diaglog =Text(diagnosticsLabel, state='disabled', width=40, height=20, wrap='none',font=("Helvetica",11))
+        Button(diagnosticsLabel, text="Clear",command=lambda parent=self: parent.clearDiagLog() ).pack(side=TOP)
         scrolbar.config(command=self.diaglog.yview)
         self.diaglog.config(yscrollcommand=scrolbar.set)
         scrolbar.pack(side=RIGHT, fill=Y)
         self.diaglog.pack(side=LEFT, fill=Y)
         self.numOfDiagLogLines=0
+       
         
         
         #status label
@@ -108,14 +112,14 @@ class GuiHandler(object):
         self.setMessageList(TaskListLabel,"Missions",0,0,AssignMission)
         
         #control label
-        controlLabel = LabelFrame(TaskListLabel, text="SMME_Control")
+        controlLabel = LabelFrame(TaskListLabel, text="Mission_Control")
         controlLabel.grid(row=0,column=1)
         self.log =Text(controlLabel, state='disabled', width=40, height=6, wrap='none',font=("Purisa",12))
-        self.log.grid(row=1,columnspan=6)
+        self.log.grid(row=1,columnspan=7)
         self.numOfLogLines=0
         i=0
-        for name in ["Start","Pause","Abort","Resume","Complete","Delete"]:
-             Button(controlLabel, text =name, command = self.genCommand(name)).grid(row=0,column=i)
+        for name in ["Start","Complete","Pause","Abort","Resume","Clear","Delete"]:
+             Button(controlLabel, text =name, command = self.genCommand(name,self.lists["Missions"],AssignMission)).grid(row=0,column=i)
              i=i+1
         
 
@@ -140,6 +144,7 @@ class GuiHandler(object):
             if not len(listTarget.curselection()):
                 tkMessageBox.showinfo("Not assignd", "please choose a value form the list before assigning")
         return assignMethod
+         
         
     def writeToLog(self,msg):
         self.numOfLogLines = self.numOfLogLines+1
@@ -161,22 +166,32 @@ class GuiHandler(object):
         if self.diaglog.index('end-1c')!='1.0':
              self.diaglog.insert('end', '\n')
         self.diaglog.insert('end', msg)
-        self.diaglog['state'] = 'disabled'    
+        self.diaglog['state'] = 'disabled'
+        
+    def clearDiagLog(self):
+        self.diaglog['state'] = 'normal'
+        self.diaglog.delete(1.0, 'end')
+        self.diaglog['state'] = 'disabled'
 
     def writeToStatusLabel(self,msg):
         self.missionStatus.set(msg)
     
     def writeToIEDStatusLabel(self,msg):
         self.IEDStatus.set(msg)
-        
-    def genCommand(self,name):
+
+    def genCommand(self,name,listTarget,msg_class):
         def commandForName():
-            msg=std_msgs.msg.String()
-            msg.data="/SMME/"+name
-            self.decision_making_publisher.publish(msg)
-            self.writeToLog(name+" sent")
+            for sel in listTarget.curselection():
+                yamlfile=parseYAML(listTarget.get(sel))
+                missionMsg=messageFromYAML(msg_class,yamlfile)
+                msg=std_msgs.msg.String()
+                msg.data="/mission/"+missionMsg.mission_id+"/"+name+"Mission"
+                self.decision_making_publisher.publish(msg)
+                self.writeToLog(name+" sent")
+            if not len(listTarget.curselection()):
+                tkMessageBox.showinfo("Not assignd", "please choose a value form the list before assigning")
         return commandForName
-        
+
         
 
 class IEDDialog(tkSimpleDialog.Dialog):
@@ -259,4 +274,3 @@ thread1.start()
 top.mainWindow.mainloop()
 thread1.stop()
 exit(0)
-

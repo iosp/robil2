@@ -13,8 +13,8 @@ HeightMap::HeightMap(int width, int height)
     _features.resize(width*height, FEATURE_UNKNOWN);
     _width = width;
     _height = height;
-    _min = -5;
-    _max = 5;
+    _min = -3;
+    _max = 3;
     _compass = imread("compass.png");
     _arrow = imread("arrow.png");
     _refPoint = Vec2D(0,0);
@@ -92,8 +92,8 @@ void HeightMap::setAbsoluteHeightAt(int x, int y, double height)
     x -= _refPoint.x;
     y -= _refPoint.y;
     if(height < HEIGHT_UNKNOWN+5) return;
-    if(height < _min) _min = height;
-    if(height > _max) _max = height;
+    //if(height < _min) _min = height;
+    //if(height > _max) _max = height;
     setRelativeHeightAt(x,y,height);
 }
 

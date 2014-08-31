@@ -4,8 +4,9 @@ header:
     secs: 0
     nsecs: 0
   frame_id: ''
-mission_id: ''
-mission_description: ''
+mission_id: '1'
+mission_description: 'testing mission'
 tasks:
-- task_id: ''
+- task_id: '441'
+- task_id: '332'
 

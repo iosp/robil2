@@ -1,0 +1,16 @@
+header: 
+  seq: 1
+  stamp: 
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+task_id: '334'
+task_description: Turning 45 deg
+steps: 
+  - 
+    id: 1
+    type: 5
+    value: 45
+    blade_relativity: 0
+    success_timeout: 50
+    duration_at_end: 1
