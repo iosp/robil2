@@ -12,6 +12,21 @@
 #include <decision_making/ROSTask.h>
 
 std::map<std::string, boost::shared_ptr<MissionMachine> > machines;
+namespace {
+
+template<class T>
+bool operator<(const T& e, const std::set<T>& s){
+	return s.find(e)!=s.end();
+}
+template<class T>
+bool operator!=(const T& e, const std::set<T>& s){
+	return s.find(e)==s.end();
+}
+#define in <
+#define not_in !=
+
+
+}
 
 ComponentMain::ComponentMain(int argc,char** argv)
 :
@@ -71,7 +86,12 @@ void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& ms
 {
 	//std::cout<< "SMME say:" << msg << std::endl;
 	if(msg.is_detected==1){
-		if(events()) events()->raiseEvent("/IEDDetected");
+		std::stringstream sIED; sIED<<msg.location;
+		std::string sIEDloc = sIED.str();
+		if(sIEDloc not_in knownIEDObjects){
+			if(events()) events()->raiseEvent("/IEDDetected");
+			knownIEDObjects.insert(sIEDloc);
+		}
 	}
 }
 
