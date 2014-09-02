@@ -24,12 +24,12 @@
     
     <include>
       <uri>model://FLEA3_L</uri>
-      <pose>-0.35 0.3334 2.02 0 0 0</pose>
+      <pose>-0.3 0.25 2.02 0 0 0</pose>
       <name>left_flea3</name>
     </include>
     <include>
       <uri>model://FLEA3_R</uri>
-      <pose>-0.35 -0.2 2.02 0 0 0</pose>
+      <pose>-0.3 -0.25 2.02 0 0 0</pose>
       <name>right_flea3</name>
     </include>
 
@@ -214,7 +214,7 @@
 
 <tf3frame>cameraL_frame</tf3frame>
 <tf3parent>body</tf3parent>
-<tf3pose>-0.35 0.3335 1.974 0 0 0</tf3pose>
+<tf3pose>-0.35 0.3335 2.02 0 0 0</tf3pose>
 
 <tf4frame>cameraR_frame</tf4frame>
 <tf4parent>body</tf4parent>
