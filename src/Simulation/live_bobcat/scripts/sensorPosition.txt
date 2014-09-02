@@ -147,7 +147,7 @@
           <upper>0</upper>
         </limit>
         <dynamics/>
-      </axis>1.974
+      </axis>
     </joint>
 
     <joint name='arm_wire_sensor_mount_joint' type='revolute'>
