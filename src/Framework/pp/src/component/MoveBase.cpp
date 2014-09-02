@@ -26,6 +26,7 @@
 
 
 #define SYNCH 	boost::recursive_mutex::scoped_lock locker(mtx);
+#define REMOVE_Z(vA) vA.setZ(0)
 
 namespace{
 
@@ -42,9 +43,9 @@ namespace{
 			const geometry_msgs::Pose& C,
 			const geometry_msgs::Pose& B
 	){
-		btVector3 vA = toVector(A);
-		btVector3 vB = toVector(B);
-		btVector3 vC = toVector(C);
+		btVector3 vA = toVector(A); REMOVE_Z(vA);
+		btVector3 vB = toVector(B); REMOVE_Z(vB);
+		btVector3 vC = toVector(C); REMOVE_Z(vC);
 		double a = vC.distance(vB);//CB
 		double c = vA.distance(vB);//AB
 		double b = vA.distance(vC);//AC
@@ -53,11 +54,13 @@ namespace{
 		return angles::to_degrees( angles::normalize_angle_positive( gamma ) );
 	}
 	size_t search_nearest_waypoint_index(const nav_msgs::Path& path, const geometry_msgs::PoseWithCovarianceStamped& pos){
-		btVector3 vPose = toVector(getPose(pos));
+		btVector3 vPose = toVector(getPose(pos)); REMOVE_Z(vPose);
 		double min_idx=0;
-		double min_distance=toVector(getPose(path.poses[0])).distance(vPose);
+		btVector3 path_poses_0 = toVector(getPose(path.poses[0])); REMOVE_Z(path_poses_0);
+		double min_distance=path_poses_0.distance(vPose);
 		for(size_t i=0;i<path.poses.size();i++){
-			double c_distance=toVector(getPose(path.poses[i])).distance(vPose);
+			btVector3 path_poses_i = toVector(getPose(path.poses[i])); REMOVE_Z(path_poses_i);
+			double c_distance=path_poses_i.distance(vPose);
 			if(c_distance<min_distance){
 				min_distance = c_distance;
 				min_idx = i;
@@ -75,7 +78,9 @@ namespace{
 		if(path.poses.size()==1){
 			geometry_msgs::PoseStamped my_pose = getPoseStamped( pos );
 			geometry_msgs::PoseStamped path_pose = getPoseStamped( path.poses[0] );
-			path_is_finished = toVector(path_pose.pose).distance(toVector(my_pose.pose)) <= TH_NEARBY;
+			btVector3 vpath_pose_pose = toVector(path_pose.pose); REMOVE_Z(vpath_pose_pose);
+			btVector3 vmy_pose_pose = toVector(my_pose.pose); REMOVE_Z(vmy_pose_pose);
+			path_is_finished = vpath_pose_pose.distance(vmy_pose_pose) <= TH_NEARBY;
 			return path_pose;
 		}
 		path_is_finished = false;
