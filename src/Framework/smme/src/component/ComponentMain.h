@@ -12,6 +12,7 @@
 #include <tf/tf.h>
 #include <boost/thread.hpp>
 #include <set>
+#include "LocationSet.h"
 
 class RosComm;
 class MissionManager;
@@ -22,7 +23,7 @@ class ComponentMain {
 	MissionManager* _mission_manager;
 	boost::thread_group threads;
 	decision_making::EventQueue* _events;
-	std::set<std::string> knownIEDObjects;
+	LocationSet<geometry_msgs::Point> knownIEDObjects;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();

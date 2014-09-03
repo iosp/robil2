@@ -86,11 +86,9 @@ void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& ms
 {
 	//std::cout<< "SMME say:" << msg << std::endl;
 	if(msg.is_detected==1){
-		std::stringstream sIED; sIED<<msg.location;
-		std::string sIEDloc = sIED.str();
-		if(sIEDloc not_in knownIEDObjects){
+		if(msg.location not_in knownIEDObjects){
 			if(events()) events()->raiseEvent("/IEDDetected");
-			knownIEDObjects.insert(sIEDloc);
+			knownIEDObjects.insert(msg.location);
 		}
 	}
 }
