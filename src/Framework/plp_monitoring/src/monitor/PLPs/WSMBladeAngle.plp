@@ -1,0 +1,64 @@
+PLP: WSMBladeAngle
+Project: 
+Type: Achieve module
+
+Variables:1
+Name:posdiff
+Type:Double
+Lower bound:
+Upper bound:
+
+Parameters:4
+Name:currentSupportHeight
+Type:Double
+Lower bound:0
+Upper bound:1.57
+In/Out:In
+Update Frequency:10
+Source:/PER/BladPosition
+Name:targetJointHeight
+Type:Double
+Lower bound:-69.5
+Upper bound:29.5
+In/Out:In
+Update Frequency:
+Source:
+Name:timeout
+Type:Double
+Lower bound:
+Upper bound:
+In/Out:In
+Update Frequency:
+Source:
+Name:jointAngleCommand
+Type:Double
+Lower bound:0
+Upper bound:1.57
+In/Out:Out
+Update Frequency:10
+Source:/WSM/BladePosition
+
+Resources:0
+
+Preconditions:0
+
+Concurrent conditions:0
+
+Concurrent modules:1
+Name:PER
+State:Always together
+
+Goal repeat: True
+Repeat frequencey: 10 Hz
+
+Goals:1
+Goal name:angleHeightDiff
+Goal parameter:posdiff
+Minimal value:-0.01
+Max value:0.01
+Success probability:0.95
+Max time to complete:4000
+
+Side effects:0
+
+Failure modes:0

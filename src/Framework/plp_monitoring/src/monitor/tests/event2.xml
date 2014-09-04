@@ -1,0 +1,79 @@
+<plan>
+   <seq name="event2" x="437.2675533530711" y="53.76889235634739" id="70c09d73-56bd-4897-9d8e-ac5a622e7423">
+         <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Initiate Dismounted Traversability Mission" x="186.7360848216028" y="114.09057067802568" DEBUG="True 1" id="fdddcc77-f47e-42dc-8359-bc9271386a4d" />
+         <par name="Mission" x="571.2610043465222" y="104.51148309893817" id="1f3a84ab-0bd2-4069-a063-e298186642d5">
+               <par name="DB Information" x="345.337483423001" y="187.02763361508875" id="2a78f551-fa66-4773-89fd-71626efdc086">
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Acquire own localization" x="250.18957577509397" y="350.70195928941456" DEBUG="True 1" id="a2f57cda-0856-4780-8726-70a470988b8d" />
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Acquire target localization" x="283.52290910842726" y="385.70195928941456" DEBUG="True 1" id="9109d09c-f907-4410-91ee-30da5860297a" />
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Obtain world model" x="317.9673535528717" y="421.2575148449701" DEBUG="True 1" id="4130d356-2f50-41bc-82f1-8a948ffd20eb" />
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Obtain obstacle map" x="348.52290910842726" y="460.7019592894142" DEBUG="True 1" id="50815020-a753-41b2-a954-9f80791800f7" />
+               </par>
+               <seq name="Global Path Planning" x="562.8699509554687" y="193.381279968735" id="3c903d08-e265-4065-bcdd-11f371a939dc">
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Stend Up" x="483.52290910842714" y="301.5352926227479" DEBUG="True 1" id="3a5646b7-c798-4390-97b8-a2bdb38522a0" />
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Turn to face target" x="500.7451313306493" y="335.42418151163673" DEBUG="True 1" id="f663c5bf-71ff-4c4e-b9a6-052650181535" />
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Map local obstacles" x="526.8562424417604" y="376.25751484496993" DEBUG="True 1" id="a7e831aa-0253-4270-975d-7562f8fd8506" />
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Path global path to target" x="557.1340202195382" y="415.1464037338589" DEBUG="True 1" id="88ad2fdb-6a4d-4487-9761-e2382b96ee18" />
+                     <par name="Navigation" x="738.522909108429" y="332.0908481783037" id="eea3b8f5-495a-4ee2-8070-6629f22d83f0">
+                           <par name="Operator Feedback" x="635.1895757750939" y="466.53529262274907" id="8fa3cda5-0897-4d86-868f-58f743b91e95">
+                                 <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Send 180gr panoramic image to Operator" x="553.5229091084287" y="507.0908481783036" DEBUG="True 1" id="5638a467-69ab-42f8-be78-3fb8c3f6cdbf" />
+                                 <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Send obstacle map to Operator" x="609.634020219539" y="542.0908481783035" DEBUG="True 1" id="3ed0f18d-eeff-4506-ae92-00484e56b22c" />
+                                 <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Send path to Operator" x="670.7451313306498" y="576.5352926227478" DEBUG="True 1" id="69488830-fd0e-4686-82a8-8c4d2f112493" />
+                           </par>
+                           <seq name="Path Following" x="891.0727481582636" y="515.5921246795798" id="21ef3300-0186-4a6a-9e2c-1d7110a7edaa">
+                                 <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Receive Operator overrides" x="767.578464663983" y="626.5352926227476" DEBUG="True 1" id="3b50b693-1215-4093-a0d7-cf7f0592b6a7" />
+                                 <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Direct sensors at near path area" x="799.9673535528656" y="665.4797370671929" DEBUG="True 1" id="799cb71f-c017-4541-9a50-79a3b7f771b2" />
+                                 <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Update local path to allow treading" x="836.4673535528672" y="704.9797370671927" DEBUG="True 1" id="84c10225-8616-4539-b446-3ba779ab895a" />
+                                 <par name="PF1" x="1019.5229091084306" y="709.868625956081" id="ab9d7cc1-46b8-4a53-9afe-4f10caa64f25">
+                                       <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?Target is reached" x="896.5229091084303" y="778.8686259560809" DEBUG="True 1" id="fa34fcf2-76e3-43f9-855f-4cae4f83a74d" />
+                                    <dec name="L" x="1069.0784646639847" y="736.5352926227486">
+                                          <seq name="Go to target" x="1097.967353552877" y="775.2019592894154" id="45bac956-9513-4d4f-80af-f496f0df9f08">
+                                                <par name="PF2" x="1052.3006868862083" y="851.4241815116359" id="e5e221ed-17bf-4484-83a7-fc98221b1e91">
+                                                      <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?[c3]until No path solution" x="950.1895757750957" y="1035.4241815116368" DEBUG="False 1" id="451cd780-9034-4bf8-a7aa-878120f47163" />
+                                                      <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?[c4]until Lower then TBD km/h average" x="950.1895757750957" y="1072.0908481783026" DEBUG="False 1" id="2d05bca9-c2e6-4dd8-ab21-d88e42d9bdf1" />
+                                                      <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?[c1]until No place to tread in" x="951.300686886207" y="957.646403733859" DEBUG="False 1" id="70c0f05e-acf1-4f48-ac64-6fc55c8dc2da" />
+                                                      <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?[c2]until obstacle or slope detected" x="951.3006868862063" y="996.5352926227479" DEBUG="False 1" id="9cd3fdb1-5359-4e2b-80fb-89cd1f1eb5db" />
+                                                      <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?[c5]until No solution" x="951.3006868862068" y="1108.757514844971" DEBUG="False 1" id="84c3890d-07f0-4d08-81a1-4ab22fe5ce4a" />
+                                                      <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?[c6]until Operator intervention" x="951.300686886207" y="1146.5352926227483" DEBUG="False 1" id="7df6223a-4573-4208-9fc4-2840e1d6e1f6" />
+                                                      <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Advance by walking along path" x="1075.3006868861978" y="921.813070400525" DEBUG="False 1" id="c79b10f0-2e27-42f9-a381-2b482758b167" />
+                                                </par>
+                                                <sel name="s1" x="1340.1895757750924" y="854.3130704005257" id="fd7ee5ea-f390-4e3c-9f32-b370e0d94824">
+                                                      <seq name="q1" x="1254.6340202195372" y="953.2019592894146" id="88dd7f57-1ad3-4479-8d66-18c971f02a42">
+                                                            <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?c2 has been detected" x="1128.5229091084273" y="1008.8686259560818" DEBUG="True 1" id="4cb16c08-1e22-4b4b-b527-ac62db7b2b95" />
+                                                            <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Adjust path plan" x="1186.0784646639834" y="1048.4241815116366" DEBUG="True 1" id="4bb29646-5d5a-446f-9373-21e67a22dca8" />
+                                                      </seq>
+                                                      <seq name="q2" x="1540.1895757750924" y="963.2019592894144" id="be7564a2-44ce-4cc3-9937-389a6ec85d09">
+                                                            <sel name="s2" x="1397.9673535528702" y="1022.0908481783033" id="8a1e1075-564d-44c7-bb05-ef01f91874c7">
+                                                                  <seq name="q4" x="1223.5229091084263" y="1110.9797370671931" id="3a093261-93c0-40a5-8ab8-07f80ed48300">
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?c1 has been detected" x="1155.745131330652" y="1174.3130704005266" DEBUG="True 1" id="50ac435e-1098-4089-80f5-093efad19cf3" />
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Stop" x="1231.300686886205" y="1210.9797370671927" DEBUG="True 1" id="5adaa254-74eb-4f1c-a01b-e4cd23223188" />
+                                                                  </seq>
+                                                                  <seq name="q5" x="1371.3006868862046" y="1110.9797370671931" id="4a296f0e-4058-4c96-aec7-cf967a92dd6c">
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?c3 has been detected" x="1314.6340202195381" y="1175.424181511638" DEBUG="True 1" id="f31af535-a6db-4c5f-be2e-0647e42df4e3" />
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Direct sensors at a 270 gr. rear section" x="1344.6340202195386" y="1210.9797370671927" DEBUG="True 1" id="eed12c80-3748-4d33-a19b-bc114a9e7055" />
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Go back along TBD m." x="1357.9673535528707" y="1245.424181511638" DEBUG="True 1" id="3dc4cc00-0796-44c1-b837-6bdd893bf010" />
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Direct sensors at a 270 gr. formawrd section" x="1371.3006868862042" y="1282.090848178305" DEBUG="True 1" id="121aa579-c506-4beb-a6f2-24b536c42ab3" />
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Plan global path to target" x="1392.411797997315" y="1320.9797370671936" DEBUG="True 1" id="d38381f6-fbee-4a36-af9e-51e9c7e62636" />
+                                                                  </seq>
+                                                                  <seq name="q6" x="1529.0784646639815" y="1109.8686259560823" id="fae39edf-a282-4539-8271-ef52629b6e7f">
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="?c4 or c5 or c6 have been detected" x="1510.1895757750929" y="1169.8686259560818" DEBUG="True 1" id="9003ac08-aad3-4f5a-b72b-63c653db760d" />
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Stop" x="1543.5229091084277" y="1205.424181511637" DEBUG="True 1" id="6e511f6d-6519-4caf-bae3-0293b84bcf7a" />
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Send 180gr panoramic image to Operator" x="1552.411797997315" y="1240.9797370671936" DEBUG="True 1" id="4df14eb7-f07b-46e4-8678-d292f4106037" />
+                                                                        <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Receive Operator overrides" x="1565.745131330649" y="1276.5352926227492" DEBUG="True 1" id="83c28484-7feb-4df1-9ed9-d827afabdd31" />
+                                                                  </seq>
+                                                            </sel>
+                                                            <seq name="q3" x="1721.3006868862024" y="1026.5352926227479" id="a3fe9540-ed6a-4081-8c67-1e150534964f">
+                                                                  <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Direct sensors at a 270 gr. forward section" x="1571.3006868862074" y="1090.9797370671927" DEBUG="True 1" id="c81e88aa-923b-43c1-b8df-07e1b3f9cb99" />
+                                                                  <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Plan detour using additional mapping" x="1669.0784646639834" y="1124.3130704005275" DEBUG="True 1" id="633ac47c-9775-4740-825f-44d7325a0a2b" />
+                                                                  <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" name="Receive Operator overrides" x="1762.4117979973164" y="1090.9797370671931" DEBUG="True 1" id="5e2c130b-ccf7-41c4-ae6e-bdd01be665b6" />
+                                                            </seq>
+                                                      </seq>
+                                                </sel>
+                                          </seq>
+                                    </dec>
+                                 </par>
+                           </seq>
+                     </par>
+               </seq>
+         </par>
+   </seq>
+</plan>
