@@ -65,6 +65,8 @@ add_message_files(
         MissionAcceptance.msg
         MultiLaserScan.msg
         GpsSpeed.msg
+        StepType.msg
+        PLPData.msg
 )
 
 ## Generate services in the 'srv' folder
