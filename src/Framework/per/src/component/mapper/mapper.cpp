@@ -80,7 +80,8 @@ void Mapper::VisualizeLoop()
       }
       if((visualize & VISUALIZE_STEREO) != 0) //disparity needed
       {
-	imshow("stereo", stereo);
+	if (!stereo.empty())
+	  imshow("stereo", stereo);
       }
       lock.unlock();
       waitKey(100);

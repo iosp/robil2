@@ -259,7 +259,8 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
   
     char name[30];
     sprintf(name, "GUI %d", _width);
-    imshow(name, image);
+    if (!image.empty())
+      imshow(name, image);
    
 }
 
