@@ -1,0 +1,52 @@
+header: 
+  seq: 1
+  stamp: 
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+task_id: '33'
+task_description: Moving Forward
+steps: 
+  -  
+    id: 1
+    type: 4
+    value: 1
+    blade_relativity: 0
+    success_timeout: 20
+    duration_at_end: 1
+  - 
+    id: 2
+    type: 1
+    value: 1
+    blade_relativity: 0
+    success_timeout: 20
+    duration_at_end: 1    
+  - 
+    id: 3
+    type: 2
+    value: 0
+    blade_relativity: 0
+    success_timeout: 10
+    duration_at_end: 1
+  - 
+    id: 4
+    type: 3
+    value: 50
+    blade_relativity: 0
+    success_timeout: 10
+    duration_at_end: 1
+  - 
+    id: 5
+    type: 1
+    value: 0.1
+    blade_relativity: 0
+    success_timeout: 10
+    duration_at_end: 1
+  - 
+    id: 6
+    type: 4
+    value: -1
+    blade_relativity: 0
+    success_timeout: 10
+    duration_at_end: 1
+  

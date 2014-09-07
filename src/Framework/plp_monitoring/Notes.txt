@@ -16,7 +16,7 @@ cd robil_ws/src/robil2/src/Framework/robil_tests/yaml/
 rostopic pub /SMME/WSM/Task robil_msgs/AssignManipulatorTask "`cat testWsm1.yaml`" --once
 ----------------------------------------------------------------------
 Run our module (Please note the order..).
-cd /robil_ws/src/robil2/src/Framework/PLP_Monitoring/src
+cd /robil_ws/src/robil2/src/Framework/plp_monitoring/src
 1. python server_PLP_attribV2.py
 2. python serverV2.py
 
@@ -24,7 +24,7 @@ cd /robil_ws/src/robil2/src/Framework/PLP_Monitoring/src
 
 Remarks:
 
-1. "rosrun PLP_Monitoring server_PLP_attribV2.py" and "rosrun PLP_Monitoring serverV2.py", 
+1. "rosrun plp_monitoring server_PLP_attribV2.py" and "rosrun plp_monitoring serverV2.py", 
 produce an error due to path issues. Will be fixed in next ver.
 
 
