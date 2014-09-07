@@ -1,0 +1,30 @@
+<plan>
+  <par Successdistribution="C[[16.0,2][29.0,1][21.0,1]] C[]" probability="[[4, 5], [0, 0]]" Failuredistribution="C[[15.0,1]] C[]">
+    <seq Successdistribution="C[[16.0,1]] C[]" probability="[[1, 5], [0, 0]]" Failuredistribution="C[[20.0,1][13.0,1][6.0,1][15.0,1]] C[]">
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]"/>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]"/>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]"/>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]"/>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]"/>
+    </seq>
+    <seq Failuredistribution="C[[9.0,2][10.0,1][21.0,1]] C[]" probability="[[1, 5], [0, 0]]" Successdistribution="C[[29.0,1]] C[]">
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]"/>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]"/>
+      <seq Failuredistribution="C[[15.0,1]] C[]" probability="[[1, 2], [0, 0]]" Successdistribution="C[[17.0,1]] C[]">
+        <tsk probability="[0.8, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]" DEBUG="[True, 100]"/>
+        <tsk probability="[0.8, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]" DEBUG="[True, 100]"/>
+        <tsk probability="[0.8, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]" DEBUG="[True, 100]"/>
+        <tsk probability="[0.8, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,10.0]" DEBUG="[True, 100]"/>
+      </seq>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,9.0]"/>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,9.0]"/>
+    </seq>
+    <seq Failuredistribution="C[[8.0,1][12.0,1][14.0,1]] C[]" probability="[[2, 5], [0, 0]]" Successdistribution="C[[16.0,1][21.0,1]] C[]">
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,9.0]"/>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,9.0]"/>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,9.0]"/>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,9.0]"/>
+      <tsk probability="[0.7, 0.5]" Successdistribution="U[2.0,5.0]" Failuredistribution="U[6.0,9.0]"/>
+    </seq>
+  </par>
+</plan>

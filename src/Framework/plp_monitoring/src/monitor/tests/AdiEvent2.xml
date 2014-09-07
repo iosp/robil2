@@ -1,0 +1,38 @@
+<plan>
+   <seq name="event2" >
+         <tsk name="Initiate Dismounted Traversability Mission"  />
+         <par name="Mission" >
+               <par name="DB Information" >
+                     <tsk name="Acquire own localization"  />
+                     <tsk name="Acquire target localization" />
+                     <tsk name="Obtain world model" />
+                     <tsk name="Obtain obstacle map"/>
+               </par>
+               <seq name="Global Path Planning">
+                     <tsk name="Stend Up"  />
+                     <tsk name="Turn to face target" />
+                     <tsk name="Map local obstacles"  />
+                     <tsk name="Path global path to target"  />
+                     <par name="Navigation">
+                           <par name="Operator Feedback" >
+                                 <tsk name="Send 180gr panoramic image to Operator" />
+                                 <tsk name="Send obstacle map to Operator" />
+                                 <tsk name="Send path to Operator"  />
+                           </par>
+                           <seq name="Path Following">
+                                 <tsk name="Receive Operator overrides" />
+                                 <tsk name="Direct sensors at near path area"/>
+                                 <tsk name="Update local path to allow treading" />
+                                 <par name="PF1">
+                                       <tsk name="?Target is reached" />
+                                       <dec name="L!L!LL">
+                                          <seq name="Go to target" >
+                                         </seq>
+                                    </dec>
+                                 </par>
+                           </seq>
+                     </par>
+               </seq>
+         </par>
+   </seq>
+</plan>
