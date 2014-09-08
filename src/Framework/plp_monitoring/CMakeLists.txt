@@ -1,17 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robil_msgs)
+project(plp_monitoring)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
+  robil_msgs
   roscpp
+  rospy
   std_msgs
-  geometry_msgs
-  nav_msgs
-  sensor_msgs
-  tf
+  
 )
 
 ## System dependencies are found with CMake's conventions
@@ -21,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+ #catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -48,33 +46,18 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-    DIRECTORY msg
-    FILES
-        Path.msg
-        IEDLocation.msg
-        MapCell.msg
-        Map.msg
-        AssignManipulatorTask.msg
-        AssignManipulatorTaskList.msg
-        AssignManipulatorTaskStep.msg
-        AssignMission.msg
-        AssignMissionTask.msg
-        AssignNavTask.msg
-        AssignNavTaskList.msg
-        MissionAcceptance.msg
-        MultiLaserScan.msg
-        GpsSpeed.msg
-        StepType.msg
-        PLPData.msg
-)
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-    FILES
-        FSMState.srv
-        MissionState.srv
-)
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -84,13 +67,10 @@ add_service_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-	std_msgs
-	geometry_msgs
-	nav_msgs
-	sensor_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   robil_msgs#   std_msgs
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -103,8 +83,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES robil_msgs
-    CATKIN_DEPENDS message_runtime geometry_msgs nav_msgs roscpp sensor_msgs std_msgs tf
+#  LIBRARIES PLP_Monitoring
+#  CATKIN_DEPENDS robil_msgs roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -115,24 +95,24 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-#include_directories(
-#  ${catkin_INCLUDE_DIRS}
-#)
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+)
 
 ## Declare a cpp library
-# add_library(robil_msgs
-#   src/${PROJECT_NAME}/robil_msgs.cpp
+# add_library(PLP_Monitoring
+#   src/${PROJECT_NAME}/PLP_Monitoring.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(robil_msgs_node src/robil_msgs_node.cpp)
+# add_executable(PLP_Monitoring_node src/PLP_Monitoring_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(robil_msgs_node robil_msgs_generate_messages_cpp)
+# add_dependencies(PLP_Monitoring_node PLP_Monitoring_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(robil_msgs_node
+# target_link_libraries(PLP_Monitoring_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -145,13 +125,14 @@ catkin_package(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+ install(PROGRAMS
+   src/server_PLP_attribV2.py
+   src/serverV2.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+ )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS robil_msgs robil_msgs_node
+# install(TARGETS PLP_Monitoring PLP_Monitoring_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -176,7 +157,7 @@ catkin_package(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_robil_msgs.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_PLP_Monitoring.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

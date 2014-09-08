@@ -1,0 +1,25 @@
+<plan>
+   <par name="event3" x="440.5" y="74.5" id="83828891-c7d7-48da-867f-72f3f15cb960">
+         <par name="perception" x="259.5" y="168.5" id="ac1a5217-449b-412b-ba1e-587b424aad5d">
+               <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="LocalizationTrack" x="124.5" y="205.5" test_time="0" test_result="true" id="a8cbffaf-f5ea-486a-9bf7-d79f14b50508" />
+               <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="TrackObject(target=A)" x="132.5" y="241.5" test_time="0" test_result="true" id="cb8c9b0b-8768-4a92-83c3-a7864819f87b" />
+               <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="TrackObject(target=B)" x="184.5" y="280.5" test_time="0" test_result="true" id="f8b73abd-429d-4bbb-95c5-c66026761d55" />
+               <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="ObstacleDetection" x="225.5" y="315.5" test_time="0" test_result="true" id="f9699205-292e-4d6a-869e-4272c2c89d56" />
+               <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="PathPlanning" x="275.5" y="352.5" test_time="0" test_result="true" id="ac96e849-318c-47d2-afcc-c01d590b8f2f" />
+         </par>
+         <seq name="mission" x="528.5" y="165.5" id="8002a72b-760f-49b1-b91b-f7a67c6c3bec">
+               <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="RobotBody(pose=standUp)" x="380.5" y="237.5" test_time="0" test_result="true" id="50b4f751-04a5-4ef2-aa07-38bc128ccc2d" />
+               <seq name="objectAFlow" x="585.5" y="236.5" id="c19bda81-5d25-4c63-acff-0c11d4030344">
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="TurnTo(target=A)" x="472.5" y="307.5" test_time="0" test_result="true" id="2b1a72a0-e3db-4fe6-b4d2-6754beacc045" />
+                     <seq name="OperatorRequest" x="633.5" y="309.5" id="3fa4b07c-910e-4ee4-8922-0005ad9f0d44">
+                           <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="PushHMI(data=panoramic_image)" x="455.5" y="372.5" test_time="0" test_result="true" id="8a8f498b-098c-45a2-b2cc-04133f19e2e1" />
+                           <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="PushHMI(data=occupancy_grid)" x="553.5" y="407.5" test_time="0" test_result="true" id="c3bb5602-32e6-4a59-906e-bfb96dd9f924" />
+                           <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="PushHMI(data=path)" x="652.5" y="447.5" test_time="0" test_result="true" id="8e647d01-781a-4992-853e-b26cc61be56a" />
+                           <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="HMIResponse" x="738.5" y="379.5" test_time="0" test_result="true" id="7dcbaf63-c292-443c-af20-235e104426c9" />
+                     </seq>
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="FollowPath" x="773.5" y="310.5" test_time="0" test_result="true" id="29ddebd3-cadc-4898-a03b-6f166bb6914d" />
+                     <tsk probability="0.9 0.5" Successdistribution="U[2.0,5.0] U[2.0,5.0]" Failuredistribution="U[6.0,10.0] U[6.0,9.0]" DEBUG="True 1" name="PickUp(target=A)" x="878.5" y="309.5" test_time="0" test_result="true" id="d632a4dc-2775-4519-a63e-69d05517f60b" />
+               </seq>
+         </seq>
+   </par>
+</plan>

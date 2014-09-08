@@ -1,0 +1,79 @@
+<plan>
+   <seq name="event2" x="437.2675533530711" y="53.76889235634739" id="70c09d73-56bd-4897-9d8e-ac5a622e7423">
+         <tsk name="Initiate Dismounted Traversability Mission" />
+         <par name="Mission" x="571.2610043465222" y="104.51148309893817" id="1f3a84ab-0bd2-4069-a063-e298186642d5">
+               <par name="DB Information" x="345.337483423001" y="187.02763361508875" id="2a78f551-fa66-4773-89fd-71626efdc086">
+                     <tsk name="Acquire own localization"/>
+                     <tsk name="Acquire target localization" />
+                     <tsk name="Obtain world model"/>
+                     <tsk name="Obtain obstacle map"/>
+               </par>
+               <seq name="Global Path Planning" x="562.8699509554687" y="193.381279968735" id="3c903d08-e265-4065-bcdd-11f371a939dc">
+                     <tsk name="Stend Up"/>
+                     <tsk name="Turn to face target"/>
+                     <tsk name="Map local obstacles" />
+                     <tsk name="Path global path to target"/>
+                     <par name="Navigation" x="738.522909108429" y="332.0908481783037" id="eea3b8f5-495a-4ee2-8070-6629f22d83f0">
+                           <par name="Operator Feedback" x="635.1895757750939" y="466.53529262274907" id="8fa3cda5-0897-4d86-868f-58f743b91e95">
+                                 <tsk name="Send 180gr panoramic image to Operator"/>
+                                 <tsk name="Send obstacle map to Operator"/>
+                                 <tsk name="Send path to Operator" />
+                           </par>
+                           <seq name="Path Following" x="891.0727481582636" y="515.5921246795798" id="21ef3300-0186-4a6a-9e2c-1d7110a7edaa">
+                                 <tsk name="Receive Operator overrides"/>
+                                 <tsk name="Direct sensors at near path area"/>
+                                 <tsk name="Update local path to allow treading" />
+                                 <par name="PF1" x="1019.5229091084306" y="709.868625956081" id="ab9d7cc1-46b8-4a53-9afe-4f10caa64f25">
+                                       <tsk name="?Target is reached"/>
+                                    <dec name="L" x="1069.0784646639847" y="736.5352926227486">
+                                          <seq name="Go to target" x="1097.967353552877" y="775.2019592894154" id="45bac956-9513-4d4f-80af-f496f0df9f08">
+                                                <par name="PF2" x="1052.3006868862083" y="851.4241815116359" id="e5e221ed-17bf-4484-83a7-fc98221b1e91">
+                                                      <tsk name="?[c3]until No path solution"/>
+                                                      <tsk name="?[c4]until Lower then TBD km/h average"/>
+                                                      <tsk name="?[c1]until No place to tread in"/>
+                                                      <tsk name="?[c2]until obstacle or slope detected"/>
+                                                      <tsk name="?[c5]until No solution"/>
+                                                      <tsk name="?[c6]until Operator intervention"/>
+                                                      <tsk name="Advance by walking along path"/>
+                                                </par>
+                                                <sel name="s1" x="1340.1895757750924" y="854.3130704005257" id="fd7ee5ea-f390-4e3c-9f32-b370e0d94824">
+                                                      <seq name="q1" x="1254.6340202195372" y="953.2019592894146" id="88dd7f57-1ad3-4479-8d66-18c971f02a42">
+                                                            <tsk name="?c2 has been detected"/>
+                                                            <tsk name="Adjust path plan"/>
+                                                      </seq>
+                                                      <seq name="q2" x="1540.1895757750924" y="963.2019592894144" id="be7564a2-44ce-4cc3-9937-389a6ec85d09">
+                                                            <sel name="s2" x="1397.9673535528702" y="1022.0908481783033" id="8a1e1075-564d-44c7-bb05-ef01f91874c7">
+                                                                  <seq name="q4" x="1223.5229091084263" y="1110.9797370671931" id="3a093261-93c0-40a5-8ab8-07f80ed48300">
+                                                                        <tsk name="?c1 has been detected"/>
+                                                                        <tsk name="Stop"/>
+                                                                  </seq>
+                                                                  <seq name="q5" x="1371.3006868862046" y="1110.9797370671931" id="4a296f0e-4058-4c96-aec7-cf967a92dd6c">
+                                                                        <tsk name="?c3 has been detected"/>
+                                                                        <tsk name="Direct sensors at a 270 gr. rear section" />
+                                                                        <tsk name="Go back along TBD m."/>
+                                                                        <tsk name="Direct sensors at a 270 gr. formawrd section"/>
+                                                                        <tsk name="Plan global path to target"/>
+                                                                  </seq>
+                                                                  <seq name="q6" x="1529.0784646639815" y="1109.8686259560823" id="fae39edf-a282-4539-8271-ef52629b6e7f">
+                                                                        <tsk name="?c4 or c5 or c6 have been detected"/>
+                                                                        <tsk name="Stop"/>
+                                                                        <tsk name="Send 180gr panoramic image to Operator"/>
+                                                                        <tsk name="Receive Operator overrides"/>
+                                                                  </seq>
+                                                            </sel>
+                                                            <seq name="q3" x="1721.3006868862024" y="1026.5352926227479" id="a3fe9540-ed6a-4081-8c67-1e150534964f">
+                                                                  <tsk name="Direct sensors at a 270 gr. forward section"/>
+                                                                  <tsk name="Plan detour using additional mapping"/>
+                                                                  <tsk name="Receive Operator overrides"/>
+                                                            </seq>
+                                                      </seq>
+                                                </sel>
+                                          </seq>
+                                    </dec>
+                                 </par>
+                           </seq>
+                     </par>
+               </seq>
+         </par>
+   </seq>
+</plan>

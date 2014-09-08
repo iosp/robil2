@@ -1,0 +1,8 @@
+<plan>
+    <seq name="mission" id="8002a72b-760f-49b1-b91b-f7a67c6c3bec" Successdistribution="C[[6.0,0.0766][7.0,0.2147][8.0,0.0871][9.0,0.024][10.0,0.0435][11.0,0.048][1005.0,0.1051][1006.0,0.1847][1007.0,0.1066][1008.0,0.0225][1009.0,0.0586][1010.0,0.0285]]" probability="0.666" Failuredistribution="C[[6.0,0.0988][7.0,0.1108][8.0,0.1527][9.0,0.1317][10.0,0.1048][11.0,0.1228][12.0,0.0838][13.0,0.0479][14.0,0.0419][15.0,0.009][1010.0,0.012][1011.0,0.021][1012.0,0.0269][1013.0,0.021][1014.0,0.015]]">
+	    <tsk name="action 1" Successdistribution="C[[2.0,0.5][3.0,0.5]] " Failuredistribution="C[[6.0,0.3333][7.0,0.3333][8.0,0.3333]]" probability="0.9"/>
+	    <tsk name="action 2" Successdistribution="C[[1.0,0.5][2.0,0.5]]" Failuredistribution="C[[6.0,0.3333][7.0,0.3333][8.0,0.3333]] " probability="0.9"/>
+	    <tsk name="action 3" Successdistribution="C[[2.0,0.5][1001.0,0.5]] " Failuredistribution="C[[6.0,0.3333][7.0,0.3333][8.0,0.3333]]" probability="0.9"/>
+	    <tsk name="action 4" Successdistribution="C[[1.0,0.75][4.0,0.25]] " Failuredistribution="C[[6.0,0.3333][7.0,0.3333][8.0,0.3333]] " probability="0.9"/>    
+    </seq>
+</plan>

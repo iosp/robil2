@@ -1,0 +1,25 @@
+Monitor image package
+=====================
+This package subscribes to the topics
+/SENSORS/CAM/L
+/SENSORS/CAM/R
+
+The package for each image calculate a histogram and publishes it as a LaserScan message to the topic /camera_monitor.
+LaserScan is used cause it has all of the fields currently needed to store the data, i.e.:
+-Header
+-array for the histograms' values.
+-and various floats variables.
+
+The data stored in the message is sumed in the following table:
+
+Data           |   Field
+--------------------------------
+Histogram      |  ranges
+Variance       |  range_max
+mean           |  range_min
+Camera(L or R) |  header->frame_id
+image width    |  angle_min
+image length   |  angle_max
+====================================
+
+
