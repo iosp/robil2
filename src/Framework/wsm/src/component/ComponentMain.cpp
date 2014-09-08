@@ -21,7 +21,7 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
 {
-	ROS_INFO("Got sequence");
+	ROS_INFO("Got sequence with Task id: %s",msg.task_id.c_str());
 	if(this->receivedWorkSeqData != NULL)
 		delete this->receivedWorkSeqData;
 	this->receivedWorkSeqData = new config::WSM::sub::WorkSeqData(msg);
