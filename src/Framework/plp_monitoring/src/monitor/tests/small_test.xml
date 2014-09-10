@@ -1,0 +1,13 @@
+<plan>
+	<par name="Perception and Execution" x="417.4" y="205.4" id="a319121b-7fdc-4a75-9f48-a404d9ec0e42">
+		<dec name="L" x="1262.6" y="759.6">
+			<tsk name="perception" probability="0.99 0.95" Successdistribution="U[2.0,3.0] U[2.0,3.0]" Failuredistribution="U[1.0,2.0] U[1.0,2.0]" />
+		</dec>
+		<seq name="Execution" x="953.4" y="333.4" id="85e65469-45be-4acc-a5e9-42903098defe">
+			<tsk name="action 1" probability="0.9 0.8" Successdistribution="U[10.0,20.0] U[10.0,20.0]" Failuredistribution="U[1.0,2.0] U[1.0,2.0]" DEBUG="True 30"/>
+			<tsk name="action 2" probability="0.9 0.8" Successdistribution="U[10.0,20.0] U[10.0,20.0]" Failuredistribution="U[1.0,2.0] U[1.0,2.0]" DEBUG="True 50"/>
+			<tsk name="action 3" probability="0.9 0.8" Successdistribution="U[10.0,20.0] U[10.0,20.0]" Failuredistribution="U[1.0,2.0] U[1.0,2.0]" DEBUG="True 20"/>
+			<tsk name="action 4" probability="0.9 0.8" Successdistribution="U[10.0,20.0] U[30.0,40.0]" Failuredistribution="U[1.0,2.0] U[1.0,2.0]" />
+		</seq>
+	</par>
+</plan>

@@ -1,0 +1,49 @@
+
+This module construct a plan according to WSM steps and provides statistics regarding the probability of success and duration.
+
+- The plan and its attributes (as given in the PLPs) are at "Framework/plp_monitoring/src/monitor/plan.xml", "Framework/plp_monitoring/src/monitor/plan_attrib.xml".
+- You can edit the configuration file at "Framework/plp_monitoring/src/config.py" (given a default configuration), explanation in the remarks.
+- The output results will be at: "Framework/plp_monitoring/src/monitor/output/outputFile"
+
+***************************************************************************************************************
+Run the WSM:
+roslaunch live_bobcat bobcat_empty_world.launch
+roslaunch bobcat_gazebo bobcat_gazebo_control.launch
+roslaunch robil2conf frameworkInit.launch
+----------------------------------------------------------------------
+Run the plan "testWsm1.yaml":
+cd robil_ws/src/robil2/src/Framework/robil_tests/yaml/
+rostopic pub /SMME/WSM/Task robil_msgs/AssignManipulatorTask "`cat testWsm1.yaml`" --once
+----------------------------------------------------------------------
+Run our module (Please note the order..).
+cd /robil_ws/src/robil2/src/Framework/plp_monitoring/src
+1. python server_PLP_attribV2.py
+2. python serverV2.py
+
+*************************************************************************************************************
+
+Remarks:
+
+1. "rosrun plp_monitoring server_PLP_attribV2.py" and "rosrun plp_monitoring serverV2.py", 
+produce an error due to path issues. Will be fixed in next ver.
+
+
+2. How to edit configuration file:
+fd=open("monitor/output/outputFile","w") //location of the output file
+fd.write("Success Probability\n")
+filePlanName="monitor/plan.xml"  //location of the input file 
+filePlanAttribName="monitor/plan_attrib.xml"   //location of the input file
+statProb=[1,1]  // statProb array of size 2.
+		//1 in the first cell for accurate probability of success or 0 for nothing
+		//1 in the second cell for approximate probability of success or 0 for nothing
+statDur=[0,0,1] // statProb array of size 2.
+		//NA (1 in the first cell for accurate probability of success or 0 for nothing) 
+		//NA (1 in the second cell for approximate probability of success or 0 for nothing)
+		//1 in the third cell for approximate probability of success or 0 for nothing
+		
+runtimeProb=0   //NA (run-time bound)
+samplesProb=100 // Amount of samples 
+T=50            // Probability for duration less than T 
+runtimeDur=0 	//NA (run-time bound)	
+accuracyDur=0	// NA (Accuracy)
+samplesDur=100	// Amount of samples

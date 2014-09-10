@@ -1,0 +1,11 @@
+<plan descriptions="./tests/TaskDescriptions.xml">
+   <par name="TimeControl" x="645.4296198711066" y="1167.0198636610467" collapsed="false" id="df211792-d525-4806-b9de-ffb665940413"> 
+	<tsk name="MonitorTime(param=3fa4b07c-910e-4ee4-8922-0005ad9f0d44)" x="714.4296198711082" y="1226.666922484576" test_time="10000" test_result="true" id="e9b2dcdb-0af6-45b4-83aa-7ea3e31ec56a" />         
+	<seq name="OperatorRequest" x="520.4296198711098" y="1226.0198636610467" collapsed="false" id="3fa4b07c-910e-4ee4-8922-0005ad9f0d44"> 
+               <tsk name="PushHMI(data=panoramic_image)" x="342.42961987111096" y="1289.019863661047" test_time="10000" test_result="true" id="8a8f498b-098c-45a2-b2cc-04133f19e2e1" />
+               <tsk name="PushHMI(data=occupancy_grid)" x="440.4296198711104" y="1324.0198636610476" test_time="10000" test_result="true" id="c3bb5602-32e6-4a59-906e-bfb96dd9f924" />
+               <tsk name="PushHMI(data=path)" x="539.4296198711093" y="1364.019863661048" test_time="10000" test_result="true" id="8e647d01-781a-4992-853e-b26cc61be56a" />
+               <tsk name="HMIResponse" x="625.4296198711075" y="1296.019863661047" test_time="10000" test_result="true" id="7dcbaf63-c292-443c-af20-235e104426c9" />
+         </seq>
+   </par>
+</plan>

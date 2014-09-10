@@ -1,0 +1,64 @@
+<plan>
+   <seq name="event1" x="377.2781816572362" y="97.20389621397294" id="eb5fdfc7-37cf-4cbe-a6f2-319cd0b9cc2d">
+         <tsk name="Initiate Mounted Mobility Mission"  />
+         <par name="Perception and Execution" x="417.4715438506005" y="205.41637817645636" id="a319121b-7fdc-4a75-9f48-a404d9ec0e42">
+               <par name="DB Information" x="162.7781816572362" y="320.70389621397294" id="6fb2aba8-0b9a-451f-b6a1-67a04d69ba07">
+                     <tsk name="Receive own localization" />
+                     <tsk name="Receive vehicle possible localization" />
+                     <tsk name="Receive world model"/>
+                     <tsk name="Receive Vehicle parameterics "  />
+               </par>
+               <seq name="Execution" x="953.4715438506005" y="333.41637817645636" id="85e65469-45be-4acc-a5e9-42903098defe">
+                     <seq name="Target Identification" x="490.0119478910026" y="569.2558442659214" id="e00305f6-a82e-4bba-8df4-4cd0e47fb9fe">
+                           <tsk name="Stand Up"/>
+                           <tsk name="Turn to face presumed target" />
+                           <tsk name="Perform an all-around scan"/>
+                           <tsk name="Identify possible target locations"/>
+                           <tsk name="Select target" />
+                           <tsk name="Send 360? panoramic image to Operator" />
+                           <tsk name="Send target parametrics to Operator"/>
+                           <tsk name="OCU shows targets overlay on panoramic image with critical parametrics (driver door) " />
+                           <tsk name="Receive Operator OK/override to target parametrics" />
+                     </seq>
+                     <seq name="Entry position" x="950.9210388000943" y="568.7078644679414" id="768692c2-bf47-477b-a6e9-01ff0017d799">
+                           <tsk name="Walk to target (Refer to Event 2)"/>
+                           <tsk name="Stand at entry position" />
+                           <tsk name="Direct sensors at doorway and cabin" />
+                           <tsk name="Identify cabin parametrics"/>
+                           <tsk name="Send cabin image to Operator"/>
+                           <tsk name="Send parametrics to Operator" />
+                           <tsk name="OCU shows parametrics overlay on cabin image "/>
+                           <tsk name="Receive Operator OK/override to cabin parametrics"/>
+                        <dec name="!L!" x="1262.6483115273659" y="759.6169553770336">
+                              <sel name="Entry routine" x="1233.823636202691" y="813.8402598503366" id="b53a46a1-f07d-4868-afea-822352709f6c">
+                                    <seq name="Enter to Car" x="1150.1872725663272" y="884.7493507594265" id="1e5728d8-5095-41be-bcb9-5af697f6e770">
+                                          <tsk name="Adjust standing position in relation to cabin"/>
+                                          <tsk name="Adjust entry posture"/>
+                                          <tsk name="Perform entry routine"/>
+                                    </seq>
+                                 <dec name="!" x="1325.8236362026867" y="864.8402598503355">
+                                       <tsk name="Reverse entry routine"/>
+                                 </dec>
+                              </sel>
+                        </dec>
+                     </seq>
+                  <dec name="!L!" x="1488.4715438506007" y="528.4163781764564">
+                        <seq name="Driving" x="1476.9437660728215" y="594.0552670653447" id="3536be82-0aaa-4c84-af46-048399ba5235">
+                              <tsk name="Identify control parametrics"/>
+                              <tsk name="Send parametrics to Operator"/>
+                              <tsk name="OCU shows parametrics overlay on controls image "/>
+                              <tsk name="Send image to Operator"/>
+                              <tsk name="Receive Operator overrides to parametrics"/>
+                              <tsk name="Adjust posture"/>
+                              <tsk name="Grip steering wheel"/>
+                              <tsk name="Turn slightly left and right"/>
+                              <tsk name="Grip starter switch" />
+                              <tsk name="Turn slightly left and right"/>
+                              <tsk name="Place feet on pedals"/>
+                              <tsk name="Press and release slightly"/>
+                        </seq>
+                  </dec>
+               </seq>
+         </par>
+   </seq>
+</plan>

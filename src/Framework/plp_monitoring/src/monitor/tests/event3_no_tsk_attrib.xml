@@ -1,0 +1,25 @@
+<plan>
+   <par name="event3" x="440.5" y="74.5" id="83828891-c7d7-48da-867f-72f3f15cb960">
+         <par name="perception" x="259.5" y="168.5" id="ac1a5217-449b-412b-ba1e-587b424aad5d">
+               <tsk name="LocalizationTrack"/>
+               <tsk name="TrackObject(target=A)"/>
+               <tsk name="TrackObject(target=B)" />
+               <tsk name="ObstacleDetection"/>
+               <tsk name="PathPlanning"/>
+         </par>
+         <seq name="mission" x="528.5" y="165.5" id="8002a72b-760f-49b1-b91b-f7a67c6c3bec">
+               <tsk name="RobotBody(pose=standUp)"/>
+               <seq name="objectAFlow" x="585.5" y="236.5" id="c19bda81-5d25-4c63-acff-0c11d4030344">
+                     <tsk name="TurnTo(target=A)"/>
+                     <seq name="OperatorRequest" x="633.5" y="309.5" id="3fa4b07c-910e-4ee4-8922-0005ad9f0d44">
+                           <tsk name="PushHMI(data=panoramic_image)"/>
+                           <tsk name="PushHMI(data=occupancy_grid)"/>
+                           <tsk name="PushHMI(data=path)"/>
+                           <tsk name="HMIResponse"/>
+                     </seq>
+                     <tsk name="FollowPath"/>
+                     <tsk name="PickUp(target=A)"/>
+               </seq>
+         </seq>
+   </par>
+</plan>
