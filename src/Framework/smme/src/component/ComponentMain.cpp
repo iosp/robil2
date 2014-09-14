@@ -28,7 +28,7 @@ bool operator!=(const T& e, const std::set<T>& s){
 
 
 
-tf::TransformListener tf_listener;
+tf::TransformListener* tf_listener;
 
 }
 
@@ -42,11 +42,13 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	_mission_manager->conf.start_mission_state="loaded";
 	_mission_manager->conf.start_task_state="loaded";
 	_mission_manager->conf.stop_task_state="unloaded";
+	tf_listener = new tf::TransformListener();
 	ROS_INFO("Mission manager created");
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
 	if(_mission_manager) delete _mission_manager; _mission_manager=0;
+	delete tf_listener;
 }
 
 void ComponentMain::handleAssignNavTask(const config::SMME::sub::AssignNavTask& msg)
@@ -96,7 +98,7 @@ void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& ms
 		try{
 			location_local.header.stamp = ros::Time::now();
 			location_local.header.frame_id = "base_link";
-			tf_listener.transformPoint( "map" , location_local, location_global);
+			tf_listener->transformPoint( "map" , location_local, location_global);
 
 			if(location_global.point not_in knownIEDObjects){
 				if(events()) events()->raiseEvent("/IEDDetected");

@@ -33,6 +33,7 @@ public:
 
 	void set_events(decision_making::EventQueue* events);
 	void rise_taskFinished();
+	void rise_taskAborted();
 	void rise_taskStarted();
 	void rise_taskPaused();
 
