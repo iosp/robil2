@@ -75,6 +75,12 @@ void ComponentMain::rise_taskFinished(){
 	_events->raiseEvent("/CompleteTask");
 	//_events->raiseEvent("/pp/Standby");
 }
+void ComponentMain::rise_taskAborted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->raiseEvent("/AbortTask");
+	//_events->raiseEvent("/pp/Standby");
+}
 void ComponentMain::rise_taskStarted(){
 	boost::mutex::scoped_lock l(_mt);
 	if(not _events) return;

@@ -5,6 +5,7 @@
 
 #include "PLPDataStruct.h"
 #include "ParsingTools.h"
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
@@ -212,12 +213,25 @@ bool parse_plp_params_goal_repeat(PLP& plp, OutTokenStream& tokens){
 	PLP_set(plp , goal_repeat , tp);
 	return true;
 }
+bool norm_freq_value(std::string& source){
+	std::stringstream source_s; source_s<<source;
+	std::stringstream dist_s;
+	boost::to_upper(source);
+	if(source.find("HZ")){
+		double d; source_s >> d; dist_s<<d;
+	}else{
+		double d; source_s >> d; d=1.0/d; dist_s<<d;
+	}
+	source = dist_s.str();
+	return true;
+}
 bool parse_plp_params_repeat_freq(PLP& plp, OutTokenStream& tokens){
 	Token t;
 	READ(t, "Repeat")
 	READ_ANY(t) if(t.name!="frequencey" and t.name!="frequency"){tokens.set_error(__LINE__); return false;}
 	READ(t, ":")
 	READ_VALUE(t)
+	norm_freq_value(t.name);
 	PLP_set(plp, repeat_frequency, t.name);
 	return true;
 }
@@ -303,8 +317,14 @@ bool parse_plp_params_failers(PLP& plp, OutTokenStream& tokens, int& stage){
 
 bool parse_plp_params(PLP& plp, OutTokenStream& tokens){
 	Token t;
-	bool res = parse_plp_params_type(plp,tokens);
+	bool res = false;
+	tokens.push();
+	do{
+		if(tokens.eof()) break;
+		res = parse_plp_params_type(plp,tokens);
+	}while(not res);
 	if(not res) return false;
+	tokens.pop();
 	while(not tokens.eof()){
 		tokens.push();
 		READ_ANY(t)

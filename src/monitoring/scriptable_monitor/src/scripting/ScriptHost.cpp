@@ -42,14 +42,18 @@ bool ScriptHost::typeAnalization(string sourceCode, AddScriptResponse& response)
 			int error_code=0;
 			vector<MonitorningScript> ms = compiler.compile(parser.plp(), error_code);
 			if(not error_code){
-				string modulename="";
+				string modulename=parser.plp().name;//"";
+				/*DEBUG]*/ cout<<"\t[d] generated scripts for module "<<modulename<<" count is "<<ms.size();cout<<endl;
 				for(size_t i=0;i<ms.size();i++){
 					stringstream predicat_script; predicat_script<<ms[i];
 					ScriptParameters p(predicat_script.str());
+					// /*DEBUG]*/ std::cout<<"\t[d] "<<predicat_script.str()<<std::endl;
 					modulename = p["module"];
+					// /*DEBUG]*/ std::cout<<"\t[d] "<<modulename<<std::endl;
 					PlpModule::add_script(predicat_script.str());
 				}
 				// /*DEBUG]*/ parser.plp().repeat_frequency = "0.5";
+				/*DEBUG]*/ cout<<"\t[d] plp repeat_frequency is "<<parser.plp().repeat_frequency<<" hz";cout<<endl;
 				if(parser.plp().repeat_frequency.empty()==false){
 					PlpModule::set_repeated_freq(modulename, boost::lexical_cast<double>(parser.plp().repeat_frequency));
 				}
@@ -306,7 +310,7 @@ void ScriptHost::checkTimers(){
 	// /*DEBUG]*/ cout<<"[i] system time = "<<system_time_seconds()-time_from_start<<" sec"<<endl;
 	//EXECUTE COMMANDS OR ALL READY TIMERS
 	BOOST_FOREACH(PlpModule::Timer t, timers){
-		/*DEBUG]*/ cout<<"\t[i] timer: run "<<t.name<<" ( started="<<t.start-time_from_start<<" , timeout="<<t.timeout-time_from_start<<" )"<<endl;
+		/*DEBUG]*/ cout<<"\t[d] timer: run "<<t.name<<" ( started="<<t.start-time_from_start<<" , timeout="<<t.timeout-time_from_start<<" )"<<endl;
 		//REPORT COMMAND
 		if(boost::starts_with(t.action,"report ")){
 			int8_t level = -1; size_t plen=0;

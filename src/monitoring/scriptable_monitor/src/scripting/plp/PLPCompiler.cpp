@@ -471,6 +471,17 @@ vector<MonitorningScript> PLPCompiler::compile(const PLP& plp, int& error_code){
 
 	results << TRANSFORM(plp, error_code);
 
+	if(results.empty()){
+		std::cout<<"[d] no scripts found. create dummy script"<<std::endl;
+		Script no_predicates;
+		no_predicates.properties<<(string()<<"type predicate");
+		no_predicates.properties<<(string()<<"name "<<plp.name<<"_no_conditions");
+		no_predicates.properties<<(string()<<"module "<<plp.name);
+		no_predicates.properties<<(string()<<"interval 1");
+		no_predicates<<(string()<<"True");
+		results << no_predicates;
+	}
+
 	return results;
 }
 

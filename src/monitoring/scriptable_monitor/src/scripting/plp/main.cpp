@@ -9,7 +9,7 @@
 
 int main() {
 	cout<<"START"<<endl;
-	ifstream file("test4.plp");
+	ifstream file("s1.plp");
 	if(file){
 		PLPParser parser(file);
 		parser.read_all();
