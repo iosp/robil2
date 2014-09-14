@@ -13,19 +13,19 @@
 	<!-- == PERCEPTION == -->
 	<node name="sensors_node" type="sensors_node" pkg="sensors" output="screen"/>
 	<node name="iedsim_node" type="iedsim_node" pkg="iedsim" output="screen"/>
-	<node name="per_node" type="per_node" pkg="per" output="screen"/>
-	<node name="loc_node" type="loc_node" pkg="loc" output="screen"/>
+	<node name="per_node" type="per_node" pkg="per" output="screen" respawn="true"/>
+	<node name="loc_node" type="loc_node" pkg="loc" output="screen" respawn="true"/>
 	<!-- ================ -->
 	
 	<!-- MISSION CONTROL  -->
-	<node name="smme_node" type="smme_node" pkg="smme" output="screen"/>
-	<node name="wsm_node" type="wsm_node" pkg="wsm" output="screen"/>
+	<node name="smme_node" type="smme_node" pkg="smme" output="screen" respawn="true"/>
+	<node name="wsm_node" type="wsm_node" pkg="wsm" output="screen" respawn="true"/>
 	<node name="ocu_node" type="ocu_node" pkg="ocu" output="screen"/>
 	<!-- ================ -->
 
 	<!-- == NAVIGATION == -->
 	<include file="$(find pp)/launch/navigation.launch" />
-	<node name="llc_node" type="llc_node" pkg="llc" output="screen"/>
+	<node name="llc_node" type="llc_node" pkg="llc" output="screen" respawn="true"/>
 	<!-- ================ -->
 
 </launch>
