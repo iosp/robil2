@@ -45,7 +45,7 @@ public:
 
 	void calculate_goal();
 	bool all_data_defined()const;
-	void notify_path_is_finished()const;
+	void notify_path_is_finished(bool success)const;
 
 	void cancel(bool clear_last_goals = false);
 	void activate();
@@ -66,6 +66,7 @@ protected:
 	ros::Publisher goalPublisher;
 	ros::Publisher goalCancelPublisher;
 	ros::Publisher mapPublisher;
+	ros::Publisher fakeLaserPublisher;
 	ros::Subscriber pathSubscriber;
 	ros::Subscriber sub_log;
 
@@ -75,6 +76,8 @@ protected:
 
 	void on_log_message(const LogMessage::ConstPtr& msg);
 	void on_log_message(int type, string message);
+	void on_error_from_move_base();
+	void stop_navigation(bool success);
 
 //FOR TEST ONLY
 public:

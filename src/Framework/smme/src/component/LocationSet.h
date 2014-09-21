@@ -9,6 +9,7 @@
 #define LOCATIONSET_H_
 
 #include <geometry_msgs/Point.h>
+#include <tf/tf.h>
 #include <list>
 #include <Geometry.h>
 

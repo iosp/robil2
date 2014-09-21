@@ -47,6 +47,7 @@ void PlpMonitorServer::on_event(Module::EVENT event,const Module* plp){
 		on_event_for_repeated(event, plp);
 		return;
 	}
+	std::cout<<"[d] on_event_for_unrepeated"<<std::endl;
 	switch(event){
 	case Module::EVENT_MODULE_START:
 		start_module(plp->get_script());
@@ -63,6 +64,7 @@ void PlpMonitorServer::on_event(Module::EVENT event,const Module* plp){
 	}
 }
 void PlpMonitorServer::on_event_for_repeated(Module::EVENT event,const Module* plp){
+	std::cout<<"[d] on_event_for_repeated"<<std::endl;
 	switch(event){
 	case Module::EVENT_MODULE_START:
 		//start_module(plp->get_script());

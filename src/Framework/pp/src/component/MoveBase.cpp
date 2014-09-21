@@ -130,6 +130,14 @@ namespace{
 		return getPoseStamped( pos );
 		//return getPoseStamped( path.poses[path.poses.size()-1] );
 	}
+
+
+
+
+	boost::thread_group threads;
+	actionlib_msgs::GoalID last_nav_goal_id;
+	nav_msgs::Path curr_nav_path;
+	bool clear_path_on_activate=true;
 }
 
 
@@ -148,6 +156,7 @@ MoveBase::MoveBase(ComponentMain* comp)
 	mapPublisher = node.advertise<sensor_msgs::PointCloud2>("/map_cloud", 5, false);
 #elif CREATE_POINTCLOUD_FOR_NAV == 1
 	mapPublisher = node.advertise<sensor_msgs::PointCloud>("/map_cloud", 5, false);
+	fakeLaserPublisher = node.advertise<sensor_msgs::LaserScan>("/costmap_clear_fake_scan",1,false);
 #endif
 
 	sub_log = node.subscribe("/rosout", 10, &MoveBase::on_log_message, this);
@@ -172,10 +181,23 @@ void MoveBase::on_log_message(int type, string message){
 	}else
 	if(type == LogMessage::ERROR){
 		ROS_DEBUG_STREAM("move base: error: "<<message);
+		on_error_from_move_base();
 	}else
 	if(type == LogMessage::FATAL){
 		ROS_DEBUG_STREAM("move base: fatal: "<<message);
+		on_error_from_move_base();
 	}
+}
+
+void MoveBase::on_error_from_move_base(){
+	ROS_ERROR("Navigation: path is aborted. send event and clear current path.");
+	stop_navigation(false);
+}
+void MoveBase::stop_navigation(bool success){
+	notify_path_is_finished(success);
+	gp_defined=gnp_defined=false;
+	this->is_path_calculated = false;
+	goalCancelPublisher.publish(last_nav_goal_id);
 }
 
 //================ TEST =================
@@ -222,8 +244,9 @@ bool MoveBase::all_data_defined()const{
 	return gl_defined and (gp_defined or gnp_defined) and is_active and not is_canceled;
 }
 
-void MoveBase::notify_path_is_finished()const{
-	comp->rise_taskFinished();
+void MoveBase::notify_path_is_finished(bool success)const{
+	if(success) comp->rise_taskFinished();
+	else comp->rise_taskAborted();
 }
 
 
@@ -292,10 +315,6 @@ SYNCH
 	if(all_data_defined()) calculate_goal();
 }
 
-boost::thread_group threads;
-actionlib_msgs::GoalID last_nav_goal_id;
-nav_msgs::Path curr_nav_path;
-bool clear_path_on_activate=true;
 
 void MoveBase::cancel(bool clear_last_goals){
 	SYNCH
@@ -368,10 +387,7 @@ void MoveBase::calculate_goal(){
 	}
 	if(is_path_finished){
 		ROS_INFO("Navigation: path finished. send event and clear current path.");
-		notify_path_is_finished();
-		gp_defined=gnp_defined=false;
-		this->is_path_calculated = false;
-		goalCancelPublisher.publish(last_nav_goal_id);
+		stop_navigation(true);
 	}
 	on_goal(goal);
 }
@@ -598,7 +614,7 @@ SYNCH
 			float fz = 0;
 
 			if(robil_map.data[i].type==robil_msgs::MapCell::type_obstacle /*or rand()%10>8*/){
-				fz = 1;
+				fz = 1 - gotten_location.pose.pose.position.z;
 			}else
 			if(robil_map.data[i].type==robil_msgs::MapCell::type_clear){
 				continue;
@@ -619,6 +635,20 @@ SYNCH
 	map.header.frame_id = "/base_link";
 	map.header.stamp = ros::Time::now();//robil_map.header.stamp;//
 
+
+	static sensor_msgs::LaserScan fake_scan; static bool fsd=false; static long fk_iter=0;fk_iter++;
+	fake_scan.header = map.header;
+	if(!fsd){fsd=true;
+		const int ranges_count=359*1;
+		fake_scan.angle_min = 0;
+		fake_scan.angle_max = (359.0/360.0)*2*M_PI;
+		fake_scan.angle_increment = fake_scan.angle_max/ranges_count;
+		fake_scan.range_min=0.1;
+		fake_scan.range_max=31;
+		fake_scan.ranges.resize(ranges_count);
+		for(int i=0;i<ranges_count;i++) fake_scan.ranges[i]=30;
+	}
+	if(fk_iter%10==0) fakeLaserPublisher.publish(fake_scan);
 	mapPublisher.publish(map);
 #endif
 

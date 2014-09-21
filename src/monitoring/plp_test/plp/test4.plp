@@ -1,0 +1,75 @@
+PLP: Module 1
+Type: Achieve module
+
+Variables:1
+Name:v1
+Source:/scan/ranges[0]
+Type:Double
+Lower bound: 10
+Upper bound:
+
+Parameters:2
+Name:p1
+Source:/scan/ranges[1]
+Type:Double
+Name:p2
+Source:/scan/ranges[2]
+Type:Double
+
+Resources:1
+Resource:Power
+Source:/scan/ranges[3]
+Minimal initial value:20
+Maximal consumption:5
+
+Preconditions:2
+Precondition name:pre1
+Parameter:p1
+Minimal value:30
+Max value:50
+Precondition name:pre2
+Parameter:p2
+Minimal value:N/A
+Max value:N/A
+
+Concurrent conditions:1
+Condition name:cond
+Parameter/Variable:v1
+Minimal value:8
+Max value:10
+
+Concurrent modules:2
+Name:module2
+State:Never together
+Name:module3
+State:Always together
+
+Goal repeat: False
+
+Goals:1
+Goal name:goal1
+Goal parameter:p2
+Minimal value:10
+Max value:11
+Success probability:0.99
+Max time to complete:50 minutes
+
+Side effects:2
+Parameter:p2
+Minimal value:56
+Max value:N/A
+Probability:.4
+Parameter:p1
+Minimal value:67
+Max value:98
+Probability:.2
+
+Failure modes:2
+Name:failure
+Severity:1
+Error code:1.1
+Failure probability:.1
+Name:failure2
+Severity:1
+Error code:1.2
+Failure probability:.05
