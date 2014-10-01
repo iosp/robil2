@@ -7,13 +7,28 @@ import threading
 import time
 from tkFileDialog   import askopenfilename
 import roslib;
-from robil_msgs.msg import AssignMission,AssignManipulatorTask,AssignNavTask,MissionAcceptance ,IEDLocation
+from robil_msgs.msg import AssignMission,AssignManipulatorTask,AssignNavTask,MissionAcceptance ,IEDLocation,Map
+from robil_msgs.srv import MissionState
 from diagnostic_msgs.msg import DiagnosticArray
+from nav_msgs.msg import Path
+from geometry_msgs.msg import PoseWithCovarianceStamped
 import std_msgs
 import rospy, yaml
 import genpy
 import ttk
+from tf import transformations
+from PIL import Image, ImageTk
 from subprocess import call
+
+import math
+import cv2
+import numpy as np
+
+def rotateXY(x,y,yaw):
+    dx=(x*math.cos(yaw)+y*math.sin(yaw))
+    dy=(y*math.cos(yaw)-x*math.sin(yaw))
+    return dx,dy
+
 
 def parseYAML(filename):
    yamlfile=None
@@ -68,29 +83,20 @@ class GuiHandler(object):
         self.TaskPublishers[AssignManipulatorTask]=rospy.Publisher('/OCU/SMME/ManipulationTask', AssignManipulatorTask)
         self.decision_making_publisher=rospy.Publisher('/decision_making/events',std_msgs.msg.String)
         self.lists=dict()
+        self.mapImage=0
         
         self.mainWindow = Tk()
-        Label(self.mainWindow,text="OCU test",font=("Helvetica",20)).grid(row=0,columnspan=3)
+        Label(self.mainWindow,text="OCU test",font=("Helvetica",20)).pack(side=TOP)
 
+        leftWrapper=Label(self.mainWindow)
+        rightWrapper=Label(self.mainWindow)
+
+        leftWrapper.pack(side=LEFT)
+        rightWrapper.pack(side=RIGHT)
        
-        
-        #dignostics
-        diagnosticsLabel = LabelFrame(self.mainWindow, text="diagnostics")
-        diagnosticsLabel.grid(row=2,column=0)
-        scrolbar =Scrollbar(diagnosticsLabel)
-        self.diaglog =Text(diagnosticsLabel, state='disabled', width=40, height=20, wrap='none',font=("Helvetica",11))
-        Button(diagnosticsLabel, text="Clear",command=lambda parent=self: parent.clearDiagLog() ).pack(side=TOP)
-        scrolbar.config(command=self.diaglog.yview)
-        self.diaglog.config(yscrollcommand=scrolbar.set)
-        scrolbar.pack(side=RIGHT, fill=Y)
-        self.diaglog.pack(side=LEFT, fill=Y)
-        self.numOfDiagLogLines=0
-       
-        
-        
         #status label
-        statusLabel = LabelFrame(self.mainWindow, text="Status",width=40,height=40)
-        statusLabel.grid(row=1,column=0)
+        statusLabel = LabelFrame(leftWrapper, text="Status",width=40,height=40)
+        statusLabel.pack(side=TOP)
         
         self.missionStatus = StringVar()
         self.missionStatus.set("unknown status")
@@ -104,9 +110,27 @@ class GuiHandler(object):
         
         Button(statusLabel, text="SetIED",command=lambda parent=self.mainWindow: IEDDialog(parent)).grid(row=2,column=0)
         
+        #dignostics
+        diagnosticsLabel = LabelFrame(leftWrapper, text="diagnostics")
+        diagnosticsLabel.pack(side=TOP)
+        scrolbar =Scrollbar(diagnosticsLabel)
+        self.diaglog =Text(diagnosticsLabel, state='disabled', width=40, height=20, wrap='none',font=("Helvetica",11))
+        Button(diagnosticsLabel, text="Clear",command=lambda parent=self: parent.clearDiagLog() ).pack(side=TOP)
+        scrolbar.config(command=self.diaglog.yview)
+        self.diaglog.config(yscrollcommand=scrolbar.set)
+        scrolbar.pack(side=RIGHT, fill=Y)
+        self.diaglog.pack(side=LEFT, fill=Y)
+        self.numOfDiagLogLines=0
+        
+        
+        #map image
+        self.mapImage=Label(master=rightWrapper)
+        self.mapImage.pack(side=BOTTOM)
+        
+        
         #task label
-        TaskListLabel = LabelFrame(self.mainWindow, text="Tasks")
-        TaskListLabel.grid(row=1,column=1,rowspan=2)
+        TaskListLabel = LabelFrame(rightWrapper, text="Tasks")
+        TaskListLabel.pack(side=BOTTOM)
         self.setMessageList(TaskListLabel,"NavTasks",1,1,AssignNavTask)
         self.setMessageList(TaskListLabel,"ManipulatorTasks",1,0,AssignManipulatorTask)
         self.setMessageList(TaskListLabel,"Missions",0,0,AssignMission)
@@ -121,10 +145,8 @@ class GuiHandler(object):
         for name in ["Start","Complete","Pause","Abort","Resume","Clear","Delete"]:
              Button(controlLabel, text =name, command = self.genCommand(name,self.lists["Missions"],AssignMission)).grid(row=0,column=i)
              i=i+1
-        
 
 
-   
     def genAddToList(self,target,msg_class):
         def unknownAddToList():
             filename=askopenfilename()
@@ -160,9 +182,9 @@ class GuiHandler(object):
     def writeToDiagLog(self,msg):
         self.numOfDiagLogLines = self.numOfDiagLogLines+1
         self.diaglog['state'] = 'normal'
-        if self.numOfLogLines > 300 :
+        if self.numOfDiagLogLines > 1 :
              self.numOfDiagLogLines= self.numOfDiagLogLines -1
-             self.diaglog.delete("1.0", "2.0")
+             self.diaglog.delete("1.0", "end")
         if self.diaglog.index('end-1c')!='1.0':
              self.diaglog.insert('end', '\n')
         self.diaglog.insert('end', msg)
@@ -178,7 +200,13 @@ class GuiHandler(object):
     
     def writeToIEDStatusLabel(self,msg):
         self.IEDStatus.set(msg)
-
+        
+    def updateMapImage(self,img): 
+        b = ImageTk.PhotoImage(image=Image.fromarray( cv2.cvtColor(img, cv2.COLOR_BGR2RGBA)))
+        self.mapImage.configure(image=b)
+        self.mapImage._image_cache = b 
+        self.mapImage.update()
+        
     def genCommand(self,name,listTarget,msg_class):
         def commandForName():
             for sel in listTarget.curselection():
@@ -195,7 +223,7 @@ class GuiHandler(object):
         
 
 class IEDDialog(tkSimpleDialog.Dialog):
-
+    
     def body(self, master): 
         self.ied_publisher=rospy.Publisher('/OCU/IED/Location',IEDLocation)
         Label(master, text="x:").grid(row=0)
@@ -231,7 +259,7 @@ class IEDDialog(tkSimpleDialog.Dialog):
         self.ied_publisher.publish(msg)
 
 class rosSubscriberThread (threading.Thread):
-    
+
     def missionAcceptanceCallback(self,msg):
         self.gui.writeToStatusLabel("id:"+msg.mission_id + ", status:" + str(msg.status) + " , at:"+msg.mission_assign_stamp.__str__())
             
@@ -239,18 +267,107 @@ class rosSubscriberThread (threading.Thread):
          self.gui.writeToDiagLog(msg.__str__())
          
     def iedLocationCallback(self,msg):
-         self.gui.writeToIEDStatusLabel(msg.__str__())
-         
+         self.gui.writeToIEDStatusLabel(msg.__str__())   
+     
+    def mapCallback(self,msg):
+        multiplier=2.0
+        height=int(multiplier*msg.info.height)
+        width=int(multiplier*msg.info.width)
+        #draw map
+        for row in range(0,height):
+            for col in range(0,width):
+                if msg.data[int(int(row/multiplier)*msg.info.width+int(col/multiplier))].height<=-3:
+                    self.image[col,row]=[0,0,100]
+                else:
+                    c=((msg.data[int(int(row/multiplier)*msg.info.width+int(col/multiplier))].height+3)/6)
+                    self.image[col,row]=[120*(1-c),240,240]
+        self.image= cv2.cvtColor(self.image, cv2.COLOR_HSV2BGR)
+        #draw obstacles
+        for row in range(0,height):
+            for col in range(0,width):
+                if msg.data[int(int(row/multiplier)*msg.info.width+int(col/multiplier))].type == 2:
+                     self.image[col,row]=[255,0,0]
+        #draw plan
+        yaw,pitch,roll=transformations.euler_from_quaternion([msg.info.origin.orientation.w,msg.info.origin.orientation.x,msg.info.origin.orientation.y,msg.info.origin.orientation.z])
+        
+        index=0
+        #print msg.info.origin.position.x ,msg.info.origin.position.y
+        mapCenterX,mapCenterY=rotateXY(75*msg.info.resolution,75*msg.info.resolution,yaw)
+        
+        mapCenterX=msg.info.origin.position.x-mapCenterX
+        mapCenterY=msg.info.origin.position.y-mapCenterY
+        
+        #testNotROt =np.zeros((150*2,150*2,3), np.uint8)
+        #test =np.zeros((150*2,150*2,3), np.uint8)
+        
+        for pose in self.plan.poses:
+            index+=1
+            #rotX,rotY=rotateXY(pose.pose.position.x,pose.pose.position.y,-yaw)
+            dy=pose.pose.position.x - msg.info.origin.position.x
+            dx=pose.pose.position.y - msg.info.origin.position.y
+            '''dx=(pose.pose.position.x*math.cos(yaw)+pose.pose.position.y*math.sin(yaw))
+            dy=(pose.pose.position.y*math.cos(yaw)-pose.pose.position.x*math.sin(yaw))
+            dx=dx - msg.info.origin.position.x
+            dy=dy - msg.info.origin.position.y'''
+            #Xpos=dx/msg.info.resolution*multiplier+height/2
+            #Ypos=dy/msg.info.resolution*multiplier+height/2
+            
+            Xpos=dx/msg.info.resolution*multiplier+height/2
+            Ypos=dy/msg.info.resolution*multiplier+height/2
+            #print yaw
+            dx1,dy1=rotateXY(dx,dy,yaw)
+#           print msg.info.origin.position.x, msg.info.origin.position.y
+#           print Xpos, Ypos
+            #cv2.circle(testNotROt,(int(Ypos),int(Xpos)),2,[255,0,float(index)/len(self.plan.poses)*255],-1)
+            
+            Xpos=dx1/msg.info.resolution*multiplier+height/2
+            Ypos=dy1/msg.info.resolution*multiplier+height/2
+            #cv2.circle(test,(int(Ypos),int(Xpos)),2,[255,0,float(index)/len(self.plan.poses)*255],-1)
+            '''
+            
+            Xpos=dx/0.2*multiplier+height/2#int(((dx*math.cos(yaw)+dy*math.sin(yaw))/0.2)*multiplier)+height/2
+            Ypos=dy/0.2*multiplier+width/2#int(((dy*math.cos(yaw)-dx*math.sin(yaw))/0.2)*multiplier)+width/2'''
+            if Xpos < height and Xpos >= 0 and Ypos < width and Ypos >= 0 :
+                cv2.circle(self.image,(int(Ypos),int(Xpos)),2,[0,0,float(index)/len(self.plan.poses)*255],-1)
+        
+        #cv2.imshow('Map',test)
+        #cv2.imshow('MapOrig',testNotROt)
+        #cv2.waitKey(8)
+        self.gui.updateMapImage(self.image)
+    
+    def drawCurrentPlan(self,image,height,width,multiplier):
+        pass
+        '''for pose in self.currentPlan:
+           newP=(height*3.0/4.0 (pose[0]-first[0])*5*multiplier,(pose[1]-first[1])*5*multiplier+width/2)
+           if newP[0] > height or newP[0] <0 or newP[1] >width or newP[1] <0:
+              continue
+           image[newP[0],newP[1]]=[0,0,0]'''
+           
+    def planCallback(self,msg):
+        self.plan=msg
+        '''basePose=0
+        for pose in msg.poses:
+            yaw,pitch,roll=transformations.euler_from_quaternion([self.pose.pose.pose.orientation.w,self.pose.pose.pose.orientation.x,self.pose.pose.pose.orientation.y,self.pose.pose.pose.orientation.z])
+            
+            dx=pose.pose.position.x - self.pose.pose.pose.position.x
+            dy=pose.pose.position.y - self.pose.pose.pose.position.y
+            self.currentPlan.append( (dx*math.cos(yaw)+dy*math.sin(yaw),dy*math.cos(yaw)-dx*math.sin(yaw)))'''
+
     def __init__(self,gui):
         threading.Thread.__init__(self)
         #place ros stuff here
         self.threadID = 0
+        self.currentPlan = []
         self.gui=gui
+        self.image=np.zeros((150*2,150*2,3), np.uint8)
+        self.plan=Path()
         self.statusSubscriber=rospy.Subscriber("/SMME/OCU/MissionAcceptance",MissionAcceptance, self.missionAcceptanceCallback)
         self.statusSubscriber=rospy.Subscriber("/SMME/OCU/Mission",MissionAcceptance, self.missionAcceptanceCallback)
-        self.statusSubscriber=rospy.Subscriber("/diagnostics",DiagnosticArray, self.diagnosticsCallback)
+        #self.statusSubscriber=rospy.Subscriber("/diagnostics",DiagnosticArray, self.diagnosticsCallback)
         self.statusSubscriber=rospy.Subscriber("/IED/Location",IEDLocation, self.iedLocationCallback)
-        
+        rospy.Subscriber("/PER/Map",Map, self.mapCallback)
+        rospy.Subscriber("/move_base/TrajectoryPlannerROS/global_plan",Path, self.planCallback)
+ 
     def run(self):
         print "Starting "
         rospy.spin()
@@ -260,17 +377,45 @@ class rosSubscriberThread (threading.Thread):
         rospy.signal_shutdown("die!")
         exit(0)
 
+class rosServiceClientThread (threading.Thread):
+
+    def diagnosticsCallback(self,msg):
+         self.gui.writeToDiagLog(msg.__str__())
+
+    def __init__(self,gui):
+        threading.Thread.__init__(self)
+        #place ros stuff here
+        self.threadID = 1
+        self.gui=gui
+ 
+    def run(self):
+        rospy.wait_for_service('mission_state')
+        try:
+            add_two_ints = rospy.ServiceProxy('mission_state', MissionState)
+            while True:
+                resp1 = add_two_ints()
+                self.diagnosticsCallback(resp1)
+                rospy.sleep(1)
+        except rospy.ServiceException, e:
+            print "Service call failed: %s"%e
+        
+    def stop(self):
+        rospy.signal_shutdown("die!")
+        exit(0)
+    
 
 rospy.init_node("ocu_gui")
+
 top = GuiHandler()
 
 # Create new threads
 thread1 = rosSubscriberThread(top)
-
+thread2 = rosServiceClientThread(top)
 # Start new Threads
 thread1.start()
-
+thread2.start()
 
 top.mainWindow.mainloop()
 thread1.stop()
 exit(0)
+
