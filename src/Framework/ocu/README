@@ -1,17 +1,22 @@
 OCU
 =====
 
-this is a very basic ocu madde for the current sprint
+this is a very basic ocu made for the current sprint
+
+setup:
+the ocu requires the python-imaging-tk package, int the terminal type:
+	
+	sudo apt-get install python-imaging-tk
 
 run with:
-rosrun ocu ocu.py
+	rosrun ocu ocu.py
 
 load missions using assigned buttons, the program works with yaml files,
 examples of valid yaml are in the scripts directory under Framework/ocu/scripts/
 
 debuging the ocu ac by done by subscribing to the folowing topics
 
-rostopic echo /decision_making/events
-rostopic echo /OCU/SMME/MissionPlan
-rostopic echo /OCU/SMME/ManipulationTask
-rostopic echo /OCU/SMME/NavigationTask
+	rostopic echo /decision_making/events
+	rostopic echo /OCU/SMME/MissionPlan
+	rostopic echo /OCU/SMME/ManipulationTask
+	rostopic echo /OCU/SMME/NavigationTask
