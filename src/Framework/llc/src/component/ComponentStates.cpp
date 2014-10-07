@@ -7,10 +7,14 @@
 #include <decision_making/DecisionMaking.h>
 #include <gazebo_msgs/GetModelState.h>
 #include "aux_functions.h"
+#include <bondcpp/bond.h>
 
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
+
+double hb_time = 0 ;
+const double t_out = 20.0 ;
 
 class Params: public CallContextParameters{
 public:
@@ -99,11 +103,18 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	//PAUSE(10000);
-
 	ROS_INFO("LLC Init");
 	Event e("EndOfInit");
 	events.raiseEvent(e);
 	return TaskResult::SUCCESS();
+}
+
+void hb_callback (const std_msgs::Bool &msg)
+{
+	if(msg.data == true )
+		hb_time = ros::Time::now().toSec();
+	if(msg.data == false)
+		hb_time = t_out + 1.0;
 }
 
 geometry_msgs::Twist Translate(geometry_msgs::PoseWithCovarianceStamped model_state , geometry_msgs::Twist model_speed){
@@ -183,10 +194,10 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	geometry_msgs::TwistStamped cur_error ; 			/* stores the current error signal */
 	geometry_msgs::TwistStamped old_error ; 			/* stores the last error signal */
 	geometry_msgs::Twist t ;							/* used for co-ordinates transform */
+	ros::Subscriber link_to_platform ;
 
-	ros::NodeHandle n ;
-
-	/* set up dynamic reconfig */
+	ros::NodeHandle n;
+	link_to_platform = n.subscribe("/Sahar/link_with_platform" , 1000, hb_callback);
 
 	COMPONENT->WPD_desired_speed.twist.linear.x = 0;
 	COMPONENT->WPD_desired_speed.twist.angular.z = 0;
@@ -194,7 +205,19 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	COMPONENT->WSM_desired_speed.twist.angular.z = 0;
 
 	/* PID loop */
-	while(1){
+
+	while (!hb_time);
+
+		ROS_INFO("Connected with platform");
+		/*
+		 * TODO: Diagnostics about connection
+		 */
+
+/*
+ *  PID LOOP
+ */
+
+	while((ros::Time::now().toSec() - hb_time) < t_out){
 		if(events.isTerminated() || !ros::ok()){			/* checks whether the line is empty, or node failed */
 			ROS_INFO("STOPPED");
 			return TaskResult::TERMINATED();
@@ -202,7 +225,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	/* get measurements and calculate error signal */
 
-#ifndef  LLC_USE_LOCALIZATION
+#ifndef LLC_USE_LOCALIZATION
 	    ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
 	    gazebo_msgs::GetModelState getmodelstate;
 	    getmodelstate.request.model_name ="Sahar";
@@ -278,6 +301,11 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 		//usleep(100000);
 	}
+	ROS_INFO("cannot connect with platform");
+	/*
+	 * TODO: break bond diagnostics
+	 */
+	// END PID loop
 	return TaskResult::SUCCESS();
 }
 
