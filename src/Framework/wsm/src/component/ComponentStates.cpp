@@ -8,6 +8,8 @@
 #include <decision_making/ROSTask.h>
 #include <decision_making/DecisionMaking.h>
 #include <decision_making/DebugModeTracker.hpp>
+#include <robil_msgs/Map.h>
+#include <robil_msgs/MapCell.h>
 #include <gazebo_msgs/GetModelState.h>
 
 using namespace std;
@@ -63,6 +65,7 @@ void pauseCallback(const std_msgs::StringConstPtr &msg)
 
 /*
  * 	This callback reads the map, & updates a sheared variable.
+ * 	*/
 
 void mapCallback(const robil_msgs::Map &msg)
 {
@@ -72,7 +75,9 @@ void mapCallback(const robil_msgs::Map &msg)
 	 * 		extracting the height.
 	 * 		& updates shared memory ;
 	 */
-//}
+	ground_height = msg.data._M_impl._M_start->height;
+	ROS_INFO("Read the Map .. ");
+}
 /*
  * 		This Method is responsible to keep steady blade.
  */
@@ -95,9 +100,6 @@ void blade_correction()
 	}
 while(loop_on){
 	try{
-
-
-
 		/*
 		 * Main work loop of blade correction.
 		 */
