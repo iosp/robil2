@@ -12,6 +12,8 @@ from robil_msgs.srv import MissionState
 from diagnostic_msgs.msg import DiagnosticArray
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseWithCovarianceStamped
+from sensor_msgs.msg import NavSatFix
+
 import std_msgs
 import rospy, yaml
 import genpy
@@ -20,9 +22,46 @@ from tf import transformations
 from PIL import Image, ImageTk
 from subprocess import call
 
+from inspect import getsourcefile
+import os
+import re,sys
+
 import math
 import cv2
 import numpy as np
+
+def calcDistance(p1,p2):
+    R = 6371.0
+    lat1 = p1[1]*math.pi/180.0
+    lat2 = p2[1]*math.pi/180.0
+    dLat = lat2 - lat1
+    dLon = (p2[2] - p1[2])*math.pi/180.0
+    a = math.sin(dLat/2) * math.sin(dLat/2) + math.sin(dLon/2) * math.sin(dLon/2) * math.cos(lat1) * math.cos(lat2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    d = R*c
+    print p1
+    print p2
+    return d*1000;
+
+def calcBearing(p1,p2):
+
+    lat1 = p1[1]*math.pi/180.0
+    lat2 = p2[1]*math.pi/180.0
+    dLat = lat2 - lat1
+    dLon = (p2[2] - p1[2])*math.pi/180.0
+    y = math.sin(dLon) * math.cos(lat2)
+    x = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dLon);
+    return math.atan2(y, x);
+
+def read_fileAux():
+    file = open(os.getenv("HOME")+"/.ros/gps_init.txt", "r")
+    return [float(re.split(" ", line)[1][:-1]) for line in file.readlines()[1:]]
+    
+def geo2xy(point,bearing=0):
+    init_coor = read_fileAux()
+    d = calcDistance(point,init_coor)
+    theta = calcBearing(init_coor,point)
+    return [d * math.cos(theta),d * math.sin(theta),point[0] - init_coor[0]]
 
 def rotateXY(x,y,yaw):
     dx=(x*math.cos(yaw)+y*math.sin(yaw))
@@ -226,10 +265,15 @@ class IEDDialog(tkSimpleDialog.Dialog):
     
     def body(self, master): 
         self.ied_publisher=rospy.Publisher('/OCU/IED/Location',IEDLocation)
-        Label(master, text="x:").grid(row=0)
-        Label(master, text="y:").grid(row=1)
-        Label(master, text="z:").grid(row=2)
+        Label(master, text="latitude/x:").grid(row=0)
+        Label(master, text="longitude/y:").grid(row=1)
+        Label(master, text="elevation/z:").grid(row=2)
 
+        self.cordSys=IntVar()
+        Radiobutton(master,text= "xyz", variable=self.cordSys, value="1").grid(row=3,column=1)
+        radio=Radiobutton(master,text= "geo", variable=self.cordSys, value="0")
+        radio.select()
+        radio.grid(row=3,column=0)
         self.e1 = Entry(master)
         self.e2 = Entry(master)
         self.e3 = Entry(master)
@@ -242,7 +286,8 @@ class IEDDialog(tkSimpleDialog.Dialog):
 
     def validate(self):
         try:
-            self.result = float(self.e1.get()) , float(self.e2.get()) ,float(self.e3.get())
+            choice=self.cordSys.get()
+            self.result = choice,float(self.e1.get()) , float(self.e2.get()) ,float(self.e3.get())
             return 1
         except ValueError:
             tkMessageBox.showwarning(
@@ -253,9 +298,17 @@ class IEDDialog(tkSimpleDialog.Dialog):
 
     def apply(self):
         msg = IEDLocation()
-        msg.location.x=self.result[0]
-        msg.location.y=self.result[1]
-        msg.location.z=self.result[2]
+        print self.result
+        if self.result[0]:
+            msg.location.x=self.result[1]
+            msg.location.y=self.result[2]
+            msg.location.z=self.result[3]
+        else:
+            x,y,z=geo2xy([self.result[3],self.result[1],self.result[2]])
+            msg.location.x=x
+            msg.location.y=y
+            msg.location.z=z
+        print msg
         self.ied_publisher.publish(msg)
 
 class rosSubscriberThread (threading.Thread):
