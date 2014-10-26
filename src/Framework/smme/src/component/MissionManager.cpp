@@ -20,12 +20,17 @@ SYNCHRONIZED
 MissionManager::MissionAcceptance MissionManager::assign(const Mission& mission) {
 SYNCHRONIZED
 	MissionID mid = id(mission);
+	if(missions.find(mid)!=missions.end()){
+		ROS_INFO_STREAM("Mission already loaded: "<<mission.mission_id<<" => rejected");
+		return createMissionRejectedMessage(mission, 0);
+	}
 	missions[mid] = mission;
 	if(tasks_count(mid)<1){
+		ROS_INFO_STREAM("Mission is empty: "<<mission.mission_id<<" => rejected");
 		missions.erase(mid);
 		return createMissionRejectedMessage(mission, 0);
 	}
-	ROS_INFO_STREAM("New mission task: "<<mission);
+	ROS_INFO_STREAM("New mission: "<<mission.mission_id);
 	return createMissionAcceptedMessage(mission);
 }
 
@@ -33,14 +38,14 @@ void MissionManager::assign(const ManTask& task) {
 SYNCHRONIZED
 	TaskID tid = id(task);
 	man_tasks[tid] = task;
-	ROS_INFO_STREAM("New manipulation task: "<<task);
+	ROS_INFO_STREAM("New manipulation task: "<<task.task_id);
 }
 
 void MissionManager::assign(const NavTask& task) {
 SYNCHRONIZED
 	TaskID tid = id(task);
 	nav_tasks[tid] = task;
-	ROS_INFO_STREAM("New navigation task: "<<task);
+	ROS_INFO_STREAM("New navigation task: "<<task.task_id);
 }
 
 MissionManager::MissionAcceptance MissionManager::createMissionAcceptedMessage(const Mission& mission){

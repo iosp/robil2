@@ -96,14 +96,17 @@ void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& ms
 		geometry_msgs::PointStamped location_local, location_global;
 		location_local.point = msg.location;
 		try{
-			location_local.header.stamp = ros::Time::now();
+			location_local.header.stamp = ros::Time(0);
 			location_local.header.frame_id = "base_link";
 			tf_listener->transformPoint( "map" , location_local, location_global);
 
 			if(location_global.point not_in knownIEDObjects){
+				std:stringstream buff;
+				check_if_not_contains(location_global.point, knownIEDObjects, buff);
 				if(events()) events()->raiseEvent("/IEDDetected");
 				knownIEDObjects.insert(location_global.point);
 				ROS_INFO_STREAM("SMME: new IED object detected: its global pose is "<<location_global.point.x<<", "<<location_global.point.y<<", "<<location_global.point.z);
+				ROS_INFO_STREAM("SMME: new IED object detected: ... \n"<<buff.str());
 			}
 		}
 		catch (tf::TransformException& ex){
