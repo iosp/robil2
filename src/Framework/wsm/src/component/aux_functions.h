@@ -7,3 +7,6 @@ double glSpeedloc(double speedx,double speedy, double yaw)
 		return sqrt(speedx*speedx + speedy*speedy);
 	return -sqrt(speedx*speedx + speedy*speedy);
 }
+
+
+

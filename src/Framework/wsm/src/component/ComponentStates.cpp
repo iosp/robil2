@@ -1,7 +1,6 @@
-
 #include <iostream>
 #include <ros/ros.h>
-
+#include <std_msgs/Float32.h>
 #include <decision_making/SynchCout.h>
 #include <decision_making/BT.h>
 #include <decision_making/FSM.h>
@@ -11,6 +10,7 @@
 #include <robil_msgs/Map.h>
 #include <robil_msgs/MapCell.h>
 #include <gazebo_msgs/GetModelState.h>
+
 
 using namespace std;
 using namespace decision_making;
@@ -24,24 +24,32 @@ using namespace decision_making;
 
 #define WRAP_POSNEG_PI(x) atan2(sin(x), cos(x))
 #define LIMIT(value, minim, maxim) std::max<double>(std::min<double>(value, maxim), minim)
+
+ComponentMain *Global_comp ;
 const int N = 1000 ;
-//#define N 1000
-
-
 int last_index = 0 ;
-double ground_height = 0 ;
+double blade2ground = 0 ;
 bool correction = false ;
 bool pause_time = false ;
 bool new_seq = true ;
 bool SensorConnection;
 sensor_msgs::JointState jointStates;
 config::WSM::sub::WorkSeqData * presentWorkSeq = NULL;
+ros::Publisher monitor ;
 
 int handle_type_1(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator cur_step , const CallContext& context, EventQueue& events);
 int handle_type_2(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator cur_step , const CallContext& context, EventQueue& events);
 int handle_type_3(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator cur_step , const CallContext& context, EventQueue& events);
 int handle_type_4(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator cur_step , const CallContext& context, EventQueue& events);
 int handle_type_5(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator cur_step , const CallContext& context, EventQueue& events);
+void monitor_time(double t_start);
+
+class Params: public CallContextParameters{
+public:
+	ComponentMain* comp;
+	Params(ComponentMain* comp):comp(comp){}
+	std::string str()const{return "";}
+};
 
 void JointStatesCallback(const sensor_msgs::JointStateConstPtr &msg)
 {
@@ -63,48 +71,86 @@ void pauseCallback(const std_msgs::StringConstPtr &msg)
 	}
 }
 
-/*
- * 	This callback reads the map, & updates a sheared variable.
- * 	*/
-
-void mapCallback(const robil_msgs::Map &msg)
+void mapCallback(const std_msgs::Float64ConstPtr &msg)
 {
 	/*
 	 * TODO:
 	 * 		Reading the height from map grid.
 	 * 		extracting the height.
 	 * 		& updates shared memory ;
+	 * 		Right now, it doesn't use robil2framework to extract the height.
 	 */
-	ground_height = msg.data._M_impl._M_start->height;
-	ROS_INFO("Read the Map .. ");
+
+	blade2ground = msg->data ;
+
 }
-/*
- * 		This Method is responsible to keep steady blade.
- */
+
 void blade_correction()
 {
 	bool loop_on = true;
-	tf::StampedTransform body2loader_startp;
-	double set_point = ground_height;		/* The initial height that we should keep */
-	config::WSM::pub::BladePositionCommand * bladeCommand;
-	double supporter_angle = 0 , loader_angle = 0 ;
+	double t_hold = 0.05 ;
+	double delta = 0 ;
+	double RPY [3] ;
+	double jac = 0 ;
 	int supporterStatesIndex = 0, loaderStatesIndex = 0;
-/* finds supporter and loader's indices. */
-	for(int i = 0; i < jointStates.name.size(); i++){
-		if(jointStates.name[i] == "supporter_joint"){
-			supporterStatesIndex = i;
+	tf::StampedTransform body2loader_startp;
+
+	/* Get the initial height that we should keep */
+
+		body2loader_startp = Global_comp->getLastTrasform("loader","body");
+		body2loader_startp.getBasis().getRPY(RPY[0],RPY[1],RPY[2],1);
+		double set_point = body2loader_startp.getOrigin().z() + 0.28748;
+
+	/* finds supporter and loader's indices. */
+		for(int i = 0; i < jointStates.name.size(); i++){
+			if(jointStates.name[i] == "supporter_joint"){
+				supporterStatesIndex = i;
+			}
+			if(jointStates.name[i] == "loader_joint"){
+				loaderStatesIndex = i;
+			}
 		}
-		if(jointStates.name[i] == "loader_joint"){
-			loaderStatesIndex = i;
-		}
-	}
+
+		config::WSM::pub::BladePositionCommand * bladeCommand;
+		double supporter_angle = 0 , loader_angle = 0 ;
+		double next_supporter_angle = 0 , next_loader_angle = 0 ;
+	//	double cur_h = 0 ;
+
 while(loop_on){
 	try{
 		/*
 		 * Main work loop of blade correction.
 		 */
-		ROS_INFO("Correcting ..");
-		boost::this_thread::sleep(boost::posix_time::seconds(3));
+
+		/* Calc Delta of change */
+		delta = (blade2ground - set_point);
+
+		/* Check if t_hold was crossed */
+
+			if(fabs(delta) >= t_hold)
+			{
+			//	ROS_INFO("set point is:%g ,last:%g , delta is: %g",set_point,blade2ground,delta);
+				supporter_angle = jointStates.position[supporterStatesIndex];
+				loader_angle = jointStates.position[loaderStatesIndex];
+				jac = InverseKinematics::get_J(supporter_angle);
+
+				next_supporter_angle = supporter_angle + (pow(jac,-1))*(delta) ;
+				next_loader_angle = -(InverseKinematics::get_pitch(next_supporter_angle,0)) + RPY[1];
+
+			//	ROS_INFO("Next supporter angle:%g",next_supporter_angle);
+
+				bladeCommand = new config::WSM::pub::BladePositionCommand();
+				bladeCommand->name.push_back("supporter_joint");
+				bladeCommand->name.push_back("loader_joint");
+
+				bladeCommand->position.push_back(next_supporter_angle);
+				bladeCommand->position.push_back(next_loader_angle);
+				Global_comp->publishBladePositionCommand(*bladeCommand);
+
+				delete bladeCommand;
+			}
+		/* sleep 1 sec */
+		boost::this_thread::sleep(boost::posix_time::seconds(1));
 	}
 	catch(boost::thread_interrupted const&)
 	{
@@ -114,29 +160,12 @@ while(loop_on){
   }
 }
 
-/*
- *  This thread subscribes to /PER/Map un order to constantly update the ground height.
- */
-void heigth_read()
+void monitor_time(double time)
 {
-	ros::NodeHandle n ;
-	//ros::Subscriber blade_sensor = n.subscribe<robil_msgs::Map>("/PER/map",100, mapCallback) ;
-	boost::posix_time::seconds delay(3);
-
-	while(ros::ok()){
-		ros::spinOnce();
-		ROS_INFO("Reading the height..");
-		boost::this_thread::sleep(delay);
-	}
+	std_msgs::Float32 pub ;
+	pub.data = time;
+	monitor.publish(pub);
 }
-
-class Params: public CallContextParameters{
-public:
-	ComponentMain* comp;
-	Params(ComponentMain* comp):comp(comp){}
-	std::string str()const{return "";}
-};
-
 
 FSM(wsm_WORK)
 {
@@ -318,9 +347,6 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 			/* End step diagnostics */
 
-		//	ROS_INFO("Got type %d", step->type);
-		//	ROS_INFO("Doing step number %d",step->id);
-
 			int exit_status = 0 ;
 
 			switch(step->type){
@@ -421,7 +447,10 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	ros::NodeHandle n;
 	ros::Subscriber jointstatesSub = n.subscribe<sensor_msgs::JointState>("/Sahar/joint_states", 100, &JointStatesCallback);
 	ros::Subscriber PauseMission = n.subscribe<std_msgs::String>("/decision_making/events" , 100 , &pauseCallback);
-	boost::thread worker(heigth_read);
+	ros::Subscriber blade_sensor = n.subscribe<std_msgs::Float64>("/test",100,mapCallback);
+	monitor = n.advertise<std_msgs::Float32>("/monitor/task_time",100);
+
+	Global_comp = &component ;
 
 	ros_decision_making_init(argc, argv);
 	RosEventQueue events;
@@ -487,10 +516,10 @@ return (model_coordinates);
  */
 int handle_type_1(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator cur_step , const CallContext& context , EventQueue& events)
 {
-	double value = ((cur_step->value)-0.28748); 	//Height in meters from 0.0
+	double value = ((cur_step->value)+0.28748); 	//Height in meters from ground
 
 		if(cur_step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_graund){
-			value += ground_height ;
+			value += blade2ground ;
 		}
 
 	double tic = ros::Time::now().toSec();			//Stores The current time
@@ -551,10 +580,13 @@ int handle_type_1(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator c
 				return 0;
 				}
 				/* Check for pause or success */
-						if(pause_time)
+						if(pause_time){
 							return -1 ;
-						else
+						}
+						else{
+							monitor_time(toc);
 							return 1 ;
+						}
 
 }
 
@@ -625,10 +657,13 @@ int handle_type_2(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator c
 		if(!pause_time)
 			COMPONENT->publishBladePositionCommand(bladeCommand);
 			/* Check for pause or success */
-				if(pause_time)
+				if(pause_time){
 					return -1 ;
-				else
+				}
+				else{
+					monitor_time(toc);
 					return 1 ;
+				}
 		}
 		else
 		{
@@ -696,6 +731,7 @@ int handle_type_3(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator c
 				return 0 ;
 			}
 			else{
+				monitor_time(toc);
 				return 1 ;
 			}
    	   }
@@ -724,6 +760,7 @@ int handle_type_4(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator c
 	boost::thread *Thread_ptr ;
 
 	if(cur_step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_graund){
+		ROS_INFO("launched correction thread");
 		Thread_ptr = new boost::thread(blade_correction);
 	}
 
@@ -766,7 +803,7 @@ int handle_type_4(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator c
 		COMPONENT->publishWSMVelocity(twist);
 
 		if(cur_step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_graund){
-			ROS_INFO(">>>> Trying to stop..");
+			ROS_INFO(">>>> Joining with correction thread..");
 			Thread_ptr->interrupt();
 			Thread_ptr->join();
 			delete Thread_ptr ;
@@ -780,6 +817,7 @@ int handle_type_4(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator c
 			return 0 ;
 		}
 		else{
+			monitor_time(toc);
 			return 1 ;
 		}
 	//}
@@ -805,14 +843,12 @@ int handle_type_4(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator c
 int handle_type_5(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator cur_step , const CallContext& context , EventQueue& events)
 {
 	double value = (cur_step->value)*(M_PI / 180.0);
+	boost::thread *Thread_ptr ;
 
 	if(cur_step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_graund){
-		/*
-		 * TODO:
-		 *   Enable ground relativity
-		 */
+		ROS_INFO("launched correction thread");
+		Thread_ptr = new boost::thread(blade_correction);
 	}
-	else{
 
 		config::WSM::pub::WSMVelocity twist;
 		geometry_msgs::TwistStamped prev_speed;
@@ -887,6 +923,14 @@ int handle_type_5(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator c
 
 		twist.twist.angular.z = 0; //Set speed to 0
 		COMPONENT->publishWSMVelocity(twist);
+
+		if(cur_step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_graund){
+				ROS_INFO(">>>> Joining with correction thread..");
+				Thread_ptr->interrupt();
+				Thread_ptr->join();
+				delete Thread_ptr ;
+			}
+
 		if(pause_time){
 			cur_step->value = (value - traveledYaw)*(180.0 / M_PI) ;
 			return -1;
@@ -895,9 +939,10 @@ int handle_type_5(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator c
 			return 0 ;
 		}
 		else{
+			monitor_time(toc);
 			return 1 ;
 		}
-	}
+
 	return 0 ;
 }
 

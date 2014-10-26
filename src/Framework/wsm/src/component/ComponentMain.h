@@ -19,6 +19,10 @@ public:
 	config::WSM::sub::BladePosition * receivedBladePosition;
 	config::LLC::sub::Location * receivedLocation;
 	config::LLC::sub::PerVelocity * receivedPerVelocity;
+	int cur_step ;
+	int task_length;
+	bool new_seq ;
+
 
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -33,4 +37,5 @@ public:
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 };
+
 #endif /* COMPONENTMAIN_H_ */

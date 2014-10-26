@@ -26,11 +26,10 @@ void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
 {
 	ROS_INFO("Got sequence with Task id: %s",msg.task_id.c_str());
 	if(this->receivedWorkSeqData != NULL){
-		ROS_INFO("error now?");
 		delete this->receivedWorkSeqData;
 	}
 	else{
-		ROS_INFO("error after");
+	//	ROS_INFO("error after");
 	}
 	this->receivedWorkSeqData = new config::WSM::sub::WorkSeqData(msg);
 }
