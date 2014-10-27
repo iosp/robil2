@@ -1,3 +1,27 @@
+27/10/2014 SHA: 7a314ef9b2c3e2ec63d361cb034c0dc7d2022da8
+
+What's new:
+===========
+1. Added Monitoring topic, addressing how much time a step took.
+2. Ground - related blade Manipulation, for tasks 1,4,5.
+
+Known limitations:
+=============
+
+1. Right now, ground-relative manipulation for tasks 4,5 assumes a sensor mounted below the blade, 
+   updating the blade's distance from the ground. (As disscused with Eliya.)
+2. Monitoring topic is: "/monitor/task_time" , and completely detached from robil2 framework.
+
+****************************************************************************************
+8/09/2014 SHA: 797747d22895145136af556355e17af6a2aad428
+What's new:
+===========
+1. It's possible to pause a mission during a step; also, when returning to execute the step, the step will continue normally.
+2. Mission complete with correct mission id from recieved header is being published.
+
+-Note:-
+1. We assumed that each task and each mission has unique ID.
+
 ****************************************************************************************
 11/08/2014 SHA: 6daab9b421fbd525717f62f86a645571936c2e4e
 What's new:

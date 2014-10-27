@@ -1,13 +1,13 @@
 #include "ros/ros.h"
 #include "std_msgs/Float64.h"
+#include "std_msgs/Bool.h"
 #include "std_msgs/String.h"
 #include "sensor_msgs/JointState.h"
 #include "geometry_msgs/Twist.h"
 #include <sstream>
 #include <iostream>
 #include <time.h>
-
- // std_msgs::Float64 x ;
+#include <bondcpp/bond.h>
 
   int movie = 1 ;
   int emergancy = 1 ;
@@ -15,6 +15,7 @@
   ros::Publisher front_right_pub_;
   ros::Publisher back_left_pub_;
   ros::Publisher back_right_pub_;
+  ros::Publisher platform_hb_pub_;
 
   ros::Publisher supporter_pub_;
   ros::Publisher loader_pub_;
@@ -22,12 +23,6 @@
   geometry_msgs::Twist::Ptr wheels (new geometry_msgs::Twist()) ;
 
   ros::Time e_stop;
-
-/*
-void pricecall(const std_msgs::Float64::ConstPtr& price){
-	x.data = price->data ;
-}
-*/
 
 void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 {
@@ -116,7 +111,6 @@ void JoCallback	(const sensor_msgs::JointState &msg)
   }
 }
 
-
 int main(int argc, char **argv)
 {
   
@@ -135,6 +129,7 @@ int main(int argc, char **argv)
   supporter_pub_ = n.advertise<std_msgs::Float64>("/Sahar/supporter_position_controller/command", 100);
   loader_pub_ = n.advertise<std_msgs::Float64>("/Sahar/loader_position_controller/command", 100);
   brackets_pub_ = n.advertise<std_msgs::Float64>("/Sahar/brackets_position_controller/command", 100);
+  platform_hb_pub_ = n.advertise<std_msgs::Bool>("/Sahar/link_with_platform" , 100);
 
   ros::Subscriber twist_sub_ = n.subscribe("/wheelsrate", 1000, wheelsCallback );
   ros::Subscriber arm_sub_ = n.subscribe("/armrate", 1000, armCallback );
@@ -143,8 +138,7 @@ int main(int argc, char **argv)
   ros::Subscriber Joint_rate_sub = n.subscribe("/LLC/EFFORTS/Joints" , 1000, JoCallback );
 
   ros::Rate loop_rate(10);
-  ros::Duration t_out;
-  e_stop = ros::Time::now();
+  std_msgs::Bool connection;
 
    while (ros::ok())
      {
@@ -154,9 +148,13 @@ int main(int argc, char **argv)
 	   		emergancy = 0 ;
 	   	 else
 	   		 emergancy = 1 ;*/
+	   connection.data = true;
+	   platform_hb_pub_.publish(connection);
        ros::spinOnce();
        loop_rate.sleep();
      }
+   connection.data = false;
+   platform_hb_pub_.publish(connection);
   return 0;
 }
 

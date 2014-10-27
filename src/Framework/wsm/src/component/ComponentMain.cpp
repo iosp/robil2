@@ -14,6 +14,9 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	this->receivedWorkSeqData = NULL;
 	this->receivedLocation = NULL;
 	this->receivedPerVelocity = NULL;
+	this->new_seq = false ;
+	this->task_length = -1 ;
+	this->cur_step = -1 ;
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -22,10 +25,13 @@ ComponentMain::~ComponentMain() {
 void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
 {
 	ROS_INFO("Got sequence with Task id: %s",msg.task_id.c_str());
-	if(this->receivedWorkSeqData != NULL)
+	if(this->receivedWorkSeqData != NULL){
 		delete this->receivedWorkSeqData;
+	}
+	else{
+	//	ROS_INFO("error after");
+	}
 	this->receivedWorkSeqData = new config::WSM::sub::WorkSeqData(msg);
-	//std::cout<< "WSM say:" << msg << std::endl;
 }
 	
 
@@ -67,7 +73,6 @@ void ComponentMain::publishBladePositionCommand(config::WSM::pub::BladePositionC
 {
 	_roscomm->publishBladePositionCommand(msg);
 }
-
 
 	
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
