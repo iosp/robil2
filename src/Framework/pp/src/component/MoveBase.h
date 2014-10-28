@@ -18,6 +18,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/MapMetaData.h>
 #include <nav_msgs/OccupancyGrid.h>
+#include <actionlib_msgs/GoalStatusArray.h>
 
 #include <ParameterHandler.h>
 #include <ParameterTypes.h>
@@ -64,11 +65,17 @@ protected:
 
 protected:
 	ros::Publisher goalPublisher;
+	ros::Publisher originalGoalPublisher;
 	ros::Publisher goalCancelPublisher;
 	ros::Publisher mapPublisher;
 	ros::Publisher fakeLaserPublisher;
+	ros::Publisher globalPathPublisher;
+	ros::Publisher selectedPathPublisher;
 	ros::Subscriber pathSubscriber;
 	ros::Subscriber sub_log;
+	ros::Subscriber moveBaseStatusSubscriber;
+	ros::Subscriber globalCostmapSubscriber;
+	ros::Subscriber speedSubscriber;
 
 	boost::recursive_mutex mtx;
 	ComponentMain* comp;
@@ -78,6 +85,7 @@ protected:
 	void on_log_message(int type, string message);
 	void on_error_from_move_base();
 	void stop_navigation(bool success);
+	void on_move_base_status(const actionlib_msgs::GoalStatusArray::ConstPtr& msg);
 
 //FOR TEST ONLY
 public:

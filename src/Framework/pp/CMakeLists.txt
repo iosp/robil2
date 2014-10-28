@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
     plpcpp
 )
 find_package(Boost REQUIRED COMPONENTS system)
+find_package(OpenCV REQUIRED)
 catkin_package(
 	CATKIN_DEPENDS
 	    robil2conf
@@ -22,6 +23,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 ## Declare a cpp library
 add_library(pp_rosComm
@@ -33,13 +35,13 @@ add_library(pp_compMain
   src/component/MoveBase.cpp
 )
 add_executable(pp_node src/main.cpp)
-target_link_libraries(pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(pp_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(pp_node pp_compMain pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(pp_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(pp_node pp_compMain pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
 
 
 add_executable(pp_test src/tester/Tester.cpp)
-target_link_libraries(pp_test ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(pp_test ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
 
 
 
