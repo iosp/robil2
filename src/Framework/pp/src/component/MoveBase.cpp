@@ -21,7 +21,7 @@
 #define CREATE_POINTCLOUD2_FOR_NAV 0
 #define CREATE_POINTCLOUD_FOR_NAV 1
 
-#define TH_NEARBY 0.5 //m
+#define TH_NEARBY 1.5 //m
 
 #include <opencv2/opencv.hpp>
 
@@ -187,6 +187,17 @@ namespace{
 					next.push_back(nei);
 				}
 			}
+			for(int y=0;y<h;y++)for(int x=0;x<w;x++){
+				point_t current = point_t(x,y);
+				bool v = global_map.data[current.index(w,h)]>10;
+				if(v){
+					for(int iy=-1;iy<=1;iy++)for(int ix=-1;ix<=1;ix++){
+						point_t nei(current.x+ix,current.y+iy);
+						if/*outside of map*/	(nei.inside(w,h)==false) 			continue;
+						reachable[nei.index(w,h)] = false;
+					}
+				}
+			}
 #			if SHOW_CV_RESULTS==1
 				cv::Mat show(h,w, CV_8UC3);
 				for(int y=0;y<h;y++)for(int x=0;x<w;x++){
@@ -262,7 +273,7 @@ MoveBase::MoveBase(ComponentMain* comp)
 	speedSubscriber = node.subscribe("/cmd_vel", 1, &on_speed);
 	globalPathPublisher = node.advertise<nav_msgs::Path>("/pp/global_path",1);
 	selectedPathPublisher = node.advertise<nav_msgs::Path>("/pp/selected_path",1);
-	moveBaseStatusSubscriber = node.subscribe("/move_base/status", 1, &MoveBase::on_move_base_status, this);
+	//moveBaseStatusSubscriber = node.subscribe("/move_base/status", 1, &MoveBase::on_move_base_status, this);
 
 #if CREATE_POINTCLOUD_FOR_NAV == 1
 	mapPublisher = node.advertise<sensor_msgs::PointCloud>("/map_cloud", 5, false);
@@ -285,7 +296,7 @@ void MoveBase::on_move_base_status(const actionlib_msgs::GoalStatusArray::ConstP
 	for(size_t i=0;i<n;i++){
 		const actionlib_msgs::GoalStatus& status = msg->status_list[i];
 		if( status.text == "" or status.text == "''" ){
-			ROS_WARN_STREAM("Navigation: move_base status is empty => aborted?");
+			//ROS_WARN_STREAM("Navigation: move_base status is empty => aborted?");
 			//on_error_from_move_base();
 		}
 	}
