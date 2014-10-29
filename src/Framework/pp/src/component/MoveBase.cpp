@@ -21,8 +21,9 @@
 #define CREATE_POINTCLOUD2_FOR_NAV 0
 #define CREATE_POINTCLOUD_FOR_NAV 1
 
-#define TH_NEARBY 0.5 //m
+#define TH_NEARBY 1.5 //m
 
+#include <opencv2/opencv.hpp>
 
 
 #define SYNCH 	boost::recursive_mutex::scoped_lock locker(mtx);
@@ -31,6 +32,11 @@
 namespace{
 
 	long goal_counter =0;
+
+	template<int N> double fround(double x){
+		static const double k = ::pow10(N);
+		return round(x*k)/k;
+	}
 
 	void remove_orientation(geometry_msgs::PoseStamped& goal){
 		goal.pose.orientation.x = 0;
@@ -69,10 +75,11 @@ namespace{
 		return min_idx;
 	}
 
-	geometry_msgs::PoseStamped search_next_waypoint(const nav_msgs::Path& path, const geometry_msgs::PoseWithCovarianceStamped& pos, bool& path_is_finished){
+	geometry_msgs::PoseStamped search_next_waypoint(const nav_msgs::Path& path, const geometry_msgs::PoseWithCovarianceStamped& pos, bool& path_is_finished, int& goal_res_index){
 		//cout<<"search_next_waypoint for: "<<pos.pose.pose.position.x<<","<<pos.pose.pose.position.y<<endl;
 		if(path.poses.size()==0){
 			path_is_finished = true;
+			goal_res_index = -1;
 			return getPoseStamped( pos );
 		}
 		if(path.poses.size()==1){
@@ -81,6 +88,7 @@ namespace{
 			btVector3 vpath_pose_pose = toVector(path_pose.pose); REMOVE_Z(vpath_pose_pose);
 			btVector3 vmy_pose_pose = toVector(my_pose.pose); REMOVE_Z(vmy_pose_pose);
 			path_is_finished = vpath_pose_pose.distance(vmy_pose_pose) <= TH_NEARBY;
+			goal_res_index = 0;
 			return path_pose;
 		}
 		path_is_finished = false;
@@ -92,13 +100,16 @@ namespace{
 			const geometry_msgs::Pose& b = getPose( path.poses[0] );
 			const geometry_msgs::Pose& d = getPose( path.poses[1] );
 			double angle_deg = calcTriangle_deg(d,b,c);
-			if(angle_deg>90){
+			bool angle_ok = angle_deg<=90;
+			bool distance_ok = (toVector(b)-toVector(c)).length() <= TH_NEARBY;
+			if(not (angle_ok or distance_ok) ){
 				//cout<<"[i] return index = 0"<<endl;
 				tf_geometry::Position p1(path.poses[0].pose.position);
 				tf_geometry::Position p2(path.poses[1].pose.position);
 				tf_geometry::Position res = p1+((p2-p1).normalized()*0.5);
 				geometry_msgs::PoseStamped pose_res=path.poses[0];
 				pose_res.pose.position = res.to_msg_Point();
+				goal_res_index = 0;
 				return getPoseStamped( pose_res );
 //				return getPoseStamped( path.poses[0] );
 			}
@@ -109,35 +120,143 @@ namespace{
 			const geometry_msgs::Pose& a = getPose( path.poses[i-1] );
 			const geometry_msgs::Pose& b = getPose( path.poses[i] );
 			double angle_deg = calcTriangle_deg(a,b,c);
-			if(angle_deg<90){
+			bool angle_ok = angle_deg>=90;
+			bool distance_ok = (toVector(b)-toVector(c)).length() <= TH_NEARBY;
+			if(not (angle_ok or distance_ok) ){
 				//cout<<"[i] return index = "<< i <<endl;
 				if(i==path.poses.size()-1){
 					geometry_msgs::PoseStamped my_pose = getPoseStamped( pos );
 					geometry_msgs::PoseStamped path_pose = getPoseStamped( path.poses[i] );
 					path_is_finished = toVector(path_pose.pose).distance(toVector(my_pose.pose)) <= TH_NEARBY;
 				}
-				if(i==path.poses.size()-1) return getPoseStamped( path.poses[i] );
+				if(i==path.poses.size()-1){
+					goal_res_index = i;
+					return getPoseStamped( path.poses[i] );
+				}
 				tf_geometry::Position p1(path.poses[i-1].pose.position);
 				tf_geometry::Position p2(path.poses[i].pose.position);
 				tf_geometry::Position res = p2+((p2-p1).normalized()*0.5);
 				geometry_msgs::PoseStamped pose_res=path.poses[i];
 				pose_res.pose.position = res.to_msg_Point();
+				goal_res_index = i;
 				return getPoseStamped( pose_res );
 			}
 		}
 		//PATH IS FINISHED
 		path_is_finished = true;
+		goal_res_index = -2;
 		return getPoseStamped( pos );
 		//return getPoseStamped( path.poses[path.poses.size()-1] );
 	}
 
 
+	struct point_t{
+		int x,y;
+		point_t(int x,int y):x(x),y(y){}
+		int index(int w,int h)const{return y*w+x;}
+		bool inside(int w,int h)const{return 0<=x and x<w and 0<=y and y<h;}
+	};
+	bool make_goal_reachable(
+		geometry_msgs::PoseStamped& goal, int& goal_index,
+		const nav_msgs::Path& path,
+		const geometry_msgs::PoseWithCovarianceStamped& pos,
+		const nav_msgs::OccupancyGrid& global_map,
+		bool& path_is_finished
+	)
+	{
+#		define SHOW_CV_RESULTS 0
+		bool result(false);
+		int data_size =global_map.data.size();
+		int w = global_map.info.width;
+		int h = global_map.info.height;
+		bool* reachable = new bool[data_size]; memset(reachable,0,data_size*sizeof(bool));
+		std::list<point_t> next;
+		point_t center(w/2,h/2);
+		try{
+			reachable[center.index(w,h)] = true;																					// select all reachable cells
+			next.push_back(center);
+			while(next.empty()==false){
+				point_t current = next.front(); next.pop_front();
+				for(int iy=-1;iy<=1;iy++)for(int ix=-1;ix<=1;ix++){
+					point_t nei(current.x+ix,current.y+iy);
+					if/*outside of map*/	(nei.inside(w,h)==false) 				continue;
+					if/*already checked*/	(reachable[nei.index(w,h)]) 			continue;
+					if/*occupied*/			(global_map.data[nei.index(w,h)]>10) 	continue;
+					/*else*/
+					reachable[nei.index(w,h)] = true;
+					next.push_back(nei);
+				}
+			}
+			for(int y=0;y<h;y++)for(int x=0;x<w;x++){
+				point_t current = point_t(x,y);
+				bool v = global_map.data[current.index(w,h)]>10;
+				if(v){
+					for(int iy=-1;iy<=1;iy++)for(int ix=-1;ix<=1;ix++){
+						point_t nei(current.x+ix,current.y+iy);
+						if/*outside of map*/	(nei.inside(w,h)==false) 			continue;
+						reachable[nei.index(w,h)] = false;
+					}
+				}
+			}
+#			if SHOW_CV_RESULTS==1
+				cv::Mat show(h,w, CV_8UC3);
+				for(int y=0;y<h;y++)for(int x=0;x<w;x++){
+					uchar v = reachable[point_t(x,y).index(w,h)] ? 255 : 0;
+					show.at<cv::Vec3b>(h-y-1,x) = cv::Vec3b(v,v,v);
+				}
+				cv::namedWindow("REACHABLE", CV_WINDOW_NORMAL);
+#			endif
+			point_t _goal(goal.pose.position.x/global_map.info.resolution, goal.pose.position.y/global_map.info.resolution);
+			point_t _robot(pos.pose.pose.position.x/global_map.info.resolution, pos.pose.pose.position.y/global_map.info.resolution);
+			point_t goal_cell(_goal.x-_robot.x+center.x, _goal.y-_robot.y+center.y);													// calculate cell of current goal
+			bool is_reachable = goal_cell.inside(w,h) and reachable[goal_cell.index(w,h)];
+			if( not is_reachable ){																									// if the cell is not reachable then
+				point_t best(0,0);																									//		search nearest to the cell reachable point, change goal and return true
+				double best_dist=hypot(w,h);
+				for(int y=0;y<h;y++)for(int x=0;x<w;x++){
+					point_t p(x,y);
+					if( not reachable[p.index(w,h)] ) continue;
+					double dist = hypot(p.x-goal_cell.x, p.y-goal_cell.y);
+					if(best_dist > dist){ best_dist=dist; best=p; }
+				}
+				goal.pose.position.x = (best.x-center.x) * global_map.info.resolution + pos.pose.pose.position.x;
+				goal.pose.position.y = (best.y-center.y) * global_map.info.resolution + pos.pose.pose.position.y;
+#				if SHOW_CV_RESULTS==1
+					show.at<cv::Vec3b>(h-goal_cell.y-1,goal_cell.x) = cv::Vec3b(100,255,200);
+					show.at<cv::Vec3b>(h-best.y-1,best.x) = cv::Vec3b(255,0,0);
+					cv::imshow("REACHABLE",show);
+					cv::waitKey(10);
+#				endif
+				result = true;
+			}
+			else { result = false; }																								// else return false
 
+		}catch (...) {}
+		delete[] reachable;
+		return result;
+	}
 
 	boost::thread_group threads;
 	actionlib_msgs::GoalID last_nav_goal_id;
+	move_base_msgs::MoveBaseActionGoal last_nav_goal;
 	nav_msgs::Path curr_nav_path;
 	bool clear_path_on_activate=true;
+
+	boost::mutex global_map_mutex;
+	nav_msgs::OccupancyGrid global_cost_map;
+}
+
+
+void on_GlobalCostMap( const nav_msgs::OccupancyGrid::ConstPtr& cost_map){
+	boost::mutex::scoped_lock l(global_map_mutex);
+	global_cost_map = *cost_map;
+	//ROS_INFO("Navigation: Global occupancy cost grid gotten");
+}
+void on_speed(const geometry_msgs::Twist::ConstPtr& msg){
+	bool moving = msg->linear.x + msg->linear.y + msg->angular.z;
+	if(not moving){
+		//ROS_INFO_STREAM( "Navigation: ROBOTE IS STOPPED" );
+	}
 }
 
 
@@ -147,14 +266,16 @@ MoveBase::MoveBase(ComponentMain* comp)
 	ros::NodeHandle node;
 
 	goalPublisher = node.advertise<move_base_msgs::MoveBaseActionGoal>("/move_base/goal", 5, false);
+	originalGoalPublisher = node.advertise<geometry_msgs::PoseStamped>("/move_base/original_goal", 5, false);
 	goalCancelPublisher = node.advertise<actionlib_msgs::GoalID>("/move_base/cancel", 5, false);
 	pathSubscriber = node.subscribe("/move_base/NavfnROS/plan", 10, &MoveBase::on_nav_path, this);
+	globalCostmapSubscriber = node.subscribe("/move_base/global_costmap/costmap", 1, &on_GlobalCostMap);
+	speedSubscriber = node.subscribe("/cmd_vel", 1, &on_speed);
+	globalPathPublisher = node.advertise<nav_msgs::Path>("/pp/global_path",1);
+	selectedPathPublisher = node.advertise<nav_msgs::Path>("/pp/selected_path",1);
+	//moveBaseStatusSubscriber = node.subscribe("/move_base/status", 1, &MoveBase::on_move_base_status, this);
 
-#if CREATE_MAP_FOR_NAV == 1
-	mapPublisher = node.advertise<nav_msgs::OccupancyGrid>("/map", 5, false);
-#elif CREATE_POINTCLOUD2_FOR_NAV == 1
-	mapPublisher = node.advertise<sensor_msgs::PointCloud2>("/map_cloud", 5, false);
-#elif CREATE_POINTCLOUD_FOR_NAV == 1
+#if CREATE_POINTCLOUD_FOR_NAV == 1
 	mapPublisher = node.advertise<sensor_msgs::PointCloud>("/map_cloud", 5, false);
 	fakeLaserPublisher = node.advertise<sensor_msgs::LaserScan>("/costmap_clear_fake_scan",1,false);
 #endif
@@ -169,6 +290,17 @@ MoveBase::MoveBase(ComponentMain* comp)
 	sub_commands = node.subscribe("/test/command", 10, &MoveBase::on_sub_commands, this);
 }
 
+void MoveBase::on_move_base_status(const actionlib_msgs::GoalStatusArray::ConstPtr& msg){
+	if( not is_active ) return;
+	size_t n = msg->status_list.size();
+	for(size_t i=0;i<n;i++){
+		const actionlib_msgs::GoalStatus& status = msg->status_list[i];
+		if( status.text == "" or status.text == "''" ){
+			//ROS_WARN_STREAM("Navigation: move_base status is empty => aborted?");
+			//on_error_from_move_base();
+		}
+	}
+}
 
 void MoveBase::on_log_message(const LogMessage::ConstPtr& msg){
 	if(msg->name == "/move_base" and msg->level > LogMessage::DEBUG){
@@ -266,19 +398,6 @@ SYNCH
 	ROS_INFO_STREAM("Navigation: Global path gotten. Number of way points is "<<goal_path.waypoints.poses.size()<<" ");
 	if(goal_path.waypoints.poses.size()==0) return;
 	gotten_path = goal_path;
-//	if(gl_defined){
-//		geometry_msgs::PoseStamped cloc = getPoseStamped(gotten_location);
-//		tf_geometry::Position curr(tf_geometry::getPose(cloc).position);
-//		tf_geometry::Position goal(tf_geometry::getPose(gotten_path.waypoints.poses[0]).position);
-//		if((goal-curr).len() > 2){
-//			//tf_geometry::Position intr = curr+((goal-curr)*0.5);
-//			tf_geometry::Position intr = (goal+curr)/2;
-//			geometry_msgs::PoseStamped intr_pose; intr_pose.pose.position = intr.to_msg_Point();
-//			cout<<"goal="<<STR(goal)<<"; curr="<<STR(curr)<<"; intr="<<STR(intr)<<endl;
-//			gotten_path.waypoints.poses.insert(gotten_path.waypoints.poses.begin(), intr_pose);
-//			ROS_INFO_STREAM("Navigation: current location("<<STR(cloc.pose.position)<<"), goal("<<STR(goal)<<") => intermediate point("<<STR(intr_pose.pose.position)<<") added to global path.");
-//		}
-//	}
 	gp_defined=true;
 
 	if(not is_active){
@@ -293,19 +412,6 @@ SYNCH
 	ROS_INFO_STREAM("Navigation: Global path gotten. Number of way points is "<<goal_path.poses.size()<<" ");
 	if(goal_path.poses.size()==0) return;
 	gotten_nav_path = goal_path;
-//	if(gl_defined){
-//		geometry_msgs::PoseStamped cloc = getPoseStamped(gotten_location);
-//		tf_geometry::Position curr(tf_geometry::getPose(cloc).position);
-//		tf_geometry::Position goal(tf_geometry::getPose(gotten_nav_path.poses[0]).position);
-//		if((goal-curr).len() > 2){
-//			//tf_geometry::Position intr = curr+((goal-curr)*0.5);
-//			tf_geometry::Position intr = (goal+curr)/2;
-//			geometry_msgs::PoseStamped intr_pose; intr_pose.pose.position = intr.to_msg_Point();
-//			//cout<<"goal="<<goal.x<<","<<goal.y<<"; curr="<<curr.x<<","<<curr.y<<"; intr="<<intr.x<<","<<intr.y<<endl;
-//			gotten_nav_path.poses.insert(gotten_nav_path.poses.begin(), intr_pose);
-//			ROS_INFO_STREAM("Navigation: current location("<<cloc.pose.position.x<<","<<cloc.pose.position.y<<"), goal("<<goal.x<<","<<goal.y<<") => intermediate point("<<intr_pose.pose.position.x<<","<<intr_pose.pose.position.y<<") added to global path.");
-//		}
-//	}
 	gnp_defined=true;
 
 	if(not is_active){
@@ -325,6 +431,7 @@ void MoveBase::cancel(bool clear_last_goals){
 		this->gp_defined = false;
 	}
 	this->is_path_calculated = false;
+	last_nav_goal = move_base_msgs::MoveBaseActionGoal();
 	goalCancelPublisher.publish(last_nav_goal_id);
 	goal_counter++;
 }
@@ -332,6 +439,7 @@ void MoveBase::activate(){
 	SYNCH
 	is_active=true;
 	is_canceled=false;
+	last_nav_goal = move_base_msgs::MoveBaseActionGoal();
 	ROS_INFO("Navigation is active. you can send Global Path.");
 	if(clear_path_on_activate){
 		this->gnp_defined= false;
@@ -377,42 +485,118 @@ void MoveBase::on_nav_path(const nav_msgs::Path& nav_path){
 	if(threads.size()==0) threads.add_thread(new boost::thread(boost::bind(path_publishing, comp, &mtx, &is_canceled, &is_path_calculated)));
 }
 
+
+
 void MoveBase::calculate_goal(){
 	geometry_msgs::PoseStamped goal;
 	bool is_path_finished;
+	int goal_index=-1;
+	nav_msgs::Path gotten_global_path;
 	if(gp_defined){
-		goal = search_next_waypoint(gotten_path.waypoints, gotten_location, is_path_finished);
+		gotten_global_path = gotten_path.waypoints;
 	}else{
-		goal = search_next_waypoint(gotten_nav_path, gotten_location, is_path_finished);
+		gotten_global_path = gotten_nav_path;
 	}
+
+	gotten_global_path.header.frame_id = "/map";
+	gotten_global_path.header.stamp = ros::Time(0) ;
+	globalPathPublisher.publish(gotten_global_path);
+	selectedPathPublisher.publish(gotten_global_path);
+
+	goal = search_next_waypoint(gotten_global_path, gotten_location, is_path_finished, goal_index);
+
 	if(is_path_finished){
-		ROS_INFO("Navigation: path finished. send event and clear current path.");
+		ROS_INFO("Navigation: path is finished. send event and clear current path.");
 		stop_navigation(true);
+		return;
 	}
+
+	global_map_mutex.lock();
+		nav_msgs::OccupancyGrid gmap = global_cost_map;
+	global_map_mutex.unlock();
+	if( gmap.info.width and gmap.info.height ){
+		geometry_msgs::PoseStamped original_goal = goal;
+		geometry_msgs::PoseStamped first_original_goal = goal;
+		static bool prev_send_original(true);
+		bool send_original = false;
+		//ROS_INFO_STREAM("Navigation: check goal on reachability ...");
+		while(
+				not is_path_finished
+				and
+				make_goal_reachable(goal, goal_index, gotten_global_path, gotten_location, gmap, is_path_finished)
+		){
+			send_original = true;
+			//ROS_INFO_STREAM("Navigation: ... original goal("<<original_goal.pose.position.x<<","<<original_goal.pose.position.y<<") is not reachable. it's changed to near one("<<goal.pose.position.x<<","<<goal.pose.position.y<<").");
+			gotten_global_path.poses[goal_index] = goal;
+			selectedPathPublisher.publish(gotten_global_path);
+
+			goal = search_next_waypoint(gotten_global_path, gotten_location, is_path_finished, goal_index);
+			if(goal.pose.position.x==original_goal.pose.position.x and goal.pose.position.y==original_goal.pose.position.y) break;
+			original_goal = goal;
+		}
+		if(send_original){
+			first_original_goal.header.frame_id = "/map";
+			first_original_goal.header.stamp = ros::Time::now();
+			originalGoalPublisher.publish(first_original_goal);
+			if(send_original!=prev_send_original){
+				ROS_INFO_STREAM("Navigation: Goal changed from original to reachable");
+			}
+		}else{
+			if(send_original!=prev_send_original){
+				ROS_INFO_STREAM("Navigation: Original goal is used");
+			}
+		}
+		prev_send_original=send_original;
+		//ROS_INFO_STREAM("Navigation: ... done");
+	}else{
+		ROS_WARN("Navigation: Global occupancy cost map is not defined");
+	}
+
+	if(is_path_finished){
+		ROS_INFO("Navigation: path is finished (case2). send event and clear current path.");
+		stop_navigation(true);
+		return;
+	}
+
 	on_goal(goal);
 }
 
 void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
+	double robil_goal_x = fround<1>(robil_goal.pose.position.x);
+	double robil_goal_y = fround<1>(robil_goal.pose.position.y);
+	if(
+		last_nav_goal.goal.target_pose.pose.position.x == robil_goal_x and
+		last_nav_goal.goal.target_pose.pose.position.y == robil_goal_y
+	){
+		//ROS_INFO_STREAM("Navigation: goal is rejected. The same one.");
+		return;
+	}
 
 	move_base_msgs::MoveBaseActionGoal goal;
 	geometry_msgs::PoseStamped ps_goal;
 
 	ps_goal = robil_goal;
 	remove_orientation(ps_goal);
+	ps_goal.pose.position.x = robil_goal_x;
+	ps_goal.pose.position.y = robil_goal_y;
 
 	goal.header.frame_id = "/map";
 	goal.header.stamp = ros::Time::now();
 	ps_goal.header = goal.header;
 
-	std::stringstream sid ; sid<<"[i] goal #"<< boost::lexical_cast<std::string>(goal_counter) <<": "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y;
+	std::stringstream sid ;
+	sid<<"[i] goal #"<< boost::lexical_cast<std::string>(goal_counter) <<": "
+					 << ps_goal.pose.position.x<<","<<ps_goal.pose.position.y;
 	goal.goal_id.id = sid.str();
 	goal.goal_id.stamp = goal.header.stamp;
 	
 	goal.goal.target_pose = ps_goal;
 	
-	//std::cout<<"goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y<<std::endl;
+	//ROS_INFO_STREAM("Navigation: set new goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y);
 	last_nav_goal_id = goal.goal_id;
+	last_nav_goal = goal;
 	goalPublisher.publish(goal);
+
 
 }
 
@@ -426,172 +610,12 @@ SYNCH
 void MoveBase::on_map(const config::PP::sub::Map& robil_map){
 SYNCH
 
-#if CREATE_MAP_FOR_NAV == 1
-	nav_msgs::OccupancyGrid map;
-
-	map.info = robil_map.info;
-	//PATCH->
-	map.info.origin.position.x =0;//+= map.info.width*map.info.resolution/2.0;
-	map.info.origin.position.y =0;//+= map.info.height*map.info.resolution/2.0;
-//	map.info.origin.position.z =0;
-	tf::Quaternion q(0,0,0,1);
-//	#define setQ(M) q=tf::Quaternion(M.x,M.y,M.z,M.w);
-//	setQ(map.info.origin.orientation);
-//	#undef setQ
-//	q.setRotation(tf::Vector3(0,0,1),M_PI_2);
-	#define setQ(M) M.x=q.x();M.y=q.y();M.z=q.z();M.w=q.w();
-	setQ(map.info.origin.orientation);
-	#undef setQ
-
-	//<-PATCH
-
-	map.data.resize(map.info.width * map.info.height, 0);
-	for(size_t i=0;i<map.data.size();i++){
-		if(robil_map.data[i].type==robil_msgs::MapCell::type_obstacle or rand()%5>2){
-			map.data[i] = 100;
-		}else
-		if(robil_map.data[i].type==robil_msgs::MapCell::type_clear){
-			map.data[i] = 0;
-		}else
-		if(robil_map.data[i].type==robil_msgs::MapCell::type_unscanned){
-			map.data[i] = -1;
-		}
-	}
-
-	map.header.frame_id = "/map_fit";//NOTE: check if frame_id not has to be from robil_map.header
-	map.header.stamp = robil_map.header.stamp;//ros::Time::now();
-
-
-
-
-
-
-	{
-#define SET(N,X)\
-	tf::Quaternion _q(X.orientation.x, X.orientation.y, X.orientation.z, X.orientation.w);\
-	tf::Quaternion q1; \
-	q1.setRotation(tf::Vector3(0,0,1),M_PI_2); \
-	tf::Vector3 _l(X.position.x-map.info.width*map.info.resolution/3.0*2.0,X.position.y-map.info.height*map.info.resolution/2.0,X.position.z);\
-	tf::Transform N(_q,_l);
-	SET( tf_map, map.info.origin )
-#undef SET
-	comp->publishTransform(tf_map,"map_fit_rotation", "map_fit");
-	}
-
-	{
-#define SET(N,X)\
-	tf::Quaternion _q(X.orientation.x, X.orientation.y, X.orientation.z, X.orientation.w);\
-	tf::Quaternion q1; \
-	q1.setRotation(tf::Vector3(0,0,1),M_PI); _q=q1*_q;\
-	tf::Vector3 _l(X.position.x,X.position.y,X.position.z);\
-	tf::Transform N(_q,_l);
-	SET( tf_map, map.info.origin )
-#undef SET
-	comp->publishTransform(tf_map,"base_link", "map_fit_rotation");
-	}
-
-	mapPublisher.publish(map);
-
-#elif CREATE_POINTCLOUD2_FOR_NAV == 1
-
-	sensor_msgs::PointCloud2 map;
-
-	map.is_dense=true;
-	map.is_bigendian=false;
-
-	map.point_step=12;
-	map.height=robil_map.info.height;
-	map.width=robil_map.info.width;
-	map.row_step=robil_map.info.width * map.point_step;
-
-	map.fields.resize(3);
-	{
-		map.fields[0].name="x";
-		map.fields[0].offset=0;
-		map.fields[0].datatype=7;
-		map.fields[0].count=1;
-
-		map.fields[1].name="y";
-		map.fields[1].offset=4;
-		map.fields[1].datatype=7;
-		map.fields[1].count=1;
-
-		map.fields[2].name="z";
-		map.fields[2].offset=8;
-		map.fields[2].datatype=7;
-		map.fields[2].count=1;
-	}
-
-	map.data.clear();
-	map.data.resize(map.height*map.row_step);
-	unsigned char* map_data = map.data.data();
-	float _fz = -10;
-	for(
-			size_t y=0;
-			y<robil_map.info.height;
-			y++
-	){
-		float fy = y*robil_map.info.resolution;
-		for(
-				size_t x=0;
-				x<robil_map.info.width;
-				x++,	map_data+=map.point_step
-		){
-			size_t i = y*robil_map.info.width+x;
-			float fx = x*robil_map.info.resolution;
-			float fz = 0;
-
-			if(robil_map.data[i].type==robil_msgs::MapCell::type_obstacle /*or rand()%10>8*/){
-				fz = 1;
-			}else
-			if(robil_map.data[i].type==robil_msgs::MapCell::type_clear){
-				fz = 0;
-			}else
-			if(robil_map.data[i].type==robil_msgs::MapCell::type_unscanned){
-				fz = -1;
-			}
-
-			_fz+=0.1;
-			if(_fz>10)_fz=-10;
-
-			memcpy(map_data+map.fields[0].offset, &fx,sizeof(fx));
-			memcpy(map_data+map.fields[1].offset, &fy,sizeof(fy));
-			memcpy(map_data+map.fields[2].offset, &fz,sizeof(fz));
-		}
-	}
-
-	map.header.frame_id = "/map_fit";
-	map.header.stamp = ros::Time::now();//robil_map.header.stamp;//
-
-	{
-#define SET(N,X)\
-	tf::Quaternion _q(0,0,0,1);\
-	tf::Quaternion q1; \
-	q1.setRotation(tf::Vector3(0,0,1),M_PI_2); \
-	tf::Vector3 _l(X.position.x-robil_map.info.width*robil_map.info.resolution/3.0*2.0,X.position.y-robil_map.info.height*robil_map.info.resolution/2.0,0);\
-	tf::Transform N(_q,_l);
-	SET( tf_map, robil_map.info.origin )
-#undef SET
-	comp->publishTransform(tf_map,"map_fit_rotation", "map_fit");
-	}
-
-	{
-#define SET(N,X)\
-	tf::Quaternion _q(0,0,0,1);\
-	tf::Quaternion q1; \
-	q1.setRotation(tf::Vector3(0,0,1),M_PI); _q=q1*_q;\
-	tf::Vector3 _l(0,0,0);\
-	tf::Transform N(_q,_l);
-	SET( tf_map, robil_map.info.origin )
-#undef SET
-	comp->publishTransform(tf_map,"base_link", "map_fit_rotation");
-	}
-
-	mapPublisher.publish(map);
-
-#elif CREATE_POINTCLOUD_FOR_NAV == 1
+#if CREATE_POINTCLOUD_FOR_NAV == 1
 
 	sensor_msgs::PointCloud map;
+	static ros::NodeHandle node("~");
+	int rad_clear =2;
+	if(not node.getParamCached("clear_map_radius",rad_clear) ) node.setParam("clear_map_radius",rad_clear);
 
 	double x_offset = robil_map.info.width*robil_map.info.resolution * 2.0/3.0;
 	double y_offset = robil_map.info.height*robil_map.info.resolution * 1.0/2.0;
@@ -628,6 +652,8 @@ SYNCH
 			point.x = -fx + x_offset;
 			point.y = -fy + y_offset;
 			point.z = fz;
+
+			if( hypot( point.x, point.y ) < rad_clear ) continue;
 			map.points.push_back(point);
 		}
 	}
@@ -650,6 +676,7 @@ SYNCH
 	}
 	if(fk_iter%10==0) fakeLaserPublisher.publish(fake_scan);
 	mapPublisher.publish(map);
+
 #endif
 
 

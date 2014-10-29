@@ -1,3 +1,7 @@
+recovery_behavior_enabled: false
+controller_frequency: 5.0
+clearing_rotation_allowed: false
+
 TrajectoryPlannerROS:
   max_vel_x: 0.55
   min_vel_x: 0.02
