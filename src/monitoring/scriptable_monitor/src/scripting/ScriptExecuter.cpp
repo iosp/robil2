@@ -91,7 +91,7 @@ PyObject* ScriptExecuter::convertToPythonType(string object) {
 	// Single item
 	if (yaml.size() == 1) {
 
-		string value = yaml[0].to<string>();
+		string value = YAML_AS(yaml[0], string);
 
 		// Is boolean
 		boost::to_lower(value);
@@ -116,7 +116,7 @@ PyObject* ScriptExecuter::convertToPythonType(string object) {
 	if (yaml.size() > 1) {
 		PyObject* list = PyList_New(yaml.size());
 		for(size_t i = 0; i < yaml.size(); i++)
-			PyList_SetItem(list, i, PyString_FromString(yaml[i].to<string>().c_str()));
+			PyList_SetItem(list, i, PyString_FromString( YAML_AS(yaml[i], string).c_str()));
 
 		return list;
 	}

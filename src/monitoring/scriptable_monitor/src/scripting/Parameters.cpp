@@ -14,10 +14,9 @@ template<> string 	Parameters::get<string>(uint32_t index) { return (*_parameter
 template<> YamlPtr 	Parameters::get<YamlPtr>(uint32_t index) {
 	 stringstream yaml_stream;
 	 yaml_stream << (*_parameters)[index];
-	 YAML::Parser parser(yaml_stream);
 	 YAML::Node document;
-	 parser.GetNextDocument(document);
-	 return YamlPtr(document.Clone());
+         YAML_LOAD_DOCUMENT( document, yaml_stream );
+	 return YamlPtr(YAML_CLONE(document));
 }
 
 template<> void 	Parameters::set<YAML::Node&>(YAML::Node& value) {
