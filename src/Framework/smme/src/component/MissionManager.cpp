@@ -17,21 +17,50 @@ SYNCHRONIZED
 	return tasks_count(missions.at(mid));
 }
 
+bool MissionManager::is_all_tasks_assigned(const Mission& mission){
+	for(size_t i=0;i<mission.tasks.size();i++){
+		TaskID tid = task_id(mission, i);
+		if( not contains(nav_tasks, tid) and not contains(man_tasks, tid) )
+			return false;
+	}
+	return true;
+}
+
 MissionManager::MissionAcceptance MissionManager::assign(const Mission& mission) {
 SYNCHRONIZED
 	MissionID mid = id(mission);
+	Mission old_mission;
+	old_mission.mission_id = "@NULL@";
 	if(missions.find(mid)!=missions.end()){
-		ROS_INFO_STREAM("Mission already loaded: "<<mission.mission_id<<" => rejected");
-		return createMissionRejectedMessage(mission, 0);
+//		ROS_INFO_STREAM("Mission already loaded: "<<mission.mission_id<<" => rejected");
+//		return createMissionRejectedMessage(mission, 0);
+		ROS_INFO_STREAM("Mission already loaded: "<<mission.mission_id<<" => reassign");
+		old_mission = missions.at(mid);
 	}
 	missions[mid] = mission;
 	if(tasks_count(mid)<1){
 		ROS_INFO_STREAM("Mission is empty: "<<mission.mission_id<<" => rejected");
 		missions.erase(mid);
-		return createMissionRejectedMessage(mission, 0);
+		if(old_mission.mission_id != "@NULL@"){
+			missions[mid] = old_mission;
+			ROS_INFO_STREAM("Return old mission");
+		}
+		return createMissionRejectedMessage(mission, 1);
 	}
-	ROS_INFO_STREAM("New mission: "<<mission.mission_id);
-	return createMissionAcceptedMessage(mission);
+	if(not is_all_tasks_assigned(mission)){
+		ROS_INFO_STREAM("Some of the mission tasks is not assigned: "<<mission.mission_id<<" => rejected");
+		missions.erase(mid);
+		if(old_mission.mission_id != "@NULL@"){
+			missions[mid] = old_mission;
+			ROS_INFO_STREAM("Return old mission");
+		}else
+		return createMissionRejectedMessage(mission, 2);
+	}
+	ROS_INFO_STREAM("New mission accepted: "<<mission.mission_id);
+	if(old_mission.mission_id != "@NULL@"){
+		return createMissionReassignedMessage(mission);
+	}else
+		return createMissionAcceptedMessage(mission);
 }
 
 void MissionManager::assign(const ManTask& task) {
@@ -50,7 +79,7 @@ SYNCHRONIZED
 
 MissionManager::MissionAcceptance MissionManager::createMissionAcceptedMessage(const Mission& mission){
 	MissionAcceptance accep;
-	accep.status = 1;
+	accep.status = 0;
 	return accep;
 }
 MissionManager::MissionAcceptance MissionManager::createMissionRejectedMessage(const Mission& mission, int error_code){
@@ -58,7 +87,11 @@ MissionManager::MissionAcceptance MissionManager::createMissionRejectedMessage(c
 	accep.status = error_code;
 	return accep;
 }
-
+MissionManager::MissionAcceptance MissionManager::createMissionReassignedMessage(const Mission& mission){
+	MissionAcceptance accep;
+	accep.status = 1000;
+	return accep;
+}
 void MissionManager::start_task(const MissionID& mid) {
 SYNCHRONIZED
 	if (!contains(missions_states, mid))

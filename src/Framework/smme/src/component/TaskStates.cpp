@@ -158,11 +158,23 @@ TaskResult state_TaskSpooling(string id, const CallContext& context, EventQueue&
 		events.raiseEvent("/pp/Resume");
 		this_thread::sleep(milliseconds(500));
 		comp->publishGlobalPath(path);
-	}else{
+		return TaskResult::SUCCESS();
+	}else
+	if(MM->task_type()==MissionManager::TT_Manipulator){
 		MissionManager::ManTask task = MM->get_man_task();
 		events.raiseEvent("/wsm/Resume");
 		this_thread::sleep(milliseconds(500));
 		comp->publishWorkSeqData(task);
+		return TaskResult::SUCCESS();
+	}else
+	if(MM->task_type()==MissionManager::TT_Unknown){
+		ROS_ERROR("smme: Active task type is unknown");
+		events.raiseEvent("/AbortTask");
+		return TaskResult::FAIL();
+	}else{
+		ROS_ERROR("smme: Error in task type detector");
+		events.raiseEvent("/AbortTask");
+		return TaskResult::FAIL();
 	}
 	return TaskResult::SUCCESS();
 }
