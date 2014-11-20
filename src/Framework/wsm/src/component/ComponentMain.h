@@ -19,6 +19,8 @@ public:
 	config::WSM::sub::BladePosition * receivedBladePosition;
 	config::LLC::sub::Location * receivedLocation;
 	config::LLC::sub::PerVelocity * receivedPerVelocity;
+	config::WSM::sub::MiniMap *recivedMap;
+	double ground_heigth;
 	int cur_step ;
 	int task_length;
 	bool new_seq ;
@@ -32,6 +34,7 @@ public:
 	void publishBladePositionCommand(config::WSM::pub::BladePositionCommand& msg);
 	void handleLocation(const config::LLC::sub::Location& msg);
 	void handlePerVelocity(const config::LLC::sub::PerVelocity& msg);
+	void handleMiniMapWSM(const config::WSM::sub::MiniMap& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);

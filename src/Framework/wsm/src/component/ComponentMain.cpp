@@ -14,9 +14,11 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	this->receivedWorkSeqData = NULL;
 	this->receivedLocation = NULL;
 	this->receivedPerVelocity = NULL;
+    this->recivedMap = NULL;
 	this->new_seq = false ;
 	this->task_length = -1 ;
 	this->cur_step = -1 ;
+	this->ground_heigth = 0;
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -62,6 +64,29 @@ void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
 
 //	std::cout<< "LLC say:" << msg << std::endl;
 }
+
+void ComponentMain::handleMiniMapWSM(const config::WSM::sub::MiniMap& msg)
+{
+
+	if(this->recivedMap != NULL){
+		delete this->recivedMap ;
+	}
+		this->recivedMap = new config::WSM::sub::MiniMap(msg);
+
+			double max = 0 ;
+		for(int i = 12 ; i < 18 ; i++)
+		{
+		//	std::cout << "[" << this->recivedMap->data[45*30 + i].height << "]" ;
+			if(this->recivedMap->data[45*30 + i].height > max)
+			{
+				max = this->recivedMap->data[3*30 + i].height;
+			}
+		}
+//	std::cout << std::endl ;
+	this->ground_heigth = max;
+
+}
+
 
 void ComponentMain::publishWSMVelocity(config::WSM::pub::WSMVelocity& msg)
 {

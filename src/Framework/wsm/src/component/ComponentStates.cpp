@@ -27,6 +27,7 @@ using namespace decision_making;
 
 ComponentMain *Global_comp ;
 const int N = 1000 ;
+const double map_offset = 0.437679380178 ;
 int last_index = 0 ;
 double blade2ground = 0 ;
 bool correction = false ;
@@ -43,6 +44,7 @@ int handle_type_3(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator c
 int handle_type_4(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator cur_step , const CallContext& context, EventQueue& events);
 int handle_type_5(std::vector<robil_msgs::AssignManipulatorTaskStep>::iterator cur_step , const CallContext& context, EventQueue& events);
 void monitor_time(double t_start);
+Vec3D deriveMapPixel (tf::StampedTransform blade2body);
 
 class Params: public CallContextParameters{
 public:
@@ -71,35 +73,51 @@ void pauseCallback(const std_msgs::StringConstPtr &msg)
 	}
 }
 
-void mapCallback(const std_msgs::Float64ConstPtr &msg)
+double find_Map_max (int x)
 {
-	/*
-	 * TODO:
-	 * 		Reading the height from map grid.
-	 * 		extracting the height.
-	 * 		& updates shared memory ;
-	 * 		Right now, it doesn't use robil2framework to extract the height.
-	 */
+	double max = -100 ;
 
-	blade2ground = msg->data ;
+	for(int i = 12 ; i < 18 ; i++ )
+	{
+		if(Global_comp->recivedMap->data[(x*30) + i].height > max)
+		{
+			max = Global_comp->recivedMap->data[(x*30) + i].height;
+		}
+	}
 
+	return max;
 }
 
 void blade_correction()
 {
 	bool loop_on = true;
 	double t_hold = 0.05 ;
-	double delta = 0 ;
+	double err = 0 ;
+	double delta = 0;
 	double RPY [3] ;
 	double jac = 0 ;
+	double g_max = 0;
+	Vec3D Map_pixel(0,0,0) ;
 	int supporterStatesIndex = 0, loaderStatesIndex = 0;
-	tf::StampedTransform body2loader_startp;
 
-	/* Get the initial height that we should keep */
+	tf::StampedTransform body2loader = Global_comp->getLastTrasform("loader","body");
+	Map_pixel = deriveMapPixel(body2loader);
 
-		body2loader_startp = Global_comp->getLastTrasform("loader","body");
-		body2loader_startp.getBasis().getRPY(RPY[0],RPY[1],RPY[2],1);
-		double set_point = body2loader_startp.getOrigin().z() + 0.28748;
+	g_max = find_Map_max((int)Map_pixel.x);
+
+		if(g_max == -100){
+			Global_comp->ground_heigth = 0 ;
+		}
+		else{
+			Global_comp->ground_heigth = g_max + map_offset ;
+		}
+
+	double set_point = Map_pixel.z - Global_comp->ground_heigth ;
+	double cur_h = 0 ;
+
+	ROS_INFO("Initial set point:[%g m]" , set_point);
+	ROS_INFO("TF calc. height: [%g m]", Map_pixel.z);
+	ROS_INFO("Initial ground height: [%g m]", g_max);
 
 	/* finds supporter and loader's indices. */
 		for(int i = 0; i < jointStates.name.size(); i++){
@@ -110,31 +128,47 @@ void blade_correction()
 				loaderStatesIndex = i;
 			}
 		}
-
 		config::WSM::pub::BladePositionCommand * bladeCommand;
 		double supporter_angle = 0 , loader_angle = 0 ;
 		double next_supporter_angle = 0 , next_loader_angle = 0 ;
-	//	double cur_h = 0 ;
 
 while(loop_on){
 	try{
-		/*
-		 * Main work loop of blade correction.
-		 */
+		/* Calc error signal */
+		body2loader = Global_comp->getLastTrasform("loader","body");
+		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
 
-		/* Calc Delta of change */
-		delta = (blade2ground - set_point);
+		Map_pixel = deriveMapPixel(body2loader);
+		g_max = find_Map_max((int)Map_pixel.x) ;
+
+
+		if(g_max == -100){
+				Global_comp->ground_heigth = 0 ;
+			}
+			else{
+				Global_comp->ground_heigth = g_max + map_offset;
+			}
+
+		cur_h = Map_pixel.z - Global_comp->ground_heigth;
+		delta = (set_point - cur_h);
+
+		ROS_INFO("===================================");
+		ROS_INFO("current Height:[%g m]", cur_h);
+		ROS_INFO("Initial set point:[%g m]" , set_point);
+		ROS_INFO("Map says ground height is: [%g m]",g_max - map_offset);
+		ROS_INFO("Current delta: [%g]" , delta);
+		ROS_INFO("===================================");
 
 		/* Check if t_hold was crossed */
 
-			if(fabs(delta) >= t_hold)
+			if(fabs(err) >= t_hold)
 			{
 			//	ROS_INFO("set point is:%g ,last:%g , delta is: %g",set_point,blade2ground,delta);
 				supporter_angle = jointStates.position[supporterStatesIndex];
 				loader_angle = jointStates.position[loaderStatesIndex];
 				jac = InverseKinematics::get_J(supporter_angle);
 
-				next_supporter_angle = supporter_angle + (pow(jac,-1))*(delta) ;
+				next_supporter_angle = supporter_angle + (pow(jac,-1))*(err) ;
 				next_loader_angle = -(InverseKinematics::get_pitch(next_supporter_angle,0)) + RPY[1];
 
 			//	ROS_INFO("Next supporter angle:%g",next_supporter_angle);
@@ -447,7 +481,6 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	ros::NodeHandle n;
 	ros::Subscriber jointstatesSub = n.subscribe<sensor_msgs::JointState>("/Sahar/joint_states", 100, &JointStatesCallback);
 	ros::Subscriber PauseMission = n.subscribe<std_msgs::String>("/decision_making/events" , 100 , &pauseCallback);
-	ros::Subscriber blade_sensor = n.subscribe<std_msgs::Float64>("/test",100,mapCallback);
 	monitor = n.advertise<std_msgs::Float32>("/monitor/task_time",100);
 
 	Global_comp = &component ;
@@ -471,39 +504,60 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 
 }
 
-geometry_msgs::Twist Translate(gazebo_msgs::GetModelState model_state){
+Vec3D deriveMapPixel (tf::StampedTransform blade2body)
+{
 
-/*std_msgs::Float64 x[3] ;
-std_msgs::Float64 z[3] ;
+	Vec3D map_pixel ;
+	Vec3D xt_1(0,0,0) ; Vec3D xt_2(0,0,0); Vec3D xt_ms(0,0,0);
+	tf::StampedTransform test ;
+	InverseKinematics::RotMatrix R_WB ; InverseKinematics::RotMatrix R_BL ; InverseKinematics::RotMatrix R_WL ;
+	double length = 0 ; int pixel_dist = 0;
 
-std_msgs::Float64 a , b , c, d ;
+	//ROS_INFO("Get rot? loc");
 
-a.data = model_state.response.pose.orientation.w ;
-b.data = model_state.response.pose.orientation.x ;
-c.data = model_state.response.pose.orientation.y ;
-d.data = model_state.response.pose.orientation.z ;
+	R_WB = InverseKinematics::getRotMatrix(Global_comp->receivedLocation);
 
-x[0].data = (pow(a.data,2) + pow(b.data,2) - pow(c.data,2) - pow(d.data,2));
-x[1].data = 2*b.data*c.data + 2*a.data*d.data ;
-x[2].data = 2*b.data*d.data - 2*a.data*c.data ;
+	test = Global_comp->getLastTrasform("loader","body");
 
-z[0].data = 2*b.data*d.data + 2*a.data*c.data ;
-z[1].data = 2*c.data*d.data - 2*a.data*b.data ;
-z[2].data = (pow(a.data,2)-pow(b.data,2) - pow(c.data,2)+pow(d.data,2));
+	geometry_msgs::PoseWithCovarianceStamped *q = new geometry_msgs::PoseWithCovarianceStamped ;
 
-for(int i = 0 ; i < 3 ; i++){
+	q->pose.pose.orientation.w = test.getRotation().getW();
+	q->pose.pose.orientation.x = test.getRotation().getX();
+	q->pose.pose.orientation.y = test.getRotation().getY();
+	q->pose.pose.orientation.z = test.getRotation().getZ();
+	q->pose.pose.position.x = test.getOrigin().x();
+	q->pose.pose.position.y = test.getOrigin().y();
+	q->pose.pose.position.z = test.getOrigin().z();
 
-}*/
+	//ROS_INFO("Get rot? blade");
 
-double sx = model_state.response.twist.linear.x ;
-double sy = model_state.response.twist.linear.y ;
-Quaternion qut(model_state.response.pose.orientation);
-Rotation rot1 = GetRotation(qut);
-double v = glSpeedloc(sx,sy,rot1.yaw);
-geometry_msgs::Twist model_coordinates ;
-model_coordinates.linear.x = v ;
+	R_BL = InverseKinematics::getRotMatrix(q);
 
-return (model_coordinates);
+	//ROS_INFO("mat mul");
+
+	R_WL = InverseKinematics::Matrix_mul(R_WB , R_BL);
+
+	//ROS_INFO("just some shit here");
+
+	xt_1.x = R_WB.R[0][3];  xt_2.x = R_WL.R [0][3];
+	xt_1.y = R_WB.R[1][3];  xt_2.y = R_WL.R [1][3];
+
+	xt_ms.x = (xt_1.x - xt_2.x);
+	xt_ms.y = (xt_1.y - xt_2.y);
+
+	length = sqrt (pow(xt_ms.x , 2) + pow(xt_ms.y , 2));
+	pixel_dist = static_cast<int>((ceil(length*5)));
+
+	map_pixel.x = (50 - pixel_dist);
+	map_pixel.y =  15 ;
+	map_pixel.z = R_WL.R[2][3];
+//	ROS_INFO("[Height by Calculation is: %g m]",R_WL.R[2][3]);
+	//ROS_INFO("[Blade location in bobcat coordinates: (%g ,%g ,%g)",R_WL.R[0][3],R_WL.R[1][3],R_WL.R[2][3]);
+	//ROS_INFO("Relevant pixel is: (%g , %g , %g)",map_pixel.x,map_pixel.y ,map_pixel.z);
+
+	delete q ;
+	return map_pixel ;
+
 }
 
 /*===============================================================
