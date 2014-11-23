@@ -1,3 +1,22 @@
+23/11/2014 SHA: 574d4e2830f18c893266f060f39e334ea453e140
+What's new:
+===========
+Changed the structure of the module, to give it more stability.
+Implemented a better ground - relative blade manipulation.
+
+Known limitations:
+=============
+!IMPORTANT!
+
+1. I've added my own subscriber to the topic /PER/MAP. Since the robil2 framework is Auto-Generating code,
+   Untill cogniteam would add this subscriber & defenitions to the current framework, in-order to compile the code, you'll have to add to 'configuration.yaml'
+   this line: WSM_sub_MiniMap: 'PER'
+   and than compile the code from outside the robil2 library. (from your catkin_ws dir).
+2. Right Now, via the new algorithm, the ground height is calculated good, I only need Oded to tell me in what refernce - frame the ground height is computed,
+   and i'll close control loop over - it , to fully implement ground-relative feature.
+
+!/IMPORTANT!
+
 27/10/2014 SHA: 7a314ef9b2c3e2ec63d361cb034c0dc7d2022da8
 
 What's new:
