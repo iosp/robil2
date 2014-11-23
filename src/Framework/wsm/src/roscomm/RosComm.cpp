@@ -15,17 +15,20 @@
 #include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
+
 RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	: _inited(init(argc, argv)), _comp(comp)
 {
 	_sub_WorkSeqData=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","WorkSeqData","sub"), 10, &RosComm::WorkSeqDataCallback,this));
 	_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","BladePosition","sub"), 10, &RosComm::BladePositionCallback,this));
+	_sub_MiniMapWSM=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","MiniMap","sub"), 10, &RosComm::PerMapCallback,this));
 	_pub_WSMVelocity=ros::Publisher(_nh.advertise<config::WSM::pub::WSMVelocity>(fetchParam(&_nh,"WSM","WSMVelocity","pub"),10));
 	_pub_BladePositionCommand=ros::Publisher(_nh.advertise<config::WSM::pub::BladePositionCommand>(fetchParam(&_nh,"WSM","BladePositionCommand","pub"),10));
 	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","Location","sub"), 10, &RosComm::LocationCallback,this));
 	_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","PerVelocity","sub"), 10, &RosComm::PerVelocityCallback,this));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
+	_plp_monitor=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticStatus>("/monitor/task_time",100));
 }
 RosComm::~RosComm()
 {
@@ -53,7 +56,6 @@ void RosComm::publishWSMVelocity( config::WSM::pub::WSMVelocity &msg)
 	_pub_WSMVelocity.publish(msg);
 }
 	
-
 void RosComm::publishBladePositionCommand( config::WSM::pub::BladePositionCommand &msg)
 {
 	_pub_BladePositionCommand.publish(msg);
@@ -70,7 +72,17 @@ void RosComm::PerVelocityCallback(const config::LLC::sub::PerVelocity::ConstPtr 
 {
 	_comp->handlePerVelocity(*msg);
 }
-	
+
+void RosComm::PerMapCallback(const config::WSM::sub::MiniMap::ConstPtr &msg)
+{
+	_comp->handleMiniMapWSM(*msg);
+}
+
+void RosComm::publish_monitor_time(const diagnostic_msgs::DiagnosticStatus& msg)
+{
+	_plp_monitor.publish(msg);
+}
+
 void RosComm::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	static tf::TransformBroadcaster br;
 	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));

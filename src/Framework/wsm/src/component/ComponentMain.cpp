@@ -7,36 +7,59 @@
  */
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
+#include "WsmTask.h"
+
+
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
+	//cur_mission = new WsmTask(this);
+	this->cur_mission = NULL ;
+	this->jointStates = NULL;
 	this->receivedBladePosition = NULL;
 	this->receivedWorkSeqData = NULL;
 	this->receivedLocation = NULL;
 	this->receivedPerVelocity = NULL;
     this->recivedMap = NULL;
-	this->new_seq = false ;
-	this->task_length = -1 ;
-	this->cur_step = -1 ;
-	this->ground_heigth = 0;
+    this->ground_heigth = 0 ;
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
+	if(cur_mission) delete cur_mission;
 }
 
 void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
 {
-	ROS_INFO("Got sequence with Task id: %s",msg.task_id.c_str());
-	if(this->receivedWorkSeqData != NULL){
-		delete this->receivedWorkSeqData;
+	if(this->cur_mission != NULL)
+	{
+		ROS_INFO("get_new_problem");
+		if((this->cur_mission->Get_Task_id()) == atoi(msg.task_id.c_str()))
+				{
+					ROS_ERROR("Rejected Task %s, WSM already has Task %d , at state '%s'",msg.task_id.c_str(),this->cur_mission->Get_Task_id(),this->cur_mission->Get_status().c_str());
+					return;
+				}
+		else
+		{
+			/*
+			if(this->cur_mission->Get_status() == "paused"){
+				ROS_ERROR("Rejected Task %s, WSM already has Task %d , at state %s",msg.task_id.c_str(),this->cur_mission->Get_Task_id(),this->cur_mission->Get_status().c_str());
+				return;
+			}
+			*/
+			ROS_INFO("Delete old , allocate mew!");
+				delete this->cur_mission ;
+				this->cur_mission = new WsmTask(atoi(msg.task_id.c_str()),0,msg,this);
+				return;
+		}
 	}
-	else{
-	//	ROS_INFO("error after");
+	else
+	{
+		ROS_INFO("allocate mew!");
+		this->cur_mission = new WsmTask(atoi(msg.task_id.c_str()),0,msg,this);
+		return;
 	}
-	this->receivedWorkSeqData = new config::WSM::sub::WorkSeqData(msg);
 }
 	
-
 void ComponentMain::handleBladePosition(const config::WSM::sub::BladePosition& msg)
 {
 	if(this->receivedBladePosition != NULL)
@@ -53,7 +76,6 @@ void ComponentMain::handleLocation(const config::LLC::sub::Location& msg)
 	this->receivedLocation = new config::LLC::sub::Location(msg);
 	//std::cout<< "LLC say:" << msg.pose.pose.position.x << std::endl;
 }
-
 
 void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
 {
@@ -87,18 +109,21 @@ void ComponentMain::handleMiniMapWSM(const config::WSM::sub::MiniMap& msg)
 
 }
 
+void ComponentMain::publish_monitor_time(const diagnostic_msgs::DiagnosticStatus& msg)
+{
+	_roscomm->publish_monitor_time(msg);
+}
+
 
 void ComponentMain::publishWSMVelocity(config::WSM::pub::WSMVelocity& msg)
 {
 	_roscomm->publishWSMVelocity(msg);
 }
 	
-
 void ComponentMain::publishBladePositionCommand(config::WSM::pub::BladePositionCommand& msg)
 {
 	_roscomm->publishBladePositionCommand(msg);
 }
-
 	
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	_roscomm->publishTransform(_tf, srcFrame, distFrame);

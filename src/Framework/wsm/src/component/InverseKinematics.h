@@ -16,9 +16,6 @@
 #include <std_msgs/Float32.h>
 #include "tf/tf.h"
 
-class Vec2D ;
-class Vec3D ;
-
 namespace InverseKinematics{
 
 typedef struct RotMatrix { double R[4][4] ; } RotMatrix;
