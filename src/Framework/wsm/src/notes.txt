@@ -2,18 +2,29 @@
 What's new:
 ===========
 Changed the structure of the module, to give it more stability.
-Implemented a better ground - relative blade manipulation.
+Implemented a better ground - relative blade manipulation algorithm.
 
 Known limitations:
 =============
 !IMPORTANT!
 
-1. I've added my own subscriber to the topic /PER/MAP. Since the robil2 framework is Auto-Generating code,
-   Untill cogniteam would add this subscriber & defenitions to the current framework, in-order to compile the code, you'll have to add to 'configuration.yaml'
-   this line: WSM_sub_MiniMap: 'PER'
-   and than compile the code from outside the robil2 library. (from your catkin_ws dir).
-2. Right Now, via the new algorithm, the ground height is calculated good, I only need Oded to tell me in what refernce - frame the ground height is computed,
-   and i'll close control loop over - it , to fully implement ground-relative feature.
+1. I've added my own subscriber to the topic /PER/MAP. So, in order to compile the WSM, you should follow these steps:
+	a. Add the third line to : robil2/configuration.yaml
+		#WSM
+		WSM_sub_WorkSeqData: 'SMME'
+		WSM_sub_BladePosition: 'PER'
+		WSM_sub_MiniMap: 'PER'
+	b. Add this line to "ParameterTypes.h" in robil2/include: 
+
+		DEF_SUB( WSM, WorkSeqData, SMME )
+		DEF_SUB( WSM, BladePosition, PER )
+		DEF_SUB( WSM , MiniMap , PER)
+
+	c. Complie.
+
+	NOTE - if you were to run "regenerate.py", or any other auto-generating code script, all these changed will revoke, and you'll have to do this again.
+	
+2. Right Now, via the new algorithm, the ground height is calculated good, I only need to clibrate the closed-control loop further.
 
 !/IMPORTANT!
 

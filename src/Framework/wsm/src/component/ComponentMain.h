@@ -26,6 +26,7 @@ public:
 	config::WSM::sub::MiniMap *recivedMap;
 	sensor_msgs::JointState *jointStates;
 	double ground_heigth;
+	double z_offset ;
 
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -36,7 +37,7 @@ public:
 	void handleLocation(const config::LLC::sub::Location& msg);
 	void handlePerVelocity(const config::LLC::sub::PerVelocity& msg);
 	void handleMiniMapWSM(const config::WSM::sub::MiniMap& msg);
-	void publish_monitor_time(const diagnostic_msgs::DiagnosticStatus& msg);
+	void publish_monitor_time(const std_msgs::Header& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);

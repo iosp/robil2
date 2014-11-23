@@ -28,7 +28,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","PerVelocity","sub"), 10, &RosComm::PerVelocityCallback,this));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
-	_plp_monitor=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticStatus>("/monitor/task_time",100));
+	_plp_monitor=ros::Publisher(_nh.advertise<std_msgs::Header>("/monitor/task_time",100));
 }
 RosComm::~RosComm()
 {
@@ -78,7 +78,7 @@ void RosComm::PerMapCallback(const config::WSM::sub::MiniMap::ConstPtr &msg)
 	_comp->handleMiniMapWSM(*msg);
 }
 
-void RosComm::publish_monitor_time(const diagnostic_msgs::DiagnosticStatus& msg)
+void RosComm::publish_monitor_time(const std_msgs::Header& msg)
 {
 	_plp_monitor.publish(msg);
 }

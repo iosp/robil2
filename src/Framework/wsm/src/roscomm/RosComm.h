@@ -8,7 +8,6 @@
 #ifndef ROSCOMM_H_
 #define ROSCOMM_H_
 #include <ros/ros.h>
-#include "std_msgs/Float32.h"
 #include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
@@ -47,7 +46,7 @@ public:
 	void PerMapCallback(const config::WSM::sub::MiniMap::ConstPtr &msg);
 
 
-	void publish_monitor_time(const diagnostic_msgs::DiagnosticStatus& msg);
+	void publish_monitor_time(const std_msgs::Header &msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
