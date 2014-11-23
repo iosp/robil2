@@ -177,6 +177,8 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 	//PAUSE(10000);
 	ROS_INFO("WSM INIT");
 	while(COMPONENT->receivedLocation == NULL){}
+	COMPONENT->z_offset = COMPONENT->receivedLocation->pose.pose.position.x ;
+	ROS_INFO("Initial ground offset is: %g",COMPONENT->z_offset );
 	events.raiseEvent(Event("/wsm/SensorConnected"));
 	return TaskResult::SUCCESS();
 }
@@ -194,7 +196,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 		while(COMPONENT->cur_mission == NULL){
 			PAUSE(10000);
-			sleep(10);
+			sleep(5);
 			ROS_INFO("No new Task");
 		}
 		while(COMPONENT->cur_mission->Get_status() == "active"){

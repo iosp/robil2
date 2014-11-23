@@ -22,6 +22,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	this->receivedPerVelocity = NULL;
     this->recivedMap = NULL;
     this->ground_heigth = 0 ;
+    this->z_offset = 0;
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -48,7 +49,7 @@ void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
 			*/
 			ROS_INFO("Delete old , allocate mew!");
 				delete this->cur_mission ;
-				this->cur_mission = new WsmTask(atoi(msg.task_id.c_str()),0,msg,this);
+				this->cur_mission = new WsmTask(atoi(msg.task_id.c_str()),1,msg,this);
 				return;
 		}
 	}
@@ -109,7 +110,7 @@ void ComponentMain::handleMiniMapWSM(const config::WSM::sub::MiniMap& msg)
 
 }
 
-void ComponentMain::publish_monitor_time(const diagnostic_msgs::DiagnosticStatus& msg)
+void ComponentMain::publish_monitor_time(const std_msgs::Header& msg)
 {
 	_roscomm->publish_monitor_time(msg);
 }

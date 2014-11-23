@@ -24,7 +24,7 @@ WsmTask::WsmTask(ComponentMain* comp)
 WsmTask::WsmTask(int taskid , int cur_step ,const config::WSM::sub::WorkSeqData& cur_WSD , ComponentMain* comp)
 	{
 		_taskid = taskid ;
-		_cur_step = 0 ;
+		_cur_step = 1 ;
 		_cur_WSD = new config::WSM::sub::WorkSeqData (cur_WSD);
 		_status = "active";
 		_step_status = "active" ;
@@ -68,6 +68,7 @@ void WsmTask::push_key_value(diagnostic_msgs::DiagnosticStatus container , std::
 	diagnostic_msgs::KeyValue kv;
 	kv.key = key.c_str(); kv.value = value.c_str();
 	container.values.push_back(kv);
+	COMPONENT_LINK->publishDiagnostic(container);
 }
 
 void WsmTask::Set_Task_WSD(const config::WSM::sub::WorkSeqData &WSD)
@@ -101,7 +102,7 @@ void WsmTask::publish_step_diag(int before, int exit_status)
 	{
 		step_diag.message = "Doing a step";
 		step_diag.values.clear();
-		WsmTask::push_key_value(step_diag , "step_id" , this->Get_step_id().c_str());
+		WsmTask::push_key_value(step_diag , "step_id" ,boost::lexical_cast<std::string>(this->Get_WSD()->steps.front().id));
 		WsmTask::push_key_value(step_diag , "status" , "started");
 		//globalcomp->publish(step_diag);
 		/*
@@ -109,25 +110,32 @@ void WsmTask::publish_step_diag(int before, int exit_status)
 		 * 		Get Gloabl Component here somehow
 		 */
 		ROS_INFO("Published pre-step diagnostics");
-		COMPONENT_LINK->publishDiagnostic(step_diag);
+		//COMPONENT_LINK->publishDiagnostic(step_diag);
 	}
 	else
 	{
 		step_diag.message = "finished a step";
 		step_diag.values.clear();
-		WsmTask::push_key_value(step_diag , "step_id" , this->Get_step_id().c_str());
+		WsmTask::push_key_value(step_diag , "step_id" , boost::lexical_cast<std::string>(this->Get_WSD()->steps.front().id));
 
-		if(exit_status == 0)
-			term_status = "completed";
-		if(exit_status == 1)
+
+
+		if(exit_status == 1){
+			term_status = "Success";
+		}
+		else if(exit_status == -1){
 			term_status = "paused";
-		else
+		}
+		else{
 			term_status = "timed out";
+		}
+
+		ROS_INFO("[Exit status is:%d in execute publish]",exit_status);
 
 		WsmTask::push_key_value(step_diag , "status", term_status);
 		//globalcomp->publish(step_diag);
 		ROS_INFO("Published post-step diagnostics");
-		COMPONENT_LINK->publishDiagnostic(step_diag);
+		//COMPONENT_LINK->publishDiagnostic(step_diag);
 		/*
 		 * TODO:
 		 * 		Publish after-diagnostics.
@@ -139,13 +147,12 @@ void WsmTask::publish_step_diag(int before, int exit_status)
 
 void WsmTask::monitor_time(double time)
 {
-	std::string step_time;
-	std::string str = boost::lexical_cast<std::string>(time);
-	diagnostic_msgs::DiagnosticStatus step_diag;
-	diagnostic_msgs::KeyValue kv;
-
-	this->push_key_value(step_diag,this->Get_step_id(),str);
-	COMPONENT_LINK->publish_monitor_time(step_diag);
+	std_msgs::Header monitor ;
+	std::string step_time = boost::lexical_cast<std::string>(time);
+	monitor.frame_id = step_time.c_str();
+	monitor.seq = this->Get_cur_step_index();
+	monitor.stamp = ros::Time::now();
+	COMPONENT_LINK->publish_monitor_time(monitor);
 }
 
 void WsmTask::execute_next_step()
@@ -173,6 +180,7 @@ void WsmTask::execute_next_step()
 		exit_status = this->handle_type_5();
 		break;
 	}
+	ROS_INFO("[Exit status is:%d in execute next step]",exit_status);
 
 	this->publish_step_diag(0,exit_status);
 
@@ -204,12 +212,13 @@ void WsmTask::Update_step()
 	}
 	else{
 		this->inter_step_sleep(this->Get_WSD()->steps.front().duration_at_end);
-		ROS_INFO("Erased step:%d",this->Get_WSD()->steps.front().id);
+		//ROS_INFO("Erased step:%d",this->Get_WSD()->steps.front().id);
 		this->Get_WSD()->steps.erase(this->Get_WSD()->steps.begin() , this->Get_WSD()->steps.begin()+ 1);
 	}
 	if(this->Get_WSD()->steps.size() >= 1){
-		this->Set_step_id(Get_WSD()->steps.front().id);
-		ROS_INFO("forwarded next step");
+	//	this->Set_step_id(Get_WSD()->steps.front().id + 1);
+		this->Set_step_id(this->_cur_step + 1);
+		ROS_INFO("forwarded next step: %d",this->Get_cur_step_index());
 	}
 	else{
 		this->Set_task_status("complete");
@@ -318,6 +327,7 @@ const int N = 1000 ;
 				/* Check for time out */
 				toc = (ros::Time::now().toSec() - tic);
 				if(toc > cur_step->success_timeout)
+					ROS_INFO("Really?");
 				return 0;
 				}
 				/* Check for pause or success */
@@ -325,6 +335,7 @@ const int N = 1000 ;
 							return -1 ;
 						}
 						else{
+							ROS_INFO("But it publisheds!");
 							this->monitor_time(toc);
 							return 1 ;
 						}
@@ -391,22 +402,18 @@ int WsmTask::handle_type_2()
 		if(this->Get_status() != "paused")
 			COMPONENT_LINK->publishBladePositionCommand(bladeCommand);
 			/* Check for pause or success*/
-				if(this->Get_status() == "paused"){
-					return -1 ;
-				}
-				else{
-					this->monitor_time(toc);
-					return 1 ;
-				}
+		if(this->Get_status() == "paused"){
+			return -1;
 		}
-		else
-		{
-			/* TODO :
-			 * 	ground relativity blade manipulation..
-*/
+		else if(toc > cur_step->success_timeout){
+			return 0 ;
 		}
+		else{
+			this->monitor_time(toc);
+			return 1 ;
+		}
+	}
 		return 0 ;
-
 }
 
 int WsmTask::handle_type_3()
@@ -721,7 +728,7 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
  void WsmTask::blade_correction()
 {
 	bool loop_on = true;
-	double t_hold = 0.05 ;
+	double t_hold = 0.01 ;
 	double err = 0 ;
 	double delta = 0;
 	double RPY [3] ;
@@ -742,11 +749,11 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 			COMPONENT_LINK->ground_heigth = g_max  ;
 		}
 
-	double set_point = Map_pixel.z + COMPONENT_LINK->ground_heigth ;
+	double set_point = Map_pixel.z + COMPONENT_LINK->ground_heigth - COMPONENT_LINK->z_offset  ;
 	double cur_h = 0 ;
 
 	ROS_INFO("Initial set point:[%g m]" , set_point);
-	ROS_INFO("TF calc. height: [%g m]", Map_pixel.z + COMPONENT_LINK->ground_heigth );
+	ROS_INFO("TF calc. height: [%g m]", Map_pixel.z + (COMPONENT_LINK->ground_heigth - COMPONENT_LINK->z_offset) );
 	ROS_INFO("Initial ground height: [%g m]", g_max);
 
 	/* finds supporter and loader's indices. */
@@ -778,26 +785,27 @@ while(loop_on){
 				COMPONENT_LINK->ground_heigth = g_max ;
 			}
 
-		cur_h = Map_pixel.z + COMPONENT_LINK->ground_heigth;
+		cur_h = Map_pixel.z + COMPONENT_LINK->ground_heigth - COMPONENT_LINK->z_offset;
 		delta = (set_point - cur_h);
 
 		ROS_INFO("===================================");
 		ROS_INFO("current Height:[%g m]", cur_h);
 		ROS_INFO("Initial set point:[%g m]" , set_point);
-		ROS_INFO("Map says ground height is: [%g m]",g_max);
+		ROS_INFO("Map says ground height is: [%g m]",g_max - COMPONENT_LINK->z_offset);
 		ROS_INFO("Current delta: [%g]" , delta);
 		ROS_INFO("===================================");
 
 		/* Check if t_hold was crossed */
 
-			if(fabs(err) >= t_hold)
+			if(fabs(delta) >= t_hold)
 			{
+		for(int i = 0 ; i < 2 ; i++){
 			//	ROS_INFO("set point is:%g ,last:%g , delta is: %g",set_point,blade2ground,delta);
 				supporter_angle = COMPONENT_LINK->jointStates->position[supporterStatesIndex];
 				loader_angle = COMPONENT_LINK->jointStates->position[loaderStatesIndex];
 				jac = InverseKinematics::get_J(supporter_angle);
 
-				next_supporter_angle = supporter_angle + (pow(jac,-1))*(err) ;
+				next_supporter_angle = supporter_angle + (pow(jac,-1))*(delta/2.0) ;
 				next_loader_angle = -(InverseKinematics::get_pitch(next_supporter_angle,0)) + RPY[1];
 
 			//	ROS_INFO("Next supporter angle:%g",next_supporter_angle);
@@ -812,6 +820,7 @@ while(loop_on){
 
 				delete bladeCommand;
 			}
+		}
 		/* sleep 1 sec */
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
 	}
