@@ -15,7 +15,9 @@
 #include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <boost/thread.hpp>
+
 class ComponentMain;
+
 class RosComm {
   bool _inited;
   ComponentMain   * _comp;
@@ -28,6 +30,8 @@ class RosComm {
 	ros::Publisher  _pub_BladePositionCommand;
 	ros::Subscriber _sub_Location;
 	ros::Subscriber _sub_PerVelocity;
+	ros::Subscriber _sub_MiniMapWSM;
+	ros::Publisher _plp_monitor;
 
   bool init(int argc,char** argv);
 public:
@@ -39,7 +43,10 @@ public:
 	void publishBladePositionCommand( config::WSM::pub::BladePositionCommand &msg);
 	void LocationCallback(const config::LLC::sub::Location::ConstPtr &msg);
 	void PerVelocityCallback(const config::LLC::sub::PerVelocity::ConstPtr &msg);
+	void PerMapCallback(const config::WSM::sub::MiniMap::ConstPtr &msg);
 
+
+	void publish_monitor_time(const std_msgs::Header &msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
