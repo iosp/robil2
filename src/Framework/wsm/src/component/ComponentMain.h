@@ -10,19 +10,22 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+
+
+class WsmTask;
 class RosComm;
+
 class ComponentMain {
 	RosComm* _roscomm;
 public:
-
+	WsmTask* cur_mission;
 	config::WSM::sub::WorkSeqData * receivedWorkSeqData;
 	config::WSM::sub::BladePosition * receivedBladePosition;
 	config::LLC::sub::Location * receivedLocation;
 	config::LLC::sub::PerVelocity * receivedPerVelocity;
-	int cur_step ;
-	int task_length;
-	bool new_seq ;
-
+	config::WSM::sub::MiniMap *recivedMap;
+	sensor_msgs::JointState *jointStates;
+	double ground_heigth;
 
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -32,6 +35,8 @@ public:
 	void publishBladePositionCommand(config::WSM::pub::BladePositionCommand& msg);
 	void handleLocation(const config::LLC::sub::Location& msg);
 	void handlePerVelocity(const config::LLC::sub::PerVelocity& msg);
+	void handleMiniMapWSM(const config::WSM::sub::MiniMap& msg);
+	void publish_monitor_time(const diagnostic_msgs::DiagnosticStatus& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
