@@ -31,6 +31,7 @@ add_library(smme_compMain
   src/component/MissionManager.cpp
   src/component/AblManager.cpp
   src/component/EventTranslator.cpp
+  src/component/PathRecorder.cpp
 )
 add_executable(smme_node src/main.cpp)
 target_link_libraries(smme_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
