@@ -1,3 +1,4 @@
+string id
 nav_msgs/Path waypoints
 bool is_ip_defined
 geometry_msgs/Point ip
