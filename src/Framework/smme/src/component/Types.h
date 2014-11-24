@@ -19,6 +19,7 @@ config::SMME::pub::GlobalPath
 	 * Twist limitation and time stamps are not used yet.
 	 */
 	config::SMME::pub::GlobalPath path;
+	path.id = task.task_id;
 	path.waypoints.poses.resize(task.waypoints.size());
 	path.waypoints.header = task.header;
 	path.is_heading_defined=true;

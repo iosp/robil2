@@ -28,8 +28,11 @@ void ComponentMain::handleLocation(const config::IEDSIM::sub::Location& msg)
 	{
 		config::IEDSIM::pub::IEDLocation msg2;
 		msg2.is_detected=1;
-		msg2.location.x=_lg->m_x-_lg->m_robot_x;
-		msg2.location.y=_lg->m_y-_lg->m_robot_y;
+		double dx =_lg->m_x-_lg->m_robot_x;
+		double dy =_lg->m_y-_lg->m_robot_y;
+
+		msg2.location.x=dx*std::cos(_lg->m_robot_yaw)+dy*std::sin(_lg->m_robot_yaw);
+		msg2.location.y=dy*std::cos(_lg->m_robot_yaw)-dx*std::sin(_lg->m_robot_yaw);
 		msg2.location.z=_lg->m_z-_lg->m_robot_z;
 		publishIEDLocation(msg2);
 	}

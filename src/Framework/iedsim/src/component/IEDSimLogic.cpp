@@ -24,9 +24,9 @@ IEDSimLogic::IEDSimLogic() :
 	m_x(0),
 	m_y(0),
 	m_z(0),
-	m_roll(0),
-	m_pitch(0),
-	m_yaw(0),
+	m_robot_roll(0),
+	m_robot_pitch(0),
+	m_robot_yaw(0),
 	msg_counter(0)
 {
 	spawm_model=inner_nh.serviceClient<gazebo_msgs::SpawnModel>("/gazebo/spawn_sdf_model");
@@ -56,7 +56,8 @@ void IEDSimLogic::updateLocationFromSim(const gazebo_msgs::ModelStates::ConstPtr
 		{
 			m_robot_x=msg->pose[i].position.x;
 			m_robot_y=msg->pose[i].position.y;
-			m_robot_z=msg->pose[i].position.z;	
+			m_robot_z=msg->pose[i].position.z;
+			m_robot_yaw=std::atan2(2*(msg->pose[i].orientation.z*msg->pose[i].orientation.w+msg->pose[i].orientation.x*msg->pose[i].orientation.y),1-2*(msg->pose[i].orientation.y*msg->pose[i].orientation.y+msg->pose[i].orientation.z*msg->pose[i].orientation.z));
 		}
 	}
 	if(found)
@@ -107,4 +108,6 @@ bool IEDSimLogic::isPoseWithinRadius(float x,float y,float z)
 	}
 	return false;
 }
+
+
 

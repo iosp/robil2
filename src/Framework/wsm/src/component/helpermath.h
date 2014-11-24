@@ -4,6 +4,7 @@
 #include "ros/ros.h"
 using std::string;
 //#define M_PI 3.14159
+
 class Vec3D
 {
     public:
@@ -121,6 +122,5 @@ Rotation GetRotation(Quaternion q)
 
   return rot;
 }
-
 
 #endif

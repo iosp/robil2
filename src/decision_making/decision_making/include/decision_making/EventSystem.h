@@ -16,6 +16,13 @@
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 #include <boost/bind.hpp>
+#include <boost/version.hpp>
+
+#if BOOST_VERSION >= 105400
+   #define BOOST_CAST boost::static_pointer_cast
+#else
+   #define BOOST_CAST boost::shared_static_cast
+#endif
 
 namespace decision_making{
 	using namespace std;
@@ -70,12 +77,12 @@ public:
 	template<class A>
 	A& parameters()const{
 		if(isParametersDefined()==false) throw ExceptionParametersUndefined();
-		return *(boost::shared_static_cast<A>(_parameters).get());
+		return *(BOOST_CAST<A>(_parameters).get());
 	}
 	template<class A>
 	A& parameters(){
 		if(isParametersDefined()==false) createParameters<A>();
-		return *(boost::shared_static_cast<A>(_parameters).get());
+		return *(BOOST_CAST<A>(_parameters).get());
 	}
 };
 typedef CallContext FSMCallContext;

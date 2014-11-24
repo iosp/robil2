@@ -106,11 +106,11 @@ protected:
 		return task.task_id;
 	}
 	inline
-	size_t tasks_count( const Mission& m){
+	size_t tasks_count( const Mission& m)const{
 		return m.tasks.size();
 	}
 	inline
-	TaskID task_id( const Mission& m, Index i){
+	TaskID task_id( const Mission& m, Index i)const{
 		return m.tasks[i].task_id;
 	}
 	//=============================================================
@@ -137,12 +137,15 @@ protected:
 	//==============================================================
 
 	//==================== Assignees ===============================
+protected:
+	bool is_all_tasks_assigned(const Mission& mission);
 public:
 	void assign(const NavTask& task);
 	void assign(const ManTask& task);
 	MissionAcceptance assign(const Mission& mission);
 	MissionAcceptance createMissionAcceptedMessage(const Mission& mission);
 	MissionAcceptance createMissionRejectedMessage(const Mission& mission, int error_code);
+	MissionAcceptance createMissionReassignedMessage(const Mission& mission);
 	void remove(const MissionID& mid);
 	//==============================================================
 

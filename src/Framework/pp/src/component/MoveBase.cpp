@@ -59,12 +59,12 @@ namespace{
 		gamma = acos( (a*a + b*b - c*c)/(2*a*b) );
 		return angles::to_degrees( angles::normalize_angle_positive( gamma ) );
 	}
-	size_t search_nearest_waypoint_index(const nav_msgs::Path& path, const geometry_msgs::PoseWithCovarianceStamped& pos){
+	size_t search_nearest_waypoint_index(const nav_msgs::Path& path, const geometry_msgs::PoseWithCovarianceStamped& pos, size_t start_index){
 		btVector3 vPose = toVector(getPose(pos)); REMOVE_Z(vPose);
-		double min_idx=0;
-		btVector3 path_poses_0 = toVector(getPose(path.poses[0])); REMOVE_Z(path_poses_0);
+		double min_idx=start_index;
+		btVector3 path_poses_0 = toVector(getPose(path.poses[min_idx])); REMOVE_Z(path_poses_0);
 		double min_distance=path_poses_0.distance(vPose);
-		for(size_t i=0;i<path.poses.size();i++){
+		for(size_t i=min_idx;i<path.poses.size();i++){
 			btVector3 path_poses_i = toVector(getPose(path.poses[i])); REMOVE_Z(path_poses_i);
 			double c_distance=path_poses_i.distance(vPose);
 			if(c_distance<min_distance){
@@ -75,7 +75,7 @@ namespace{
 		return min_idx;
 	}
 
-	geometry_msgs::PoseStamped search_next_waypoint(const nav_msgs::Path& path, const geometry_msgs::PoseWithCovarianceStamped& pos, bool& path_is_finished, int& goal_res_index){
+	geometry_msgs::PoseStamped search_next_waypoint(const nav_msgs::Path& path, size_t start_index, const geometry_msgs::PoseWithCovarianceStamped& pos, bool& path_is_finished, int& goal_res_index){
 		//cout<<"search_next_waypoint for: "<<pos.pose.pose.position.x<<","<<pos.pose.pose.position.y<<endl;
 		if(path.poses.size()==0){
 			path_is_finished = true;
@@ -92,7 +92,7 @@ namespace{
 			return path_pose;
 		}
 		path_is_finished = false;
-		size_t ni = search_nearest_waypoint_index(path , pos);
+		size_t ni = search_nearest_waypoint_index(path , pos, start_index);
 		//cout<<"[i] nearest index = "<<ni<<endl;
 		const geometry_msgs::Pose& c = getPose( pos );
 		//FIRST POINT
@@ -274,6 +274,7 @@ MoveBase::MoveBase(ComponentMain* comp)
 	globalPathPublisher = node.advertise<nav_msgs::Path>("/pp/global_path",1);
 	selectedPathPublisher = node.advertise<nav_msgs::Path>("/pp/selected_path",1);
 	//moveBaseStatusSubscriber = node.subscribe("/move_base/status", 1, &MoveBase::on_move_base_status, this);
+	diagnosticPublisher = node.advertise<diagnostic_msgs::DiagnosticArray>(DIAGNOSTIC_TOPIC_NAME, 100);
 
 #if CREATE_POINTCLOUD_FOR_NAV == 1
 	mapPublisher = node.advertise<sensor_msgs::PointCloud>("/map_cloud", 5, false);
@@ -329,6 +330,7 @@ void MoveBase::stop_navigation(bool success){
 	notify_path_is_finished(success);
 	gp_defined=gnp_defined=false;
 	this->is_path_calculated = false;
+	remove_memory_about_path(gotten_path.id);
 	goalCancelPublisher.publish(last_nav_goal_id);
 }
 
@@ -492,8 +494,10 @@ void MoveBase::calculate_goal(){
 	bool is_path_finished;
 	int goal_index=-1;
 	nav_msgs::Path gotten_global_path;
+	string path_id = "";
 	if(gp_defined){
 		gotten_global_path = gotten_path.waypoints;
+		path_id = gotten_path.id;
 	}else{
 		gotten_global_path = gotten_nav_path;
 	}
@@ -503,7 +507,7 @@ void MoveBase::calculate_goal(){
 	globalPathPublisher.publish(gotten_global_path);
 	selectedPathPublisher.publish(gotten_global_path);
 
-	goal = search_next_waypoint(gotten_global_path, gotten_location, is_path_finished, goal_index);
+	goal = search_next_waypoint(gotten_global_path, get_unvisited_index(path_id), gotten_location, is_path_finished, goal_index);
 
 	if(is_path_finished){
 		ROS_INFO("Navigation: path is finished. send event and clear current path.");
@@ -530,7 +534,7 @@ void MoveBase::calculate_goal(){
 			gotten_global_path.poses[goal_index] = goal;
 			selectedPathPublisher.publish(gotten_global_path);
 
-			goal = search_next_waypoint(gotten_global_path, gotten_location, is_path_finished, goal_index);
+			goal = search_next_waypoint(gotten_global_path, get_unvisited_index(path_id), gotten_location, is_path_finished, goal_index);
 			if(goal.pose.position.x==original_goal.pose.position.x and goal.pose.position.y==original_goal.pose.position.y) break;
 			original_goal = goal;
 		}
@@ -558,7 +562,44 @@ void MoveBase::calculate_goal(){
 		return;
 	}
 
+	diagnostic_publish_new_goal(path_id, goal, goal_index, gotten_location);
+	update_unvisited_index(path_id, goal_index);
 	on_goal(goal);
+}
+
+namespace{
+	typedef diagnostic_msgs::DiagnosticStatus::_values_type::value_type KeyValue;
+
+	KeyValue diag_value_str(const string& key, const string& value){
+		KeyValue v;
+		v.key = key; v.value = value;
+		return v;
+	}
+	template<class T>
+	KeyValue diag_value(const string& key, const T& value){
+		stringstream s; s<<value;
+		return diag_value_str(key, s.str());
+	}
+	template<>
+	KeyValue diag_value(const string& key, const string& value){
+		return diag_value_str(key, value);
+	}
+
+}
+void MoveBase::diagnostic_publish_new_goal(const string& path_id, const geometry_msgs::PoseStamped& goal, size_t goal_index, const config::PP::sub::Location& gotten_location){
+	using namespace diagnostic_msgs;
+	DiagnosticArray array;
+	DiagnosticStatus status;
+	status.hardware_id ="";
+	status.level = DiagnosticStatus::OK;
+	status.message = "path planner selects new goal";
+	status.values.push_back(diag_value("task_id",path_id));
+	status.values.push_back(diag_value("goal",goal));
+	status.values.push_back(diag_value("index",goal_index));
+	status.values.push_back(diag_value("pose",gotten_location));
+	array.status.push_back(status);
+	array.header.stamp = ros::Time::now();
+	diagnosticPublisher.publish(array);
 }
 
 void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
@@ -679,5 +720,30 @@ SYNCH
 
 #endif
 
-
 }
+
+
+
+size_t MoveBase::get_unvisited_index(string path_id){
+	if(path_id=="") return 0;
+	boost::recursive_mutex::scoped_lock l(mtx);
+	size_t inx=0;
+	if(unvisited_index.find(path_id)==unvisited_index.end()){
+		unvisited_index[path_id]=0;
+	}
+	inx = unvisited_index.at(path_id);
+	return inx;
+}
+void MoveBase::remove_memory_about_path(string path_id){
+	if(path_id=="") return;
+	boost::recursive_mutex::scoped_lock l(mtx);
+	if(unvisited_index.find(path_id)==unvisited_index.end()) return;
+	unvisited_index.erase(path_id);
+}
+
+void MoveBase::update_unvisited_index(string path_id, size_t new_index){
+	if(path_id=="") return;
+	boost::recursive_mutex::scoped_lock l(mtx);
+	unvisited_index[path_id] = new_index;
+}
+

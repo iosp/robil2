@@ -1,3 +1,33 @@
+23/11/2014 SHA: 574d4e2830f18c893266f060f39e334ea453e140
+What's new:
+===========
+Changed the structure of the module, to give it more stability.
+Implemented a better ground - relative blade manipulation algorithm.
+
+Known limitations:
+=============
+!IMPORTANT!
+
+1. I've added my own subscriber to the topic /PER/MAP. So, in order to compile the WSM, you should follow these steps:
+	a. Add the third line to : robil2/configuration.yaml
+		#WSM
+		WSM_sub_WorkSeqData: 'SMME'
+		WSM_sub_BladePosition: 'PER'
+		WSM_sub_MiniMap: 'PER'
+	b. Add this line to "ParameterTypes.h" in robil2/include: 
+
+		DEF_SUB( WSM, WorkSeqData, SMME )
+		DEF_SUB( WSM, BladePosition, PER )
+		DEF_SUB( WSM , MiniMap , PER)
+
+	c. Complie.
+
+	NOTE - if you were to run "regenerate.py", or any other auto-generating code script, all these changed will revoke, and you'll have to do this again.
+	
+2. Right Now, via the new algorithm, the ground height is calculated good, I only need to clibrate the closed-control loop further.
+
+!/IMPORTANT!
+
 27/10/2014 SHA: 7a314ef9b2c3e2ec63d361cb034c0dc7d2022da8
 
 What's new:

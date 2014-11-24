@@ -16,8 +16,8 @@
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
-#include <bullet/LinearMath/btVector3.h>
-#include <bullet/LinearMath/btQuaternion.h>
+//#include <bullet/LinearMath/btVector3.h>
+//#include <bullet/LinearMath/btQuaternion.h>
 #include <angles/angles.h>
 
 #if USE_AFFINE==1
@@ -40,6 +40,9 @@
 
 static const double d2r = 0.0174532925;
 static const double r2d = 57.2957795;
+
+#define btVector3 tf::Vector3
+#define btQuaternion tf::Quaternion
 
 namespace tf_geometry{
 
@@ -104,9 +107,9 @@ namespace tf_geometry{
 		Position(const geometry_msgs::Vector3& point){
 			x = point.x; y = point.y; z = point.z;
 		}
-		Position(const btVector3& point){
-			x = point.x(); y = point.y(); z = point.z();
-		}
+// 		Position(const btVector3& point){
+// 			x = point.x(); y = point.y(); z = point.z();
+// 		}
 		Position(const tf::Vector3& point){
 			x = point.x(); y = point.y(); z = point.z();
 		}
@@ -140,9 +143,9 @@ namespace tf_geometry{
 			point.x=x; point.y=y; point.z=z;
 			return point;
 		}
-		operator btVector3 ()const{
-			return btVector3(x,y,z);
-		}
+// 		operator btVector3 ()const{
+// 			return btVector3(x,y,z);
+// 		}
 		operator tf::Vector3 ()const{
 			return tf::Vector3(x,y,z);
 		}
@@ -154,7 +157,7 @@ namespace tf_geometry{
 		geometry_msgs::Point to_msg_Point()const{ return *this; }
 		geometry_msgs::Point32 to_msg_Point32()const{ return *this; }
 		geometry_msgs::Vector3 to_msg_Vector3()const{ return *this; }
-		btVector3 to_btVector3()const{ return *this; }
+// 		btVector3 to_btVector3()const{ return *this; }
 		tf::Vector3 to_tfVector3()const{ return *this; }
 #if USE_AFFINE==1
 		AffVector to_AffVector()const{ return *this; }
@@ -280,9 +283,9 @@ namespace tf_geometry{
 		Orientation(const geometry_msgs::Quaternion& q){
 			x = q.x; y = q.y; z = q.z; w = q.w;
 		}
-		Orientation(const btQuaternion& q){
-			x = q.x(); y = q.y(); z = q.z(); w = q.w();
-		}
+// 		Orientation(const btQuaternion& q){
+// 			x = q.x(); y = q.y(); z = q.z(); w = q.w();
+// 		}
 		Orientation(const tf::Quaternion& q){
 			x = q.x(); y = q.y(); z = q.z(); w = q.w();
 		}
@@ -296,9 +299,9 @@ namespace tf_geometry{
 			q.x = x; q.y = y; q.z = z; q.w = w;
 			return q;
 		}
-		operator btQuaternion()const{
-			return btQuaternion(x,y,z,w);
-		}
+// 		operator btQuaternion()const{
+// 			return btQuaternion(x,y,z,w);
+// 		}
 		operator tf::Quaternion()const{
 			return tf::Quaternion(x,y,z,w);
 		}
@@ -307,7 +310,7 @@ namespace tf_geometry{
 		}
 
 		geometry_msgs::Quaternion to_msg_Quaternion()const{ return *this; }
-		btQuaternion to_btQuaternion()const{ return *this; }
+// 		btQuaternion to_btQuaternion()const{ return *this; }
 		tf::Quaternion to_tfQuaternion()const{ return *this; }
 		tf::Matrix3x3 to_tfMatrix()const{ return *this; }
 		tf::Matrix3x3 to_RotationMatrix()const{ return *this; }

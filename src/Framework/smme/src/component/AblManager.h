@@ -9,6 +9,7 @@
 #define ABLMANAGER_H_
 
 #include "ComponentMain.h"
+#include "PathRecorder.h"
 
 namespace decision_making{
 class EventQueue;
@@ -33,6 +34,8 @@ class AblManager {
 		std::string policy;
 	};
 	std::list<Activated> activated;
+
+	PathRecorder path_recorder;
 
 public:
 	AblManager(ComponentMain* comp);

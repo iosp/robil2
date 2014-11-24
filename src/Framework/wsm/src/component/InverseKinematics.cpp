@@ -16,9 +16,7 @@
 
 
 #define WRAP_POSNEG_PI(x) atan2(sin(x), cos(x))
-
 #define LIMIT(value, minim, maxim) std::max<double>(std::min<double>(value, maxim), minim)
-
 #define safe_asin(x) asin(LIMIT(x, -1, 1))
 #define safe_acos(x) acos(LIMIT(x, -1, 1))
 #define safe_pow(x, y) ((fabs(y - 0.5) < 0.001) ? sqrt(fabs(x)) : pow(x, y))
@@ -101,5 +99,98 @@ double LoaderInv(double q3, double desired_pitch){
 
 	return 0;
 }
+
+RotMatrix Matrix_mul(RotMatrix lhs , RotMatrix rhs )
+{
+	//n * n matrices only.
+
+	RotMatrix Mat_c ;
+
+	for(int j = 0 ; j < 4 ; j++)
+	{
+		for(int i = 0 ; i < 4 ; i++)
+		{
+			Mat_c.R[i][j] = 0 ; 		/* init (i,j) entry */
+			for(int k = 0 ; k < 4 ; k++)
+			{
+				Mat_c.R[i][j] += lhs.R[i][k] * rhs.R[k][j];
+			}
+		}
+	}
+/*
+	ROS_INFO("R_WB");
+	ROS_INFO("%g %g %g %g",lhs.R[0][0],lhs.R[0][1],lhs.R[0][2],lhs.R[0][3]);
+	ROS_INFO("%g %g %g %g",lhs.R[1][0],lhs.R[1][1],lhs.R[1][2],lhs.R[1][3]);
+	ROS_INFO("%g %g %g %g",lhs.R[2][0],lhs.R[2][1],lhs.R[2][2],lhs.R[2][3]);
+	ROS_INFO("%g %g %g %g",lhs.R[3][0],lhs.R[3][1],lhs.R[3][2],lhs.R[3][3]);
+	ROS_INFO("R_BL");
+	ROS_INFO("%g %g %g %g",rhs.R[0][0],rhs.R[0][1],rhs.R[0][2],rhs.R[0][3]);
+	ROS_INFO("%g %g %g %g",rhs.R[1][0],rhs.R[1][1],rhs.R[1][2],rhs.R[1][3]);
+	ROS_INFO("%g %g %g %g",rhs.R[2][0],rhs.R[2][1],rhs.R[2][2],rhs.R[2][3]);
+	ROS_INFO("%g %g %g %g",rhs.R[3][0],rhs.R[3][1],rhs.R[3][2],rhs.R[3][3]);
+		ROS_INFO("R_WL");
+		ROS_INFO("%g %g %g %g",Mat_c.R[0][0],Mat_c.R[0][1],Mat_c.R[0][2],Mat_c.R[0][3]);
+		ROS_INFO("%g %g %g %g",Mat_c.R[1][0],Mat_c.R[1][1],Mat_c.R[1][2],Mat_c.R[1][3]);
+		ROS_INFO("%g %g %g %g",Mat_c.R[2][0],Mat_c.R[2][1],Mat_c.R[2][2],Mat_c.R[2][3]);
+		ROS_INFO("%g %g %g %g",Mat_c.R[3][0],Mat_c.R[3][1],Mat_c.R[3][2],Mat_c.R[3][3]);
+*/
+	return Mat_c;
+}
+
+RotMatrix getRotMatrix (geometry_msgs::PoseWithCovarianceStamped *q)
+{
+	RotMatrix Matrix ;
+
+	geometry_msgs::PoseWithCovarianceStamped* r = new geometry_msgs::PoseWithCovarianceStamped(*q);
+
+	double a = r->pose.pose.orientation.w ;
+	double b = r->pose.pose.orientation.x ;
+	double c = r->pose.pose.orientation.y ;
+	double d = r->pose.pose.orientation.z ;
+
+	Matrix.R[0][0] = (pow(a,2) + pow(b,2) - pow(c,2) - pow(d,2));
+	Matrix.R[1][0] = 2*b*c + 2*a*d ;
+	Matrix.R[2][0] = 2*b*d - 2*a*c ;
+	Matrix.R[3][0] = 0 ;
+
+	Matrix.R[0][1] = 2*b*c - 2*a*d ;
+	Matrix.R[1][1] = (pow(a,2) - pow(b,2) + pow(c,2) - pow(d,2));
+	Matrix.R[2][1] = 2*c*d + 2*a*b ;
+	Matrix.R[3][1] = 0 ;
+
+	Matrix.R[0][2] = 2*b*d + 2*a*c ;
+	Matrix.R[1][2] = 2*c*d - 2*a*b ;
+	Matrix.R[2][2] = (pow(a,2)-pow(b,2) - pow(c,2)+pow(d,2));
+	Matrix.R[3][2] = 0 ;
+
+	Matrix.R[0][3] = r->pose.pose.position.x ;
+	Matrix.R[1][3] = r->pose.pose.position.y ;
+	Matrix.R[2][3] = r->pose.pose.position.z ;
+	Matrix.R[3][3] = 1 ;
+/*
+	ROS_INFO(" X :%g",q->pose.pose.position.x);
+	ROS_INFO(" Y :%g",q->pose.pose.position.y);
+	ROS_INFO(" Z :%g",q->pose.pose.position.z);
+*/
+	delete r ;
+
+	return Matrix ;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

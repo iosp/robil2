@@ -8,18 +8,21 @@
 #ifndef GEOMETRY_H_
 #define GEOMETRY_H_
 
-#include <bullet/LinearMath/btVector3.h>
-#include <bullet/LinearMath/btQuaternion.h>
+//#include <bullet/LinearMath/btVector3.h>
+//#include <bullet/LinearMath/btQuaternion.h>
+#include <tf/tf.h>
 #include <angles/angles.h>
 #include "ParameterTypes.h"
 
-inline btVector3 toVector(const geometry_msgs::Pose& A){
-	return btVector3(A.position.x, A.position.y, A.position.z);
+inline tf::Vector3 toVector(const geometry_msgs::Pose& A){
+	return tf::Vector3(A.position.x, A.position.y, A.position.z);
 }
-inline btQuaternion toAngles(const geometry_msgs::Pose& A){
-	return btQuaternion(A.orientation.x, A.orientation.y, A.orientation.z, A.orientation.w);
+inline tf::Quaternion toAngles(const geometry_msgs::Pose& A){
+	return tf::Quaternion(A.orientation.x, A.orientation.y, A.orientation.z, A.orientation.w);
 }
 
+#define btVector3 tf::Vector3
+#define btQuaternion tf::Quaternion
 
 
 
