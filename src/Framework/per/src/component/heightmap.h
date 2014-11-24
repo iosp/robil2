@@ -3,7 +3,9 @@
 #include "helpermath.h"
 #include <vector>
 #include <opencv2/opencv.hpp>
-
+#include <road_detection/roadLanes.h>
+#include <road_detection/lane.h>
+using namespace road_detection;
 using namespace std;
 using namespace cv;
 
@@ -12,11 +14,20 @@ using namespace cv;
     Designed according to specs.
 */
 
-#define TYPE_UNSCANNED 0
-#define TYPE_CLEAR 1
-#define TYPE_OBSTACLE 2
-#define FEATURE_UNKNOWN	0
-#define FEATURE_ROAD	1
+#define TYPE_UNSCANNED 		0
+#define TYPE_CLEAR 		1
+#define TYPE_OBSTACLE 		2
+#define FEATURE_UNKNOWN		0
+
+#define FEATURE_ROAD		1
+#define FEATURE_RIGHT 		2
+#define FEATURE_LEFT 		3
+#define FEATURE_LANE		4
+#define FEATURE_NOT_ROAD 	5
+
+#define LANES_IMAGE_HEIGHT 964
+#define LANES_IMAGE_WIDTH 1288
+
 
 class HeightMap
 {
@@ -38,6 +49,13 @@ class HeightMap
 	 */
         void    setAbsoluteHeightAt(int x, int y, double height);
         double  getAbsoluteHeightAt(int x, int y);
+	
+	/// Walrus Experiment:
+	void    setAbsoluteFeatureAt(int x, int y, int feature);
+        int     getAbsoluteFeatureAt(int x, int y);
+	
+	int     getAbsoluteTypeAt(int x, int y);
+	/// Until here **
 	
 	/**
 	 * These are used to assign and query heights on the map given a relative position
@@ -73,7 +91,7 @@ class HeightMap
 	 */
         void displayConsole();
         void displayGUI(int, int, int, int enlarger=3);
-        void displayTypesGUI(int enlarger=3);
+        void displayTypesGUI(vector<lane> lanes, int enlarger=3);
         void display3D();
 	
 	/**

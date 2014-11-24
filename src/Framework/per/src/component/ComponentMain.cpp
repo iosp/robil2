@@ -185,3 +185,10 @@ void ComponentMain::publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg)
 	_roscomm->publishGpsSpeed(msg);
 }
 
+/**
+ * Walrus Changes:
+ */
+void ComponentMain::setLanes(vector<lane> l)
+{
+  Mapper::setLanes(l);
+}

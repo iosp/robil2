@@ -230,7 +230,7 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
                 continue;
             }
             double c = (h - _min)/(_max-_min);
-            image.at<Vec3b>(x,y) = Vec3b(120*(1-c),240, 240);
+	    image.at<Vec3b>(x,y) = Vec3b(120*(1-c),240, 240);
         }
     cvtColor(image, image, CV_HSV2BGR);
     //put the tempory arrow representing my position and rotation on the map
@@ -264,13 +264,15 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
    
 }
 
-void HeightMap::displayTypesGUI(int enlarger)
+
+void HeightMap::displayTypesGUI(vector<lane> lanes,int enlarger)
 {
   //int enlarger = 3;
   Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
   //cvtColor(image, image, CV_BGR2HSV);
   
   for(int y = 0; y < _height*enlarger; y++)
+  {
       for(int x = 0; x < _width*enlarger; x++)
       {
 	  int t = this->_types[x/enlarger + _width*(y/enlarger)];
@@ -278,9 +280,31 @@ void HeightMap::displayTypesGUI(int enlarger)
 	  if(t == TYPE_CLEAR) image.at<Vec3b>(x,y) = Vec3b(255,255,255);
 	  else if(t == TYPE_OBSTACLE) image.at<Vec3b>(x,y) = Vec3b(255,0,0);
 	  else if(t == TYPE_UNSCANNED) image.at<Vec3b>(x,y) = Vec3b(60,160,60);
+	  
 	  int f = this->_features[x/enlarger + _width*(y/enlarger)];
-	  if(f == FEATURE_ROAD) image.at<Vec3b>(x,y) = Vec3b(100,100,100);
+	  
+	  if(f == FEATURE_ROAD)
+	  {
+	    image.at<Vec3b>(x,y) = Vec3b(100,100,100);
+	  }
+	  if(f == FEATURE_LANE)
+	  {
+	    image.at<Vec3b>(x,y) = Vec3b(255,128,255);
+	  }
+	  if(f == FEATURE_LEFT)
+	  {
+	    image.at<Vec3b>(x,y) = Vec3b(255,0,255);
+	  }
+	  if(f == FEATURE_RIGHT)
+	  {
+	    image.at<Vec3b>(x,y) = Vec3b(0,0,0);
+	  }
+	  if(f == FEATURE_NOT_ROAD)
+	  {
+	    image.at<Vec3b>(x,y) = Vec3b(60,100,150);
+	  }
       }
+  }  
   //cvtColor(image, image, CV_HSV2BGR);
   int px = _width/2+25;
   int py = _height/2;
@@ -289,8 +313,15 @@ void HeightMap::displayTypesGUI(int enlarger)
   cv::Mat r = cv::getRotationMatrix2D(pt, 90, 1.0);
   cv::warpAffine(_arrow, arrow, r, cv::Size(_arrow.rows, _arrow.rows));
   for(int i = 0; i < _arrow.rows; i++)
+  {
       for(int j = 0; j < _arrow.cols; j++)
-	if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0)) image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
+      {
+	if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0))
+	{
+	  image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
+	}
+      }
+  }
   imshow("TerrainTypeUI", image);
   cv::waitKey(1);
 }
@@ -420,8 +451,35 @@ vector<int>& HeightMap::getFeatures()
   return _features;
 }
 
+/** 
+ * Walrus Experiment:
+ */
+
+int HeightMap::getAbsoluteFeatureAt(int x, int y)
+{
+  x -= _refPoint.x;
+  y -= _refPoint.y;
+  return getRelativeFeatureAt(x,y);
+}
+
+void HeightMap::setAbsoluteFeatureAt(int x, int y, int feature)
+{
+    x -= _refPoint.x;
+    y -= _refPoint.y;
+    //if(height < HEIGHT_UNKNOWN+5) return;
+    //if(height < _min) _min = height;
+    //if(height > _max) _max = height;
+    setRelativeFeatureAt(x,y,feature);
+}
 
 
-
-
-
+int HeightMap::getAbsoluteTypeAt(int x, int y)
+{
+   
+    x -= _refPoint.x;
+    y -= _refPoint.y;
+    //if(height < HEIGHT_UNKNOWN+5) return;
+    //if(height < _min) _min = height;
+    //if(height > _max) _max = height;
+    getRelativeTypeAt(x,y);
+}

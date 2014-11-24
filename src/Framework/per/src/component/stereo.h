@@ -77,8 +77,9 @@ Mat filterDisparity(Mat img)
   return img;
 }
 
+/**** Old Version //
 
-void ProjectDepthImage(HeightMap* map, Mat img, Vec3D myRight, Vec3D myFront, Vec3D myUp, Vec3D myPos)
+void ProjectDepthImage(HeightMap* map, Mat img, Vec3D myRight, Vec3D myFront, Vec3D myUp, Vec3D myPos, vector<lane> lanes)
 {
   static const double fov = 0.6981317; //45 deg to each side
   double min=100, max=-100;
@@ -102,6 +103,108 @@ void ProjectDepthImage(HeightMap* map, Mat img, Vec3D myRight, Vec3D myFront, Ve
     }
   }
 }
+
+//*/
+
+
+
+/**
+ * Walrus changes:
+ */
+//*/
+void ProjectDepthImage(HeightMap* map, Mat img, Vec3D myRight, Vec3D myFront, Vec3D myUp, Vec3D myPos, vector<lane> lanes)
+{
+
+//   printf("Starting ProjectDepthImage\n");
+
+  static const double fov = 0.6981317; //45 deg to each side
+  double min=100, max=-100;
+  double sin_fov = sin(fov);
+  double tan_fov = tan(fov);
+  
+  double propotion = LANES_IMAGE_HEIGHT/img.rows;
+  
+  for(int i = img.rows-1; i >= 0; i--)
+  {
+    bool mid_road = false;
+    bool right_road = false;
+    bool left_road = false;
+    bool not_road = false;
+    bool is_road = false;
+    vector<int> lanes_Xs = vector<int>(lanes.size());
+    int count = 0;
+
+    for(vector<lane>::iterator it = lanes.begin(); it != lanes.end(); it++)
+    {
+      //*****Check why function can't get to this point*****//
+//       printf("Initiating lanes Xs vector\n");
+
+      lane l = *it;
+      if(l.x0 != 0 || l.x1 != 0 || l.x2 != 0)
+        lanes_Xs[count] = (int)((l.x2*i*propotion*i*propotion + l.x1*i*propotion + l.x0)/propotion);
+      else 
+        lanes_Xs[count] = -1;
+      count++;
+    }
+    
+    for(int j = 0; j < img.cols; j++)
+    {
+      if(i > (img.rows)*0 && lanes_Xs.size() > 0)
+      {
+	if( j < lanes_Xs[0] || j > lanes_Xs.at(count-1))
+	{
+	  not_road = true;
+	}
+	if( j > lanes_Xs[0] && j < lanes_Xs.at(count-1) )
+	{
+	  
+	}
+	if(lanes_Xs[0] == j)
+	{
+	  left_road = true;
+	}
+	else if(lanes_Xs[count-1]  == j)
+	{
+	  right_road = true;
+	}  
+	else
+	{
+	  for(int k=1; k<lanes_Xs.size()-1; k++)
+	    if(lanes_Xs[k] == j)
+	    mid_road = true;	   
+	}
+      }
+      uchar depth = img.at<uchar>(i, j);
+      if(depth < 40 || depth > 150) continue;
+      float depth_m = pow(float(depth)/753.42, -1.0661);
+      //depth_m = pow(depth, 0.5);
+      float right_m = depth_m * sin_fov * 2*(-j + img.cols/2)/img.cols;
+      float up_m = depth_m * sin_fov * 2*(-i + img.rows/2)/img.rows;
+      Vec3D pos = myPos.add(myFront.multiply(depth_m).add(myRight.multiply(right_m).add(myUp.multiply(up_m))));
+      map->setAbsoluteHeightAt((int)(5*pos.x), (int)(5*pos.y), (pos.z));
+      
+      if(is_road) map->setAbsoluteFeatureAt((int)(5*pos.x), (int)(5*pos.y), FEATURE_ROAD);
+      if(mid_road) map->setAbsoluteFeatureAt((int)(5*pos.x), (int)(5*pos.y), FEATURE_LANE);
+      if(left_road) map->setAbsoluteFeatureAt((int)(5*pos.x), (int)(5*pos.y), FEATURE_LEFT);
+      if(right_road) map->setAbsoluteFeatureAt((int)(5*pos.x), (int)(5*pos.y), FEATURE_RIGHT);      
+      if(not_road &&
+	   (map->getAbsoluteTypeAt((int)(5*pos.x), (int)(5*pos.y)) == TYPE_CLEAR || 
+	    map->getAbsoluteFeatureAt((int)(5*pos.x), (int)(5*pos.y)) == FEATURE_ROAD) 
+	) 
+		map->setAbsoluteFeatureAt((int)(5*pos.x), (int)(5*pos.y), FEATURE_NOT_ROAD);
+      if(pos.z > max) max = pos.z;
+      if(pos.z < min) min = pos.z;
+	 
+      mid_road = false;
+      left_road = false;
+      right_road = false;
+      not_road = false;
+      is_road = false;
+    }
+  }
+}
+//*/
+/** Until Here: ********************/
 
 
 Mat handleStereo(Mat left, Mat right)

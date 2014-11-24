@@ -17,6 +17,14 @@
 #define VISUALIZE_TYPES		8
 #define VISUALIZE_FULLMAP	16
 
+/// walrus includes:
+#include <road_detection/roadLanes.h>
+#include <road_detection/lane.h>
+#include <vector>
+using namespace std;
+using namespace road_detection;
+/// until here
+
 using namespace cv;
 //static singleton
 class Mapper
@@ -56,6 +64,11 @@ class Mapper
     static HeightMap* height_map;
     static RosComm* roscomm;
     static unsigned char flags;
+    
+    /**
+     * Walrus Changes:
+     */
+    static void setLanes(vector<lane> lanes);
 };
 
 
