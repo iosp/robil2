@@ -11,12 +11,12 @@
 #include <ParameterTypes.h>
 #include <tf/tf.h>
 
-#include <road_detection/lane.h>
-#include <road_detection/roadLanes.h>
+#include <per/lane.h>
+#include <per/roadLanes.h>
 
 #include <vector>
 using namespace std;
-using namespace road_detection;
+using namespace per;
 
 class HeightMap;
 
@@ -58,7 +58,7 @@ public:
 	/**
 	 * Walrus Changes:
 	 */
-	void setLanes(vector<lane> l);
+	void setLanes(vector<per::lane> l);
 private:
       sensor_msgs::Imu _imuData;
       sensor_msgs::NavSatFix _gpsData;

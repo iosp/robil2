@@ -3,8 +3,8 @@
 #include <sensor_msgs/CompressedImage.h>
 // #include <sensor_msgs/Image.h>
 #include "std_msgs/Float64MultiArray.h"
-#include "road_detection/roadLanes.h"
-#include "road_detection/lane.h"
+#include "per/roadLanes.h"
+#include "per/lane.h"
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
 #include "displayImage/DisplayImage.h"
@@ -35,7 +35,7 @@ void displayImage(const sensor_msgs::CompressedImage& msg)
   
   lanes = detectRoad(m, 50, 100, toDebug);
  
-  road_detection::roadLanes retMsg;
+  per::roadLanes retMsg;
   
   retMsg.header.stamp = ros::Time::now();
   retMsg.header.frame_id = "Road Detection\n";
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
   ros::NodeHandle n1;
   n = &n1;
   ros::Subscriber sub = n->subscribe("SENSORS/CAM/R/compressed", 1000, chatterCallback);
-  chatter_pub = n->advertise<road_detection::roadLanes>("RoadLanes",1000);
+  chatter_pub = n->advertise<per::roadLanes>("RoadLanes",1000);
   ros::AsyncSpinner spinner(1);
   spinner.start();
   ros::waitForShutdown();

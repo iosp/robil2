@@ -19,6 +19,7 @@ add_message_files(
   lane.msg
   roadLanes.msg
 )
+
 generate_messages(
     DEPENDENCIES
     std_msgs
@@ -29,7 +30,7 @@ catkin_package(
 	    robil2conf
 	    gazebo_ros
 	    decision_making decision_making_parser
-		message_runtime
+	    message_runtime
 )
 ###########
 ## Build ##
