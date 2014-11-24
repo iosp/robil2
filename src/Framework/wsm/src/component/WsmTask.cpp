@@ -109,7 +109,7 @@ void WsmTask::publish_step_diag(int before, int exit_status)
 		 * TODO:
 		 * 		Get Gloabl Component here somehow
 		 */
-		ROS_INFO("Published pre-step diagnostics");
+	//	ROS_INFO("Published pre-step diagnostics");
 		//COMPONENT_LINK->publishDiagnostic(step_diag);
 	}
 	else
@@ -130,11 +130,11 @@ void WsmTask::publish_step_diag(int before, int exit_status)
 			term_status = "timed out";
 		}
 
-		ROS_INFO("[Exit status is:%d in execute publish]",exit_status);
+	//	ROS_INFO("[Exit status is:%d in execute publish]",exit_status);
 
 		WsmTask::push_key_value(step_diag , "status", term_status);
 		//globalcomp->publish(step_diag);
-		ROS_INFO("Published post-step diagnostics");
+	//	ROS_INFO("Published post-step diagnostics");
 		//COMPONENT_LINK->publishDiagnostic(step_diag);
 		/*
 		 * TODO:
@@ -162,7 +162,7 @@ void WsmTask::execute_next_step()
 	switch(this->Get_step()->type)
 	{
 	case robil_msgs::AssignManipulatorTaskStep::type_unknown:
-		ROS_INFO("Illegal Task type");
+	//	ROS_INFO("Illegal Task type");
 		break;
 	case robil_msgs::AssignManipulatorTaskStep::type_blade_height:
 		exit_status = this->handle_type_1();
@@ -180,7 +180,7 @@ void WsmTask::execute_next_step()
 		exit_status = this->handle_type_5();
 		break;
 	}
-	ROS_INFO("[Exit status is:%d in execute next step]",exit_status);
+//	ROS_INFO("[Exit status is:%d in execute next step]",exit_status);
 
 	this->publish_step_diag(0,exit_status);
 
@@ -206,8 +206,8 @@ void WsmTask::Set_task_status(string status)
 void WsmTask::Update_step()
 {
 	if(this->Get_status() == "paused" || this->Get_WSD()->steps.size() == 0 || this->Get_status() == "aborted"){
-		ROS_INFO("Update step: mission got paused or aborted");
-		ROS_INFO("Current step is still:%s",this->Get_step_id().c_str());
+	//	ROS_INFO("Update step: mission got paused or aborted");
+	//	ROS_INFO("Current step is still:%s",this->Get_step_id().c_str());
 		return;
 	}
 	else{
@@ -218,11 +218,11 @@ void WsmTask::Update_step()
 	if(this->Get_WSD()->steps.size() >= 1){
 	//	this->Set_step_id(Get_WSD()->steps.front().id + 1);
 		this->Set_step_id(this->_cur_step + 1);
-		ROS_INFO("forwarded next step: %d",this->Get_cur_step_index());
+	//	ROS_INFO("forwarded next step: %d",this->Get_cur_step_index());
 	}
 	else{
 		this->Set_task_status("complete");
-		ROS_INFO("Mission in complete status now");
+	//	ROS_INFO("Mission in complete status now");
 	}
 
 	return;
@@ -266,9 +266,10 @@ const int N = 1000 ;
 
 	ROS_INFO("Made type 1");
 	double value = ((this->Get_WSD()->steps.front().value)+0.28748); 	//Height in meters from ground
+	ROS_INFO("Value: %g",value);
 
 		if(cur_step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_graund){
-			value += COMPONENT_LINK->ground_heigth ;
+			value += COMPONENT_LINK->z_offset ;
 		}
 
 	double tic = ros::Time::now().toSec();			//Stores The current time
@@ -305,9 +306,9 @@ const int N = 1000 ;
 
 					ROS_INFO("Initial values are: Q3 = %f , Loader = %f , Pitch = %f , Hight = %f DH = %f"  , Q3[0] , loader[0], des_pitch , H[0],dh);
 					ROS_INFO("des_pitch: %f", des_pitch);
-
+					//&&(this->Get_status()!="paused")
 				/* Perform inverse Kinematics */
-						for(int i = 1 ; (i < N)&&(this->Get_status() != "paused") ; i++){
+						for(int i = 1 ; (i < N)&&(this->Get_status()!="paused"); i++){
 							jacobi = InverseKinematics::get_J(Q3[i-1]);
 							Q3[i] = Q3[i-1] + (pow(jacobi,-1))*dh ;
 							loader[i] = -(InverseKinematics::get_pitch(Q3[i],0)) + des_pitch ;
@@ -322,20 +323,18 @@ const int N = 1000 ;
 
 													COMPONENT_LINK->publishBladePositionCommand(*bladeCommand);
 													delete bladeCommand;
-							usleep(5000);
 
-				/* Check for time out */
-				toc = (ros::Time::now().toSec() - tic);
-				if(toc > cur_step->success_timeout)
-					ROS_INFO("Really?");
-				return 0;
+							usleep(5000);
+						toc = (ros::Time::now().toSec() - tic);
+					    if(toc > cur_step->success_timeout)
+						return 0;
 				}
 				/* Check for pause or success */
+						/* Check for time out */
 						if(this->Get_status() == "paused"){
 							return -1 ;
 						}
 						else{
-							ROS_INFO("But it publisheds!");
 							this->monitor_time(toc);
 							return 1 ;
 						}
@@ -714,6 +713,8 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 	length = sqrt (pow(xt_ms.x , 2) + pow(xt_ms.y , 2));
 	pixel_dist = static_cast<int>((ceil(length*5)));
 
+	ROS_INFO("This is the distance:%d",pixel_dist);
+
 	map_pixel.x = (50 - pixel_dist);
 	map_pixel.y =  15 ;
 	map_pixel.z = R_WL.R[2][3];
@@ -728,7 +729,7 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
  void WsmTask::blade_correction()
 {
 	bool loop_on = true;
-	double t_hold = 0.01 ;
+	double t_hold = 0.05 ;
 	double err = 0 ;
 	double delta = 0;
 	double RPY [3] ;
@@ -749,11 +750,11 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 			COMPONENT_LINK->ground_heigth = g_max  ;
 		}
 
-	double set_point = Map_pixel.z + COMPONENT_LINK->ground_heigth - COMPONENT_LINK->z_offset  ;
+	double set_point = Map_pixel.z + COMPONENT_LINK->ground_heigth ;
 	double cur_h = 0 ;
 
 	ROS_INFO("Initial set point:[%g m]" , set_point);
-	ROS_INFO("TF calc. height: [%g m]", Map_pixel.z + (COMPONENT_LINK->ground_heigth - COMPONENT_LINK->z_offset) );
+	ROS_INFO("TF calc. height: [%g m]", (Map_pixel.z + (COMPONENT_LINK->ground_heigth)));
 	ROS_INFO("Initial ground height: [%g m]", g_max);
 
 	/* finds supporter and loader's indices. */
@@ -785,13 +786,13 @@ while(loop_on){
 				COMPONENT_LINK->ground_heigth = g_max ;
 			}
 
-		cur_h = Map_pixel.z + COMPONENT_LINK->ground_heigth - COMPONENT_LINK->z_offset;
+		cur_h = Map_pixel.z + COMPONENT_LINK->ground_heigth ;
 		delta = (set_point - cur_h);
 
 		ROS_INFO("===================================");
-		ROS_INFO("current Height:[%g m]", cur_h);
+		ROS_INFO("current Height:[%g m]", cur_h );
 		ROS_INFO("Initial set point:[%g m]" , set_point);
-		ROS_INFO("Map says ground height is: [%g m]",g_max - COMPONENT_LINK->z_offset);
+		ROS_INFO("Map says ground height is: [%g m]",g_max );
 		ROS_INFO("Current delta: [%g]" , delta);
 		ROS_INFO("===================================");
 
