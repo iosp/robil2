@@ -592,14 +592,19 @@ void MoveBase::diagnostic_publish_new_goal(const string& path_id, const geometry
 	DiagnosticStatus status;
 	status.hardware_id ="";
 	status.level = DiagnosticStatus::OK;
-	status.message = "path planner selects new goal";
+	status.name = "path planner";
+	stringstream sid; sid<<"goal: task("<<path_id<<")["<<goal_index<<"]=("<<goal.pose.position.x<<","<<goal.pose.position.y<<")";
+	status.message = sid.str();
 	status.values.push_back(diag_value("task_id",path_id));
 	status.values.push_back(diag_value("goal",goal));
 	status.values.push_back(diag_value("index",goal_index));
 	status.values.push_back(diag_value("pose",gotten_location));
 	array.status.push_back(status);
 	array.header.stamp = ros::Time::now();
-	diagnosticPublisher.publish(array);
+	if(last_diagnostic_message_id!=status.message){
+		diagnosticPublisher.publish(array);
+		last_diagnostic_message_id = status.message;
+	}
 }
 
 void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
@@ -735,6 +740,7 @@ size_t MoveBase::get_unvisited_index(string path_id){
 	return inx;
 }
 void MoveBase::remove_memory_about_path(string path_id){
+	last_diagnostic_message_id = "";
 	if(path_id=="") return;
 	boost::recursive_mutex::scoped_lock l(mtx);
 	if(unvisited_index.find(path_id)==unvisited_index.end()) return;

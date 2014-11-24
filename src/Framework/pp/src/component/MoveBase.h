@@ -99,6 +99,7 @@ protected:
 	void remove_memory_about_path(string path_id);
 	void update_unvisited_index(string path_id, size_t new_index);
 
+	string last_diagnostic_message_id;
 	void diagnostic_publish_new_goal(const string& path_id, const geometry_msgs::PoseStamped& goal, size_t goal_index, const config::PP::sub::Location& gotten_location);
 
 
