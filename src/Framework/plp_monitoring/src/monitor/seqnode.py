@@ -42,7 +42,8 @@ class SeqNode (node):
             a[1] = a[1] + b[1]
             if not b[0]:	  
                 break
-            
+        
+        
         if (self.monitor):    
             if a[0]:
                 self.setDistTableSuccAtIndex(tmpIndex, a[1])
@@ -57,47 +58,41 @@ class SeqNode (node):
         distMatrixSucc = []
         distMatrixFail = []
         probTotal = 1
-        probArr = []
+        #probArr = []
         for child in self.getChildren():
             [prob,distS,distF] = child.runAccurate(index)
-            if isinstance(self.getDistSuccByIndex(index), Computed):
-                distMatrixSucc.append(distS.toMatrix())
-            if isinstance(self.getDistFailByIndex(index), Computed):    
-                distMatrixFail.append(distF.toMatrix())
+            distMatrixSucc.append(distS.toMatrix())
+            distMatrixFail.append(distF.toMatrix())
             probTotal=probTotal*prob
-            probArr.append(1-prob)
+            #probArr.append(1-prob)
         distScc = SumRandomVariables.SumAccurateDescrete(distMatrixSucc)
-        distFail = SumRandomVariables.OrSumAccurateDescrete(distMatrixFail,distMatrixSucc,probArr)
+        #distFail = SumRandomVariables.OrSumAccurateDescrete(distMatrixFail,distMatrixSucc,probArr)
         self.updateProbTableAtIndex(index, 0, round(probTotal,4))
         self.setDistTableSuccAtIndex(index,0,distScc)
-        self.setDistTableFailAtIndex(index,0,distFail)
+        self.setDistTableFailAtIndex(index,0,[],{0:1})
         return [self.getProbAtIndex(index),self.getDistSuccByIndex(index),self.getDistFailByIndex(index)]
 
             
             
             
-    def runApproximate(self, index,e,T):
+    def runApproximate(self, index,e):
         distMatrixSucc = []
         distMatrixFail = []
         probTotal = 1
         probArr = []
         numChildren = 0
         for child in self.getChildren():
-            [prob,distS,distF] = child.runAccurate(index)
+            [prob,distS,distF] = child.runApproximate(index,e*child.size/self.size)
             distMatrixSucc.append(distS.toMatrix())
             distMatrixFail.append(distF.toMatrix())
             probTotal=probTotal*prob
             probArr.append(1-prob)
             numChildren+=1
-        distScc = SumRandomVariables.SumApproximateDescrete(distMatrixSucc,e,numChildren)
-        distFail = SumRandomVariables.OrSumApproximateDescrete(distMatrixFail,distMatrixSucc,probArr,e,numChildren)
+        distScc = SumRandomVariables.gridyAlgo(distMatrixSucc,e,numChildren)
+        #distFail = SumRandomVariables.OrSumApproximateDescrete(distMatrixFail,distMatrixSucc,probArr,e,numChildren)
         self.updateProbTableAtIndex(index, 0, round(probTotal,4))
-        self.setDistTableSuccAtIndex(index,0,distScc)
-        self.setDistTableFailAtIndex(index,0,distFail)
-        if self.isRoot():
-            u= SumRandomVariables.computeUpperBound(T,e,numChildren,distMatrixSucc)
-            l= SumRandomVariables.computeLowerBound(T,e,numChildren,distMatrixSucc)
-            self.setBounds(index,u,l)
+        self.setDistTableSuccAtIndex(index,0,[], distScc.getDist())
+        self.setDistTableFailAtIndex(index,0,[],{0:1})
         return [self.getProbAtIndex(index),self.getDistSuccByIndex(index),self.getDistFailByIndex(index)]
 
 

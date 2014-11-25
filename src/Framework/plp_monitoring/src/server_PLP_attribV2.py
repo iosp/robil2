@@ -10,10 +10,11 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 WSMstepsID = ["","WSMBladeAngle","WSMBladeHeight","WSMClamp","WSMAdvance","WSMTurn"]
 
 def addProperties(stepType):
-  xmlFile=open(__location__+"/monitor/PLPs/"+WSMstepsID[stepType]+".plp", "r")
-  loc = xmlFile.read().find('Success probability:')
-  xmlFile.seek(loc+20)
-  prob=xmlFile.read(4)
+  plpFile=open(__location__+"/monitor/PLPs/"+WSMstepsID[stepType]+".plp", "r")
+  loc = plpFile.read().find('Success probability:')
+  plpFile.seek(loc+20)
+  prob=plpFile.read(4)
+  plpFile.close()
   return(prob,"","")  
 
 def callback(data):

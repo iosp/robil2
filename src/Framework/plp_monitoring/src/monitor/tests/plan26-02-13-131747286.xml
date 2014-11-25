@@ -1,5 +1,0 @@
-<plan descriptions="./plans/TaskDescriptions.xml">
-   <seq name="mission" x="458.5" y="231.5" collapsed="false" id="b4d82946-9f42-43e8-abdd-4b33f2de8951"> 
-         <tsk name="MonitorWayPoint" x="446.5" y="318.5" test_time="0" test_result="true" id="085b7169-3e88-411e-908a-70df35fc494b" />
-   </seq>
-</plan>

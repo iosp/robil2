@@ -55,31 +55,36 @@ class ParallelNode (node):
         for child in self.getChildren():
             [prob,distS,distF] = child.runAccurate(index)
             distMatrixSucc.append(distS.toMatrix())
-            distMatrixFail.append(distF.toMatrix())
-            probTotal=probTotal*(1-prob)
+            #distMatrixFail.append(distF.toMatrix())
+            probTotal=probTotal*(prob)
         distSucc= SumRandomVariables.MaxAccurateDescrete(distMatrixSucc)
-        distFail= SumRandomVariables.MaxAccurateDescrete(distMatrixFail)
-        self.updateProbTableAtIndex(index, 0, round(1-probTotal,4))
+        #distFail= SumRandomVariables.MinAccurateDescrete(distMatrixFail)
+        self.updateProbTableAtIndex(index, 0, round(probTotal,4))
         self.setDistTableSuccAtIndex(index,0,[],distSucc)
-        self.setDistTableFailAtIndex(index,0,[],distFail)
+        #self.setDistTableFailAtIndex(index,0,[],distFail)
+        self.setDistTableFailAtIndex(index,0,[],{0:1})
         return [self.getProbAtIndex(index),self.getDistSuccByIndex(index),self.getDistFailByIndex(index)]
         
         
         
         
-    def runApproximate(self, index,e,T):
+    def runApproximate(self, index,e):
         distMatrixSucc = []
         distMatrixFail = []
         probTotal = 1
         for child in self.getChildren():
-            [prob,distS,distF] = child.runApproximate(index,e,T)
+            [prob,distS,distF] = child.runApproximate(index,min(e*child.size/self.size, 1.0/(len(self.getChildren())^2+len(self.getChildren()))))
             distMatrixSucc.append(distS.toMatrix())
-            distMatrixFail.append(distF.toMatrix())
-            probTotal=probTotal*(1-prob)
-        probTotal = 1-probTotal
+            #distMatrixFail.append(distF.toMatrix())
+            probTotal=probTotal*(prob)
+
         distSucc= SumRandomVariables.MaxAccurateDescrete(distMatrixSucc)
-        distFail= SumRandomVariables.MaxAccurateDescrete(distMatrixFail)
+        #distFail= SumRandomVariables.MaxAccurateDescrete(distMatrixFail)
         self.updateProbTableAtIndex(index, 0, round(probTotal,4))
         self.setDistTableSuccAtIndex(index,0,[],distSucc)
-        self.setDistTableFailAtIndex(index,0,[],distFail)
+        #self.setDistTableFailAtIndex(index,0,[],distFail)
+        self.setDistTableFailAtIndex(index,0,[],{0:1})
+
         return [self.getProbAtIndex(index),self.getDistSuccByIndex(index),self.getDistFailByIndex(index)]    
+
+
