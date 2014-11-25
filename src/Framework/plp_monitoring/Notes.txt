@@ -31,6 +31,12 @@ Run our module (Please note the order..).
 rosrun plp_monitoring server_PLP_attribV2.py 12 100000 (or other parameters..)
 rosrun plp_monitoring serverV2.py
 
+Bugs:
+need to stop the server_PLP_attribV2 and serverV2 between runs.
+no statistics, using constant velocity bounds [0.4, 0.5].
+no statistics, using constant distribution for all steps [0.4, 0.5].
+
+
 
 -----------------------------------------------------------Ver. : 07 Sep 2014--------------------------------------------------------------
 This module construct a plan according to WSM steps and provides statistics regarding the probability of success and duration.
