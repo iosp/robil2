@@ -103,7 +103,12 @@ void send_static_ziro_tf_links(ComponentMain* comp){
 	comp->publishTransform(tf,"map", "odom");
 	comp->publishTransform(tf,"map", "laser");
 }
-
+void send_static_base_center_offset(ComponentMain* comp){
+	tf::Quaternion q(0,0,0,1);
+	tf::Vector3 l(-1,0,0);
+	tf::Transform tf(q,l);
+	comp->publishTransform(tf,"base_link", "base_link_center");
+}
 const double x_offset_for_bebug=0;
 const double y_offset_for_bebug=0;
 
@@ -114,6 +119,7 @@ void MoveBase::on_position_update(const config::PP::sub::Location& msg){
 	last_location = msg;
 	send_static_ziro_tf_links(comp);
 	comp->publishTransform(tf,"odom", "base_link");
+	send_static_base_center_offset(comp);
 	if(resend_thread==0){
 		resend_thread = new boost::thread(boost::bind(&MoveBase::resend,this));
 	}
@@ -121,7 +127,7 @@ void MoveBase::on_position_update(const config::PP::sub::Location& msg){
 
 #include <boost/thread.hpp>
 void MoveBase::resend(){
-	ROS_INFO("Start TF structure sender(20Hz): world->map(->odom->base_link|->laser)");
+	ROS_INFO("Start TF structure sender(20Hz): world->map(->odom->base_link->base_link_center|->laser)");
 	while(ros::ok and not boost::this_thread::interruption_requested()){
 		//ROS_INFO("send tf");
 		on_position_update(last_location);
