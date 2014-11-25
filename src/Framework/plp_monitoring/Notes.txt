@@ -15,7 +15,7 @@ Changes:
 2) Output to file: "Framework/plp_monitoring/src/monitor/output/outputFile"
 3) Output to topic: "/Monitor/PLPs/output" as string.
 4) Bug fix
-5) Removed (temporarily) option for accurate computation and deterministic approximation.
+5) Removed (temporarily) option for accurate computation and deterministic approximation. Now, there is no need to use "config.py" in this module.
 
 How to Run?
 Run the WSM:

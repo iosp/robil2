@@ -1,6 +1,0 @@
-			<tsk name="action 1" probability="0.9 0.8" Successdistribution="U[10.0,20.0] U[10.0,20.0]" Failuredistribution="U[1.0,2.0] U[1.0,2.0]" DEBUG="True 30">
-			<tsk name="action 2" probability="0.9 0.8" Successdistribution="U[10.0,20.0] U[10.0,20.0]" Failuredistribution="U[1.0,2.0] U[1.0,2.0]" DEBUG="True 50"/>
-			<tsk name="action 3" probability="0.9 0.8" Successdistribution="U[10.0,20.0] U[10.0,20.0]" Failuredistribution="U[1.0,2.0] U[1.0,2.0]" DEBUG="True 20"/>
-			<tsk name="action 4" probability="0.9 0.8" Successdistribution="U[10.0,20.0] U[30.0,40.0]" Failuredistribution="U[1.0,2.0] U[1.0,2.0]" />
-			<tsk name="perception" probability="0.99 0.95" Successdistribution="U[2.0,3.0] U[2.0,3.0]" Failuredistribution="U[1.0,2.0] U[1.0,2.0]" />
-</tsk>
