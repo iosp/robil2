@@ -102,6 +102,8 @@ DEF_SUB( WPD, Location, LOC )
 
 DEF_SUB( WSM, WorkSeqData, SMME )
 DEF_SUB( WSM, BladePosition, PER )
+DEF_SUB( WSM , MiniMap , PER)
+
 
 DEF_SUB( LOC, PositionUpdate, OCU )
 DEF_SUB( LOC, GPS, PER )

@@ -1,7 +1,3 @@
-<tsk Failuredistribution="U[4.0,5.0]" Successdistribution="U[2.0,2.5]" name="1" probability="0.92">
-  <tsk Failuredistribution="U[4.0,5.0]" Successdistribution="U[2.0,2.5]" name="2" probability="0.95"/>
-  <tsk Failuredistribution="U[0.0,0.0]" Successdistribution="U[0.0,0.0]" name="3" probability="0.94"/>
-  <tsk Failuredistribution="U[200.0,250.0]" Successdistribution="U[100.0,125.0]" name="4" probability="0.98"/>
-  <tsk Failuredistribution="U[0.4,0.5]" Successdistribution="U[0.2,0.25]" name="5" probability="0.95"/>
-  <tsk Failuredistribution="U[-4.0,-5.0]" Successdistribution="U[-2.0,-2.5]" name="6" probability="0.92"/>
+<tsk Failuredistribution="U[8.0,10.0]" Successdistribution="U[4.0,5.0]" id="1" probability="1.00" name="1">
+  <tsk Failuredistribution="U[12.0,15.0]" Successdistribution="U[6.0,7.5]" id="2" probability="1.00" name="2"/>
 </tsk>

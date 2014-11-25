@@ -43,7 +43,6 @@ def test29():
     print "Average success time in debug mode with clear sky = %f" %(root.getChild(0).getAverageSuccTime(0))
     print "Average success time in debug mode when Cloudy = %f" %(root.getChild(0).getAverageSuccTime(1))
     elapsed = (time.time() - start)
-    elapsed = (time.time() - start)
     print "Time: %f" %elapsed
 
 def test30():
