@@ -1,11 +1,3 @@
 -------------------------------Astimated Duration-----------------------------------------
-Sampeling: # samples: 100000 Prob: 1.0 
-Sampeling: # samples: 100000 T:12.0 Duration Distribution: 1.0 
--------------------------------Astimated Duration After Step 1-----------------------------------
-Success probability in offline mode monitor: Mission: 1.0 
-Average success time monitor: Mission: 11.622 
-SD success time monitor: Mission:0.473708771293 
--------------------------------Astimated Duration After Step 2-----------------------------------
-Success probability in offline mode monitor: Mission: 0.0 
-Average success time monitor: Mission: 12.175 
-SD success time monitor: Mission:0.0 
+Sampeling: # samples: 100000 Prob: 0.81378 
+Sampeling: # samples: 100000 T:12.0 Duration Distribution: 0.0 

@@ -28,8 +28,8 @@ cd robil_ws/src/robil2/src/Framework/robil_tests/yaml/
 rostopic pub /SMME/WSM/Task robil_msgs/AssignManipulatorTask "`cat testWsm1.yaml`" --once
 ----------------------------------------------------------------------
 Run our module (Please note the order..).
-rosrun plp_monitoring server_PLP_attribV2.py 12 100000 (or other parameters..)
-rosrun plp_monitoring serverV2.py
+rosrun plp_monitoring server_PLP_attribV2.py
+rosrun plp_monitoring serverV2.py 12 100000 (or other parameters..)
 
 Bugs:
 need to stop the server_PLP_attribV2 and serverV2 between runs.
