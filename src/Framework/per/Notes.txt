@@ -1,5 +1,26 @@
 --The Perception Package--
 
+-Updated 24 Nov 2014
+Added road detection to the perception module.
+To run this module you need to:
+1. Launch the framework init:
+	$ roslaunch robil2conf frameworkInit.launch
+2. Run the road detection:
+	$ rosrun per road_detection
+2* If you want to see the road detection in debug mode (see the results of the lanes found) you can run the road detection using:
+	$ rosrun per road_detection -d
+
+IMPORTANT
+---------
+If the stereo package is unable to create a disparity map the road_detection
+can't be projected on the heightmap will have no effect!!!
+To check if the disparity map has any useful information run:
+rostopic pub /PER/VISUAL std_msgs/Char "data: 4"
+To stop the disparity map run:
+rostopic pub /PER/VISUAL std_msgs/Char "data: 0"
+
+
+
 -Updated 25 Jun 2014
 
 Implemented Features:

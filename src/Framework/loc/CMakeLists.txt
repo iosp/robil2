@@ -31,6 +31,6 @@ add_executable(loc_node src/main.cpp)
 add_executable(user_function_example src/userHelperFunction/example.cpp)
 target_link_libraries(loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(loc_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(loc_node loc_compMain loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS}
-)
+target_link_libraries(loc_node loc_compMain loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(user_function_example loc_compMain loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 

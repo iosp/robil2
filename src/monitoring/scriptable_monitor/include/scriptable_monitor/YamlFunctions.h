@@ -16,10 +16,9 @@ public:
 	static Yaml toYaml(string object) {
 		 stringstream yaml_stream;
 		 yaml_stream << object;
-		 YAML::Parser parser(yaml_stream);
 		 YAML::Node document;
-		 parser.GetNextDocument(document);
-		 return YamlPtr(document.Clone());
+		 YAML_LOAD_DOCUMENT(document, yaml_stream);
+		 return YamlPtr(YAML_CLONE(document));
 	}
 
 };

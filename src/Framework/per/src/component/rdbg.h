@@ -1,6 +1,7 @@
 #ifndef RDBG__H
 #define RDBG__H
 #include <sys/socket.h>
+#include <unistd.h>
 #include <arpa/inet.h>
 #include <string>
 #include <stdio.h>
@@ -23,7 +24,8 @@ inline void rdbg(const char* str)
   servaddr.sin_addr.s_addr=inet_addr(ip.c_str());
   servaddr.sin_port=htons(port);
   sendto(sockfd,str,strlen(str),0,(struct sockaddr *)&servaddr,sizeof(servaddr));
-  close(sockfd);
+  //close(sockfd);
+  shutdown(sockfd,2);
 
 }
 

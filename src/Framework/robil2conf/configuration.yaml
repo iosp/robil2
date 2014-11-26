@@ -89,6 +89,7 @@ WPD_pub_WPDVelocity: '/WPD/Speed'
 #WSM
 WSM_sub_WorkSeqData: 'SMME'
 WSM_sub_BladePosition: 'PER'
+WSM_sub_MiniMap: 'PER'
 
 WSM_pub_WSMVelocity: '/WSM/Speed'
 WSM_pub_BladePositionCommand: '/WSM/BladePosition'

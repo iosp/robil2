@@ -26,6 +26,11 @@
 #include <rosgraph_msgs/Log.h>
 typedef rosgraph_msgs::Log LogMessage;
 
+#define DIAGNOSTIC_TOPIC_NAME "/diagnostics"
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <diagnostic_msgs/DiagnosticStatus.h>
+
+
 using namespace std;
 
 class ComponentMain;
@@ -76,6 +81,7 @@ protected:
 	ros::Subscriber moveBaseStatusSubscriber;
 	ros::Subscriber globalCostmapSubscriber;
 	ros::Subscriber speedSubscriber;
+	ros::Publisher diagnosticPublisher;
 
 	boost::recursive_mutex mtx;
 	ComponentMain* comp;
@@ -86,6 +92,16 @@ protected:
 	void on_error_from_move_base();
 	void stop_navigation(bool success);
 	void on_move_base_status(const actionlib_msgs::GoalStatusArray::ConstPtr& msg);
+
+
+	std::map<string, size_t> unvisited_index;
+	size_t get_unvisited_index(string path_id);
+	void remove_memory_about_path(string path_id);
+	void update_unvisited_index(string path_id, size_t new_index);
+
+	string last_diagnostic_message_id;
+	void diagnostic_publish_new_goal(const string& path_id, const geometry_msgs::PoseStamped& goal, size_t goal_index, const config::PP::sub::Location& gotten_location);
+
 
 //FOR TEST ONLY
 public:

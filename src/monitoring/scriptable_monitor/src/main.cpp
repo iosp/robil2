@@ -208,9 +208,8 @@ void scriptHostTest() {
 void yamlTest() {
 	 stringstream yaml_stream;
 	 yaml_stream << "[1.5462267]";
-	 YAML::Parser parser(yaml_stream);
 	 YAML::Node document;
-	 parser.GetNextDocument(document);
+	 YAML_LOAD_DOCUMENT(document, yaml_stream);
 
 	 cout << document.size() << endl;
 }

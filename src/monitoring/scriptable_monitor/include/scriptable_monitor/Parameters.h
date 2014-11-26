@@ -11,7 +11,7 @@
 #include <iostream>
 #include <inttypes.h>
 #include <map>
-#include <yaml-cpp/yaml.h>
+#include "yaml.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -28,7 +28,8 @@ public:
 
 	YAML::Node* get() { return _yamlNode.get(); }
 
-	template <typename T> const T to() const { return _yamlNode->to<T>(); }
+	template <typename T> const T to() const { return YAML_AS( *_yamlNode, T ); }
+    template <typename T> const T as() const { return YAML_AS( *_yamlNode, T ); }
 
 	template <typename T>
 	inline const YAML::Node& operator [] (const T& key) const { return (*_yamlNode)[key]; }

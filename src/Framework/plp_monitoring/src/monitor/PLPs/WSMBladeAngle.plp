@@ -37,6 +37,10 @@ Upper bound:1.57
 In/Out:Out
 Update Frequency:10
 Source:/WSM/BladePosition
+Name:velocity
+Type:Double
+Lower bound:0.5
+Upper bound:0.2
 
 Resources:0
 

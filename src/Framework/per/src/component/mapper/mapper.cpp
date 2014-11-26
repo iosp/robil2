@@ -19,6 +19,10 @@ Mat stereo;
 HeightMap* Mapper::height_map;
 RosComm* Mapper::roscomm;
 
+/// walrus declares:
+vector<lane> _lanes;
+/// Until here
+
 void Mapper::MainLoop()
 {
   camL = false;
@@ -42,7 +46,7 @@ void Mapper::MainLoop()
       Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
       Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
       Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
-      ProjectDepthImage(height_map, stereo, right, front, up, position.add(up.multiply(1.6)));
+      ProjectDepthImage(height_map, stereo, right, front, up, position.add(up.multiply(1.6)), _lanes);
     }
     publishMap();
     publishMiniMap();
@@ -72,7 +76,7 @@ void Mapper::VisualizeLoop()
       if((visualize & VISUALIZE_TYPES) != 0) //map types needed
       {
 	HeightMap m = height_map->deriveMap(position.x, position.y, myRot);
-	m.displayTypesGUI();
+	m.displayTypesGUI(_lanes);
       }
       if((visualize & VISUALIZE_FULLMAP) != 0) //global map needed
       {
@@ -88,6 +92,19 @@ void Mapper::VisualizeLoop()
     }
   }
 }
+
+/**
+ * Walrus Cahnges:
+ */
+
+void Mapper::setLanes(vector<lane> lanes)
+{
+  _lanes = lanes;
+}
+
+/** Until Here**/
+
+
 
 void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
 {

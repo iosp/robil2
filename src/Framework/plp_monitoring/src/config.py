@@ -8,20 +8,26 @@ Created on Wed Aug 27 16:28:41 2014
 
 #from Compute import *
 from monitor import Compute
+import os
 
-if __name__ == "__main__": 
-    fd=open("monitor/output/outputFile","w")
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+
+def config():
+    fd=open(__location__+"/monitor/output/outputFile","w")
     fd.write("Success Probability\n")
-    filePlanName="monitor/plan.xml"
-    filePlanAttribName="monitor/plan_attrib.xml"
-    statProb=[1,1]  
+    filePlanName=__location__+"/monitor/plan.xml"
+    filePlanAttribName=__location__+"/monitor/plan_attrib.xml"
+    statProb=[0,1]  
     statDur=[0,0,1]
     runtimeProb=0 
     samplesProb=100
     T=50
     runtimeDur=0 
     accuracyDur=0
-    samplesDur=100
+    samplesDur=1000
     Compute.coputeSuccProb(fd,statProb,filePlanName,filePlanAttribName,runtimeProb,samplesProb)
-    Compute.coputeDur(fd,statDur,filePlanName,filePlanAttribName,T,runtimeDur,accuracyDur,samplesDur)
+    tree=Compute.coputeDur(fd,statDur,filePlanName,filePlanAttribName,T,runtimeDur,accuracyDur,samplesDur)
     print "done"
+    return tree

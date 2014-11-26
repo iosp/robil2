@@ -67,12 +67,16 @@ void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& 
 {
 	config::SMME::pub::MissionAcceptance acceptance =
 			_mission_manager->assign(msg);
-	if(acceptance.status>0){
+	if(acceptance.status==0){
 		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" accepted");
 		machines[msg.mission_id]=boost::shared_ptr<MissionMachine>(new MissionMachine(this,msg.mission_id));
 		machines[msg.mission_id]->start();
+	}else
+	if(acceptance.status == 1000){
+		acceptance.status = 0;
+		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" accepted, but continue with same mission fsm");
 	}else{
-		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" rejected");
+		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" rejected (error="<<acceptance.status<<")");
 	}
 	publishMissionAcceptance(acceptance);
 }

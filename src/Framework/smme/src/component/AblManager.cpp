@@ -21,7 +21,6 @@ AblManager::AblManager(ComponentMain* comp)
 
 	ADD_TRIGGER("/NoPathFound","/PathFound");
 	ADD_TRIGGER("/CommFail","/CommOK");
-	ADD_TRIGGER("/CommFail","/CommOK");
 	ADD_TRIGGER("/ObstacleDetected","/AllClear");
 	ADD_TRIGGER("/RoadDetected","/OpenSpace");
 	ADD_TRIGGER("/Turn-over","/StablePosition");
@@ -147,6 +146,11 @@ void AblManager::on_activation(const Activated& act){
 				}
 				case_str(POLICY_TELEOPERATION){
 					events->raiseEvent("/goBack");
+
+					events->raiseEvent("/pp/Resume");
+					boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+					path_recorder.publish_plan();
+					path_recorder.stop_record();
 				}
 			}
 		}
@@ -257,6 +261,9 @@ void AblManager::on_deactivation(const Activated& act){
 				}
 				case_str(POLICY_TELEOPERATION){
 
+					events->raiseEvent("/pp/Standby");
+					path_recorder.clean_path();
+					path_recorder.start_record();
 				}
 			}
 		}

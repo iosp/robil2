@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
 )       
       
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
       
  
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -146,9 +146,13 @@ FILE(WRITE "${XMLPARSER}" "${SRC_XML_PARSER_TEXT}" )
 # add_dependencies(decision_making_parser_node decision_making_parser_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(decision_making_parser_node
-#   ${catkin_LIBRARIES}
-# )
+ target_link_libraries(decision_making_parser
+   ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+ )
+ target_link_libraries(tao_parser_test
+   ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+ )
+
 
 #############
 ## Install ##

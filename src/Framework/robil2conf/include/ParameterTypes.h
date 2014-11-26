@@ -31,6 +31,7 @@ DEF_PUB( SMME, MissionAcceptance, types::MissionAcceptance )
 
 
 DEF_PUB( WPD, WPDVelocity, types::Speed )
+
 DEF_PUB( WSM, WSMVelocity, types::Speed )
 DEF_PUB( WSM, BladePositionCommand, types::BladPose )
 
@@ -102,6 +103,7 @@ DEF_SUB( WPD, Location, LOC )
 
 DEF_SUB( WSM, WorkSeqData, SMME )
 DEF_SUB( WSM, BladePosition, PER )
+DEF_SUB( WSM, MiniMap , PER)
 
 DEF_SUB( LOC, PositionUpdate, OCU )
 DEF_SUB( LOC, GPS, PER )
