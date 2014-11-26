@@ -3,6 +3,7 @@
 
 void ProjectLaserRange(HeightMap* map, Vec3D myRight, Vec3D myFront, Vec3D myPos, double range, double scanAngle)
 {
+  if (range < 2) return;
     double rcos_a = range*cos(scanAngle);
     double rsin_a = range*sin(scanAngle);
     
