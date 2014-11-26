@@ -342,7 +342,7 @@ class rosSubscriberThread (threading.Thread):
                      self.image[col,row]=[255,0,0]
         #draw plan
         yaw,pitch,roll=transformations.euler_from_quaternion([msg.info.origin.orientation.w,msg.info.origin.orientation.x,msg.info.origin.orientation.y,msg.info.origin.orientation.z])
-        
+        yaw=yaw+math.pi/2
         index=0
         #print msg.info.origin.position.x ,msg.info.origin.position.y
         mapCenterX,mapCenterY=rotateXY(75*msg.info.resolution,75*msg.info.resolution,yaw)
@@ -375,13 +375,16 @@ class rosSubscriberThread (threading.Thread):
             
             Xpos=dx1/msg.info.resolution*multiplier+height/2
             Ypos=dy1/msg.info.resolution*multiplier+height/2
+            
+            #fix y orientation
+            Ypos=height-Ypos
             #cv2.circle(test,(int(Ypos),int(Xpos)),2,[255,0,float(index)/len(self.plan.poses)*255],-1)
             '''
             
             Xpos=dx/0.2*multiplier+height/2#int(((dx*math.cos(yaw)+dy*math.sin(yaw))/0.2)*multiplier)+height/2
             Ypos=dy/0.2*multiplier+width/2#int(((dy*math.cos(yaw)-dx*math.sin(yaw))/0.2)*multiplier)+width/2'''
             if Xpos < height and Xpos >= 0 and Ypos < width and Ypos >= 0 :
-                cv2.circle(self.image,(int(Ypos),int(Xpos)),2,[0,0,float(index)/len(self.plan.poses)*255],-1)
+                cv2.circle(self.image,(int(Ypos),int(Xpos+50)),2,[0,0,float(index)/len(self.plan.poses)*255],-1)
         
         #cv2.imshow('Map',test)
         #cv2.imshow('MapOrig',testNotROt)
@@ -419,7 +422,7 @@ class rosSubscriberThread (threading.Thread):
         #self.statusSubscriber=rospy.Subscriber("/diagnostics",DiagnosticArray, self.diagnosticsCallback)
         self.statusSubscriber=rospy.Subscriber("/IED/Location",IEDLocation, self.iedLocationCallback)
         rospy.Subscriber("/PER/Map",Map, self.mapCallback)
-        rospy.Subscriber("/move_base/TrajectoryPlannerROS/global_plan",Path, self.planCallback)
+        rospy.Subscriber("/move_base/NavfnROS/plan",Path, self.planCallback)
  
     def run(self):
         print "Starting "
