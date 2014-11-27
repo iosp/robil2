@@ -725,7 +725,7 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 	delete q ;
 	return map_pixel ;
 }
-
+/*
  void WsmTask::blade_correction()
 {
 	bool loop_on = true;
@@ -757,7 +757,7 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 	ROS_INFO("TF calc. height: [%g m]", (Map_pixel.z + (COMPONENT_LINK->ground_heigth)));
 	ROS_INFO("Initial ground height: [%g m]", g_max);
 
-	/* finds supporter and loader's indices. */
+	/* finds supporter and loader's indices.
 		for(int i = 0; i < COMPONENT_LINK->jointStates->name.size(); i++){
 			if(COMPONENT_LINK->jointStates->name[i] == "supporter_joint"){
 				supporterStatesIndex = i;
@@ -773,9 +773,9 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 while(loop_on){
 	try{
 		/* Calc error signal */
-		body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
+	//	body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
 		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
-
+		/*
 		Map_pixel = deriveMapPixel(body2loader);
 		g_max = find_Map_max((int)Map_pixel.x) ;
 
@@ -796,7 +796,7 @@ while(loop_on){
 		ROS_INFO("Current delta: [%g]" , delta);
 		ROS_INFO("===================================");
 
-		/* Check if t_hold was crossed */
+		/* Check if t_hold was crossed
 
 			if(fabs(delta) >= t_hold)
 			{
@@ -822,7 +822,7 @@ while(loop_on){
 				delete bladeCommand;
 			}
 		}
-		/* sleep 1 sec */
+		/* sleep 1 sec
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
 	}
 	catch(boost::thread_interrupted const&)
@@ -832,19 +832,17 @@ while(loop_on){
 	}
   }
 }
-
- void WsmTask::debug()
+*/
+ void WsmTask::blade_correction()
  {
 	 tf::StampedTransform body2loader;
 	 double RPY [3] ;
-// std_msgs::Float64 blade ;
-	// blade.data = 0;
-//	 ground.data = 0;
 	 double jac = 0 ;
 	 int flag = 1 ;
 	 double t_hold = 0.01;
 	 Vec3D Map_pixel(0,0,0) ;
 	 double g_max = 0; double cur_h = 0 ; double set_point = 0; double delta = 0; double blade_height = 0;int supporterStatesIndex = 0, loaderStatesIndex = 0;
+
 		/* Calc error signal */
 		body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
 		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
