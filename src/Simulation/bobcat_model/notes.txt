@@ -1,4 +1,17 @@
 ****************************************************************************************
+27/11/2014
+SHA: b8ebf9309e9dc64bbcf926de2ad6adc8f83294f2
+What's new:
+===========
+1. We have manged to migrate to sdf.
+
+NOTE:
+	- Bobcat's old URDF wont spwan the controllers since some links are missing.
+	- after pulling the code from repo. use:
+	roslaunch bobcat_gazebo bobcat_world_sdf_model.launch
+	in order to launch the sdf model, with an improved real time factor.
+
+
 20/05/2014 SHA: 3b9476afede9c6a00487b1a301a05aa68ab2786c
 What's new:
 ===========
