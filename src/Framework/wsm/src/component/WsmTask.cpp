@@ -836,6 +836,7 @@ while(loop_on){
  void WsmTask::blade_correction()
  {
 	 tf::StampedTransform body2loader;
+	 bool loop_on = true;
 	 double RPY [3] ;
 	 double jac = 0 ;
 	 int flag = 1 ;
@@ -873,7 +874,8 @@ while(loop_on){
 			double supporter_angle = 0 , loader_angle = 0 ;
 			double next_supporter_angle = 0 , next_loader_angle = 0 ;
 
-	 while(1){
+while(loop_on){
+	try{
 		/* Calc error signal */
 		body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
 		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
@@ -923,11 +925,17 @@ while(loop_on){
 			COMPONENT_LINK->publishBladePositionCommand(*bladeCommand);
 
 			delete bladeCommand;
-
-
 		}
-	 }
- }
+	/* sleep 1 sec*/
+//	boost::this_thread::sleep(boost::posix_time::seconds(1));
+}
+catch(boost::thread_interrupted const&)
+{
+	loop_on = false;
+	ROS_INFO("Correction terminated");
+	}
+  }
+}
 
 /*
  Vec3D deriveMapPixel (tf::StampedTransform blade2body)
