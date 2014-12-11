@@ -1,37 +1,29 @@
 <!-- -*- mode: XML -*- -->
 <launch>
 
-  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
-    
 
-  <arg name="paused" default="false"/>
-  <arg name="use_sim_time" default="true"/>
-  <arg name="gui" default="true"/>
-  <arg name="headless" default="false"/>
-  <arg name="debug" default="false"/>
-
-  <!-- We resume the logic in empty_world.launch -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="debug" value="$(arg debug)" />
-    <arg name="gui" value="$(arg gui)" />
-    <arg name="paused" value="$(arg paused)"/>
-    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-    <arg name="headless" value="$(arg headless)"/>
-    <arg name="world_name" value="$(find srvss_bobcat)/worlds/srvss_bobcat_empty.world"/>
-  </include>
-
-
- <param name="robot_description" command="cat $(find srvss_bobcat)/urdf/BOBCAT.URDF" />
- 
-
-  <!-- ros_control clam launch file -->
-  <include file="$(find srvss_bobcat)/launch/srvss_bobcat_controllers.launch" />
-
-
-  <!--  -->
-  <node name="srvss_bobcat_RateToEffort_node" pkg="srvss_bobcat" type="srvss_bobcat_rate2effort_node" cwd="node" output="screen" />
+        <arg name="pause" value="-u"/>
+        <arg name="bobcat_sdf_models" value="$(find srvss_bobcat)/sdf_models"/>
+	<arg name="world_name" value="$(find srvss_bobcat)/worlds/srvss_bobcat_empty.world"/>
 
 
 
+<!-- setting gazebo path for scenario platform and sensors models -->
+	<env name="GAZEBO_MODEL_PATH" value="$(arg bobcat_sdf_models)"/>
+
+<!-- synchronizing ros to gazebo -->
+	<param name="/use_sim_time" value="true" />
+
+<!-- start gazebo server-->
+	<node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen" args="$(arg pause) $(arg world_name)" />
+
+	
+<!-- start gazebo client -->
+	<node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
+
+
+<!-- srvss_Dumy -->
+	<include file="$(find srvss_bobcat)/launch/srvss_bobcat.launch"/>
+	<node pkg="tf" type="static_transform_publisher" name="sick_link_broadcaster" args="1 0 0.2 0 0 0 body front_sick 100" />
 
 </launch>

@@ -61,7 +61,6 @@ float new_bobcat_lon = -1;
 boost::mutex GPS_data_mutex;
 void GPS_callback(const sensor_msgs::NavSatFix GPS_msg) 
 {    
-
       sensor_msgs::NavSatFix p1, p2;
       p1.latitude = 31.2622;     // GPS sensor origin (lat = 31.2622, lon = 34.803611) - BenGuriyon University
       p1.longitude = 34.803611;
