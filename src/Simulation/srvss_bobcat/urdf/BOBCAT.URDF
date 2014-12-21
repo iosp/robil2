@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
-<robot
-  name="bobcat">
-  <link
-    name="body">
+<robot name="bobcat">
+  <link name="body">
     <inertial>
       <origin
         xyz="-0.890714078986241 0.000176354230843794 0.525609535873677"
@@ -23,7 +21,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/body_lite.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/body.STL" />
       </geometry>
       <material
         name="">
@@ -37,12 +35,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/body_lite.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/body.STL" />
       </geometry>
     </collision>
   </link>
-  <link
-    name="front_left_wheel">
+  <link name="front_left_wheel">
     <inertial>
       <origin
         xyz="2.0502E-07 0.19645 -3.6566E-09"
@@ -63,7 +60,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/front_left_wheel.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/front_left_wheel.STL" />
       </geometry>
       <material
         name="">
@@ -77,13 +74,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/front_left_wheel_lite.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/front_left_wheel.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="front_left_wheel_joint"
-    type="continuous">
+  <joint name="front_left_wheel_joint" type="continuous">
     <origin
       xyz="-0.22722 0.47558 0.125"
       rpy="0 2.1164E-16 0" />
@@ -94,8 +89,7 @@
     <axis
       xyz="0 1 0" />
   </joint>
-  <link
-    name="front_right_wheel">
+  <link name="front_right_wheel">
     <inertial>
       <origin
         xyz="-2.0519E-07 -0.19645 -4.3198E-09"
@@ -116,7 +110,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/front_right_wheel.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/front_right_wheel.STL" />
       </geometry>
       <material
         name="">
@@ -130,13 +124,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/front_right_wheel_lite.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/front_right_wheel.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="front_right_wheel_joint"
-    type="continuous">
+  <joint name="front_right_wheel_joint" type="continuous">
     <origin
       xyz="-0.22722 -0.47558 0.125"
       rpy="0 2.1164E-16 0" />
@@ -147,8 +139,7 @@
     <axis
       xyz="0 1 0" />
   </joint>
-  <link
-    name="back_left_wheel">
+  <link name="back_left_wheel">
     <inertial>
       <origin
         xyz="7.7344E-08 0.19645 1.8868E-07"
@@ -169,7 +160,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/back_left_wheel.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/back_left_wheel.STL" />
       </geometry>
       <material
         name="">
@@ -183,13 +174,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/back_left_wheel_lite.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/back_left_wheel.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="back_left_wheel_joint"
-    type="continuous">
+  <joint name="back_left_wheel_joint" type="continuous">
     <origin
       xyz="-1.227 0.47558 0.14772"
       rpy="0 2.1164E-16 0" />
@@ -200,8 +189,7 @@
     <axis
       xyz="0 1 0" />
   </joint>
-  <link
-    name="back_right_wheel">
+  <link name="back_right_wheel">
     <inertial>
       <origin
         xyz="-1.4894E-07 -0.19645 1.3751E-07"
@@ -222,7 +210,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/back_right_wheel.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/back_right_wheel.STL" />
       </geometry>
       <material
         name="">
@@ -236,13 +224,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/back_right_wheel_lite.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/back_right_wheel.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="back_right_wheel_joint"
-    type="continuous">
+  <joint name="back_right_wheel_joint" type="continuous">
     <origin
       xyz="-1.227 -0.47558 0.14772"
       rpy="0 2.1164E-16 0" />
@@ -253,8 +239,7 @@
     <axis
       xyz="0 1 0" />
   </joint>
-  <link
-    name="base_arm">
+  <link name="base_arm">
     <inertial>
       <origin
         xyz="0.066509 1.9771E-12 0.25686"
@@ -275,7 +260,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/base_arm.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/base_arm.STL" />
       </geometry>
       <material
         name="">
@@ -289,13 +274,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/base_arm.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/base_arm.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="base_arm_joint"
-    type="fixed">
+  <joint name="base_arm_joint" type="fixed">
     <origin
       xyz="-1.9776 0 1.1773"
       rpy="0 2.1164E-16 0" />
@@ -304,8 +287,7 @@
     <child
       link="base_arm" />
   </joint>
-  <link
-    name="main_arm">
+  <link name="main_arm">
     <inertial>
       <origin
         xyz="1.1865 -4.0206E-07 -0.60466"
@@ -326,7 +308,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/main_arm.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/main_arm.STL" />
       </geometry>
       <material
         name="">
@@ -340,13 +322,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/main_arm.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/main_arm.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="main_arm_joint"
-    type="fixed">
+  <joint name="main_arm_joint" type="fixed">
     <origin
       xyz="0.22304 0 0.5262"
       rpy="0 -2.1164E-16 0" />
@@ -355,8 +335,7 @@
     <child
       link="main_arm" />
   </joint>
-  <link
-    name="supporter">
+  <link name="supporter">
     <inertial>
       <origin
         xyz="0.51341 -4.9085E-16 -0.060486"
@@ -377,7 +356,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/supporter.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/supporter.STL" />
       </geometry>
       <material
         name="">
@@ -391,13 +370,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/supporter.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/supporter.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="supporter_joint"
-    type="fixed">
+  <joint name="supporter_joint" type="fixed">
     <origin
       xyz="0.39771 0 -0.89486"
       rpy="0 8.0491E-16 0" />
@@ -406,8 +383,7 @@
     <child
       link="supporter" />
   </joint>
-  <link
-    name="front_cylinder">
+  <link name="front_cylinder">
     <inertial>
       <origin
         xyz="0.16022 1.6587E-08 -0.17142"
@@ -428,7 +404,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/front_cylinder.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/front_cylinder.STL" />
       </geometry>
       <material
         name="">
@@ -442,13 +418,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/front_cylinder.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/front_cylinder.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="front_cylinder_joint"
-    type="fixed">
+  <joint name="front_cylinder_joint" type="fixed">
     <origin
       xyz="1.741 0 -0.80293"
       rpy="0 8.0491E-16 0" />
@@ -457,8 +431,7 @@
     <child
       link="front_cylinder" />
   </joint>
-  <link
-    name="front_shaft">
+  <link name="front_shaft">
     <inertial>
       <origin
         xyz="9.4954E-07 8.3283E-07 -0.19417"
@@ -479,7 +452,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/front_shaft.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/front_shaft.STL" />
       </geometry>
       <material
         name="">
@@ -493,13 +466,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/front_shaft.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/front_shaft.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="front_shaft_joint"
-    type="fixed">
+  <joint name="front_shaft_joint" type="fixed">
     <origin
       xyz="0.50479 0 -0.54009"
       rpy="-3.1416 0.75163 -3.1416" />
@@ -508,8 +479,7 @@
     <child
       link="front_shaft" />
   </joint>
-  <link
-    name="loader">
+  <link name="loader">
     <inertial>
       <origin
         xyz="0.37894 2.192E-15 0.067409"
@@ -530,7 +500,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/loader.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/loader.STL" />
       </geometry>
       <material
         name="">
@@ -544,13 +514,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/loader.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/loader.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="loader_joint"
-    type="fixed">
+  <joint name="loader_joint" type="fixed">
     <origin
       xyz="2.0984 0 -1.557"
       rpy="0 2.5362E-15 0" />
@@ -559,8 +527,7 @@
     <child
       link="loader" />
   </joint>
-  <link
-    name="back_cylinder">
+  <link name="back_cylinder">
     <inertial>
       <origin
         xyz="0.14567 5.3127E-08 0.43479"
@@ -581,7 +548,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/back_cylinder.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/back_cylinder.STL" />
       </geometry>
       <material
         name="">
@@ -595,13 +562,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/back_cylinder.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/back_cylinder.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="back_cylinder_joint"
-    type="fixed">
+  <joint name="back_cylinder_joint" type="fixed">
     <origin
       xyz="-1.8135 0 0.2184"
       rpy="0 8.0491E-16 0" />
@@ -610,8 +575,7 @@
     <child
       link="back_cylinder" />
   </joint>
-  <link
-    name="back_shaft">
+  <link name="back_shaft">
     <inertial>
       <origin
         xyz="-1.2324E-08 -4.788E-09 -0.41004"
@@ -632,7 +596,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/back_shaft.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/back_shaft.STL" />
       </geometry>
       <material
         name="">
@@ -646,13 +610,11 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://srvss_bobcat/meshes/back_shaft.STL" />
+          filename="package://srvss_bobcat/sdf_models/srvss_bobcat/meshes/back_shaft.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="back_shaft_joint"
-    type="fixed">
+  <joint name="back_shaft_joint" type="fixed">
     <origin
       xyz="0.33441 0 0.99813"
       rpy="-5.7722E-16 0.32328 -4.9954E-16" />
@@ -665,36 +627,40 @@
  <!-- Transmissions for ROS Control -->
   <transmission name="tran1">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="front_right_wheel_joint"/>
+    <joint name="front_right_wheel_joint">
+	<hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
     <actuator name="motor1">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran2">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="front_left_wheel_joint"/>
-    <actuator name="motor2">
+    <joint name="front_left_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran3">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="back_right_wheel_joint"/>
-    <actuator name="motor3">
+    <joint name="back_right_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor3">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran4">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="back_left_wheel_joint"/>
-    <actuator name="motor4">
+    <joint name="back_left_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor4">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>

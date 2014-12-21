@@ -28,7 +28,7 @@ class node:
     debugMode = False
     
     #constractur- treeInstance-node in the etree, the etree itself, and prep-type(seq,plan etc.)
-    def __init__(self,treeInstance = None,mytree = None,prep="plan",parent=None):
+    def __init__(self, treeInstance = None,mytree = None,prep="plan",parent=None):
         # you can't have multiple __init__ functions in Python so we use mytree = None
         if mytree == None :
 	  #create a new tree instance with plan node as root
@@ -55,7 +55,7 @@ class node:
         probString = self.getAttrib("probability")
         if probString !=None:
            # self.probTable= self._parseString(probString)
-            self.probTable = self._createProbTable(probString)
+           self.probTable = self._createProbTable(probString)
         else:
             self.probTable= None
         
@@ -69,12 +69,16 @@ class node:
 	
 	#flag that indicates if this node was updated after debug
         self.reset = False
-        self.upperBound = [0]*node.parmetersInTheWorld
-        self.lowerBound = [0]*node.parmetersInTheWorld    
+        #self.upperBound = [0]*node.parmetersInTheWorld
+        #self.lowerBound = [0]*node.parmetersInTheWorld 
+        self.size = 1 
     #parseString by whiteSpace
     def _parseString(self, string):
         words = re.split('\s+',string)
 	   #return a list of words seperate by whiteSpace
+		#print "liat", words
+        if words[len(words)-1]=='':
+            words.remove('')
         return words
     #create probtalbe- parse string to list of float
     def _createProbTable(self,stringProbList):
@@ -131,6 +135,7 @@ class node:
         
     #create the wrap for child list and return a list    
     def _createChildList(self):
+		#print self.treeInst.__len__(), self.treeInst.tag
         if len(self.childList) !=0:
             return self.childList
         for element in list(self.treeInst):
@@ -640,7 +645,16 @@ class node:
             for child in childlist:
                 child.clear()
                 child.clearWholeTree()
+     
+    def updateSize(self):
+        if self.treeInst.tag =="tsk":
+            self.size=1
+        else:
+            for c in self.getChildren():
+                c.updateSize()
+                self.size = self.size+c.size
         
+            
      #run plan  
     def runPlan(self, index):
       children = self.getChildren()
@@ -650,27 +664,31 @@ class node:
         children = self.getChildren()
         children[0].runAccurate(index) 
         
-    def runPlanApproximate(self,index,e,T):
+    def runPlanApproximate(self,index,e):
+        self.updateSize()
         children = self.getChildren()
-        children[0].runApproximate(index,e,T)
+        children[0].runApproximate(index,e)
         
     
     
     #get average to success time
     def getAverageSuccTime(self, index):
         if self.getDistSuccByIndex(index) != None:
+            #print self.getDistSuccByIndex(index).printMe()
             return self.getDistSuccByIndex(index).calcAverageTime()
         else:
             return float('Inf')
 
     def getSDSuccTime(self, index):
         if self.getDistSuccByIndex(index) != None:
+            #print self.getDistSuccByIndex(index).printMe()
             return self.getDistSuccByIndex(index).SDTime()
         else:
             return float(0)
             
 #compute probability for less then T time            
     def getLessThenTProb(self,index,T):
+        #print "here"
         if self.getDistSuccByIndex(index) != None:
             #return round(self.getProbAtIndex(index)*self.getDistSuccByIndex(index).LessThenT(T),4)
             return self.getDistSuccByIndex(index).LessThenT(T)

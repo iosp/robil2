@@ -73,7 +73,7 @@ class TskNode (node):
             #raise NameError('NotComputedDistribution')
             
         
-    def runApproximate(self, index, e,T):
+    def runApproximate(self, index, e):
         return self.runAccurate(index)
         
         

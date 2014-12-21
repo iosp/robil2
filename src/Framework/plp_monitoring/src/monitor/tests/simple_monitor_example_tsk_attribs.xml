@@ -1,3 +1,0 @@
-<tsk name="MountVehicle(param=Mount)" x="278.5" y="302.5" test_time="0" test_result="true" id="8399979d-e1c7-4490-b567-60c7d70b7596" Successdistribution="U[1.0,5.0] U[24.0,25.0]" Failuredistribution="U[30.0,40.0] U[20.0,30.0]" probability="0.5 0.5 ">
-<tsk name="MonitorTime(param=563a39ca-99df-45dc-a369-73c7af2fe951)" x="528.5" y="205.5" test_time="0" test_result="true" id="e0ed8565-f533-4b36-b72a-48a6cd269b22" Successdistribution="U[10000.0,10000.0] U[10000.0,10000.0]" Failuredistribution="U[10000.0,10000.0] U[10000.0,10000.0]" probability="1.0 1.0"/>
-</tsk>

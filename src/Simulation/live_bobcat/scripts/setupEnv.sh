@@ -56,7 +56,8 @@ if [ -a $HOME/.gazebo/models/bobcat/model.sdf ]; then
 fi
 
 #generate basic sdf file
-$($gazebo_prefix/bin/gzsdf "print" $bobcat_dir/urdf/BOBCAT.URDF 1> $HOME/.gazebo/models/bobcat/modelTemp.sdf 2>/dev/null)
+$(cp -u $bobcat_dir/urdf/bobcatSDF.sdf $HOME/.gazebo/models/bobcat/modelTemp.sdf)
+#$($gazebo_prefix/bin/gzsdf "print" $bobcat_dir/urdf/BOBCAT.URDF 1> $HOME/.gazebo/models/bobcat/modelTemp.sdf 2>/dev/null)
 
 
 #add the sensors and joints to the model

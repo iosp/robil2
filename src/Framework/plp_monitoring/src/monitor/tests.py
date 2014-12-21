@@ -5,6 +5,7 @@ from Node import node
 import time
 import sys
 from GUI import *
+from computeTree import *
 
 #create a tree from scratch
 def test1():
@@ -1255,6 +1256,70 @@ def test32():
 
     elapsed = (time.time() - start)
     print "Time: %f" %elapsed    
+    
+    
+def test33():
+    tree = xmlTree("tests/asmall.xml",None,"tests/asmall_tsk_attrib.xml")
+    root = tree.getRoot()
+    node.parmetersInTheWorld = 1
+    tree.createWrapperTreeMap("id")
+    
+    root.treeToXml("output/asmall.xml") 
+    print("test 32.1: success!")
+    node.debugMode = False
+    for i in range(10000):
+        root.runPlan(0)
+#    monitorID = "param=9b82d340-6893-4e68-a676-4d1658aae8d0"
+#    print monitorID.split("=")[1]        
+    if root:
+        #print "Success probability in offline mode monitor: Mission: %f" % root.getChild(0).getProbAtIndex(0)
+        print "Success probability in offline mode monitor: Mission: %f" % root.getChild(0).getLessThenTProb(0,10)
+        print "Average success time monitor: Mission= %f" % root.getChild(0).getAverageSuccTime(0)
+        print "SD success time monitor: Mission= %f" % root.getChild(0).getSDSuccTime(0)
+    root.treeToXml("output/asmall_after_run.xml") 
+    print("test 32.2: success!")   
+    
+    finished_node = tree.getWrappedNode("1")
+    finished_node.setDebug("True" + " " + "2.0")
+    tree.treeToXml("output/"+Ctree.filePath[6:-4]+"11"+"_after_run_debug_true.xml")
+    tree = xmlTree("output/"+Ctree.filePath[6:-4]+"11"+"_after_run_debug_true.xml")        
+    root = tree.getRoot()
+    node.debugMode = True  
+    for i in range(1000):
+        root.runPlan(0)
+#    monitorID = "param=9b82d340-6893-4e68-a676-4d1658aae8d0"
+#    print monitorID.split("=")[1]        
+    if root:
+        #print "Success probability in offline mode monitor: Mission: %f" % root.getChild(0).getProbAtIndex(0)
+        print "Success probability in offline mode monitor: Mission: %f" % root.getChild(0).getLessThenTProb(0,10)
+        print "Average success time monitor: Mission= %f" % root.getChild(0).getAverageSuccTime(0)
+        print "SD success time monitor: Mission= %f" % root.getChild(0).getSDSuccTime(0)
+    root.treeToXml("output/asmall_after_run.xml") 
+    print("test 32.3: success!")       
+    
+    
+    tree = xmlTree("tests/asmall.xml",None,"tests/asmall_tsk_attrib2.xml")
+    root = tree.getRoot()
+    node.parmetersInTheWorld = 1
+
+    root.treeToXml("output/asmall2.xml") 
+    print("test 32.4: success!")
+    node.debugMode = False
+    for i in range(1000):
+        root.runPlan(0)
+#    monitorID = "param=9b82d340-6893-4e68-a676-4d1658aae8d0"
+#    print monitorID.split("=")[1]        
+    if root:
+        #print "Success probability in offline mode monitor: Mission: %f" % root.getChild(0).getProbAtIndex(0)
+        print "Success probability in offline mode monitor: Mission: %f" % root.getChild(0).getLessThenTProb(0,10)
+        print "Average success time monitor: Mission= %f" % root.getChild(0).getAverageSuccTime(0)
+        print "SD success time monitor: Mission= %f" % root.getChild(0).getSDSuccTime(0)
+    root.treeToXml("output/asmall_after_run2.xml") 
+    
+    print("test 32.5: success!")
+    
+      
+    
 #changed by RAZ -- we can now import from dist.* files, since the directory has an empty __init__.py file, and python recognizes it as a module.#thanks
 def _createComputedDist(string = None):
     from distributions.computed import Computed
@@ -1272,7 +1337,7 @@ def _createUniformDist(parmA,parmB):
 
 if __name__ == "__main__":
     #run the 10 tests
-    test32()
+    test33()
 #    
 #    if len(sys.argv) == 2 and sys.argv[1] == "all":
 #	test1()

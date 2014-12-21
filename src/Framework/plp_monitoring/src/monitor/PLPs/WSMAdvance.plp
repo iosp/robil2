@@ -25,8 +25,8 @@ Update Frequency:
 Source:
 Name:velocity
 Type:Double
-Lower bound:0
-Upper bound:1
+Lower bound:0.5
+Upper bound:0.2
 In/Out:Out
 Update Frequency:10
 Source:/WSM/Speed
@@ -49,8 +49,9 @@ Goal name:jointAngleDiff
 Goal parameter:posdiff
 Minimal value:0
 Max value:
-Success probability:0.92
+Success probability:1.00
 Max time to complete:2000
+
 
 Side effects:0
 

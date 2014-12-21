@@ -5,6 +5,7 @@
 #include "ComponentMain.h"
 #include <gazebo_msgs/GetModelState.h>
 #include <boost/thread.hpp>
+#include <std_msgs/Float64.h>
 
 #define WRAP_POSNEG_PI(x) atan2(sin(x), cos(x))
 #define LIMIT(value, minim, maxim) std::max<double>(std::min<double>(value, maxim), minim)
@@ -665,7 +666,7 @@ double WsmTask::find_Map_max (int x)
 	{
 		if(COMPONENT_LINK->recivedMap->data[(x*30) + i].height > max)
 		{
-			max = COMPONENT_LINK->recivedMap->data[(x*30) + i].height;
+			 return COMPONENT_LINK->recivedMap->data[(x*30) + i].height;
 		}
 	}
 	return max;
@@ -707,17 +708,16 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 	xt_1.x = R_WB.R[0][3];  xt_2.x = R_WL.R [0][3];
 	xt_1.y = R_WB.R[1][3];  xt_2.y = R_WL.R [1][3];
 
-	xt_ms.x = (xt_1.x - xt_2.x);
-	xt_ms.y = (xt_1.y - xt_2.y);
+	xt_ms.x = (xt_2.x - xt_1.x);
+	xt_ms.y = (xt_2.y - xt_1.y);
 
 	length = sqrt (pow(xt_ms.x , 2) + pow(xt_ms.y , 2));
-	pixel_dist = static_cast<int>((ceil(length*5)));
+	pixel_dist = static_cast<int>((floor(length*5)));
 
-	ROS_INFO("This is the distance:%d",pixel_dist);
-
-	map_pixel.x = (50 - pixel_dist);
+	map_pixel.x = (49 - (pixel_dist + 5)); /* use was -1*/
 	map_pixel.y =  15 ;
 	map_pixel.z = R_WL.R[2][3];
+	ROS_INFO("Map_pixel x:%g", (30*(map_pixel.x) + 7));
 //	ROS_INFO("[Height by Calculation is: %g m]",R_WL.R[2][3]);
 	//ROS_INFO("[Blade location in bobcat coordinates: (%g ,%g ,%g)",R_WL.R[0][3],R_WL.R[1][3],R_WL.R[2][3]);
 	//ROS_INFO("Relevant pixel is: (%g , %g , %g)",map_pixel.x,map_pixel.y ,map_pixel.z);
@@ -725,7 +725,7 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 	delete q ;
 	return map_pixel ;
 }
-
+/*
  void WsmTask::blade_correction()
 {
 	bool loop_on = true;
@@ -757,7 +757,7 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 	ROS_INFO("TF calc. height: [%g m]", (Map_pixel.z + (COMPONENT_LINK->ground_heigth)));
 	ROS_INFO("Initial ground height: [%g m]", g_max);
 
-	/* finds supporter and loader's indices. */
+	/* finds supporter and loader's indices.
 		for(int i = 0; i < COMPONENT_LINK->jointStates->name.size(); i++){
 			if(COMPONENT_LINK->jointStates->name[i] == "supporter_joint"){
 				supporterStatesIndex = i;
@@ -773,9 +773,9 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 while(loop_on){
 	try{
 		/* Calc error signal */
-		body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
+	//	body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
 		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
-
+		/*
 		Map_pixel = deriveMapPixel(body2loader);
 		g_max = find_Map_max((int)Map_pixel.x) ;
 
@@ -796,7 +796,7 @@ while(loop_on){
 		ROS_INFO("Current delta: [%g]" , delta);
 		ROS_INFO("===================================");
 
-		/* Check if t_hold was crossed */
+		/* Check if t_hold was crossed
 
 			if(fabs(delta) >= t_hold)
 			{
@@ -822,13 +822,117 @@ while(loop_on){
 				delete bladeCommand;
 			}
 		}
-		/* sleep 1 sec */
+		/* sleep 1 sec
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
 	}
 	catch(boost::thread_interrupted const&)
 	{
 		loop_on = false;
 		ROS_INFO("Correction terminated");
+	}
+  }
+}
+*/
+ void WsmTask::blade_correction()
+ {
+	 tf::StampedTransform body2loader;
+	 bool loop_on = true;
+	 double RPY [3] ;
+	 double jac = 0 ;
+	 int flag = 1 ;
+	 double t_hold = 0.01;
+	 Vec3D Map_pixel(0,0,0) ;
+	 double g_max = 0; double cur_h = 0 ; double set_point = 0; double delta = 0; double blade_height = 0;int supporterStatesIndex = 0, loaderStatesIndex = 0;
+
+		/* Calc error signal */
+		body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
+		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
+		body2loader.getBasis().getRPY(RPY[0],RPY[1],RPY[2],1);
+		Map_pixel = deriveMapPixel(body2loader);
+
+		g_max = find_Map_max((int)Map_pixel.x) ;
+
+		if(g_max == -100){
+				COMPONENT_LINK->ground_heigth = 0 ;
+			}
+			else{
+				COMPONENT_LINK->ground_heigth = g_max ;
+			}
+
+		set_point = Map_pixel.z - (COMPONENT_LINK->ground_heigth) ;
+
+		/* finds supporter and loader's indices. */
+			for(int i = 0; i < COMPONENT_LINK->jointStates->name.size(); i++){
+				if(COMPONENT_LINK->jointStates->name[i] == "supporter_joint"){
+					supporterStatesIndex = i;
+				}
+				if(COMPONENT_LINK->jointStates->name[i] == "loader_joint"){
+					loaderStatesIndex = i;
+				}
+			}
+			config::WSM::pub::BladePositionCommand * bladeCommand;
+			double supporter_angle = 0 , loader_angle = 0 ;
+			double next_supporter_angle = 0 , next_loader_angle = 0 ;
+
+while(loop_on){
+	try{
+		/* Calc error signal */
+		body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
+		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
+
+		Map_pixel = deriveMapPixel(body2loader);
+		g_max = find_Map_max((int)Map_pixel.x) ;
+
+		blade_height = Map_pixel.z ;
+		cur_h = Map_pixel.z - (COMPONENT_LINK->ground_heigth ) ;
+		delta = (set_point - cur_h);
+
+	//	blade_height = (Map_pixel.z - (COMPONENT_LINK->ground_heigth + COMPONENT_LINK->receivedLocation->pose.pose.position.z) );
+	//	delta = (set_point - blade_height);
+
+		ROS_INFO("===================================");
+		ROS_INFO("Blade height: %g m",blade_height);
+		ROS_INFO("Ground: %g m", (COMPONENT_LINK->ground_heigth ));
+		ROS_INFO("cur_h:%g m",cur_h);
+		ROS_INFO("===================================");
+		usleep(500000);
+
+	//	blade.data = Map_pixel.z - (COMPONENT_LINK->ground_heigth ) ;
+	//	ground.data =  COMPONENT_LINK->ground_heigth + COMPONENT_LINK->receivedLocation->pose.pose.position.z ;
+	//	COMPONENT_LINK->publish_h(blade);
+	//	COMPONENT_LINK->publish_m(ground);
+
+
+		if((fabs(delta) > t_hold))
+		{
+			ROS_INFO("Correcting");
+			delta = delta*0.4 ;
+			supporter_angle = COMPONENT_LINK->jointStates->position[supporterStatesIndex];
+			loader_angle = COMPONENT_LINK->jointStates->position[loaderStatesIndex];
+			jac = InverseKinematics::get_J(supporter_angle);
+
+			next_supporter_angle = supporter_angle + (pow(jac,-1))*(delta) ;
+			next_loader_angle = -(InverseKinematics::get_pitch(next_supporter_angle,0)) + RPY[1];
+
+		//	ROS_INFO("Next supporter angle:%g",next_supporter_angle);
+
+			bladeCommand = new config::WSM::pub::BladePositionCommand();
+			bladeCommand->name.push_back("supporter_joint");
+			bladeCommand->name.push_back("loader_joint");
+
+			bladeCommand->position.push_back(next_supporter_angle);
+			bladeCommand->position.push_back(next_loader_angle);
+			COMPONENT_LINK->publishBladePositionCommand(*bladeCommand);
+
+			delete bladeCommand;
+		}
+	/* sleep 1 sec*/
+//	boost::this_thread::sleep(boost::posix_time::seconds(1));
+}
+catch(boost::thread_interrupted const&)
+{
+	loop_on = false;
+	ROS_INFO("Correction terminated");
 	}
   }
 }

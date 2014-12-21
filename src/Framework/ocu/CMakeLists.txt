@@ -2,7 +2,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ocu)
 find_package(catkin REQUIRED COMPONENTS
-    roscpp rospy
+    roscpp 
+	rospy
     robil2conf
     decision_making decision_making_parser
 )

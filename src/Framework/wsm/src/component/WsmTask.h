@@ -49,7 +49,7 @@ public:
 	Vec3D deriveMapPixel (tf::StampedTransform blade2body);
 	void blade_correction();
 	void monitor_time(double time);
-
+	void debug();
 };
 
 

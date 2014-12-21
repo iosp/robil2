@@ -1,8 +1,0 @@
-<plan>
-    <seq name="mission" >
-	    <tsk name="action 1"/>
-	    <tsk name="action 2"/>
-	    <tsk name="action 3" />
-	    <tsk name="action 4"/>  
-    </seq>
-</plan>
