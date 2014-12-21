@@ -14,8 +14,9 @@
 	<node name="sensors_node" type="sensors_node" pkg="sensors" output="screen"/>
 	<node name="iedsim_node" type="iedsim_node" pkg="iedsim" output="screen"/>
 	<node name="per_node" type="per_node" pkg="per" output="screen" respawn="true"/>
+	<!--arg name="toDebug" default=""/>	
 	<param name="toDebug" value="$(arg toDebug)" />
-	<node name="road_detection" type="road_detection" pkg="per" output="screen" respawn="true" args="$(arg toDebug)"/>
+	<node name="road_detection" type="road_detection" pkg="per" output="screen" respawn="true" args="$(arg toDebug)"/-->
 	<node name="loc_node" type="loc_node" pkg="loc" output="screen" respawn="true"/>
 	<!-- ================ -->
 	

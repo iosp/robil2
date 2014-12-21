@@ -54,7 +54,7 @@ void HeightMap::setRelativeHeightAt(int x, int y, double height)
     y = _height/2 - y;
     
     if(_at(x,y) < _min) _at(x,y) = height;
-    else _at(x,y) = _at(x,y)*0.95 + height*0.05;
+    else _at(x,y) = _at(x,y)*0.98 + height*0.02;
 }
 
 void HeightMap::setRelativeTypeAt(int x, int y, int type)
