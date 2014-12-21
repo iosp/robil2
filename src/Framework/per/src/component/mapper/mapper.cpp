@@ -11,6 +11,8 @@ bool Mapper::camR;
 bool Mapper::loc_received;
 unsigned char Mapper::visualize;
 boost::mutex Mapper::lock; 
+boost::mutex disparity;
+boost::mutex road_mutex;
 Rotation Mapper::myRot, Mapper::ibeoRot, Mapper::leftSickRot, Mapper::rightSickRot;
 Vec3D Mapper::position;
 Quaternion Mapper::myQuat;
@@ -20,7 +22,7 @@ HeightMap* Mapper::height_map;
 RosComm* Mapper::roscomm;
 
 /// walrus declares:
-vector<lane> _lanes;
+Mat _lanes;
 /// Until here
 
 void Mapper::MainLoop()
@@ -37,10 +39,10 @@ void Mapper::MainLoop()
     if(++i < 30) continue;
     //printf("MAPPER\n");
     lock.lock();
+     
     height_map->calculateTypes();
     if(camL && camR) 
     {
-      stereo = handleStereo(camRImg, camLImg);
       camL = camR = false;
       Quaternion& q = myQuat;
       Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
@@ -97,9 +99,11 @@ void Mapper::VisualizeLoop()
  * Walrus Cahnges:
  */
 
-void Mapper::setLanes(vector<lane> lanes)
+void Mapper::setLanes(Mat lanes)
 {
+  road_mutex.lock();
   _lanes = lanes;
+  road_mutex.unlock();  
 }
 
 /** Until Here**/
@@ -376,3 +380,28 @@ void Mapper::setVisualize(unsigned char flags)
   Mapper::visualize = flags;
   lock.unlock();
 }
+
+
+const int MAPPING_FREQUENCY = 15; 
+ 
+void Mapper::StereoThread()
+{
+  while(1)
+  {
+    boost::this_thread::sleep(boost::posix_time::milliseconds(1000/MAPPING_FREQUENCY)); 
+    
+    Mat _stereo;
+    lock.lock();
+    if(!camR || !camL) //all data arrived at least once
+    {
+      lock.unlock();
+      continue;
+    }
+    _stereo = handleStereo(camLImg, camRImg);
+    lock.unlock();
+    
+    disparity.lock();
+    stereo = _stereo;
+    disparity.unlock(); 
+  }
+} 

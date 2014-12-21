@@ -30,6 +30,9 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	 boost::thread mapper(Mapper::MainLoop);
 	 boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 	 boost::thread mapper2(Mapper::VisualizeLoop);
+	 /// walrus func:
+	  boost::this_thread::sleep(boost::posix_time::milliseconds(300));
+	  boost::thread mapper3(Mapper::StereoThread);
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -188,7 +191,7 @@ void ComponentMain::publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg)
 /**
  * Walrus Changes:
  */
-void ComponentMain::setLanes(vector<lane> l)
+void ComponentMain::setLanes(Mat m)
 {
-  Mapper::setLanes(l);
+  Mapper::setLanes(m);
 }

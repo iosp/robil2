@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "std_msgs/Header.h"
 #include <sensor_msgs/CompressedImage.h>
 // #include <sensor_msgs/Image.h>
 #include "std_msgs/Float64MultiArray.h"
@@ -14,6 +15,7 @@
 
 using namespace cv;
 using namespace std;
+using namespace per;
 
 /** *
  * 		displayImage:
@@ -24,34 +26,28 @@ ros::Publisher chatter_pub ;
 int toDebug;
 
 void displayImage(const sensor_msgs::CompressedImage& msg)
-// void displayImage(const sensor_msgs::Image& msg)
 {
   Mat m = imdecode(Mat(msg.data),1);
-//   Mat m = Mat(msg.step/3, msg.height);
-  
-  //imshow("blat", m);
-  //waitKey(0);
-  std::vector<double> lanes;
+  Mat lanes;
   
   lanes = detectRoad(m, 50, 100, toDebug);
- 
-  per::roadLanes retMsg;
   
-  retMsg.header.stamp = ros::Time::now();
-  retMsg.header.frame_id = "Road Detection\n";
+  sensor_msgs::CompressedImage retMsg;
+  retMsg.header = std_msgs::Header();
+  retMsg.format = "png";
   
-  int size = lanes.size()/5;
-  retMsg.lanes.resize(size);
-  
-  for(int i=0; i<size; i++)
+  std::vector<int> params;
+  params.resize(3, 0);
+  params[0] = CV_IMWRITE_PNG_COMPRESSION;
+  params[1] = 2; 
+  try
   {
-    retMsg.lanes[i].highPix 	= lanes[i*5 + 0];
-    retMsg.lanes[i].lowPix 	= lanes[i*5 + 1];
-    retMsg.lanes[i].x2 	= lanes[i*5 + 2];
-    retMsg.lanes[i].x1 	= lanes[i*5 + 3];
-    retMsg.lanes[i].x0 	= lanes[i*5 + 4];
+     cv::imencode(".png", lanes, retMsg.data, params);
   }
-  
+  catch (cv::Exception& e)
+  {
+    ROS_ERROR("%s", e.what());
+  }
   chatter_pub.publish(retMsg);
 }
 
@@ -73,7 +69,6 @@ void chatterCallback(const sensor_msgs::CompressedImage& msg)
   {
     counter ++;
   }
-    
 }
 
 
@@ -88,15 +83,13 @@ int main(int argc, char **argv)
       toDebug = 0;
     else
       toDebug =1; 
-    
   ros::init(argc, argv, "listener");
   ros::NodeHandle n1;
   n = &n1;
   ros::Subscriber sub = n->subscribe("SENSORS/CAM/R/compressed", 1000, chatterCallback);
-  chatter_pub = n->advertise<per::roadLanes>("RoadLanes",1000);
+  chatter_pub = n->advertise<sensor_msgs::CompressedImage&>("RoadLanes",1000);
   ros::AsyncSpinner spinner(1);
   spinner.start();
   ros::waitForShutdown();
-  
   return 0;
 }

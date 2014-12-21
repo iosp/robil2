@@ -13,10 +13,12 @@
 
 #include <per/lane.h>
 #include <per/roadLanes.h>
-
+#include <opencv2/opencv.hpp>
 #include <vector>
 using namespace std;
 using namespace per;
+using namespace cv;
+
 
 class HeightMap;
 
@@ -58,7 +60,7 @@ public:
 	/**
 	 * Walrus Changes:
 	 */
-	void setLanes(vector<per::lane> l);
+	void setLanes(Mat m);
 private:
       sensor_msgs::Imu _imuData;
       sensor_msgs::NavSatFix _gpsData;

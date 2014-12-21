@@ -265,7 +265,7 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
 }
 
 
-void HeightMap::displayTypesGUI(vector<lane> lanes,int enlarger)
+void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
 {
   //int enlarger = 3;
   Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
@@ -286,19 +286,7 @@ void HeightMap::displayTypesGUI(vector<lane> lanes,int enlarger)
 	  if(f == FEATURE_ROAD)
 	  {
 	    image.at<Vec3b>(x,y) = Vec3b(100,100,100);
-	  }
-	  if(f == FEATURE_LANE)
-	  {
-	    image.at<Vec3b>(x,y) = Vec3b(255,128,255);
-	  }
-	  if(f == FEATURE_LEFT)
-	  {
-	    image.at<Vec3b>(x,y) = Vec3b(255,0,255);
-	  }
-	  if(f == FEATURE_RIGHT)
-	  {
-	    image.at<Vec3b>(x,y) = Vec3b(0,0,0);
-	  }
+	  }	  
 	  if(f == FEATURE_NOT_ROAD)
 	  {
 	    image.at<Vec3b>(x,y) = Vec3b(60,100,150);
