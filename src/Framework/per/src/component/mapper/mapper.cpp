@@ -26,7 +26,7 @@ Mat _lanes;
 /// Until here
 
 void Mapper::MainLoop()
-{
+{  
   camL = false;
   camR = false;
   loc_received = false;
@@ -389,7 +389,6 @@ void Mapper::StereoThread()
   while(1)
   {
     boost::this_thread::sleep(boost::posix_time::milliseconds(1000/MAPPING_FREQUENCY)); 
-    
     Mat _stereo;
     lock.lock();
     if(!camR || !camL) //all data arrived at least once
@@ -397,9 +396,9 @@ void Mapper::StereoThread()
       lock.unlock();
       continue;
     }
+    
     _stereo = handleStereo(camLImg, camRImg);
     lock.unlock();
-    
     disparity.lock();
     stereo = _stereo;
     disparity.unlock(); 

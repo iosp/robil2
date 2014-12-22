@@ -36,17 +36,19 @@ Mat getDisparity(Mat left_image, Mat right_image)
     //cvSaveImage("disp.ppm", &cv_image_depth_aux);
     //system("pause");
     Mat img(cv_image_depth_aux, true);
+    Mat new_img;
+    new_img = img;
 	//system("pause");
-    //cvReleaseImage(&cv_image_depth_aux);
+    cvReleaseImage(&cv_image_depth_aux);
     cvReleaseMat(&matf);
     //cvReleaseMat(&disp_left_visual);
-   // cvReleaseImage(temp);
+    //cvReleaseImage(temp);
     //cvReleaseImage(temp2);
     cvReleaseStereoBMState(&state);
 	
     //cvtColor(img,img, CV_BGR2GRAY);
     
-    return img;
+    return new_img;
 }
 
 Mat filterDisparity(Mat img)
