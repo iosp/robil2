@@ -11,7 +11,7 @@
 	<!-- ================ -->
 
 	<!-- == PERCEPTION == -->
-	<node name="sensors_node" type="sensors_node" pkg="sensors" output="screen"/>
+	<!--node name="sensors_node" type="sensors_node" pkg="sensors" output="screen"/-->
 	<node name="iedsim_node" type="iedsim_node" pkg="iedsim" output="screen"/>
 	<node name="per_node" type="per_node" pkg="per" output="screen" respawn="true"/>
 	<!--arg name="toDebug" default=""/>	
