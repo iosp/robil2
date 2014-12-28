@@ -8,8 +8,7 @@
 #include "per/lane.h"
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
-#include "displayImage/DisplayImage.h"
-#include "displayImage/polyfit.h"
+#include "displayImage/entropy.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
 
@@ -22,16 +21,22 @@ using namespace per;
  ** */
 ros::NodeHandle *n;
 ros::Publisher chatter_pub ;
-
+bool lock = false;
 int toDebug;
 
 void displayImage(const sensor_msgs::CompressedImage& msg)
 {
+  if(lock)
+  {
+    cout << "locked" << endl;
+    return;
+  }
   Mat m = imdecode(Mat(msg.data),1);
   Mat lanes;
-  
-  lanes = detectRoad(m, 50, 100, toDebug);
-  
+  lock = true;
+  lanes = displayMyEntropy/*detectRoad*/(m, 50, 100, toDebug);
+  lock = false;
+  return;
   sensor_msgs::CompressedImage retMsg;
   retMsg.header = std_msgs::Header();
   retMsg.format = "png";
@@ -56,7 +61,7 @@ void displayImage(const sensor_msgs::CompressedImage& msg)
  ** */
   
 int counter = 0;
-int everyNthTime = 5;//should be : 2;
+int everyNthTime = 2;//should be : 2;
 
 void chatterCallback(const sensor_msgs::CompressedImage& msg)
 {

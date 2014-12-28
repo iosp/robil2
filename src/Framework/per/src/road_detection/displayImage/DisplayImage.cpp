@@ -330,14 +330,16 @@ Mat detectRoad(Mat image, int cut_p, int down_p, int toDebug)
   
   if(toDebug)
   {
-    Rect ROI = getROI(WIN_SIZE-10, WIN_SIZE*3/4);
+    Rect ROI;
+    ROI = getROI(WIN_SIZE-10, WIN_SIZE*3/4);
     rectangle(image, Point(ROI.x,ROI.y), Point( ROI.x-ROI.width,ROI.y-ROI.height), Scalar(0,0,255),2,8,0);
     
-    ROI = getROI(WIN_SIZE-10, WIN_SIZE*1/4);
-    rectangle(image, Point(ROI.x,ROI.y), Point( ROI.x-ROI.width,ROI.y-ROI.height), Scalar(0,0,255),2,8,0);
+   ROI = getROI(WIN_SIZE-10, WIN_SIZE*1/4);
+   rectangle(image, Point(ROI.x,ROI.y), Point( ROI.x-ROI.width,ROI.y-ROI.height), Scalar(0,0,255),2,8,0);
     
-    ROI = getROI(WIN_SIZE-20, WIN_SIZE*2/3);
-    rectangle(image, Point(ROI.x,ROI.y), Point( ROI.x-ROI.width,ROI.y-ROI.height), Scalar(0,0,255),2,8,0);
+     ROI = getROI(WIN_SIZE-20, WIN_SIZE*2/3);
+     //cout << ROI << endl;
+     rectangle(image, Point(ROI.x,ROI.y), Point( ROI.x-ROI.width,ROI.y-ROI.height), Scalar(0,0,255),2,8,0);
     
     ROI = getROI(WIN_SIZE-20, WIN_SIZE*1/3);
     rectangle(image, Point(ROI.x,ROI.y), Point( ROI.x-ROI.width,ROI.y-ROI.height), Scalar(0,0,255),2,8,0);
