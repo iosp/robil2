@@ -32,6 +32,8 @@ class RosComm {
 	ros::Subscriber _sub_PerVelocity;
 	ros::Subscriber _sub_MiniMapWSM;
 	ros::Publisher _plp_monitor;
+//	ros::Publisher _blade_h;
+//	ros::Publisher _Map_pub;
 
   bool init(int argc,char** argv);
 public:
@@ -46,6 +48,8 @@ public:
 	void PerMapCallback(const config::WSM::sub::MiniMap::ConstPtr &msg);
 
 
+//	void publish_h(const std_msgs::Float64 &msg);
+//	void publish_m(const std_msgs::Float64 &msg);
 	void publish_monitor_time(const std_msgs::Header &msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);

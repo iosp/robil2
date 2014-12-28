@@ -7,6 +7,7 @@
  */
 #include <ros/ros.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Float64.h>
 #include "RosComm.h"
 #include "../component/ComponentMain.h"
 #include <string>       // std::string
@@ -29,6 +30,9 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
 	_plp_monitor=ros::Publisher(_nh.advertise<std_msgs::Header>("/monitor/task_time",100));
+//	_blade_h = ros::Publisher(_nh.advertise<std_msgs::Float64>("/bladeh",100));
+//	_Map_pub = ros::Publisher(_nh.advertise<std_msgs::Float64>("/groundh",100));
+
 }
 RosComm::~RosComm()
 {
@@ -82,7 +86,15 @@ void RosComm::publish_monitor_time(const std_msgs::Header& msg)
 {
 	_plp_monitor.publish(msg);
 }
+/*
+void RosComm::publish_h(const std_msgs::Float64 &msg){
+	_blade_h.publish(msg);
+}
 
+void RosComm::publish_m(const std_msgs::Float64 &msg){
+	_Map_pub.publish(msg);
+}
+*/
 void RosComm::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	static tf::TransformBroadcaster br;
 	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));
