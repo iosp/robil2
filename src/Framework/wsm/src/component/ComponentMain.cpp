@@ -115,7 +115,7 @@ void ComponentMain::publish_monitor_time(const std_msgs::Header& msg)
 {
 	_roscomm->publish_monitor_time(msg);
 }
-
+/*
 void ComponentMain::publish_h(const std_msgs::Float64 &msg)
 {
 	_roscomm->publish_h(msg);
@@ -125,7 +125,7 @@ void ComponentMain::publish_m(const std_msgs::Float64 &msg)
 {
 	_roscomm->publish_m(msg);
 }
-
+*/
 void ComponentMain::publishWSMVelocity(config::WSM::pub::WSMVelocity& msg)
 {
 	_roscomm->publishWSMVelocity(msg);
