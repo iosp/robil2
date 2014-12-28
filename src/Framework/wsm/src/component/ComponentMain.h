@@ -38,6 +38,8 @@ public:
 	void handlePerVelocity(const config::LLC::sub::PerVelocity& msg);
 	void handleMiniMapWSM(const config::WSM::sub::MiniMap& msg);
 	void publish_monitor_time(const std_msgs::Header& msg);
+	void publish_h(const std_msgs::Float64 &msg);
+	void publish_m(const std_msgs::Float64 &msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
