@@ -27,6 +27,8 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
        Mat* ptrImage = (Mat*)userdata;
        Mat sq = (*ptrImage)(rec);
        Mat hist = calculateHistogram(sq,"hist of square");
+       if (!baseHist.data)
+	 baseHist = calculateHistogram(sq);
        double base_test1 = compareHist(baseHist,hist,0);
        cout << "compared to base: " << base_test1 << endl;
 //        imshow("small image",sq);
