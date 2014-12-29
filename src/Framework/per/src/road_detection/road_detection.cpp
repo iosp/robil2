@@ -23,7 +23,7 @@ ros::NodeHandle *n;
 ros::Publisher chatter_pub ;
 bool lock = false;
 int toDebug;
-
+// int image = 4;
 void displayImage(const sensor_msgs::CompressedImage& msg)
 {
   if(lock)
@@ -32,6 +32,13 @@ void displayImage(const sensor_msgs::CompressedImage& msg)
     return;
   }
   Mat m = imdecode(Mat(msg.data),1);
+//   char s[100] = {0};
+//   sprintf(s,"ent/image%d.jpg",image);
+//   printf("%s\n",s);
+//   Mat m = 
+//   cv::imread(s);//imdecode(Mat(msg.data),1);
+//   image++;
+//   cv::resize(m, m, img.size());
   Mat lanes;
   lock = true;
   lanes = displayMyEntropy/*detectRoad*/(m, 50, 100, toDebug);
@@ -65,6 +72,7 @@ int everyNthTime = 2;//should be : 2;
 
 void chatterCallback(const sensor_msgs::CompressedImage& msg)
 {
+  
   if(counter%everyNthTime == 0)
   {
     displayImage(msg);
