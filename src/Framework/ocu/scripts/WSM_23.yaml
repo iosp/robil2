@@ -1,0 +1,16 @@
+header: 
+  seq: 1
+  stamp: 
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+task_id: '23'
+task_description: lift blade
+steps: 
+  - 
+    id: 1
+    type: 1
+    value: 0
+    blade_relativity: 0
+    success_timeout: 20
+ 

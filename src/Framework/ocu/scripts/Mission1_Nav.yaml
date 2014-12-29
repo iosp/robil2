@@ -7,6 +7,7 @@ header:
 mission_id: '1'
 mission_description: ''
 tasks:
+- task_id: '23'
 - task_id: '11'
 
 
