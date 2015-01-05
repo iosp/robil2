@@ -1,0 +1,99 @@
+#!/usr/bin/env python
+
+import rospy
+import psutil
+
+from diagnostic_msgs.msg import *
+
+
+class DiagnosticPublisher(object):
+    """Publishes diagnostic messages"""
+    def __init__(self):
+        self._publisher = rospy.Publisher("/diagnostics", DiagnosticArray, queue_size = 10) 
+
+    def publish(self, messageText, hardwareId, values):
+        message = DiagnosticArray()
+        diagnosticStatus = DiagnosticStatus()
+
+        diagnosticValues = []
+
+        for keyValue in values:
+            v = KeyValue()
+            v.key = keyValue[0]
+            v.value = keyValue[1]
+
+            diagnosticValues.append(v)
+
+        diagnosticStatus.level = DiagnosticStatus.OK
+        diagnosticStatus.name = messageText
+        diagnosticStatus.message = "Utilization"
+        diagnosticStatus.hardware_id = hardwareId
+        diagnosticStatus.values = diagnosticValues
+
+        message.header.stamp = rospy.Time.now()
+        message.status.append(diagnosticStatus)
+
+        self._publisher.publish(message) 
+        
+
+def createCpuUsageMessageValues():
+    '''
+    Return a float representing the current system-wide CPU utilization as a percentage for each core
+    '''
+    cpuUsage = psutil.cpu_percent(interval=0.1, percpu=True)
+    overallCpuUsage = psutil.cpu_percent(interval=0.1, percpu=False)
+
+    values = []
+    coreNum = int(1)
+    
+    values.append([ "cpu", str(overallCpuUsage) ])
+
+    for coreUsage in cpuUsage:
+        values.append([ "core{}".format(coreNum), str(coreUsage) ])
+        coreNum += 1
+
+    return values
+
+def createMemoryUsageMessageValues():
+    '''
+    total: total physical memory available.
+    available: the actual amount of available memory that can be given instantly to 
+               processes that request more memory in bytes; this is calculated by summing 
+               different memory values depending on the platform (e.g. free + buffers + cached on Linux) 
+               and it is supposed to be used to monitor actual memory usage in a cross platform fashion.
+    percent: the percentage usage calculated as (total - available) / total * 100.
+    used: memory used, calculated differently depending on the 
+          platform and designed for informational purposes only.
+    free: memory not being used at all (zeroed) that is readily available; 
+          note that this doesn't reflect the actual memory available (use 'available' instead).
+    '''
+
+    memory = psutil.virtual_memory()
+    toMb = 1024.0 ** 2
+
+    return [ 
+            [ "total", str(memory.total / toMb) + "MB" ], 
+            [ "available", str(memory.available / toMb) + "MB" ],
+            [ "percent", str(memory.percent) + "%" ],
+            [ "used", str(memory.used / toMb) + "MB"],
+            [ "free", str(memory.free / toMb) + "MB"],
+        ]
+
+if __name__ == "__main__":
+
+    rospy.init_node("resource_monitor_node")
+
+    rospy.loginfo("Resource monitor started")
+
+    rateHz = rospy.get_param("~publish_rate", 1)
+
+    rospy.loginfo("publish_rate = {}hz".format(rateHz))
+
+    diagnosticPublisher = DiagnosticPublisher()
+
+    rate = rospy.Rate(rateHz)
+    while not rospy.is_shutdown():
+        diagnosticPublisher.publish("CPU", "cpu", createCpuUsageMessageValues())
+        diagnosticPublisher.publish("Memory", "memory", createMemoryUsageMessageValues())
+        rospy.loginfo("Resources published")
+        rate.sleep()
