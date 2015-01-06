@@ -84,7 +84,7 @@ boost::mutex mutex;
 
 void ProjectDepthImage(HeightMap* map, Mat img, Vec3D myRight, Vec3D myFront, Vec3D myUp, Vec3D myPos, Mat lanes)
 {
-  return;
+  //return;
   mutex.lock();
   static const double fov = 0.6981317; //45 deg to each side
   double min=100, max=-100;
@@ -112,7 +112,7 @@ void ProjectDepthImage(HeightMap* map, Mat img, Vec3D myRight, Vec3D myFront, Ve
       float right_m = depth_m * sin_fov * 2*(-j + img.cols/2)/img.cols;
       float up_m = depth_m * sin_fov * 2*(-i + img.rows/2)/img.rows;
       Vec3D pos = myPos.add(myFront.multiply(depth_m).add(myRight.multiply(right_m).add(myUp.multiply(up_m))));
-//       map->setAbsoluteHeightAt((int)(5*pos.x), (int)(5*pos.y), (pos.z));
+      map->setAbsoluteHeightAt((int)(5*pos.x), (int)(5*pos.y), (pos.z));
            
       
       if(pos.z > max) max = pos.z;
