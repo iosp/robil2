@@ -96,6 +96,7 @@ void ekf::setGPSSpeedMeasurement(robil_msgs::GpsSpeed _speed)
 {
 	z.at<double>(2,0) = _speed.speed;
 }
+
 void ekf::estimator()
 {
 	if(_Eimu.set || _Egps.set)
@@ -121,6 +122,9 @@ void ekf::estimator()
 	this->last_pose = this->estimatedPose;
 	this->velocity.twist.linear.x = xk.at<double>(3,0) * cos(xk.at<double>(7,0)) * cos(xk.at<double>(6,0));
 	this->velocity.twist.linear.y = xk.at<double>(3,0) * sin(xk.at<double>(7,0)) * cos(xk.at<double>(6,0));
+	this->velocity.twist.angular.x = xk.at<double>(8,0);
+	this->velocity.twist.angular.y = xk.at<double>(9,0);
+	this->velocity.twist.angular.z = xk.at<double>(10,0);
 	this->velocity.header.stamp = time;
 
 	this->estimatedPose.pose.pose.position.x = xk.at<double>(0,0);

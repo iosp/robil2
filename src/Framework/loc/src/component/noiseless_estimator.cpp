@@ -19,6 +19,9 @@ Observer::Observer()
 	this->velocity.twist.linear.y = 0;
 	this->velocity.twist.linear.z = 0;
 
+	this->velocity.twist.angular.x = 0;
+	this->velocity.twist.angular.y = 0;
+	this->velocity.twist.angular.z = 0;
 }
 
 Observer::~Observer()
@@ -57,6 +60,40 @@ geometry_msgs::TwistStamped Observer::getEstimatedSpeed()
 {
 	return this->velocity;
 }
+
+geometry_msgs::TwistStamped filter(geometry_msgs::TwistStamped prev,geometry_msgs::TwistStamped current)
+{
+	geometry_msgs::TwistStamped avg;
+	double alpha = 0.1;
+	avg.twist.linear.x = prev.twist.linear.x * (1 - alpha) + current.twist.linear.x * alpha;
+	avg.twist.linear.y = prev.twist.linear.y * (1 - alpha) + current.twist.linear.y * alpha;
+	avg.twist.linear.z = prev.twist.linear.z * (1 - alpha) + current.twist.linear.z * alpha;
+	
+	avg.twist.angular.x = prev.twist.angular.x * (1 - alpha) + current.twist.angular.x * alpha;
+	avg.twist.angular.y = prev.twist.angular.y * (1 - alpha) + current.twist.angular.y * alpha;
+	avg.twist.angular.z = prev.twist.angular.z * (1 - alpha) + current.twist.angular.z * alpha;
+	
+	if (avg.twist.angular.z > PI)
+	  avg.twist.angular.z -= 2*PI;
+	if (avg.twist.angular.z < -PI)
+	  avg.twist.angular.z += 2*PI;
+	return avg;
+}
+
+bool isNan(geometry_msgs::TwistStamped avg)
+{
+  if (avg.twist.linear.x != avg.twist.linear.x) return true;
+  if (avg.twist.linear.y != avg.twist.linear.y) return true;
+  if (avg.twist.linear.z != avg.twist.linear.z) return true;
+  
+  if (avg.twist.angular.x != avg.twist.angular.x) return true;
+  if (avg.twist.angular.y != avg.twist.angular.y) return true;
+  if (avg.twist.angular.z != avg.twist.angular.z) return true;
+  
+  return false;
+  
+  
+}
 void Observer::estimator()
 {
 	/* non KF estimation*/
@@ -65,23 +102,23 @@ void Observer::estimator()
 	double theta = calcBearing(initialGPS,GPSmeasurement);
 	double x = d * cos(theta);
 	double y = d * sin(theta);
-
+	geometry_msgs::TwistStamped prev_vel = this->velocity;
 	ros::Time time,dt;
 	time = ros::Time::now();
 	dt = time;
 	dt.sec -= this->estimatedPose.header.stamp.sec;
 	dt.nsec -= this->estimatedPose.header.stamp.nsec;
 
+	Quaternion qut(this->estimatedPose.pose.pose.orientation);
+	Rotation rot1 = GetRotation(qut);
+	Quaternion qut2(IMUmeasurement.orientation);
+	Rotation rot2 = GetRotation(qut2);
+	
 	this->estimatedPose.pose.pose.position.x = x;
 	this->estimatedPose.pose.pose.position.y = y;
 	this->estimatedPose.pose.pose.position.z = GPSmeasurement.altitude;
 	this->estimatedPose.pose.pose.orientation = IMUmeasurement.orientation;
 	this->estimatedPose.header.stamp = time;
-	
-	Quaternion qut(this->estimatedPose.pose.pose.orientation);
-	Rotation rot1 = GetRotation(qut);
-	Quaternion qut2(IMUmeasurement.orientation);
-	Rotation rot2 = GetRotation(qut2);
 	
 	double yaw = rot2.yaw;
 	while(yaw < 0)
@@ -105,7 +142,9 @@ void Observer::estimator()
 	this->velocity.twist.linear.z = this->speedMeasurement.speed * sin(rot2.pitch);
 	this->velocity.header.stamp = time;
 		
+
 	rot2 = rot2.add(Rotation(-rot1.roll, -rot1.pitch, -rot1.yaw));
+	
 	rot2.pitch /= dt.toSec();
 	rot2.roll /= dt.toSec();
 	rot2.yaw /= dt.toSec();
@@ -113,8 +152,11 @@ void Observer::estimator()
 	this->velocity.twist.angular.x = rot2.roll;
 	this->velocity.twist.angular.y = rot2.pitch;
 	this->velocity.twist.angular.z = rot2.yaw;
+	if(isNan(this->velocity))
+	  this->velocity = prev_vel;
+	else
+	  this->velocity = filter(prev_vel,this->velocity);
 
-	
 }
 
 
