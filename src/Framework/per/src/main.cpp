@@ -47,7 +47,7 @@ int main(int argc,char** argv)
   ros::NodeHandle n;
   
   ros::Subscriber vis = n.subscribe("/PER/VISUAL", 5, setVisual);
-  //ros::Subscriber wlrs = n.subscribe("/RoadLanes", 10, handleWalrusData);
+  ros::Subscriber wlrs = n.subscribe("/RoadLanes", 10, handleWalrusData);
     
   ros::AsyncSpinner spinner(4); // Use 4 threads
   spinner.start();

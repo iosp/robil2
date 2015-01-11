@@ -11,6 +11,7 @@
 #include "displayImage/entropy.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <time.h>       /* clock_t, clock, CLOCKS_PER_SEC */
 
 using namespace cv;
 using namespace std;
@@ -41,9 +42,14 @@ void displayImage(const sensor_msgs::CompressedImage& msg)
 //   cv::resize(m, m, img.size());
   Mat lanes;
   lock = true;
+  
+  clock_t t;
+  t = clock();
   lanes = displayMyEntropy/*detectRoad*/(m, 50, 100, toDebug);
+  t = clock() - t;
+  printf ("%.3f seconds.\n", ((float)t)/CLOCKS_PER_SEC);
+  
   lock = false;
-  return;
   sensor_msgs::CompressedImage retMsg;
   retMsg.header = std_msgs::Header();
   retMsg.format = "png";
@@ -68,7 +74,7 @@ void displayImage(const sensor_msgs::CompressedImage& msg)
  ** */
   
 int counter = 0;
-int everyNthTime = 2;//should be : 2;
+int everyNthTime = 5;//should be : 2;
 
 void chatterCallback(const sensor_msgs::CompressedImage& msg)
 {

@@ -5,7 +5,6 @@
 #include "../stereo.h"
 
 #include <sensor_msgs/image_encodings.h>
-
 bool Mapper::camL;
 bool Mapper::camR;
 bool Mapper::loc_received;
@@ -41,6 +40,7 @@ void Mapper::MainLoop()
     lock.lock();
      
     height_map->calculateTypes();
+    
     if(camL && camR) 
     {
       camL = camR = false;
@@ -48,13 +48,13 @@ void Mapper::MainLoop()
       Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
       Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
       Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
-      ProjectDepthImage(height_map, stereo, right, front, up, position.add(up.multiply(1.6)), _lanes);
+      //ProjectDepthImage(height_map, stereo, right, front, up, position.add(up.multiply(1.6)), _lanes);
     }
+    
     publishMap();
     publishMiniMap();
     
     lock.unlock();
-    
   }
 }
 
