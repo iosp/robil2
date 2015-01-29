@@ -22,7 +22,7 @@ public:
 	{
 		Eacc = 0.137;
 		s = 11;
-		m = 10;
+		m = 11;
 		dt = 0.1;
 		tk = t;
 		xk = Mat::zeros(s,1, CV_64F);
@@ -57,6 +57,7 @@ public:
 
 		H = (Mat_<double>(m,s) <<  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 					    0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 					    0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
 					    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
 					    0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
@@ -67,16 +68,17 @@ public:
 					    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
 		    );
 
-		R = (Mat_<double>(m,m) << Vgps,  0, 0, 0, 0, 0, 0, 0, 0, 0,
-								  0,  Vgps, 0, 0, 0, 0, 0, 0, 0, 0,
-								  0, 0, Vvel, 0, 0, 0, 0, 0, 0, 0,
-								  0, 0, 0,  Vacc, 0, 0, 0, 0, 0, 0, 
-								  0, 0, 0, 0, Vori, 0, 0, 0, 0, 0,
-								  0, 0, 0, 0, 0, Vori, 0, 0, 0, 0,
-								  0, 0, 0, 0, 0, 0, Vori, 0, 0, 0,
-								  0, 0, 0, 0, 0, 0, 0, Vgyro, 0, 0,
-								  0, 0, 0, 0, 0, 0, 0, 0, Vgyro, 0,
-								  0, 0, 0, 0, 0, 0, 0, 0, 0, Vgyro
+		R = (Mat_<double>(m,m) <<  Vgps,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					      0,  Vgps, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					      0, 0, Vz, 0, 0, 0, 0, 0, 0, 0,
+					      0, 0, 0, Vvel, 0, 0, 0, 0, 0, 0, 0,
+					      0, 0, 0, 0,  Vacc, 0, 0, 0, 0, 0, 0, 
+					      0, 0, 0, 0, 0, Vori, 0, 0, 0, 0, 0,
+					      0, 0, 0, 0, 0, 0, Vori, 0, 0, 0, 0,
+					      0, 0, 0, 0, 0, 0, 0, Vori, 0, 0, 0,
+					      0, 0, 0, 0, 0, 0, 0, 0, Vgyro, 0, 0,
+					      0, 0, 0, 0, 0, 0, 0, 0, 0, Vgyro, 0,
+					      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Vgyro
 								  );
 
 		P = H.t()*R*H;
@@ -99,9 +101,9 @@ public:
 	}
 	void modify_F(double yaw,double pitch)
 	{
-		F  = (Mat_<double>(s,s) << 1, 0, 0, dt*cos(yaw)*cos(pitch),    dt*dt*cos(yaw)*cos(pitch)/2, 0, 0, 0, 0, 0, 0,
-								   0, 1, 0, dt*sin(yaw)*cos(pitch),    dt*dt*sin(yaw)*cos(pitch)/2, 0, 0, 0, 0, 0, 0,
-								   0, 0, 1, dt*sin(pitch),    dt*dt/2*sin(pitch), 0, 0, 0, 0, 0, 0,
+		F  = (Mat_<double>(s,s) << 			   1, 0, 0, dt*cos(yaw)*cos(pitch),    /*dt*dt*cos(yaw)*cos(pitch)/2*/0, 0, 0, 0, 0, 0, 0,
+								   0, 1, 0, dt*sin(yaw)*cos(pitch),    /*dt*dt*sin(yaw)*cos(pitch)/2*/0, 0, 0, 0, 0, 0, 0,
+								   0, 0, 1, /*dt*sin(pitch)*/0,    /*dt*dt/2*sin(pitch)*/0, 0, 0, 0, 0, 0, 0,
 								   0, 0, 0, 1,   dt, 0, 0, 0, 0, 0, 0,
 								   0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0,
 								   0, 0, 0, 0,    0, 1, 0, 0, 1, 0, 0,
@@ -113,8 +115,9 @@ public:
 								   );
 	}
 public:
-	static const double Vacc = 0.000465329;
-	static const double Vgps = 6.25;
+	static const double Vacc = 0.0465329;
+	static const double Vgps = 30.25;
+	static const double Vz = 0.001;
 	static const double Vvel = 0.05;
 	static const double Vgyro = 0.000252982;
 	static const double Vori = 5/180*3.14159;

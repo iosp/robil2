@@ -7,15 +7,15 @@
 #include <opencv2/opencv.hpp>
 #include <cmath>
 #include "component/rdbg.h"
-#include <per/roadLanes.h>
-#include <per/lane.h>
+// #include <per/roadLanes.h>
+// #include <per/lane.h>
 
 #include <sensor_msgs/CompressedImage.h>
 #include <vector>
 
 
 using namespace cv;
-using namespace per;
+// using namespace per;
 
 ComponentMain* cptr;
 Mat emptyLanes;

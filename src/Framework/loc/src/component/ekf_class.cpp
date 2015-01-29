@@ -66,6 +66,7 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 	double y = d * sin(theta);
 	z.at<double>(0,0) = x;
 	z.at<double>(1,0) = y;
+	z.at<double>(2,0) = measurement.altitude;
 }
 
 void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
@@ -83,18 +84,18 @@ void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
 	this->IMUmeasurement = measurement;
 	Quaternion qut2(measurement.orientation);
 	Rotation rot2 = GetRotation(qut2);
-	z.at<double>(3,0) = (measurement.linear_acceleration.x - Eacc);
-	z.at<double>(4,0) = rot2.roll;
-	z.at<double>(5,0) = rot2.pitch;
-	z.at<double>(6,0) = rot2.yaw;
-	z.at<double>(7,0) = measurement.angular_velocity.x;
-	z.at<double>(8,0) = measurement.angular_velocity.y;
-	z.at<double>(9,0) = measurement.angular_velocity.z;
+	z.at<double>(4,0) = (measurement.linear_acceleration.x - Eacc);
+	z.at<double>(5,0) = rot2.roll;
+	z.at<double>(6,0) = rot2.pitch;
+	z.at<double>(7,0) = rot2.yaw;
+	z.at<double>(8,0) = measurement.angular_velocity.x;
+	z.at<double>(9,0) = measurement.angular_velocity.y;
+	z.at<double>(10,0) = measurement.angular_velocity.z;
 
 }
 void ekf::setGPSSpeedMeasurement(robil_msgs::GpsSpeed _speed)
 {
-	z.at<double>(2,0) = _speed.speed;
+	z.at<double>(3,0) = _speed.speed;
 }
 
 void ekf::estimator()
@@ -129,7 +130,7 @@ void ekf::estimator()
 
 	this->estimatedPose.pose.pose.position.x = xk.at<double>(0,0);
 	this->estimatedPose.pose.pose.position.y = xk.at<double>(1,0);
-	this->estimatedPose.pose.pose.position.z = xk.at<double>(2,0);
+	this->estimatedPose.pose.pose.position.z = /*xk.at<double>(2,0);*/this->GPSmeasurement.altitude;
 	Rotation rot2(xk.at<double>(5,0), xk.at<double>(6,0), xk.at<double>(7,0));
 	Quaternion quat2 = GetFromRPY(rot2);
 	this->estimatedPose.pose.pose.orientation.x = quat2.x;

@@ -3,8 +3,8 @@
 using namespace std;
 using namespace cv;
 
-const int SIZE_X = 1624;
-const int SIZE_Y = 1224;
+const int SIZE_X = 1288;//1624;
+const int SIZE_Y = 964;//1224;
 const int ENT_WIN_SIZE = 35;
 const int rs = SIZE_X/ENT_WIN_SIZE;
 const int cls = SIZE_Y/ENT_WIN_SIZE;
@@ -168,7 +168,7 @@ Mat displayMyEntropy(Mat image, int cut_p, int down_p, int toDebug)
 	for(int j=0;j<cls;j++)
 	  idCtr[arr[i][j].id]++;
     int ID = kMax(idCtr,rs*cls,2);
-    empty = createEntropyImage(arr,rs,cls,ENT_WIN_SIZE,ID,SIZE_X,SIZE_Y);
+    //empty = createEntropyImage(arr,rs,cls,ENT_WIN_SIZE,ID,SIZE_X,SIZE_Y);
     /** Paint and show image**/
     if(toDebug)
     {
@@ -187,7 +187,7 @@ Mat displayMyEntropy(Mat image, int cut_p, int down_p, int toDebug)
 	    clr = 0;
 	  else
 	    clr = 18;
-	  
+	  clr = (arr[i][j].id) % 255;
 	  //cout << arr[i][j].id << "   " << endl;printEntro(arr[i][j].entropy);
 	  rectangle(image,rec,Scalar(((clr*5)%255),((clr*9)%255),((clr*12)%255)),1,8,0);
 	  
@@ -201,7 +201,7 @@ Mat displayMyEntropy(Mat image, int cut_p, int down_p, int toDebug)
 	param.arr = arr;
 	setMouseCallback("ent_image", CallBackFunc, (void*)&param);
 	imshow("ent_image", image);
-	imshow("entropy_mask", empty);
+	//imshow("entropy_mask", empty);
 	waitKey(run);
     }    
     

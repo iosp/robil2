@@ -4,8 +4,8 @@
 #include <sensor_msgs/CompressedImage.h>
 // #include <sensor_msgs/Image.h>
 #include "std_msgs/Float64MultiArray.h"
-#include "per/roadLanes.h"
-#include "per/lane.h"
+// #include "per/roadLanes.h"
+// #include "per/lane.h"
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
 #include "displayImage/entropy.h"
@@ -15,7 +15,7 @@
 
 using namespace cv;
 using namespace std;
-using namespace per;
+// using namespace per;
 
 /** *
  * 		displayImage:
