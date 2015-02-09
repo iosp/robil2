@@ -32,8 +32,8 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	 boost::thread mapper2(Mapper::VisualizeLoop);
 	 /// walrus func:
 	  boost::this_thread::sleep(boost::posix_time::milliseconds(300));
-	 boost::thread mapper3(Mapper::StereoThread);
-	 boost::this_thread::sleep(boost::posix_time::milliseconds(300));
+	 //boost::thread mapper3(Mapper::StereoThread);
+	 //boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;

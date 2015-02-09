@@ -22,6 +22,8 @@ public:
 	virtual ~ComponentMain();
 	static void performEstimation();
 	void handlePositionUpdate(const config::LOC::sub::PositionUpdate& msg);
+	void setSteeringInput(double msg);
+	void setThrottleInput(double msg);
 	void handleGPS(const config::LOC::sub::GPS& msg);
 	void handleINS(const config::LOC::sub::INS& msg);
 	void handleVOOdometry(const config::LOC::sub::VOOdometry& msg);

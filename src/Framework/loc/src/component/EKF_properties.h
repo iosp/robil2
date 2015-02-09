@@ -17,28 +17,29 @@ public:
 	int s,m;
     double dt,tk;
     double Eacc, _dIMU,_dGPS;;
-    Mat F, Q, H, R, xk,P,xk1,P1,K,z;
+    Mat F, Q, H, R, xk,P,xk1,P1,K,z,u,B;
 	void __init__props(double t)
 	{
 		Eacc = 0.137;
-		s = 11;
-		m = 11;
-		dt = 0.1;
+		s = 13;
+		m = 13;
+		dt = 0.05;
 		tk = t;
 		xk = Mat::zeros(s,1, CV_64F);
-		modify_F(0,0);
 		xk1 = xk;
 		//0//     x
 		//1//     y
 		//2//     z
-		//3//     v
-		//4//     a
-		//5//     R
-		//6//     P
-		//7//     Y
-		//8//     dR
-		//9//     dP
-		//10/     dY
+		//3//     vx
+		//4//     vy
+		//5//     ax
+		//6//     ay
+		//7//     R
+		//8//     P
+		//9//     Y
+		//10//     dR
+		//11//     dP
+		//12/     dY
 
 		z = Mat::zeros(m,1, CV_64F);
 		////0     x
@@ -51,36 +52,17 @@ public:
 		////7     dR
 		////8     dP
 		////9     dY
+		u = Mat::zeros(2,1, CV_64F);
+		B = Mat::zeros(s,2,CV_64F);
+		F = Mat::eye(s,s,CV_64F);
+		modify_F(0,0);
+		////0     Throttle input
+		////1     Steering input
+		Q = Mat::eye(s, s, CV_64F)*0.002;
 
-
-		Q = Mat::eye(s, s, CV_64F)*0.0002;
-
-		H = (Mat_<double>(m,s) <<  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-					    0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-					    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-					    0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-					    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-					    0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-					    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-					    0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-					    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
-					    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
-					    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
-		    );
-
-		R = (Mat_<double>(m,m) <<  Vgps,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-					      0,  Vgps, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-					      0, 0, Vz, 0, 0, 0, 0, 0, 0, 0,
-					      0, 0, 0, Vvel, 0, 0, 0, 0, 0, 0, 0,
-					      0, 0, 0, 0,  Vacc, 0, 0, 0, 0, 0, 0, 
-					      0, 0, 0, 0, 0, Vori, 0, 0, 0, 0, 0,
-					      0, 0, 0, 0, 0, 0, Vori, 0, 0, 0, 0,
-					      0, 0, 0, 0, 0, 0, 0, Vori, 0, 0, 0,
-					      0, 0, 0, 0, 0, 0, 0, 0, Vgyro, 0, 0,
-					      0, 0, 0, 0, 0, 0, 0, 0, 0, Vgyro, 0,
-					      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Vgyro
-								  );
-
+		H = Mat::eye(s, s, CV_64F);
+		Mat arr = (Mat_<double>(1,m) <<  Vgps,Vgps,Vz,Vvel,Vvel,Vacc,Vacc,Vori,Vori,Vori,Vgyro,Vgyro,Vgyro);
+		R = Mat::diag(arr);
 		P = H.t()*R*H;
 		P1 = F*P*F.t() + Q;
 	}
@@ -94,25 +76,28 @@ public:
 		if (dt < 0.005)
 		{
 			dt = 0.005;
-			std::cout << "dt= " << dt << std::endl;
+			std::cout << "LOC says: dt= " << dt << std::endl;
 		}
 		tk = tk1;
-		modify_F(xk.at<double>(7,0),xk.at<double>(6,0));
+		modify_F(xk.at<double>(9,0),xk.at<double>(8,0));
+		modify_B(xk.at<double>(9,0),xk.at<double>(8,0));
 	}
 	void modify_F(double yaw,double pitch)
 	{
-		F  = (Mat_<double>(s,s) << 			   1, 0, 0, dt*cos(yaw)*cos(pitch),    /*dt*dt*cos(yaw)*cos(pitch)/2*/0, 0, 0, 0, 0, 0, 0,
-								   0, 1, 0, dt*sin(yaw)*cos(pitch),    /*dt*dt*sin(yaw)*cos(pitch)/2*/0, 0, 0, 0, 0, 0, 0,
-								   0, 0, 1, /*dt*sin(pitch)*/0,    /*dt*dt/2*sin(pitch)*/0, 0, 0, 0, 0, 0, 0,
-								   0, 0, 0, 1,   dt, 0, 0, 0, 0, 0, 0,
-								   0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0,
-								   0, 0, 0, 0,    0, 1, 0, 0, 1, 0, 0,
-								   0, 0, 0, 0,    0, 0, 1, 0, 0, 1, 0,
-								   0, 0, 0, 0,    0, 0, 0, 1, 0, 0, 1,
-								   0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0,
-								   0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0,
-								   0, 0, 0, 0,    0, 0, 0, 0, 0, 0, 0
-								   );
+	  F.at<double>(0,0) = 1;F.at<double>(0,3) = dt;F.at<double>(0,5) = dt*dt/2;
+	  F.at<double>(1,1) = 1;F.at<double>(1,4) = dt;F.at<double>(1,6) = dt*dt/2;
+	  F.at<double>(3,3) = 0;
+	  F.at<double>(4,4) = 0;
+	  F.at<double>(9,9) = 1;
+	  F.at<double>(9,12) = dt;
+	  F.at<double>(12,12) = 0;
+	}
+	void modify_B(double yaw,double pitch)
+	{
+		B.at<double>(3,0) = cos(yaw);
+		B.at<double>(4,0) = sin(yaw);
+		//B.at<double>(9,1) = dt;
+		B.at<double>(12,1) = 1;
 	}
 public:
 	static const double Vacc = 0.0465329;
@@ -120,7 +105,7 @@ public:
 	static const double Vz = 0.001;
 	static const double Vvel = 0.05;
 	static const double Vgyro = 0.000252982;
-	static const double Vori = 5/180*3.14159;
+	static const double Vori = 0.087266389;
 };
 
 #endif /* EKF_PROPERTIES_H_ */
