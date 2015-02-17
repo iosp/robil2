@@ -14,7 +14,6 @@ ComponentMain *ComponentMain::_this;
 
 ComponentMain::ComponentMain(int argc,char** argv)
 {
-	//void (ComponentMain::)();;
 	_roscomm = new RosComm(this,argc, argv);
 	ComponentMain::_this = this;
 	_estimation_thread = new boost::thread(&ComponentMain::performEstimation);
@@ -27,6 +26,7 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::performEstimation()
 {
+  
 	config::LOC::pub::Location msg1;
 	config::LOC::pub::PerVelocity msg2;
 	for(;;)
@@ -119,4 +119,12 @@ void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _
 }
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
 	_roscomm->publishDiagnostic(header, _report);
+}
+void ComponentMain::setSteeringInput(double msg)
+{
+    if(_added_noise) _estimator.setSteeringInput(msg);
+}
+void ComponentMain::setThrottleInput(double msg)
+{
+    if(_added_noise) _estimator.setThrottleInput(msg);
 }

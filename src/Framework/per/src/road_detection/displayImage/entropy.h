@@ -3,19 +3,26 @@
 using namespace std;
 using namespace cv;
 
-const int SIZE_X = 1288;
-const int SIZE_Y = 964;
+const int SIZE_X = 1288;//1624;
+const int SIZE_Y = 964;//1224;
 const int ENT_WIN_SIZE = 35;
 const int rs = SIZE_X/ENT_WIN_SIZE;
 const int cls = SIZE_Y/ENT_WIN_SIZE;
 int run = 1;
 Mat baseHist;
-entropyArray arr[rs][cls]={};
-
-void CallBackFunc(int event, int x, int y, int flags, void* userdata)
+struct MouseParams
 {
+    Mat *img;
+    entropyArray **arr;
+};
+void CallBackFunc(int event, int x, int y, int flags, void* param)
+{
+     MouseParams* mp = (MouseParams*)param;
+     Mat* img = mp->img;
      if  ( event == EVENT_LBUTTONDOWN )
      {
+       
+       entropyArray** arr = mp->arr;
        cout << "id of cell: " << arr[x/ENT_WIN_SIZE][y/ENT_WIN_SIZE].id << endl;
        printEntro(arr[x/ENT_WIN_SIZE][y/ENT_WIN_SIZE].entropy);
        cout << "idx: " << x/ENT_WIN_SIZE << "  " << y/ENT_WIN_SIZE << endl;
@@ -24,8 +31,7 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
        rec.height = ENT_WIN_SIZE;
        rec.x = x - ENT_WIN_SIZE / 2;
        rec.y = y - ENT_WIN_SIZE / 2;
-       Mat* ptrImage = (Mat*)userdata;
-       Mat sq = (*ptrImage)(rec);
+       Mat sq = (*img)(rec);
        Mat hist = calculateHistogram(sq,"hist of square");
        if (!baseHist.data)
 	 baseHist = calculateHistogram(sq);
@@ -48,8 +54,7 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
        rec.height = ENT_WIN_SIZE;
        rec.x = x - ENT_WIN_SIZE / 2;
        rec.y = y - ENT_WIN_SIZE / 2;
-       Mat* ptrImage = (Mat*)userdata;
-       Mat sq = (*ptrImage)(rec);
+       Mat sq = (*img)(rec);
        baseHist = calculateHistogram(sq,"hist of square");
        cout << "base hist chosen" << endl;
           //cout << "Middle button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
@@ -71,8 +76,15 @@ Mat displayMyEntropy(Mat image, int cut_p, int down_p, int toDebug)
     Rect rec;
     rec.width = ENT_WIN_SIZE;
     rec.height = ENT_WIN_SIZE;
+    entropyArray **arr;
+//     int rs = image.cols/ENT_WIN_SIZE;
+//     int cls = image.rows/ENT_WIN_SIZE;
+    arr = new entropyArray*[rs];
+    for(int i = 0; i < rs; ++i)
+      arr[i] = new entropyArray[cls];
     
-    //cout << "rows : " << rs << " cols: " << cls << "  " << image.rows <<"  " << image.cols << endl;
+    
+//     cout << "rows : " << rs << " cols: " << cls << "  " << image.rows <<"  " << image.cols << endl;
     
     /**BFS the image to find neighbours**/
     
@@ -149,9 +161,21 @@ Mat displayMyEntropy(Mat image, int cut_p, int down_p, int toDebug)
 	it = Q.insert(it,P2);
       }
     }
+    /** count The IDs and find the best ID **/
+    int idCtr[rs*cls]={0};
+    int I_max = 0,I_max2 = 1;
+    for(int i=0;i<rs;i++)
+	for(int j=0;j<cls;j++)
+	  idCtr[arr[i][j].id]++;
+    int ID = kMax(idCtr,rs*cls,2);
+    //empty = createEntropyImage(arr,rs,cls,ENT_WIN_SIZE,ID,SIZE_X,SIZE_Y);
     /** Paint and show image**/
     if(toDebug)
     {
+//       for(int i=0;i<rs*cls;i++)
+// 	if (idCtr[i] && idCtr[i]>10)
+// 	  cout << "id " << i << ": "<< idCtr[i] <<endl;
+//       cout << "2nd is: " << ID << endl;
       int max_clr = 255 / id; 
       int clr = 0;
       for(int i=0;i<rs;i++)
@@ -159,18 +183,31 @@ Mat displayMyEntropy(Mat image, int cut_p, int down_p, int toDebug)
 	{
 	  rec.x = i*ENT_WIN_SIZE;
 	  rec.y = j*ENT_WIN_SIZE;
-	  clr = max_clr*arr[i][j].id;
+	  if (arr[i][j].id == ID)
+	    clr = 0;
+	  else
+	    clr = 18;
+	  clr = (arr[i][j].id) % 255;
 	  //cout << arr[i][j].id << "   " << endl;printEntro(arr[i][j].entropy);
-	  rectangle(image,rec,Scalar(((arr[i][j].id*5)%255),((arr[i][j].id*9)%255),((arr[i][j].id*12)%255)),1,8,0);
+	  rectangle(image,rec,Scalar(((clr*5)%255),((clr*9)%255),((clr*12)%255)),1,8,0);
 	  
 	}
+	
 	namedWindow("ent_image", 1);
 
 	//set the callback function for any mouse event
-	setMouseCallback("ent_image", CallBackFunc, (void*)&image);
+        MouseParams param;
+	param.img = &image;
+	param.arr = arr;
+	setMouseCallback("ent_image", CallBackFunc, (void*)&param);
 	imshow("ent_image", image);
+	//imshow("entropy_mask", empty);
 	waitKey(run);
     }    
-
+    
+    for(int i = 0; i < rs; ++i)
+      delete [] arr[i];
+    delete [] arr;
+    
     return empty;
 }

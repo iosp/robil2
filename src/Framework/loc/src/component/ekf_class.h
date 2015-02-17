@@ -70,6 +70,15 @@ public:
 	 * Change the mean of the accelerometer.
 	 */
 	void changeEacc(sensor_msgs::Imu _Eacc);
+	/*
+	 * Set the steering input
+	 */
+	void setSteeringInput(double msg);
+	/*
+	 * Set the throttle input
+	 */
+	void setThrottleInput(double msg);
+	
 	
 private:
 	Egps _Egps;

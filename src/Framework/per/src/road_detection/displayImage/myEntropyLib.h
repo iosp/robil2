@@ -30,7 +30,7 @@ void printEntro(vector<double> EP)
 
 bool compareEntropies(vector<double> EP, vector<double> EP2) //entropyProperties
 {
-  double AT = 15; //avarageThreshold
+  double AT = 5; //avarageThreshold
   double VT = 5; // varianceThreshold
 
   if( abs(EP[0]-EP2[0]) > AT || abs(EP[1]-EP2[1]) > AT || abs(EP[2]-EP2[2]) > AT)
@@ -79,7 +79,7 @@ vector<double> calcEntropy(Mat w)
   return res;
 }
 
-void changeID(entropyArray arr[][27],int to, int what,int rs,int cls)
+void changeID(entropyArray **arr,int to, int what,int rs,int cls)
 {
   for(int i=0;i<rs;i++)
     for(int j=0;j<cls;j++)
@@ -155,4 +155,43 @@ Mat calculateHistogram(cv::Mat const& image,std::string const& name="")
     }
     normalize( hist, hist, 0, 1, NORM_MINMAX, -1, Mat() );
     return hist;
+}
+
+int kMax(int arr[],int size,int k=1)
+{
+  int I=0,i,max = 9999999;
+  for(int j=0;j<k;j++)
+  {
+    for(I=0,i=1;i<size;i++)  
+    {
+      if(arr[i] > arr[I] && arr[i] < max)
+	I = i;
+    }
+    max = arr[I];
+  }
+  return I;
+}
+
+Mat createEntropyImage(entropyArray **arr,int rs,int cls,int size,int ID,int sx,int sy)
+{
+  Mat dest = Mat(sy, sx, CV_8U);
+  uchar color;
+  
+  Rect rec;
+  rec.width = size;
+  rec.height = size;
+  for(int i=0; i< rs; i++)
+  {
+    for(int j=0; j<cls; j++)
+    {
+      rec.x = i*size;
+      rec.y = j*size;
+      if(arr[i][j].id == ID)
+	dest(rec).setTo(Scalar(0,0,0));
+      else
+	dest(rec).setTo(Scalar(255,255,255));
+      
+    }
+  }
+  return dest;
 }
