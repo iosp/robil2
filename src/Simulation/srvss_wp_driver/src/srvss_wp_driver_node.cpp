@@ -363,7 +363,9 @@ void wp_driver(const ros::TimerEvent& )
      ROS_INFO(" current_time = %f , time_interval = %f" , current_time , time_interval); 
      ROS_INFO(" wp_num = %d , wp = %d " , wp_num , wp);
      ROS_INFO(" current_lat_t = %f , current_lon_t = %f, current_max_vel_t = %f , target_adjusted_vel = %f , target_azi = %f" , current_lat_t , current_lon_t , current_max_vel_t ,adjusted_vel_t , t_azi);
+
      ROS_INFO(" bobcat_lat = %f , bobcat_lon = %f , bobcat_lin_vel= %f , bobcat_vel_azi =%f , bobcat_azi = %f " , bobcat_lat , bobcat_lon , bobcat_lin_vel , bobcat_vel_azi , bobcat_azi);
+
      ROS_INFO(" lat_error = %f , lon_error = %f , dist_error = %f , vel_error = %f , azi_error = %f" , lat_error , lon_error , dist_error , vel_error , azi_error );
      ROS_INFO(" bobcat_lin_vel = %f , bobcat_ang_vel = %f ", bobcat_lin_vel , bobcat_ang_vel );
      ROS_INFO(" distance to obstacle = %f ", obs_dist );
@@ -413,6 +415,7 @@ void wp_driver(const ros::TimerEvent& )
 
            // if ( (std::abs(azi_error) >= 0.01) && ( std::abs(bobcat_ang_vel) < 1 ) )
               // { twistMsg.angular.x = -2.00 * std::min( std::abs(azi_error) , (float)1.0 ) * (azi_error/std::abs(azi_error))  ;  }
+
             if ( (std::abs(azi_error) >= 0.1) && ( std::abs(bobcat_ang_vel) < 1 ) )
                { twistMsg.angular.x = -0.90 * std::min( std::abs(azi_error) , (float)1.0 ) * (azi_error/std::abs(azi_error))  ;  }
             else 
