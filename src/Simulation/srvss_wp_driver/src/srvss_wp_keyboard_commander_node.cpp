@@ -24,7 +24,7 @@ int main(int argc, char **argv)
   
   geometry_msgs::Pose WP_command; 
 
-  float wp_x, wp_y;
+  float wp_x, wp_y, wp_V;
 
   ros::Rate loop_rate(1);
   while (ros::ok())
@@ -33,12 +33,15 @@ int main(int argc, char **argv)
  	  std::cin >> wp_x ; 
 	  std::cout << " wp_Y =  ";
  	  std::cin >> wp_y ;
+	  std::cout << " wp_Speed =  ";
+ 	  std::cin >> wp_V ;
          	         
  	  int i = 0;
           WP_command.position.x = wp_x;
           WP_command.position.y = wp_y;  
- 	   	
-          ROS_INFO("receve :  wp_X = %f  , wp_Y = %f " , wp_x , wp_y ); 
+          WP_command.position.z = wp_V;
+
+          ROS_INFO("Received :  wp_X = %f  , wp_Y = %f, wp_Speed = %f " , wp_x , wp_y, wp_V );
 
           WP_command_pub.publish(WP_command);
      

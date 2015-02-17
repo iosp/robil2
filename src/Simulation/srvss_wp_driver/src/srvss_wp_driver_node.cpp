@@ -48,8 +48,9 @@ void WP_callback(const geometry_msgs::Pose WP_msg)
         
           t_lat[1] = WP_msg.position.x;
           t_lon[1] = WP_msg.position.y;
+          t_vel[1] = WP_msg.position.z;
 
-          ROS_INFO( " !!! RECEIVED NEW TARGET WP : lat = %f , lon = %f " , WP_msg.position.x , WP_msg.position.y );
+          ROS_INFO( " !!! RECEIVED NEW TARGET WP : lat = %f , lon = %f , Speed = %f " , WP_msg.position.x , WP_msg.position.y, WP_msg.position.z );
 
   WP_mutex.unlock();
 }
@@ -134,6 +135,7 @@ void IMU_callback(const sensor_msgs::Imu IMU_msg)
  
      float current_lat_t;
      float current_lon_t;
+     float current_max_vel_t;
 
      float lat_error;
      float lon_error;
@@ -165,9 +167,11 @@ int init_nav_data()
      WP_mutex.lock(); 
       t_lat[0] = bobcat_init_lat;   // the first wp is the initial position of the bobcat  
       t_lon[0] = bobcat_init_lon; 
+      t_vel[0] = 0;
 
       current_lat_t =  t_lat[0];   
       current_lon_t =  t_lon[0];
+      current_max_vel_t = t_vel[0];
      WP_mutex.unlock(); 
 
      bobcat_lat =  bobcat_init_lat;
@@ -239,9 +243,6 @@ void SICK_callback(const sensor_msgs::LaserScan::ConstPtr& SICK_msg)
      float WP_passing_dist = 1;  // the distance that the bobcat required to approach a WP in order to claim that it reached it, and go for the next (if next WP exist).
 
 
-
-
-
      int bypass_on = 0;   // flag that shows that the a current WP is a bypass WP (and not a path WP)
      int bypass_by_jump_to_next_wp = 0;  // flag that shows that the obstacle is located on top the currant WP, the bypass shall be performed by moving to next WP
 
@@ -260,6 +261,7 @@ void wp_driver(const ros::TimerEvent& )
 
               current_lat_t = t_lat[wp];
               current_lon_t = t_lon[wp];
+              current_max_vel_t = t_vel[wp];
 
               keybord_com_wp = 0;
            }
@@ -318,22 +320,37 @@ void wp_driver(const ros::TimerEvent& )
      float bobcat_lat_diff = bobcat_lat - previous_lat;
      float bobcat_lon_diff = bobcat_lon - previous_lon;
      float bobcat_vel_azi = atan2( bobcat_lon_diff , bobcat_lat_diff);
-    
+
      // calculation of the bobcat velocity (relative to the bobcat azimuth)
      bobcat_lin_vel =  sqrt ( pow( bobcat_lat_diff/time_interval , 2) + pow( bobcat_lon_diff/time_interval , 2) );        
+
      float relative_vel_der =  std::abs(bobcat_vel_azi - (bobcat_azi-jb*2*PI));
-     if ( relative_vel_der <= 1.57 ) 
-          { bobcat_lin_vel =  sqrt( pow( bobcat_lat_diff/time_interval , 2) + pow( bobcat_lon_diff/time_interval , 2) ); } 
+     if ((bobcat_azi-jb*2*PI) > PI)
+     	 { relative_vel_der =  std::abs(bobcat_vel_azi - (bobcat_azi-jb*2*PI - 2*PI)); }
+     else if ((bobcat_azi-jb*2*PI) < -PI)
+    	 { relative_vel_der =  std::abs(bobcat_vel_azi - (bobcat_azi-jb*2*PI + 2*PI)); }
+
+//     ROS_INFO(" !!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
+//     ROS_INFO(" bobcat_vel_azi = %f , (bobcat_azi-jb*2*PI) = %f , jb = %d , relative_vel_der = %f", bobcat_vel_azi , (bobcat_azi-jb*2*PI) , jb, relative_vel_der/PI);
+
+     if ( ( (relative_vel_der/PI) <= 0.5 ) || ( (relative_vel_der/PI) >= 1.5) )
+          {
+    	 	bobcat_lin_vel = sqrt( pow( bobcat_lat_diff/time_interval , 2) + pow( bobcat_lon_diff/time_interval , 2) );
+            ROS_INFO(" !!! + bobcat_lin_vel = %f " , bobcat_lin_vel);
+          }
      else 
-          { bobcat_lin_vel = - sqrt( pow( bobcat_lat_diff/time_interval , 2) + pow( bobcat_lon_diff/time_interval , 2) ); }     
+          {
+    	    bobcat_lin_vel = - sqrt( pow( bobcat_lat_diff/time_interval , 2) + pow( bobcat_lon_diff/time_interval , 2) );
+            ROS_INFO(" !!! - bobcat_lin_vel = %f " , bobcat_lin_vel);
+          }
 
     
      // distance, azimuth and velocity errors calculation 
            dist_error = sqrt(lat_error*lat_error + lon_error*lon_error);
            azi_error = t_azi - bobcat_azi; 
   
-     float t_vel = max_vel * std::min( 1/(3*std::abs(azi_error)+1) , (float)1.0 );
-     float vel_error = t_vel - bobcat_lin_vel;
+     float adjusted_vel_t = current_max_vel_t * std::min( 1/(3*std::abs(azi_error)+1) , (float)1.0 );
+     float vel_error = adjusted_vel_t - bobcat_lin_vel;
    
 
      // calculation of the error Integrals (Not in use for now)
@@ -345,8 +362,8 @@ void wp_driver(const ros::TimerEvent& )
      ROS_INFO(" ------- ");  
      ROS_INFO(" current_time = %f , time_interval = %f" , current_time , time_interval); 
      ROS_INFO(" wp_num = %d , wp = %d " , wp_num , wp);
-     ROS_INFO(" current_lat_t = %f , current_lon_t = %f , target_vel = %f , target_azi = %f" , current_lat_t , current_lon_t , t_vel , t_azi);
-     ROS_INFO(" bobcat_lat = %f , bobcat_lon = %f , bobcat_lin_vel= %f , bobcat_azi = %f " , bobcat_lat , bobcat_lon , bobcat_lin_vel , bobcat_azi );
+     ROS_INFO(" current_lat_t = %f , current_lon_t = %f, current_max_vel_t = %f , target_adjusted_vel = %f , target_azi = %f" , current_lat_t , current_lon_t , current_max_vel_t ,adjusted_vel_t , t_azi);
+     ROS_INFO(" bobcat_lat = %f , bobcat_lon = %f , bobcat_lin_vel= %f , bobcat_vel_azi =%f , bobcat_azi = %f " , bobcat_lat , bobcat_lon , bobcat_lin_vel , bobcat_vel_azi , bobcat_azi);
      ROS_INFO(" lat_error = %f , lon_error = %f , dist_error = %f , vel_error = %f , azi_error = %f" , lat_error , lon_error , dist_error , vel_error , azi_error );
      ROS_INFO(" bobcat_lin_vel = %f , bobcat_ang_vel = %f ", bobcat_lin_vel , bobcat_ang_vel );
      ROS_INFO(" distance to obstacle = %f ", obs_dist );
@@ -373,6 +390,7 @@ void wp_driver(const ros::TimerEvent& )
                     WP_mutex.lock();
                       current_lat_t = t_lat[wp];
                       current_lon_t = t_lon[wp];
+                      current_max_vel_t = t_vel[wp];
                     WP_mutex.unlock(); 
                 	bypass_by_jump_to_next_wp = 0;
                  }    
@@ -382,7 +400,7 @@ void wp_driver(const ros::TimerEvent& )
                   if (bobcat_lin_vel >= 0.005 ) 
                      { twistMsg.linear.x = -0.0001*bobcat_lin_vel; }
                   else if (bobcat_lin_vel <= -0.005 ) 
-                     { twistMsg.linear.x = 0.0001*bobcat_lin_vel; }     
+                     { twistMsg.linear.x = 0.0001*bobcat_lin_vel; }
                 }
 
           }
@@ -393,7 +411,9 @@ void wp_driver(const ros::TimerEvent& )
             else 
                { twistMsg.linear.x = 0; }
 
-            if ( (std::abs(azi_error) >= 0.1) && ( std::abs(bobcat_ang_vel) < 1 ) ) 
+           // if ( (std::abs(azi_error) >= 0.01) && ( std::abs(bobcat_ang_vel) < 1 ) )
+              // { twistMsg.angular.x = -2.00 * std::min( std::abs(azi_error) , (float)1.0 ) * (azi_error/std::abs(azi_error))  ;  }
+            if ( (std::abs(azi_error) >= 0.1) && ( std::abs(bobcat_ang_vel) < 1 ) )
                { twistMsg.angular.x = -0.90 * std::min( std::abs(azi_error) , (float)1.0 ) * (azi_error/std::abs(azi_error))  ;  }
             else 
                { twistMsg.angular.x = 0; }
@@ -518,7 +538,7 @@ int main(int argc, char **argv)
     else if (std::string(argv[1]).compare("-path")==0)
 		{
 		std::cout << "!! path !!"<<std::endl;
-
+/*
 		  if (  ((argc-2) > max_wp_num*2 )  || (  ((argc-2)%2)!=0  )  )
 		  	  {
 			  ROS_ERROR(" wrong input !!! ");
@@ -530,13 +550,25 @@ int main(int argc, char **argv)
 			  { ROS_ERROR(" It is not clear why... ");}
 			  return 1;
 		  	  }
+*/
+		  wp_num = ((argc-2)/3);
 
-		  wp_num = ((argc-2)/2);
+		  std::cout << " wp_num = " << wp_num << std::endl;
+		  std::cout << " argc = " << argc << std::endl;
+		  std::cout << " argv[0] = " << argv[0] << std::endl;
+		  std::cout << " argv[1] = " << argv[1] << std::endl;
+		  std::cout << " argv[2] = " << argv[2] << std::endl;
+		  std::cout << " argv[3] = " << argv[3] << std::endl;
+		  std::cout << " argv[4] = " << argv[4] << std::endl;
+
 	      for (int i=1 ; i<=wp_num ; i++)
 		    {
-		      t_lat[i] = std::atof(argv[2*i]);
-		      t_lon[i] = std::atof(argv[2*i+1]);
+		      t_lat[i] = std::atof(argv[2+3*(i-1)]);
+		      t_lon[i] = std::atof(argv[3+3*(i-1)]);
+		      t_vel[i] = std::atof(argv[4+3*(i-1)]);
 		    }
+
+
 		}
 
   else if(std::string(argv[1]).compare("-file")==0)
@@ -585,17 +617,17 @@ int main(int argc, char **argv)
 
   ros::Subscriber GPS_data = n.subscribe("/SENSORS/GPS", 100, GPS_callback); 
   ros::Subscriber IMU_data = n.subscribe("/SENSORS/IMU", 100, IMU_callback); 
-  ros::Subscriber SICK_data = n.subscribe("/front_sick/scan", 100, SICK_callback); 
+  ros::Subscriber SICK_data = n.subscribe("/front_sick/scan", 100, SICK_callback);
     
-
   init_nav_data(); // a loop that waits for reception of GPS and INS data
-  for(int j=0 ; j<wp_num ; j++)
-  	std::cout << "wp[" << j << "] lat = " << t_lat[j] << " lon = " << t_lon[j] << std::endl;
+
+  for(int j=0 ; j<=wp_num ; j++)
+   	std::cout << "wp[" << j << "] lat = " << t_lat[j] << " lon = " << t_lon[j] << " vel = " << t_vel[j] << std::endl;
 
   ros::Timer wp_driver_timer = n.createTimer(ros::Duration(0.05), wp_driver);
-  ros::Timer obstacle_avoidance_timer = n.createTimer(ros::Duration(0.25), obstacle_avoidance);     
+  ros::Timer obstacle_avoidance_timer = n.createTimer(ros::Duration(0.25), obstacle_avoidance);
   wheelsrate_pub = n.advertise<geometry_msgs::Twist>("/wheelsrate", 1000);
- 
+
   ros::spin();
 
   return 0;
