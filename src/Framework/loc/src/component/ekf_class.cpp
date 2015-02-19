@@ -68,6 +68,7 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 	z.at<double>(0,0) = x;
 	z.at<double>(1,0) = y;
 	z.at<double>(2,0) = measurement.altitude;
+	_received_gps = true;
 }
 
 void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
@@ -112,8 +113,9 @@ void ekf::estimator()
 	ros::Time time = ros::Time::now();
 	setdt(time.toSec());
 	time_propagation();
+	if(!_received_gps) repairMeasurement();
 	measurement_update();
-	
+	_received_gps = false;
 	
 	this->velocity.twist.linear.x = xk.at<double>(3,0);
 	this->velocity.twist.linear.y = xk.at<double>(4,0);
@@ -212,4 +214,12 @@ void ekf::positionUpdate(geometry_msgs::PoseStamped msg)
   xk.at<double>(7,0) = rot2.roll;
   xk.at<double>(8,0) = rot2.pitch;
   xk.at<double>(9,0) = rot2.yaw;
+}
+void ekf::repairMeasurement()
+{
+    z.at<double>(0,0) = xk1.at<double>(0,0);
+    z.at<double>(1,0) = xk1.at<double>(1,0);
+    z.at<double>(2,0) = xk1.at<double>(2,0);
+    //z.at<double>(3,0) = xk1.at<double>(3,0);
+    //z.at<double>(4,0) = xk1.at<double>(4,0);
 }
