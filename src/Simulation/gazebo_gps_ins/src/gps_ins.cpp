@@ -13,6 +13,7 @@
 #include "sensor_msgs/Imu.h"
 #include "sensor_msgs/NavSatFix.h"
 #include "sensor_msgs/NavSatStatus.h"
+#include "std_msgs/Int8.h"
 #include <ParameterTypes.h>
 #include <ctime>
 #include <sstream>
@@ -52,6 +53,7 @@ namespace gazebo
   {
 
   public:
+
     void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     {
       srand(time(NULL));
@@ -138,7 +140,8 @@ namespace gazebo
       _publisherGPS = _nodeHandle.advertise<sensor_msgs::NavSatFix>(TOPIC_NAME_GPS, 10);
 	  _publisherIMU = _nodeHandle.advertise<sensor_msgs::Imu>(TOPIC_NAME_IMU, 10);
  	_publisherGPSspeed = _nodeHandle.advertise<robil_msgs::GpsSpeed>(TOPIC_NAME_SPEED, 10);
-
+      _gps_switch_sub = _nodeHandle.subscribe("/GPSSwitch", 5, &GPS_INS::startStopGPS,this);
+      _gps_switch = 1;
     }
     double sampleNormal() 
     {
@@ -214,9 +217,13 @@ namespace gazebo
 		msg_spd.header.frame_id = "gps_ins";
 		msg_spd.speed = sqrt(_model->GetWorldLinearVel().x * _model->GetWorldLinearVel().x + _model->GetWorldLinearVel().y * _model->GetWorldLinearVel().y + _model->GetWorldLinearVel().z * _model->GetWorldLinearVel().z) + _spd_noise*sampleNormal();
 
-		_publisherGPS.publish(msg_gps);
+		
 		_publisherIMU.publish(msg_imu);	
-		_publisherGPSspeed.publish(msg_spd);	
+		if(_gps_switch)
+		{
+		  _publisherGPS.publish(msg_gps);
+		  _publisherGPSspeed.publish(msg_spd);	
+		}
     }
     
 
@@ -245,7 +252,8 @@ namespace gazebo
 
     ros::NodeHandle		_nodeHandle;
     ros::Publisher 		_publisherGPS, _publisherIMU, _publisherGPSspeed;
-    
+    ros::Subscriber 		_gps_switch_sub;
+    int 			_gps_switch;
     //sensors::GpsSensorPtr 	_gps;
     sensors::ImuSensorPtr 	_imu;
     math::Vector3 _init_pos;
@@ -254,6 +262,10 @@ namespace gazebo
     int  _frequency;
     common::Time		_lastTime;
     int 			_seq;
+    void startStopGPS(const std_msgs::Int8& msg)
+    {
+      _gps_switch = msg.data;    
+    }
   };
 
 // Register this plugin with the simulator

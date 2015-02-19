@@ -202,3 +202,14 @@ void ekf::setSteeringInput(double msg){
 void ekf::setThrottleInput(double msg){
   this->u.at<double>(0,0) = msg * 12;
 }
+void ekf::positionUpdate(geometry_msgs::PoseStamped msg)
+{
+  xk.at<double>(0,0) = msg.pose.position.x;
+  xk.at<double>(1,0) = msg.pose.position.y;
+  xk.at<double>(2,0) = msg.pose.position.z;  
+  Quaternion qut2(msg.pose.orientation);
+  Rotation rot2 = GetRotation(qut2);
+  xk.at<double>(7,0) = rot2.roll;
+  xk.at<double>(8,0) = rot2.pitch;
+  xk.at<double>(9,0) = rot2.yaw;
+}

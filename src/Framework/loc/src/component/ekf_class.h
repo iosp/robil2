@@ -78,8 +78,10 @@ public:
 	 * Set the throttle input
 	 */
 	void setThrottleInput(double msg);
-	
-	
+	/*
+	 * User (OCU) position update
+	 */
+	void positionUpdate(geometry_msgs::PoseStamped msg);
 private:
 	Egps _Egps;
 	Eimu _Eimu;

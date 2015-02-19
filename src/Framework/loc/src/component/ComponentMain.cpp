@@ -60,7 +60,10 @@ void ComponentMain::performEstimation()
 }
 void ComponentMain::handlePositionUpdate(const config::LOC::sub::PositionUpdate& msg)
 {
-	//std::cout<< "LOC say:" << msg << std::endl;
+	if(_added_noise)
+	  _this->_estimator.positionUpdate(msg);
+	else
+	  std::cout << "LOC says: position update is not activated if noise is not added" << std::endl;
 }
 	
 
