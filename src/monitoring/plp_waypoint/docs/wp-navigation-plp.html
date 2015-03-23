@@ -15,10 +15,10 @@
 
 <ul>
 <li><code>map</code> &larr; <code>/PER/MiniMap</code> occupancy grid of the area. Message is <code>Map.msg</code>.</li>
-<li><code>mapError</code> &larr; <code>TBD</code> Current assume map error=0. Error will become interesting when we use visual data.</li>
-<li><code>path</code> &larr; <code>/PP/Path</code> planned path</li>
+<li><code>path</code> &larr; <code>/PP/Path</code> planned path. Message type is <code>robil_msgs/Path</code></li>
 <li><code>position</code> &larr; <code>/Loc/Pose</code> global position. Message type is <code>PoseWithCovarianceStamped</code>.</li>
-<li><code>positionError</code> &larr; <code>/Loc/Pose</code></li>
+<li><code>positionError</code> &larr; <code>/Loc/Pose</code> (obtained from the covariance component of <code>position</code>)</li>
+<li><code>mapError</code> &larr; <code>TBD</code> Current assume map error=0. Error will become interesting when we use visual data.</li>
 </ul>
 
 <h3 id="variables">Variables</h3>
@@ -35,28 +35,13 @@
 <li><code>MIN_LOC_ERROR</code> Minimal error under which it is unsafe to drive</li>
 <li><code>BOBCAT_SIZE</code> Size of the bobcat</li>
 <li><code>MIN_BLADE_CLEARANCE</code> Minimal blade clearance for driving</li>
+<li><code>FUEL_CONSUMPTION_RATE</code></li>
+<li><code>BOBCAT_AVERAGE_SPEED</code></li>
 </ul>
 
-<h2 id="robilintegration">Robil Integration</h2>
+<h2 id="naturalpreconditions">Natural Preconditions</h2>
 
-<h3 id="trigger">Trigger</h3>
-
-<ul>
-<li>Nav task active</li>
-<li>received local path</li>
-</ul>
-
-<h3 id="output">Output</h3>
-
-<ul>
-<li><code>LocSuc</code> &rarr; <code>/Some/queue/for/PLPs</code> Local Navigation Success Probability</li>
-<li><code>LocTime</code> &rarr; <code>/Some/queue/for/PLPs</code> Local Navigation Time Estimation</li>
-<li><code>Confidence</code> &rarr; <code>/Some/queue/for/PLPs</code> Confidence level for the estimations given.</li>
-</ul>
-
-<h2 id="naturalpreconditions">? Natural Preconditions ?</h2>
-
-<p><em>Replace with natural PLP for the entire system?</em></p>
+<p><em>Replace with natural PLP for the entire system</em></p>
 
 <ul>
 <li><code>bladeDof[0] in ([x,y]...) and bladeDof[1] in ([x,y]....) and bladeDof[2] in ([x,y]...)</code>
@@ -78,7 +63,7 @@
 
 <ul>
 <li><code>distanceToWaypoint &gt; 1m</code></li>
-<li><code>clearance(t)+positionError &lt; MIN_LOC_ERROR</code></li>
+<li><code>positionError &lt; MIN_LOC_ERROR</code></li>
 </ul>
 
 <h3 id="concurrencyconditions">Concurrency Conditions</h3>
@@ -101,7 +86,7 @@
 <h2 id="sideeffects">Side Effects</h2>
 
 <ul>
-<li>Fuel: <code>fuelConsumptionRate * distanceToWaypoint * (heightVariablity * hvFactor)</code></li>
+<li>Fuel: <code>FUEL_CONSUMPTION_RATE * distanceToWaypoint * (heightVariablity * hvFactor)</code></li>
 </ul>
 
 <h2 id="goal">Goal</h2>
@@ -127,4 +112,21 @@
 <ul>
 <li>Given Success: <code>rt_s(explicit subset of the PLP parameters)</code></li>
 <li>Given Failure: <code>rt_f(explicit subset of the PLP parameters)</code></li>
+</ul>
+
+<h2 id="robilintegration">Robil Integration</h2>
+
+<h3 id="trigger">Trigger</h3>
+
+<ul>
+<li>Nav task active</li>
+<li>received local path</li>
+</ul>
+
+<h3 id="output">Output</h3>
+
+<ul>
+<li><code>LocSuc</code> &rarr; <code>/Some/queue/for/PLPs</code> Local Navigation Success Probability</li>
+<li><code>LocTime</code> &rarr; <code>/Some/queue/for/PLPs</code> Local Navigation Time Estimation</li>
+<li><code>Confidence</code> &rarr; <code>/Some/queue/for/PLPs</code> Confidence level for the estimations given.</li>
 </ul>
