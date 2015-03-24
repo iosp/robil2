@@ -72,6 +72,10 @@ _Replace with natural PLP for the entire system_
 * Nav task active
 * received local path
 
+### Abort
+* Getting a new local path
+* ????
+
 ### Output 
 * `LocSuc` &rarr; `/Some/queue/for/PLPs`  Local Navigation Success Probability
 * `LocTime` &rarr; `/Some/queue/for/PLPs` Local Navigation Time Estimation

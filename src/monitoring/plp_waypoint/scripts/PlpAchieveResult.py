@@ -7,6 +7,9 @@ class PlpAchieveResultFailureScenario:
         self.name = name
         self.probability = probability
         self.time = time
+        
+    def __repr__(self):
+        return "(%s p:%s t:%s)" % (self.name, self.probability, self.time)
 
 
 class PlpAchieveResult:
@@ -28,3 +31,9 @@ class PlpAchieveResult:
 
     def add_failure(self, fail):
         self.failure[fail.name] = fail
+        
+    def __repr__(self):
+        return "PlpAchieveResult( success:%s success_time:%s confidence:%s side_effects:%s failure:%s )" % \
+                    (self.success, self.success_time, self.confidence, repr(self.side_effects), repr(self.failure))
+                    
+                
