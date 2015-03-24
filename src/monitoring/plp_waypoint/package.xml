@@ -2,7 +2,9 @@
 <package>
   <name>plp_waypoint</name>
   <version>0.0.0</version>
-  <description>The plp_waypoint package. Implements a PLP that calculates the success probability of navigating to the next waypoint.</description>
+  <description>The plp_waypoint package. Implements a PLP that calculates the success probability of navigating to the next waypoint.
+    The PLP concept is being developed in BGU by Ronen Brafman and Eyal Shimoni.
+  </description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -25,7 +27,6 @@
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
   <!-- Authors do not have to be maintianers, but could be -->
   <!-- Example: -->
-  <author email="">Ronen Brafman</author>
   <author email="barsinam@cs.bgu.ac.il">Michael Bar-Sinai</author>
 
 
