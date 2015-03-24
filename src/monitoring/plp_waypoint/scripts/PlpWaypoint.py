@@ -64,7 +64,7 @@ class PlpWaypoint:
                                                            0.5 * self.map_occupancy * self.distance_to_waypoint
                                                            * pow(self.constants["BOBCAT_AVERAGE_SPEED"], 2)))
         result.confidence = 0.7
-        
+
         return result
 
     def can_estimate(self):
