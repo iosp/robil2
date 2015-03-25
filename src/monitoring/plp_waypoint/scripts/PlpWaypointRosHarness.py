@@ -9,7 +9,7 @@ PLP_TOPIC = "/plp/messages"
 
 TODO_VALUE = "todo value"
 
-class PlpWaypointRoseNode:
+class PlpWaypointRosHarness:
     """
     A harness for a PlpWaypoint in a ROS/RobIL system. Listens to the right topics, feeds the data to
     the PLP objects, and emits predictions when possible.
@@ -32,7 +32,6 @@ class PlpWaypointRoseNode:
         rospy.Subscriber("/PP/Path", Path, self.path_updated)
         rospy.Subscriber("/Loc/Pose", PoseWithCovarianceStamped, self.position_updated)
         rospy.Subscriber(TODO_VALUE, TODO_VALUE, self.nav_task_active)
-        rospy.Subscriber(TODO_VALUE, TODO_VALUE, self.receive_local_path)
     
     def path_updated(self, msg):
         self.plp.update_path(msg)

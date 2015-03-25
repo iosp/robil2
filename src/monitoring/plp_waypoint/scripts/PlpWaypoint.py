@@ -1,4 +1,5 @@
 from math import sqrt
+from itertools import izip, imap, chain
 from PlpAchieveResult import *
 
 
@@ -31,7 +32,7 @@ class PlpWaypoint:
 
         # variables
         self.map_occupancy = None
-        self.distance_to_waypoint = None
+        self.local_path_distance = None
         self.height_variability = None
 
     def get_estimation(self):
@@ -50,18 +51,18 @@ class PlpWaypoint:
         """
         # TODO: This is a dummy implementation
         result = PlpAchieveResult()
-        result.success = (1-self.map_occupancy)*pow(3, -0.01*self.distance_to_waypoint)
-        result.success_time = (1+self.map_occupancy)*self.distance_to_waypoint*self.constants["BOBCAT_AVERAGE_SPEED"]
-        result.side_effects["fuel"] = self.distance_to_waypoint \
+        result.success = (1-self.map_occupancy)*pow(3, -0.01*self.local_path_distance)
+        result.success_time = (1+self.map_occupancy)*self.local_path_distance*self.constants["BOBCAT_AVERAGE_SPEED"]
+        result.side_effects["fuel"] = self.local_path_distance \
                                       * self.constants["FUEL_CONSUMPTION_RATE"] \
                                       * self.height_variability * 1.7
         result.add_failure(PlpAchieveResultFailureScenario("bobcat_stuck",
                                                            sqrt(self.map_occupancy),
-                                                           self.map_occupancy * self.distance_to_waypoint
+                                                           self.map_occupancy * self.local_path_distance
                                                            * self.constants["BOBCAT_AVERAGE_SPEED"]))
         result.add_failure(PlpAchieveResultFailureScenario("bobcat_turned_over",
                                                            0.005 * sqrt(self.map_occupancy),
-                                                           0.5 * self.map_occupancy * self.distance_to_waypoint
+                                                           0.5 * self.map_occupancy * self.local_path_distance
                                                            * pow(self.constants["BOBCAT_AVERAGE_SPEED"], 2)))
         result.confidence = 0.7
 
@@ -78,7 +79,7 @@ class PlpWaypoint:
                    or (self.position_error is None))
 
     def validate_preconditions(self):
-        return self.distance_to_waypoint > 1 and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
+        return self.local_path_distance > 1 and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
 
     def calculate_variables(self):
         """
@@ -87,7 +88,7 @@ class PlpWaypoint:
         """
         self.map_occupancy = self.calc_map_occupancy()
         self.height_variability = self.calc_map_height_variability()
-        self.distance_to_waypoint = self.calc_distance_to_waypoint()
+        self.local_path_distance = self.calc_local_path_distance()
 
     def calc_map_occupancy(self):
         """
@@ -125,15 +126,16 @@ class PlpWaypoint:
         average_diff = total_diff/len(diffs)
         return pow(average_diff, 0.5)
 
-    def calc_distance_to_waypoint(self):
+    def calc_local_path_distance(self):
         """
         :return: Euclidean distance to the next waypoint, in Meters.
         """
-        next_point = self.path.waypoints.poses[0].point
-        current_pos = self.position.pose.pose
-        current_point = current_pos.position
-
-        return PlpWaypoint.dist_between(next_point, current_point)
+        local_planned_path = self.path.waypoints.poses
+        local_actual_path = chain([self.position.pose.pose], local_planned_path)
+        pairs = izip(local_actual_path, local_planned_path)
+        dist_between_points = imap( PlpWaypoint.dist_between_tuple, pairs )
+        
+        return sum(dist_between_points)
 
     # Utility methods ##############################
 
@@ -142,6 +144,10 @@ class PlpWaypoint:
         y_error = self.position_error[6+1]
         return sqrt(pow(x_error, 2)+pow(y_error, 2))
 
+    @staticmethod
+    def dist_between_tuple( tpl ):
+        return PlpWaypoint.dist_between(tpl[0], tpl[1])
+        
     @staticmethod
     def dist_between(point_a, point_b):
         """
