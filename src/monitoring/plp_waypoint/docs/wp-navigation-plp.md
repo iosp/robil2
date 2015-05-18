@@ -1,9 +1,10 @@
 # WP Navigation PLP
 - v1 2015-01-12
 - v2 2015-01-28
+- v3 2015-05-18 Updated to reflect the python code and the recent presentations.
 
 ## About
-This PLP calculates the success probability of navigating to the next waypoint in a path.
+This PLP calculates the success probability of navigating to the end of a local path.
 
 ## Values
 ### Parameters
@@ -12,9 +13,9 @@ This PLP calculates the success probability of navigating to the next waypoint i
 * `position` &larr; `/Loc/Pose` global position. Message type is `PoseWithCovarianceStamped`.
 * `positionError` &larr; `/Loc/Pose` (obtained from the covariance component of `position`)
 * `mapError` &larr; `TBD` Current assume map error=0. Error will become interesting when we use visual data.
-    
+
 ### Variables
-* `distanceToWaypoint` local path length to WP 
+* `distanceToWaypoint` local path length to WP
 * `mapOccupancy` percentage of occupied cells in MiniMap
 * `heightVariablity` height variability in `map`
 
@@ -22,24 +23,23 @@ This PLP calculates the success probability of navigating to the next waypoint i
 * `MIN_LOC_ERROR` Minimal error under which it is unsafe to drive
 * `BOBCAT_SIZE` Size of the bobcat
 * `MIN_BLADE_CLEARANCE` Minimal blade clearance for driving
-* `FUEL_CONSUMPTION_RATE` 
+* `FUEL_CONSUMPTION_RATE`
 * `BOBCAT_AVERAGE_SPEED`
 
 ## Natural Preconditions
-_Replace with natural PLP for the entire system_
-
 * `bladeDof[0] in ([x,y]...) and bladeDof[1] in ([x,y]....) and bladeDof[2] in ([x,y]...)`
     - Ensuring that the IBEO can see the road
 
 ## Application Context
 ### Resources
-* Rover (exclusive) 
+* Rover (exclusive)
 
 ### Preconditions
 * `distanceToWaypoint > 1m`
 * `positionError < MIN_LOC_ERROR`
 
 ### Concurrency Conditions
+_Later, we will replace this with "natural" PLP for the entire system. That PLP will maintain an "everything is OK" statement_
 * `Bobcat_OK`
 * `IBEO_OK`
 * `INS_OK`
@@ -56,27 +56,31 @@ _Replace with natural PLP for the entire system_
 ## Goal
 * `distanceToWaypoint < 1m`
 
-
-## Probabilities
-* Success: `P_s(explicit subset of the PLP parameters)`
-* Failure: 
-    * `Bobcat_stuck`: `P_f(explicit subset of the PLP parameters)`
-    * `Bobcat_turned_over`: `P_f(explicit subset of the PLP parameters)`
-
-## Running Time
-* Given Success: `rt_s(explicit subset of the PLP parameters)`
-* Given Failure: `rt_f(explicit subset of the PLP parameters)`
+## Result
+_The calculation result describes the probabilities and time for each known outcome: success, and various types of failures._
+* success
+  * probability: `(explicit subset of the PLP parameters)`
+  * time
+* failures
+  * `Bobcat_stuck`:
+    * probability: `(explicit subset of the PLP parameters)`
+    * time: `(explicit subset of the PLP parameters)`
+  * `Bobcat_turned_over`:
+    * probability: `(explicit subset of the PLP parameters)`
+    * time: `(explicit subset of the PLP parameters)`
+* confidence `A number in the range of 0..1`
 
 ## Robil Integration
 ### Trigger
 * Nav task active
-* received local path
+* Received local path
+* Enough data already gathered (minimap, position, etc.)
 
 ### Abort
 * Getting a new local path
-* ????
 
-### Output 
-* `LocSuc` &rarr; `/Some/queue/for/PLPs`  Local Navigation Success Probability
-* `LocTime` &rarr; `/Some/queue/for/PLPs` Local Navigation Time Estimation
-* `Confidence` &rarr; `/Some/queue/for/PLPs` Confidence level for the estimations given.
+### Pause/Resume
+* Pausing and resuming tasks according to the task manager.
+
+### Output
+Send a message describing a result to a ROS topic. Exact details TBD.
