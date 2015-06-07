@@ -15,6 +15,12 @@ LLC_pub_EffortsTh: '/LLC/EFFORTS/Throttle'
 LLC_pub_EffortsSt: '/LLC/EFFORTS/Steering'
 LLC_pub_EffortsJn: '/LLC/EFFORTS/Joints'
 
+#LLI
+LLI_sub_EffortsTh: 'LLC'
+LLI_sub_EffortsSt: 'LLC'
+LLI_sub_EffortsJn: 'LLC'
+
+
 #OCU
 OCU_sub_IEDLocation: 'IEDSIM'
 OCU_sub_MissionAcceptance: 'SMME'
