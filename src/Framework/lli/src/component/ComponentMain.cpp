@@ -17,19 +17,19 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
 {
-	std::cout<< "LLI say:" << msg << std::endl;
+//	std::cout<< "LLI say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleEffortsSt(const config::LLI::sub::EffortsSt& msg)
 {
-	std::cout<< "LLI say:" << msg << std::endl;
+//	std::cout<< "LLI say:" << msg << std::endl;
 }
 	
 
 void ComponentMain::handleEffortsJn(const config::LLI::sub::EffortsJn& msg)
 {
-	std::cout<< "LLI say:" << msg << std::endl;
+//	std::cout<< "LLI say:" << msg << std::endl;
 }
 	
 
