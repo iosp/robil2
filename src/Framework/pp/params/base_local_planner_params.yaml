@@ -22,13 +22,13 @@ TrajectoryPlannerROS:
 
   # pdist_scale: 1.0
 
-  # sim_time: 2.0
-  # sim_granularity: 0.0125
-  # angular_sim_granularity: 0.05
+  sim_time: 5.0
+  sim_granularity: 0.0125
+  angular_sim_granularity: 0.05
   # vtheta_samples: 40
   # vx_samples: 6
 
-  holonomic_robot: false
+  holonomic_robot: true
 
 
 # TrajectoryPlannerROS:

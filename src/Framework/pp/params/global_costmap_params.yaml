@@ -11,5 +11,5 @@ global_costmap:
   origin_x: -75
   origin_y: -75
   resolution: 0.30
-  inflation_radius: 1.20
+  inflation_radius: 5.1
   transform_tolerance: 5

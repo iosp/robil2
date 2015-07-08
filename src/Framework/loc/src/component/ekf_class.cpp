@@ -154,7 +154,7 @@ void ekf::measurement_update()
 
 void ekf::time_propagation()
 {
-	xk1 = F*xk + B*u;
+	xk1 = F*xk;// + B*u;
 	P1 = F*P*F.t() + Q;
 }
 void ekf::setGasPedalState(std_msgs::Float64 value)
