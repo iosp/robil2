@@ -1,13 +1,17 @@
+#!/usr/bin/env python
 import rospy
-import plp_waypoint.msg
 from robil_msgs.msg import Map, Path
-from nav_msgs.msg import Path
+# from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseWithCovarianceStamped
 
+# from plp_waypoint.msg import PlpMessage
+from std_msgs.msg import String # TODO replace with the plp message
+
+from PlpWaypoint import *
 
 PLP_TOPIC = "/plp/messages"
 
-TODO_VALUE = "todo value"
+TODO_VALUE = "todo_value"
 
 class PlpWaypointRosHarness:
     """
@@ -17,21 +21,22 @@ class PlpWaypointRosHarness:
 
     def __init__(self):
         # Init internal PLP
-		self.plp = PlpWaypoint( {"MIN_LOC_ERROR": 5, #m
-								 "BOBCAT_SIZE": (3.5, 2, 1.7),  # L x H x W, in meters
-								 "MIN_BLADE_CLEARANCE": 1,  # m
-								 "FUEL_CONSUMPTION_RATE": 10000, # m/liter
-                                 "BOBCAT_AVERAGE_SPEED": 20*1000 # m/hour
-                                 })
+        self.plp = PlpWaypoint( {"MIN_LOC_ERROR": 5, #m
+                                 "BOBCAT_SIZE": (3.5, 2, 1.7),  # L x H x W, in meters
+                                 "MIN_BLADE_CLEARANCE": 1,  # m
+                                 "FUEL_CONSUMPTION_RATE": 10000, # m/liter
+                                 "BOBCAT_AVERAGE_SPEED": 20000 # m/hour
+                                 } )
+        
         self.trigger_state = 0
-
+        
         #Init the ROS stuff
-        rospy.init_node("PlpWaypoint", anonymous=False)
-        self.publisher = rospy.Publisher(PLP_TOPIC, PlpMessage, queue_size=5)
+        rospy.init_node("plp_waypoint", anonymous=False)
+        self.publisher = rospy.Publisher(PLP_TOPIC, String, queue_size=5)
         rospy.Subscriber("/PER/MiniMap", Map, self.map_updated)
         rospy.Subscriber("/PP/Path", Path, self.path_updated)
         rospy.Subscriber("/Loc/Pose", PoseWithCovarianceStamped, self.position_updated)
-        rospy.Subscriber(TODO_VALUE, TODO_VALUE, self.nav_task_active)
+        # rospy.Subscriber(TODO_VALUE, TODO_VALUE, self.nav_task_active)
         rospy.loginfo("PlpWaypointRosHarness: Started")
 
     def path_updated(self, msg):
@@ -69,5 +74,15 @@ class PlpWaypointRosHarness:
         if self.plp.can_estimate:
             res = self.plp.get_estimation()
             self.publisher.pubish( PlpMessage(None, "Waypoint", "Estimation", repr(res)))
-        else
+        else:
             self.publisher.publish( PlpMessage(None, "Waypoint", "error", "PLP triggered, but not enough data available"))
+
+
+if __name__ == '__main__':
+    try:
+        rospy.loginfo("Starting plp_waypoint node")
+        harness = PlpWaypointRosHarness()
+        rospy.spin()
+
+    except rospy.ROSInterruptException:
+        pass
