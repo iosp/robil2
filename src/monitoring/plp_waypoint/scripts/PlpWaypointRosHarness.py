@@ -73,9 +73,9 @@ class PlpWaypointRosHarness:
         rospy.loginfo("PlpWaypointRosHarness: Activating PLP")
         if self.plp.can_estimate:
             res = self.plp.get_estimation()
-            self.publisher.pubish( repr(PlpMessage(None, "Waypoint", "Estimation", repr(res))) ) # TODO remove repr when proper message is used
+            self.publisher.pubish( std_msgs.msg.String(repr(PlpMessage(None, "Waypoint", "Estimation", repr(res))))) # TODO remove repr when proper message is used
         else:
-            self.publisher.publish( repr(PlpMessage(None, "Waypoint", "error", "PLP triggered, but not enough data available")) ) # TODO remove repr when proper message is used
+            self.publisher.publish( std_msgs.msg.String(repr(PlpMessage(None, "Waypoint", "error", "PLP triggered, but not enough data available")))) # TODO remove repr when proper message is used
 
 
 if __name__ == '__main__':
