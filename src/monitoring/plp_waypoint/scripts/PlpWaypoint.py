@@ -134,7 +134,7 @@ class PlpWaypoint:
         local_actual_path = chain([self.position.pose.pose], local_planned_path)
         pairs = izip(local_actual_path, local_planned_path)
         dist_between_points = imap( PlpWaypoint.dist_between_tuple, pairs )
-        
+
         return sum(dist_between_points)
 
     # Utility methods ##############################
@@ -147,7 +147,7 @@ class PlpWaypoint:
     @staticmethod
     def dist_between_tuple( tpl ):
         return PlpWaypoint.dist_between(tpl[0], tpl[1])
-        
+
     @staticmethod
     def dist_between(point_a, point_b):
         """
@@ -166,8 +166,7 @@ class PlpWaypoint:
 
     def update_position(self, a_position):
         self.position = a_position.pose.pose.position
-        self.position_error = a_position.pose.pose.covariance
+        self.position_error = a_position.pose.covariance
 
     def update_path(self, a_path):
         self.path = a_path
-

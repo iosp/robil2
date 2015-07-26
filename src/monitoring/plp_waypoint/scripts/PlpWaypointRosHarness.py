@@ -2,10 +2,10 @@
 import rospy
 from robil_msgs.msg import Map, Path
 # from nav_msgs.msg import Path
-from geometry_msgs.msg import PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped, PoseWithCovariance
 
 # from plp_waypoint.msg import PlpMessage
-from std_msgs.msg import String # TODO replace with the plp message
+from std_msgs.msg import String, Header # TODO replace with the plp message
 
 from PlpWaypoint import *
 
@@ -27,9 +27,9 @@ class PlpWaypointRosHarness:
                                  "FUEL_CONSUMPTION_RATE": 10000, # m/liter
                                  "BOBCAT_AVERAGE_SPEED": 20000 # m/hour
                                  } )
-        
+
         self.trigger_state = 0
-        
+
         #Init the ROS stuff
         rospy.init_node("plp_waypoint", anonymous=False)
         self.publisher = rospy.Publisher(PLP_TOPIC, String, queue_size=5)
@@ -40,15 +40,15 @@ class PlpWaypointRosHarness:
         rospy.loginfo("PlpWaypointRosHarness: Started")
 
     def path_updated(self, msg):
-        rospy.loginfo("PlpWaypointRosHarness: Updating Path")
+        # rospy.loginfo("PlpWaypointRosHarness: Updating Path")
         self.plp.update_path(msg)
 
     def map_updated(self, msg):
-        rospy.loginfo("PlpWaypointRosHarness: Updating Map")
+        # rospy.loginfo("PlpWaypointRosHarness: Updating Map")
         self.plp.update_map(msg)
 
     def position_updated(self, msg):
-        rospy.loginfo("PlpWaypointRosHarness: Updating Position")
+        rospy.loginfo("PlpWaypointRosHarness: Updating Position: {0}".format(repr(msg)))
         self.plp.update_position(msg)
 
     def nav_task_active(self, msg):
@@ -80,8 +80,13 @@ class PlpWaypointRosHarness:
 
 if __name__ == '__main__':
     try:
-        rospy.loginfo("Starting plp_waypoint node")
+        rospy.loginfo("Starting plp_waypoint node...")
         harness = PlpWaypointRosHarness()
+
+        # DuckTape: Adding a fake position. TODO: remove once /Loc/Pose is active
+        harness.position_updated( PoseWithCovarianceStamped() )
+
+        rospy.loginfo("started")
         rospy.spin()
 
     except rospy.ROSInterruptException:
