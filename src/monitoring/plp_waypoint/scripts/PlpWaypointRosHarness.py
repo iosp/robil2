@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from robil_msgs.msg import Map, Path
+from robil_msgs.msg import Map, Path, AssignNavTask, AssignMission
 # from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseWithCovariance
 
@@ -10,8 +10,6 @@ from std_msgs.msg import String, Header # TODO replace with the plp message
 from PlpWaypoint import *
 
 PLP_TOPIC = "/plp/messages"
-
-TODO_VALUE = "todo_value"
 
 class PlpWaypointRosHarness:
     """
@@ -28,7 +26,10 @@ class PlpWaypointRosHarness:
                                  "BOBCAT_AVERAGE_SPEED": 20000 # m/hour
                                  } )
 
+        # Init harness state
         self.trigger_state = 0
+        self.nav_tasks = {} # id -> nav_task
+        self.missions = {} # id -> mission
 
         #Init the ROS stuff
         rospy.init_node("plp_waypoint", anonymous=False)
@@ -36,8 +37,11 @@ class PlpWaypointRosHarness:
         rospy.Subscriber("/PER/MiniMap", Map, self.map_updated)
         rospy.Subscriber("/PP/Path", Path, self.path_updated)
         rospy.Subscriber("/Loc/Pose", PoseWithCovarianceStamped, self.position_updated)
-        # rospy.Subscriber(TODO_VALUE, TODO_VALUE, self.nav_task_active)
-        rospy.loginfo("PlpWaypointRosHarness: Started")
+        rospy.Subscriber("/OCU/SMME/NavigationTask", AssignNavTask, self.nav_task_assigned)
+        rospy.Subscriber("/OCU/SMME/MissionPlan", AssignMission, self.mission_assigned)
+        rospy.Subscriber("/decision_making/events", String, self.state_machine_change)
+
+        rospy.loginfo("Started")
 
     def path_updated(self, msg):
         # rospy.loginfo("PlpWaypointRosHarness: Updating Path")
@@ -48,16 +52,27 @@ class PlpWaypointRosHarness:
         self.plp.update_map(msg)
 
     def position_updated(self, msg):
-        rospy.loginfo("PlpWaypointRosHarness: Updating Position: {0}".format(repr(msg)))
+        rospy.loginfo("Position updated")
         self.plp.update_position(msg)
 
     def nav_task_active(self, msg):
-        rospy.loginfo("PlpWaypointRosHarness: Task is active!")
+        rospy.loginfo("Task is active!")
         self.advace_trigger_state()
 
     def receive_local_path(self, msg):
-        rospy.loginfo("PlpWaypointRosHarness: Local path received")
+        rospy.loginfo("Local path received")
         self.advace_trigger_state()
+
+    def nav_task_assigned(self, nav_task):
+        rospy.loginfo("navtask {0} stored".format(nav_task.task_id))
+        self.nav_tasks[ nav_task.task_id ] = nav_task
+
+    def mission_assigned(self, mission):
+        rospy.loginfo("mission {0} stored".format(mission.mission_id))
+        self.missions[ mission.mission_id ] = mission
+
+    def state_machine_change(self, eventString):
+        rospy.loginfo("evt: {0}".format(eventString))
 
     def advance_trigger_state(self):
         self.state = self.state + 1
@@ -70,7 +85,7 @@ class PlpWaypointRosHarness:
         Attempts to get estimation from the PLP. May fail if the PLP does not have
         enough information.
         """
-        rospy.loginfo("PlpWaypointRosHarness: Activating PLP")
+        rospy.loginfo("Activating PLP")
         if self.plp.can_estimate:
             res = self.plp.get_estimation()
             self.publisher.pubish( std_msgs.msg.String(repr(PlpMessage(None, "Waypoint", "Estimation", repr(res))))) # TODO remove repr when proper message is used
