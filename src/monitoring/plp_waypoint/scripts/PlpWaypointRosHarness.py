@@ -27,7 +27,8 @@ class PlpWaypointRosHarness:
                                  } )
 
         # Init harness state
-        self.trigger_state = 0
+        self.trigger_nav_task_active = False
+        self.trigger_local_path_published = False
         self.nav_tasks = {} # id -> nav_task
         self.missions = {} # id -> mission
 
@@ -46,6 +47,8 @@ class PlpWaypointRosHarness:
     def path_updated(self, msg):
         # rospy.loginfo("PlpWaypointRosHarness: Updating Path")
         self.plp.update_path(msg)
+        self.trigger_local_path_published = True
+        self.attempt_estimation()
 
     def map_updated(self, msg):
         # rospy.loginfo("PlpWaypointRosHarness: Updating Map")
@@ -54,10 +57,6 @@ class PlpWaypointRosHarness:
     def position_updated(self, msg):
         rospy.loginfo("Position updated")
         self.plp.update_position(msg)
-
-    def nav_task_active(self, msg):
-        rospy.loginfo("Task is active!")
-        self.advace_trigger_state()
 
     def receive_local_path(self, msg):
         rospy.loginfo("Local path received")
@@ -73,24 +72,41 @@ class PlpWaypointRosHarness:
 
     def state_machine_change(self, eventString):
         rospy.loginfo("evt: {0}".format(eventString))
-
-    def advance_trigger_state(self):
-        self.state = self.state + 1
-        if ( self.state == 2 ):
-            self.attempt_estimation()
-            self.state = 0
+        comps = eventString.split("/")
+        # Test for the triggering of a task.
+        if ( len(comps) == 5 & 
+             comps[0]=="mission" & 
+             comps[2]=="TaskActive" &
+             comps[4]=="TaskSpooling" ):
+            mission_id = comps[1]
+            task_index = comps[6]
+            
+            # test if the task is a navigtion task
+            rospy.loginfo("Task {0} of mission {1} spooling".format(task_id, mission_id) )
+            if ( self.missions.has_key(mission_id) ):
+                mission = self.missions[mission_id]
+                task_id = mission.tasks[task_index].task_id
+                if ( self.tasks.has_key(task_id) ):
+                    self.trigger_local_path_published = False
+                    self.trigger_nav_task_active = True
 
     def attempt_estimation(self):
         """
         Attempts to get estimation from the PLP. May fail if the PLP does not have
         enough information.
         """
-        rospy.loginfo("Activating PLP")
-        if self.plp.can_estimate:
-            res = self.plp.get_estimation()
-            self.publisher.pubish( std_msgs.msg.String(repr(PlpMessage(None, "Waypoint", "Estimation", repr(res))))) # TODO remove repr when proper message is used
-        else:
-            self.publisher.publish( std_msgs.msg.String(repr(PlpMessage(None, "Waypoint", "error", "PLP triggered, but not enough data available")))) # TODO remove repr when proper message is used
+        if ( self.trigger_nav_task_active & self.trigger_local_path_published ):
+            # turm trigger off
+            self.trigger_local_path_published = False
+            self.trigger_nav_task_active = False
+
+            # Estimate and publish.
+            rospy.loginfo("Activating PLP")
+            if self.plp.can_estimate:
+                res = self.plp.get_estimation()
+                self.publisher.pubish( std_msgs.msg.String(repr(PlpMessage(None, "Waypoint", "Estimation", repr(res))))) # TODO remove repr when proper message is used
+            else:
+                self.publisher.publish( std_msgs.msg.String(repr(PlpMessage(None, "Waypoint", "error", "PLP triggered, but not enough data available")))) # TODO remove repr when proper message is used
 
 
 if __name__ == '__main__':

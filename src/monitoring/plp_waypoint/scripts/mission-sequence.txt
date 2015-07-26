@@ -1,20 +1,26 @@
-evt: data: /mission/441/StartMission
-evt: data: /mission/441/StartTask
-evt: data: /mission/441/ResumeTask
-evt: data: /pp/Resume
-evt: data: /TaskIsStarted
-evt: data: /pp/ON/pp_ON/WORK/pp_WORK/READY/READY/0
-evt: data: /mission/441/TaskActive/TaskActive/TaskSpooling/TaskSpooling/0
-evt: data: /CompleteTask
-evt: data: /mission/441/CompleteTask
-evt: data: /mission/441/CompleteMission
-evt: data: /pp/Standby
-evt: data: /mission/441/TaskActive/TaskActive/TaskFinished/TaskFinished/0
-evt: data: /mission/441/MissionActive/MissionActive/MissionSpooling/MissionSpooling/0
-evt: data: /mission/441/StopTask
-evt: data: /mission/441/MissionActive/MissionActive/MissionFinished/MissionFinished/0
-evt: data: /TaskIsPaused
-evt: data: /pp/ON/pp_ON/WORK/pp_WORK/STANDBY/STANDBY/0
-evt: data: /pp/Standby
-evt: data: /mission/441/TaskActive/TaskActive/0
-evt: data: /mission/441/TaskPending/TaskPending/0
+# evt: data: /mission/441/StartMission
+  evt: data: /mission/441/StartTask
+# evt: data: /mission/441/ResumeTask
+# evt: data: /pp/Resume
+# evt: data: /TaskIsStarted
+# evt: data: /pp/ON/pp_ON/WORK/pp_WORK/READY/READY/0
+  evt: data: /mission/441/TaskActive/TaskActive/TaskSpooling/TaskSpooling/0
+# evt: data: /CompleteTask
+  evt: data: /mission/441/CompleteTask
+# evt: data: /mission/441/CompleteMission
+# evt: data: /pp/Standby
+  evt: data: /mission/441/TaskActive/TaskActive/TaskFinished/TaskFinished/0
+# evt: data: /mission/441/MissionActive/MissionActive/MissionSpooling/MissionSpooling/0
+# evt: data: /mission/441/StopTask
+# evt: data: /mission/441/MissionActive/MissionActive/MissionFinished/MissionFinished/0
+# evt: data: /TaskIsPaused
+# evt: data: /pp/ON/pp_ON/WORK/pp_WORK/STANDBY/STANDBY/0
+# evt: data: /pp/Standby
+# evt: data: /mission/441/TaskActive/TaskActive/0
+# evt: data: /mission/441/TaskPending/TaskPending/0
+  
+
+
+  evt: data: /mission/441/TaskActive/TaskActive/TaskSpooling/TaskSpooling/0
+  evt: data: /mission/441/TaskActive/TaskActive/TaskFinished/TaskFinished/0
+  evt: data: /mission/441/TaskActive/TaskActive/0
