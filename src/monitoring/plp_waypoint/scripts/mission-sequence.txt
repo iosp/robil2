@@ -52,3 +52,10 @@
 /pp/Standby
 /mission/441442/TaskActive/TaskActive/0
 /mission/441442/TaskPending/TaskPending/0
+
+--- Also ---
+data: /mission/441442/ResumeMission
+data: /mission/441442/ClearMission
+data: /mission/441442/AbortMission
+data: /mission/441442/CompleteMission
+data: /mission/441442/ClearMission

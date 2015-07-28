@@ -38,7 +38,7 @@ class PlpWaypoint:
     def get_estimation(self):
         self.calculate_variables()
         if self.validate_preconditions():
-            return self.estimate
+            return self.estimate()
         else:
             return None
 
@@ -119,8 +119,11 @@ class PlpWaypoint:
                 values.append(cell.height)
 
         # Average
+        if ( len(values) == 0 ):
+            return 1
+
         total = sum(values)
-        average = total/float(len(values))
+        average = total/ float(len(values))
         diffs = map(lambda x: pow(x-average, 2), values)
         total_diff = sum(diffs)
         average_diff = total_diff/len(diffs)
@@ -130,8 +133,8 @@ class PlpWaypoint:
         """
         :return: Euclidean distance to the next waypoint, in Meters.
         """
-        local_planned_path = self.path.waypoints.poses
-        local_actual_path = chain([self.position.pose.pose], local_planned_path)
+        local_planned_path = map( lambda p: p.pose, self.path.waypoints.poses)
+        local_actual_path = chain([self.position], local_planned_path)
         pairs = izip(local_actual_path, local_planned_path)
         dist_between_points = imap( PlpWaypoint.dist_between_tuple, pairs )
 
@@ -155,9 +158,9 @@ class PlpWaypoint:
         :param point_b:
         :return: Euclidean distance between point_a and point_b.
         """
-        return sqrt(pow(point_a.x-point_b.x, 2)
-                    + pow(point_a.y-point_b.y, 2)
-                    + pow(point_a.z-point_b.z, 2))
+        return sqrt(pow(point_a.position.x-point_b.position.x, 2)
+                    + pow(point_a.position.y-point_b.position.y, 2)
+                    + pow(point_a.position.z-point_b.position.z, 2))
 
     # Updaters ##############################
 
@@ -165,7 +168,7 @@ class PlpWaypoint:
         self.map = a_map
 
     def update_position(self, a_position):
-        self.position = a_position.pose.pose.position
+        self.position = a_position.pose.pose
         self.position_error = a_position.pose.covariance
 
     def update_path(self, a_path):
