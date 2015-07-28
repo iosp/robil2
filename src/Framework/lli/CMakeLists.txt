@@ -23,13 +23,19 @@ include_directories(
 add_library(lli_rosComm
   src/roscomm/RosComm.cpp
 )
+add_library(LLICtrl 
+  src/QinetiQ_IO/LLICtrl.cpp
+  src/QinetiQ_IO/ShareUtil.cpp 
+)
 add_library(lli_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
 )
+
 add_executable(lli_node src/main.cpp)
 target_link_libraries(lli_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(lli_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(lli_node lli_compMain lli_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(lli_node lli_compMain lli_rosComm LLICtrl ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
+
 
