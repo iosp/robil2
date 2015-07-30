@@ -375,7 +375,7 @@ bool CLLI_Ctrl::TransmitData(short bufSize) {
 			(struct sockaddr *) &si_Remote, sizeof(si_Remote));
   //   }
 
-	if (dbgKey == 't' || dbgKey == 'a') {
+	if (dbgKey == 't' || dbgKey == 'f') {
 
 		printf("[%.6f]Trx:", currTime);
 		for (int i = 0; i < bufSize; i++) {
@@ -694,7 +694,7 @@ bool CLLI_Ctrl::StateMachineSwitch(LLI_SM * devSM)
 			   devSM->timeTag = m_currTT;
 		   }
 		   else if (m_currTT - devSM->timeTag > ROS_CONTROL_REFRESH_TIME_MAX) {
-               if (dbgKey == 'a')
+               if (dbgKey == 'f')
 			      printf ("[%.3f]lli_State_Wait_Responce: %.3f\n", m_currTT, m_currTT - devSM->timeTag);
 			   devSM->reqState = lli_State_Standby;
 			   devSM->currState = lli_State_Standby;
@@ -722,7 +722,7 @@ bool CLLI_Ctrl::StateMachineSwitch(LLI_SM * devSM)
 			   else if (devSM->respRequest == devSM->devResponce ||
 				        m_currTT - devSM->timeTag > 0.3) {
 
-	              if (dbgKey == 'a' && m_currTT - devSM->timeTag > 0.3) {
+	              if (dbgKey == 'f' && m_currTT - devSM->timeTag > 0.3) {
             		  printf ("[%.3f]No Reject Response: %.3f\n", m_currTT, m_currTT - devSM->timeTag);
 	              }
 
@@ -915,6 +915,10 @@ bool CLLI_Ctrl::PeriodicActivity() {
 	// Keyboard command simulation
 	if (Kb_hit() != 0) {
 		ch = getchar();
+		kbKey = ch;
+
+		/*
+
 		if ((ch >= '0' && ch <= '9') || (ch == 27)) {
 			kbKey = (kbKey == ch) ? '\0' : ch;
 //#ifdef _ARIK_TEST_
@@ -927,80 +931,121 @@ bool CLLI_Ctrl::PeriodicActivity() {
 			printf("dbgKey = %c\n", dbgKey);
 //#endif
 		}
-
+*/
 		switch (kbKey) {
 
 		   case 27:					// Terminate
 			   m_IsTerminateThread = true;
-			   kbKey = '\0';
+//			   kbKey = '\0';
 			   return false;
+
+		   case 'r':  // received messages print
+		   case 't':  // transmited messages print
+		   case 'f':  // full network traffic print
+			   dbgKey = (dbgKey) ? '\0' : ch;
+			   break;
+
 
 		   case '2':				// Standby State Request
 			   m_DriveCurrentState.reqState = lli_State_Standby;
 			   m_DriveCurrentState.currState = lli_State_Standby;
 			   m_ManipulatorCurrentState.reqState = lli_State_Standby;
 			   m_ManipulatorCurrentState.currState = lli_State_Standby;
-			   kbKey = '\0';
+	//		   kbKey = '\0';
 			   break;
 
 		   case '3':				// Ready State Request
 		       m_DriveCurrentState.reqState = lli_State_Ready;
-			   kbKey = '\0';
+		//	   kbKey = '\0';
 			   break;
 
 		   case '4':				// Ready State Request
 		       //m_DriveCurrentState.reqState = lli_State_Ready;
 		       m_ManipulatorCurrentState.reqState = lli_State_Ready;
-			   kbKey = '\0';
+			//   kbKey = '\0';
 			   break;
 
-
-		   case '7':
+           // Throttel control
+		   case 'a':
 			   //jointsValTest[1] -= 10;
 			   throttelValTest  -= 10;
-			   kbKey = '\0';
-			   //SetJointRequest (jointsValTest[0], jointsValTest[1]);
-			    SetThrottelRequest (throttelValTest);
-				//SetSteeringRequest (steeringValTest);
-
-			 //  printf ("joint effort required: %d -> %d\n", jointsValTest[0], reqJoints_Val[0]);
+			   printf ("Throttel preparation: %d\n", throttelValTest);
+			  // kbKey = '\0';
 		       break;
 
-		   case '6':
+		   case 's':
 			   //jointsValTest[1] = 0;
 			   throttelValTest  = 0;
-			   kbKey = '\0';
-
 			   SetThrottelRequest (throttelValTest);
- 			  // SetSteeringRequest (steeringValTest);
-			   //SetJointRequest (jointsValTest[0], jointsValTest[1]);
-			//   printf ("joint effort required: %d -> %d\n", jointsValTest[0], reqJoints_Val[0]);
+			   printf ("Throttel preparation: %d\n", throttelValTest);
+			   //kbKey = '\0';
 		       break;
 
-		   case '5':
+		   case 'd':
 			   throttelValTest  += 10;
+			   printf ("Throttel preparation: %d\n", throttelValTest);
 			   //jointsValTest[1] += 10;
-			   kbKey = '\0';
-
-			   SetThrottelRequest (throttelValTest);
-//			   SetSteeringRequest (steeringValTest);
-			   //SetJointRequest (jointsValTest[0], jointsValTest[1]);
-			//   printf ("joint effort required: %d -> %d\n", jointsValTest[0], reqJoints_Val[0]);
+			   //kbKey = '\0';
 		       break;
+
+		   case 'w':
+			   //jointsValTest[1] -= 10;
+//			   printf "Throttel preparation: %d\n", throttelValTest);
+			   //kbKey = '\0';
+			   //SetJointRequest (jointsValTest[0], jointsValTest[1]);
+			   SetThrottelRequest (throttelValTest);
+		       //SetSteeringRequest (steeringValTest);
+		       break;
+
+
+           // Steering control
+		   case 'j':
+			   steeringValTest  -= 10;
+			   printf ("Steering preparation: %d\n", steeringValTest);
+			   //kbKey = '\0';
+		       break;
+
+		   case 'k':
+			   steeringValTest  = 0;
+			   SetSteeringRequest (steeringValTest);
+			   printf ("Steering preparation: %d\n", steeringValTest);
+			   //kbKey = '\0';
+		       break;
+
+		   case 'l':
+			   steeringValTest  += 10;
+			   printf ("Steering preparation: %d\n", steeringValTest);
+			   //jointsValTest[1] += 10;
+			   //kbKey = '\0';
+		       break;
+
+		   case 'i':
+			   //kbKey = '\0';
+			   //SetJointRequest (jointsValTest[0], jointsValTest[1]);
+		       SetSteeringRequest (steeringValTest);
+		       break;
+
+
 
 		   case '8':				// Drive Control Release Request
 			   reqDevCtrlRelease[lli_Ctrl_Drive] = true;
-			   kbKey = '\0';
+			   //kbKey = '\0';
 			   break;
 
 		   case '9':				// Manipulator Control Release Request
 			   reqDevCtrlRelease[lli_Ctrl_Manip] = true;
-			   kbKey = '\0';
+			   //kbKey = '\0';
 			   break;
 
 		  // case ''
 
 		} // switch (...
+
+		if (kbKey != '\0') {
+			printf ("kbKey switched to %c\n", kbKey);
+			kbKey = '\0';
+		}
+
 
 	} // if (Kb_hit...
 
@@ -1402,7 +1447,7 @@ void CLLI_Ctrl::ThreadFunc() {
 //				clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &myTc);
 
 
-				if (dbgKey == 'r' || dbgKey == 'a') {
+				if (dbgKey == 'r' || dbgKey == 'f') {
 					lastTime = currentTime;
 					printf("[%.6f]Read: ", currentTime);
 					for (int i = 0; i < retVal; i++) {
