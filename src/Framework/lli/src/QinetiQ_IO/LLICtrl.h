@@ -45,15 +45,6 @@ typedef enum { lli_Ctrl_Drive = 0, lli_Ctrl_Manip } LLI_CONTROL_DEVICE;
 enum { lli_TransmitResponceHeartBit_Msg, lli_TransmitWrenchEffort_Msg, lli_TransmitJoinEffort_Msg, lli_TransmitDriveCtrl_Msg,
 	lli_TransmitManipulatorCtrl_Msg, lli_TransmitReleaseDriveCtrl_Msg, lli_TransmitReleaseManipulatorCtrl_Msg
 };
-/*
-void        TransmitResponceHeartBit ();
-void        TransmitWrenchEffortMsg (unsigned short throttelVal, unsigned short steeringVal);
-void        TransmitJoinEffortMsg (unsigned short throttelVal, unsigned short steeringVal);
-void        TransmitDriveCtrlMsg (unsigned short val);
-void        TransmitManipulatorCtrlMsg (unsigned short val);
-void        TransmitReleaseDriveCtrlMsg ();
-void        TransmitReleaseManipulatorCtrlMsg ();
-*/
 
 
 struct LLI_SM {
@@ -82,11 +73,6 @@ public:
 
 private:
 
- //  PROCESS_INFORMATION      sched_pi;
- //  STARTUPINFO              sched_si;  
-   //HANDLE		m_hThread;
-   //unsigned int		m_dwThreadId;
-
    unsigned char	m_IsTerminateThread;
 
    // UDP IP, local port number and remote port number
@@ -103,6 +89,7 @@ private:
    unsigned char	rxBufShift;
 
    unsigned short	nRcvDataInBuff;
+
    //TimeTags for synchronization control (TBD)
    double       	m_rxTT;
    double       	m_currTT;
@@ -113,10 +100,6 @@ private:
    bool			m_stateReq;
    bool			m_txReady;
    bool			m_txDone;
-   //short		m_DriveReq;
-   //short		m_ManipReq;
-   //short		m_DriveReqCount;
-   //short		m_ManipReqCount;
 
    LLI_SM		m_DriveCurrentState;
    LLI_SM		m_ManipulatorCurrentState;
@@ -126,8 +109,6 @@ private:
    short reqJoints_Val[2];
 
    bool  reqDevCtrlRelease[2];
-   //bool  reqManCtrlRelease;
-
 
    int 			        socketFd;
    struct sockaddr_in   si_Remote;
@@ -138,11 +119,8 @@ private:
    LLI_TX_SPOOLER   m_TxSpooler;
 
 public:
-#ifdef NT
-	bool		Init (CString addr, unsigned int lPortID, unsigned int rPortID);
-#else
-	bool		Init (char *addr, unsigned int lPortID, unsigned int rPortID);
-#endif
+
+    bool		Init (char *addr, unsigned int lPortID, unsigned int rPortID);
 
 	bool		Reset ();
 	int		    ReceiveData ();
@@ -153,9 +131,6 @@ public:
 	bool		StateMachineSwitch ();
 	bool        StateMachineSwitch(LLI_CONTROL_DEVICE devCtrl);
 	bool        StateMachineSwitch(LLI_SM * devCtrlSM);
-	//bool        StateMachineSwitch (LLI_STATE stateReq);
-	//bool        StateMachineSwitch (LLI_CONTROL_DEVICE devCtrl, LLI_STATE stateReq);
-
 
 	bool		PeriodicActivity ();
 
@@ -168,7 +143,6 @@ public:
     double      GetLastRxTimeTag () { return m_rxTT; }
     void        ResetLocalTimeTag (double &l_tt);
 
-	//bool		ParseData ();
 	unsigned short	ParseData ();
 	bool		MsgVerification (unsigned short msgId);
 	void		CheckConnectionActive (bool valid, unsigned short msgCount);
@@ -176,17 +150,24 @@ public:
 	bool        GetQinetiqActived ();
 
 	// Set Control/Release Devices by ROS messages
+	LLI_STATE   GetDriveCurrentState ();
+	LLI_STATE   GetManipulatorCurrentState ();
+	void        DriveControlRequest ();
+	void        ManipulatorControlRequest ();
+	void        DriveControlRelease ();
+	void        ManipulatorControlRelease ();
+
 	void        SetThrottelRequest (short reqVal);
 	void        SetSteeringRequest (short reqVal);
 	void        SetJointRequest (short reqVal1, short reqVal2);
-	void        SetDrvCtrlReleaseRequest () { reqDevCtrlRelease[lli_Ctrl_Drive] = true; }
-	void        SetManipCtrlReleaseRequest () { reqDevCtrlRelease[lli_Ctrl_Manip] = true; }
-
-	//void        SetDriveCtrlRelease ();
-	//void        SetManipulatorCtrlRelease ();
-
-
 	void        ResetEffortRequest (LLI_CONTROL_DEVICE devCtrl);
+	void        ResetThrottelRequest ();
+	void        ResetSteeringRequest ();
+	void        ResetJointRequest ();
+
+	//void        SetDrvCtrlReleaseRequest () { reqDevCtrlRelease[lli_Ctrl_Drive] = true; }
+	//void        SetManipCtrlReleaseRequest () { reqDevCtrlRelease[lli_Ctrl_Manip] = true; }
+
 
 
 private:
@@ -206,18 +187,15 @@ private:
     void        SetReceiveTimeTag ();
 
     bool        SetDeviceRequest (LLI_CONTROL_DEVICE devCtrl, LLI_STATE stateReq);
-   // void        WaitForControlPreprocessor (LLI_CONTROL_DEVICE * dev2Ctrl);
-   // void        WaitForControlPreprocessor  (LLI_SM * devCtrlSM);
+
     unsigned short  RequestComponentControl (LLI_CONTROL_DEVICE dev2Ctrl);
     unsigned short  RequestComponentRelease (LLI_CONTROL_DEVICE dev2Ctrl);
+
     bool            SetEffortControl (LLI_CONTROL_DEVICE dev2Ctrl);
 
     bool        SetMsgId_To_TxSpooler (unsigned short msgId);
     unsigned short  GetMsgId_From_TxSpooler ();
     unsigned short  GetMsgsNum_From_TxSpooler ();
-	void            ResetThrottelRequest ();
-	void            ResetSteeringRequest ();
-	void            ResetJointRequest ();
 
 	void            PritnOfStatePassed (LLI_SM * devSM);
 
@@ -225,9 +203,6 @@ private:
 	unsigned short	JausRealToUShort (short realVal, short lowerLimit, short upperLimit);
 
 };
-
-
-
 
 
 #endif
