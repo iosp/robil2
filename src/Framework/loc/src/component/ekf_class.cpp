@@ -5,6 +5,7 @@
 #include "GPS2file.h"
 ekf::ekf() : _Egps(100),_Eimu(100)
 {
+  
 	_while_standing = false;
 	std::cout << "setting properties" << std::endl;
 	__init__props(0);
@@ -66,6 +67,8 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 	double y = d * sin(theta);
 	z.at<double>(0,0) = x;
 	z.at<double>(1,0) = y;
+	z.at<double>(2,0) = measurement.altitude;
+	_received_gps = true;
 }
 
 void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
@@ -83,19 +86,22 @@ void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
 	this->IMUmeasurement = measurement;
 	Quaternion qut2(measurement.orientation);
 	Rotation rot2 = GetRotation(qut2);
-	z.at<double>(3,0) = (measurement.linear_acceleration.x - Eacc);
-	z.at<double>(4,0) = rot2.roll;
-	z.at<double>(5,0) = rot2.pitch;
-	z.at<double>(6,0) = rot2.yaw;
-	z.at<double>(7,0) = measurement.angular_velocity.x;
-	z.at<double>(8,0) = measurement.angular_velocity.y;
-	z.at<double>(9,0) = measurement.angular_velocity.z;
+	z.at<double>(5,0) = (measurement.linear_acceleration.x - Eacc) * cos(xk.at<double>(9,0));
+	z.at<double>(6,0) = (measurement.linear_acceleration.x - Eacc) * sin(xk.at<double>(9,0));
+	z.at<double>(7,0) = rot2.roll;
+	z.at<double>(8,0) = rot2.pitch;
+	z.at<double>(9,0) = rot2.yaw;
+	z.at<double>(10,0) = measurement.angular_velocity.x;
+	z.at<double>(11,0) = measurement.angular_velocity.y;
+	z.at<double>(12,0) = measurement.angular_velocity.z;
 
 }
 void ekf::setGPSSpeedMeasurement(robil_msgs::GpsSpeed _speed)
 {
-	z.at<double>(2,0) = _speed.speed;
+	z.at<double>(3,0) = _speed.speed * cos(xk.at<double>(9,0));
+	z.at<double>(4,0) = _speed.speed * sin(xk.at<double>(9,0));
 }
+
 void ekf::estimator()
 {
 	if(_Eimu.set || _Egps.set)
@@ -106,27 +112,22 @@ void ekf::estimator()
 	 */
 	ros::Time time = ros::Time::now();
 	setdt(time.toSec());
-	if (_while_standing)
-		modify_Q(0);
-	else
-		modify_Q(0.02);
-	measurement_update();
-	if (_while_standing)
-	{
-		xk.at<double>(2,0) = 0.0;
-		xk.at<double>(3,0) = 0.0;
-	}
 	time_propagation();
+	if(!_received_gps) repairMeasurement();
+	measurement_update();
+	_received_gps = false;
 	
-	this->last_pose = this->estimatedPose;
-	this->velocity.twist.linear.x = xk.at<double>(3,0) * cos(xk.at<double>(7,0)) * cos(xk.at<double>(6,0));
-	this->velocity.twist.linear.y = xk.at<double>(3,0) * sin(xk.at<double>(7,0)) * cos(xk.at<double>(6,0));
+	this->velocity.twist.linear.x = xk.at<double>(3,0);
+	this->velocity.twist.linear.y = xk.at<double>(4,0);
+	this->velocity.twist.angular.x = xk.at<double>(10,0);
+	this->velocity.twist.angular.y = xk.at<double>(11,0);
+	this->velocity.twist.angular.z = xk.at<double>(12,0);
 	this->velocity.header.stamp = time;
 
 	this->estimatedPose.pose.pose.position.x = xk.at<double>(0,0);
 	this->estimatedPose.pose.pose.position.y = xk.at<double>(1,0);
 	this->estimatedPose.pose.pose.position.z = xk.at<double>(2,0);
-	Rotation rot2(xk.at<double>(5,0), xk.at<double>(6,0), xk.at<double>(7,0));
+	Rotation rot2(xk.at<double>(7,0), xk.at<double>(8,0), xk.at<double>(9,0));
 	Quaternion quat2 = GetFromRPY(rot2);
 	this->estimatedPose.pose.pose.orientation.x = quat2.x;
 	this->estimatedPose.pose.pose.orientation.y = quat2.y;
@@ -135,11 +136,11 @@ void ekf::estimator()
 	this->estimatedPose.header.stamp = time;
 
 	this->estimatedPose.pose.covariance = boost::assign::list_of (P.at<double>(0,0)) (P.at<double>(1,0)) (P.at<double>(2,0)) (P.at<double>(5,0)) (P.at<double>(6,0)) (P.at<double>(7,0))
-																 (P.at<double>(0,1)) (P.at<double>(1,1)) (P.at<double>(2,1)) (P.at<double>(5,1)) (P.at<double>(6,1)) (P.at<double>(7,1))
-																 (P.at<double>(0,2)) (P.at<double>(1,2)) (P.at<double>(2,2)) (P.at<double>(5,2)) (P.at<double>(6,2)) (P.at<double>(7,2))
-																 (P.at<double>(0,5)) (P.at<double>(1,5)) (P.at<double>(2,5)) (P.at<double>(5,5)) (P.at<double>(6,5)) (P.at<double>(7,5))
-																 (P.at<double>(0,6)) (P.at<double>(1,6)) (P.at<double>(2,6)) (P.at<double>(5,6)) (P.at<double>(6,6)) (P.at<double>(7,6))
-																 (P.at<double>(0,7)) (P.at<double>(1,7)) (P.at<double>(2,7)) (P.at<double>(5,7)) (P.at<double>(6,7)) (P.at<double>(7,7));
+								    (P.at<double>(0,1)) (P.at<double>(1,1)) (P.at<double>(2,1)) (P.at<double>(5,1)) (P.at<double>(6,1)) (P.at<double>(7,1))
+								    (P.at<double>(0,2)) (P.at<double>(1,2)) (P.at<double>(2,2)) (P.at<double>(5,2)) (P.at<double>(6,2)) (P.at<double>(7,2))
+								    (P.at<double>(0,5)) (P.at<double>(1,5)) (P.at<double>(2,5)) (P.at<double>(5,5)) (P.at<double>(6,5)) (P.at<double>(7,5))
+								    (P.at<double>(0,6)) (P.at<double>(1,6)) (P.at<double>(2,6)) (P.at<double>(5,6)) (P.at<double>(6,6)) (P.at<double>(7,6))
+								    (P.at<double>(0,7)) (P.at<double>(1,7)) (P.at<double>(2,7)) (P.at<double>(5,7)) (P.at<double>(6,7)) (P.at<double>(7,7));
 }
 
 void ekf::measurement_update()
@@ -153,7 +154,7 @@ void ekf::measurement_update()
 
 void ekf::time_propagation()
 {
-	xk1 = F*xk;
+	xk1 = F*xk;// + B*u;
 	P1 = F*P*F.t() + Q;
 }
 void ekf::setGasPedalState(std_msgs::Float64 value)
@@ -196,4 +197,29 @@ void ekf::setInitGPS(sensor_msgs::NavSatFix initGPS)
 		this->initialGPS.longitude = _init_longitude;
 	}
 	gps2file(this->initialGPS.altitude,this->initialGPS.latitude,this->initialGPS.longitude);
+}
+void ekf::setSteeringInput(double msg){
+  this->u.at<double>(0,1) = msg * 12 / 0.6 / 0.95;
+}
+void ekf::setThrottleInput(double msg){
+  this->u.at<double>(0,0) = msg * 12;
+}
+void ekf::positionUpdate(geometry_msgs::PoseStamped msg)
+{
+  xk.at<double>(0,0) = msg.pose.position.x;
+  xk.at<double>(1,0) = msg.pose.position.y;
+  xk.at<double>(2,0) = msg.pose.position.z;  
+  Quaternion qut2(msg.pose.orientation);
+  Rotation rot2 = GetRotation(qut2);
+  xk.at<double>(7,0) = rot2.roll;
+  xk.at<double>(8,0) = rot2.pitch;
+  xk.at<double>(9,0) = rot2.yaw;
+}
+void ekf::repairMeasurement()
+{
+    z.at<double>(0,0) = xk1.at<double>(0,0);
+    z.at<double>(1,0) = xk1.at<double>(1,0);
+    z.at<double>(2,0) = xk1.at<double>(2,0);
+    //z.at<double>(3,0) = xk1.at<double>(3,0);
+    //z.at<double>(4,0) = xk1.at<double>(4,0);
 }

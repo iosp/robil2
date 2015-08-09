@@ -51,7 +51,7 @@ void findLines(Mat m, vector<Point> contour, Vec4i hierarchy, Scalar color);
 /** *******************************
  *  detectRoad:
  ** *******************************/
-vector<double> detectRoad(Mat read_image, int cut_p, int down_p, int toDebug);
+Mat detectRoad(Mat read_image, int cut_p, int down_p, int toDebug);
 
 
 #endif 

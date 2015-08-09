@@ -3,9 +3,9 @@
 #include "helpermath.h"
 #include <vector>
 #include <opencv2/opencv.hpp>
-#include <per/roadLanes.h>
-#include <per/lane.h>
-using namespace per;
+// #include <per/roadLanes.h>
+// #include <per/lane.h>
+// using namespace per;
 using namespace std;
 using namespace cv;
 
@@ -20,9 +20,6 @@ using namespace cv;
 #define FEATURE_UNKNOWN		0
 
 #define FEATURE_ROAD		1
-#define FEATURE_RIGHT 		2
-#define FEATURE_LEFT 		3
-#define FEATURE_LANE		4
 #define FEATURE_NOT_ROAD 	5
 
 #define LANES_IMAGE_HEIGHT 964
@@ -91,7 +88,7 @@ class HeightMap
 	 */
         void displayConsole();
         void displayGUI(int, int, int, int enlarger=3);
-        void displayTypesGUI(vector<lane> lanes, int enlarger=3);
+        void displayTypesGUI(Mat lanes, int enlarger=3);
         void display3D();
 	
 	/**

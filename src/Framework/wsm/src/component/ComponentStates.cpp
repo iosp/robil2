@@ -1,6 +1,5 @@
 #include <iostream>
 #include <ros/ros.h>
-#include <std_msgs/Float32.h>
 #include <decision_making/SynchCout.h>
 #include <decision_making/BT.h>
 #include <decision_making/FSM.h>
@@ -209,7 +208,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 		//	ROS_INFO("No new Task");
 		}
 		while(COMPONENT->cur_mission->Get_status() == "active"){
-			ROS_INFO("Executing steps");
+		//	COMPONENT->cur_mission->debug();
 			COMPONENT->cur_mission->publish_step_diag(1,0);
 			COMPONENT->cur_mission->execute_next_step();
 			COMPONENT->cur_mission->Update_step();

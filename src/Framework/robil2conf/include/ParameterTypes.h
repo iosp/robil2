@@ -59,6 +59,10 @@ DEF_SUB( LLC, BladePositionCommand, WSM )
 DEF_SUB( LLC, Location, LOC )
 DEF_SUB( LLC, PerVelocity, LOC )
 
+DEF_SUB( LLI, EffortsTh, LLC )
+DEF_SUB( LLI, EffortsSt, LLC )
+DEF_SUB( LLI, EffortsJn, LLC )
+
 DEF_SUB( OCU, IEDLocation, IEDSIM )
 DEF_SUB( OCU, MissionAcceptance, SMME )
 DEF_SUB( OCU, LocalPath, PP )

@@ -70,10 +70,26 @@ public:
 	 * Change the mean of the accelerometer.
 	 */
 	void changeEacc(sensor_msgs::Imu _Eacc);
-	
+	/*
+	 * Set the steering input
+	 */
+	void setSteeringInput(double msg);
+	/*
+	 * Set the throttle input
+	 */
+	void setThrottleInput(double msg);
+	/*
+	 * User (OCU) position update
+	 */
+	void positionUpdate(geometry_msgs::PoseStamped msg);
+	/*
+	 * This function repairs the measurement vector z incase a gps measurement was not _received_gps
+	 */
+	void repairMeasurement();
 private:
 	Egps _Egps;
 	Eimu _Eimu;
+	bool _received_gps;
 	geometry_msgs::PoseWithCovarianceStamped estimatedPose,last_pose;
 	geometry_msgs::TwistStamped velocity;
 	sensor_msgs::NavSatFix initialGPS, GPSmeasurement;

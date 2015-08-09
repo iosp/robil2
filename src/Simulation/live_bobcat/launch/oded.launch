@@ -1,5 +1,4 @@
 <launch>
-
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
   <arg name="paused" default="false"/>
   <arg name="use_sim_time" default="true"/>
@@ -14,13 +13,14 @@
     <arg name="paused" value="$(arg paused)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
-    <arg name="world_name" value="$(find live_bobcat)/worlds/testingGround.world"/>
+	<arg name="world_name" value="$(find live_bobcat)/worlds/terrain.world"/>
   </include>
 
- <param name="robot_description" command="cat $(find bobcat)/urdf/BOBCAT.URDF" />
+<param name="robot_description" command="cat $(find bobcat)/urdf/BOBCAT.URDF" /> 
 
   <!-- ros_control clam launch file -->
   <include file="$(find bobcat_gazebo)/launch/bobcat_gazebo_control.launch" />
 
-  <node name="RateToEffort" pkg="rate2effort" type="rate2effort"/>
+  <node name="RateToEffort" pkg="rate2effort" type="rate2effort" cwd="node" output="screen" />
+ 
 </launch>

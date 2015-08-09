@@ -24,6 +24,6 @@
 
 <!-- srvss_Dumy -->
 	<include file="$(find srvss_bobcat)/launch/srvss_bobcat.launch"/>
-	<node pkg="tf" type="static_transform_publisher" name="sick_link_broadcaster" args="1 0 0.2 0 0 0 body front_sick 100" />
+
 
 </launch>

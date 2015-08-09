@@ -14,7 +14,6 @@ ComponentMain *ComponentMain::_this;
 
 ComponentMain::ComponentMain(int argc,char** argv)
 {
-	//void (ComponentMain::)();;
 	_roscomm = new RosComm(this,argc, argv);
 	ComponentMain::_this = this;
 	_estimation_thread = new boost::thread(&ComponentMain::performEstimation);
@@ -27,14 +26,17 @@ ComponentMain::~ComponentMain() {
 
 void ComponentMain::performEstimation()
 {
+	int noise = 0;
+  
 	config::LOC::pub::Location msg1;
 	config::LOC::pub::PerVelocity msg2;
 	for(;;)
 	{
 		try
 		{
+			ros::param::param("/LOC/Noise",noise,1); 
 			/* Perform the estimatior process*/
-			if(_added_noise)
+			if(noise)
 			{
 				_this->_estimator.estimator();
 				msg1 = _this->_estimator.getEstimatedPose();
@@ -60,7 +62,12 @@ void ComponentMain::performEstimation()
 }
 void ComponentMain::handlePositionUpdate(const config::LOC::sub::PositionUpdate& msg)
 {
-	//std::cout<< "LOC say:" << msg << std::endl;
+	int noise = 0;
+	ros::param::param("/LOC/Noise",noise,1); 
+	if(noise)
+	  _this->_estimator.positionUpdate(msg);
+	else
+	  std::cout << "LOC says: position update is not activated if noise is not added" << std::endl;
 }
 	
 
@@ -68,7 +75,9 @@ void ComponentMain::handleGPS(const config::LOC::sub::GPS& msg)
 {
 	config::LOC::pub::Location msg1;
 	config::LOC::pub::PerVelocity msg2;
-	if(_added_noise)
+	int noise = 0;
+	ros::param::param("/LOC/Noise",noise,1); 
+	if(noise)
 		_estimator.setGPSMeasurement(msg);
 	else
 		_observer.setGPSMeasurement(msg);
@@ -77,7 +86,9 @@ void ComponentMain::handleGPS(const config::LOC::sub::GPS& msg)
 
 void ComponentMain::handleINS(const config::LOC::sub::INS& msg)
 {
-	if(_added_noise)
+	int noise = 0;
+	ros::param::param("/LOC/Noise",noise,1); 
+	if(noise)
 		_estimator.setIMUMeasurement(msg);
 	else
 		_observer.setIMUMeasurement(msg);
@@ -91,7 +102,9 @@ void ComponentMain::handleVOOdometry(const config::LOC::sub::VOOdometry& msg)
 
 void ComponentMain::handleGpsSpeed(const config::LOC::sub::PerGpsSpeed& msg)
 {
-	if(_added_noise)
+	int noise = 0;
+	ros::param::param("/LOC/Noise",noise,1); 
+	if(noise)
 		_estimator.setGPSSpeedMeasurement(msg);
 	else
 		_observer.setGPSSpeedMeasurement(msg);
@@ -119,4 +132,16 @@ void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _
 }
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
 	_roscomm->publishDiagnostic(header, _report);
+}
+void ComponentMain::setSteeringInput(double msg)
+{
+    int noise = 0;
+	ros::param::param("/LOC/Noise",noise,1); 
+	if(noise) _estimator.setSteeringInput(msg);
+}
+void ComponentMain::setThrottleInput(double msg)
+{
+   int noise = 0;
+	ros::param::param("/LOC/Noise",noise,1); 
+	if(noise) _estimator.setThrottleInput(msg);
 }

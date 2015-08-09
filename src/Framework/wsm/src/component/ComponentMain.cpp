@@ -8,6 +8,7 @@
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
 #include "WsmTask.h"
+#include <std_msgs/Float64.h>
 
 
 ComponentMain::ComponentMain(int argc,char** argv)
@@ -96,17 +97,17 @@ void ComponentMain::handleMiniMapWSM(const config::WSM::sub::MiniMap& msg)
 	}
 		this->recivedMap = new config::WSM::sub::MiniMap(msg);
 
-			double max = 0 ;
-		for(int i = 12 ; i < 18 ; i++)
-		{
+			//double max = 0 ;
+	//	for(int i = 12 ; i < 18 ; i++)
+	//	{
 		//	std::cout << "[" << this->recivedMap->data[45*30 + i].height << "]" ;
-			if(this->recivedMap->data[45*30 + i].height > max)
-			{
-				max = this->recivedMap->data[3*30 + i].height;
-			}
-		}
+	//		if(this->recivedMap->data[45*30 + i].height > max)
+	//		{
+		//		max = this->recivedMap->data[3*30 + i].height;
+	///		}
+	//	}
 //	std::cout << std::endl ;
-	this->ground_heigth = max;
+//	this->ground_heigth = max;
 
 }
 
@@ -114,8 +115,17 @@ void ComponentMain::publish_monitor_time(const std_msgs::Header& msg)
 {
 	_roscomm->publish_monitor_time(msg);
 }
+/*
+void ComponentMain::publish_h(const std_msgs::Float64 &msg)
+{
+	_roscomm->publish_h(msg);
+}
 
-
+void ComponentMain::publish_m(const std_msgs::Float64 &msg)
+{
+	_roscomm->publish_m(msg);
+}
+*/
 void ComponentMain::publishWSMVelocity(config::WSM::pub::WSMVelocity& msg)
 {
 	_roscomm->publishWSMVelocity(msg);

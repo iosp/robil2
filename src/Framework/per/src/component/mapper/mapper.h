@@ -18,11 +18,11 @@
 #define VISUALIZE_FULLMAP	16
 
 /// walrus includes:
-#include <per/roadLanes.h>
-#include <per/lane.h>
+// #include <per/roadLanes.h>
+// #include <per/lane.h>
 #include <vector>
 using namespace std;
-using namespace per;
+// using namespace per;
 /// until here
 
 using namespace cv;
@@ -31,6 +31,10 @@ class Mapper
 {
   public:
     static void MainLoop();
+    
+    /// walrus function:
+    static void StereoThread();
+    /// 'till here
     
     static void VisualizeLoop();
     
@@ -68,7 +72,7 @@ class Mapper
     /**
      * Walrus Changes:
      */
-    static void setLanes(vector<lane> lanes);
+    static void setLanes(Mat lanes);
 };
 
 
