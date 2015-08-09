@@ -8,6 +8,7 @@
 #ifndef EKF_PROPERTIES_H_
 #define EKF_PROPERTIES_H_
 #include <opencv2/opencv.hpp>
+#include "helpermath.h"
 using namespace cv;
 
 
@@ -21,8 +22,8 @@ public:
 	void __init__props(double t)
 	{
 		Eacc = 0.137;
-		s = 13;
-		m = 13;
+		s = 14;
+		m = 14;
 		dt = 0.05;
 		tk = t;
 		xk = Mat::zeros(s,1, CV_64F);
@@ -34,28 +35,33 @@ public:
 		//4//     vy
 		//5//     ax
 		//6//     ay
-		//7//     R
-		//8//     P
-		//9//     Y
-		//10//     dR
-		//11//     dP
-		//12/     dY
+		//7//     X
+		//8//     Y
+		//9//     Z
+		//10//    W
+		//11//    dR
+		//12//    dP
+		//13/     dY
 
 		z = Mat::zeros(m,1, CV_64F);
-		////0     x
-		////1     y
-		////2     v
-		////3     a
-		////4     R
-		////5     P
-		////6     Y
-		////7     dR
-		////8     dP
-		////9     dY
+		//0//     x
+		//1//     y
+		//2//     z
+		//3//     vx
+		//4//     vy
+		//5//     ax
+		//6//     ay
+		//7//     X
+		//8//     Y
+		//9//     Z
+		//10//    W
+		//11//    dR
+		//12//    dP
+		//13/     dY
 		u = Mat::zeros(2,1, CV_64F);
 		B = Mat::zeros(s,2,CV_64F);
 		F = Mat::eye(s,s,CV_64F);
-		modify_F(0,0);
+		modify_F();
 		////0     Throttle input
 		////1     Steering input
 		Q = Mat::eye(s, s, CV_64F)*0.002;
@@ -79,25 +85,30 @@ public:
 			std::cout << "LOC says: dt= " << dt << std::endl;
 		}
 		tk = tk1;
-		modify_F(xk.at<double>(9,0),xk.at<double>(8,0));
+		modify_F();
 		modify_B(xk.at<double>(9,0),xk.at<double>(8,0));
 	}
-	void modify_F(double yaw,double pitch)
+	void modify_F()
 	{
 	  F.at<double>(0,0) = 1;F.at<double>(0,3) = dt;F.at<double>(0,5) = dt*dt/2;
 	  F.at<double>(1,1) = 1;F.at<double>(1,4) = dt;F.at<double>(1,6) = dt*dt/2;
+	  /*
+	   * Started working with quaternions!! No more YAW. Instead modify measurements!
+	   */
+	  
+	  Rotation rot22 = GetRotation(Quaternion(z.at<double>(7,0),z.at<double>(8,0),z.at<double>(9,0),z.at<double>(10,0)));
+	  z.at<double>(3,0) *= cos(rot22.yaw);
+	  z.at<double>(4,0) *= sin(rot22.yaw);
 	  F.at<double>(3,3) = 0;
 	  F.at<double>(4,4) = 0;
-	  F.at<double>(9,9) = 1;
-	  F.at<double>(9,12) = dt;
-	  F.at<double>(12,12) = 0;
+	  F.at<double>(13,13) = 0;
 	}
 	void modify_B(double yaw,double pitch)
 	{
 		B.at<double>(3,0) = cos(yaw);
 		B.at<double>(4,0) = sin(yaw);
 		//B.at<double>(9,1) = dt;
-		B.at<double>(12,1) = 1;
+		B.at<double>(13,1) = 1;
 	}
 public:
 	static const double Vacc = 0.0465329;
