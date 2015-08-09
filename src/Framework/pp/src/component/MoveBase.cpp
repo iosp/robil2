@@ -38,6 +38,9 @@ namespace{
 		return round(x*k)/k;
 	}
 
+
+	//=========================== SEARCH NEXT WAIPOINT : BGN ====================================
+
 	void remove_orientation(geometry_msgs::PoseStamped& goal){
 		goal.pose.orientation.x = 0;
 		goal.pose.orientation.y = 0;
@@ -149,13 +152,133 @@ namespace{
 		//return getPoseStamped( path.poses[path.poses.size()-1] );
 	}
 
+	//=========================== SEARCH NEXT WAIPOINT : END ====================================
+
+	//=========================== MAKE GOAL REACHABLE : BGN =====================================
 
 	struct point_t{
 		int x,y;
 		point_t(int x,int y):x(x),y(y){}
 		int index(int w,int h)const{return y*w+x;}
-		bool inside(int w,int h)const{return 0<=x and x<w and 0<=y and y<h;}
+		bool inside(int w,int h)const{ return 0<=x and x<w and 0<=y and y<h; }
 	};
+
+	inline
+	point_t get_point_on_grid(const geometry_msgs::Point& p, double resolution, const point_t& center, const point_t& robot)
+	{
+		return point_t(p.x/resolution - robot.x + center.x, p.y/resolution - robot.y + center.y );
+	}
+
+	inline
+	bool on_way(const nav_msgs::Path& path, int goal_index, const point_t& point, double dist, double resolution, const point_t& center, const point_t& robot)
+	{
+		point_t p1(0,0);
+		point_t p2(0,0);
+		while(goal_index < path.poses.size()){
+			if(goal_index < path.poses.size()-1){
+				p1 = get_point_on_grid(path.poses[goal_index + 0].pose.position, resolution, center, robot );
+				p2 = get_point_on_grid(path.poses[goal_index + 1].pose.position, resolution, center, robot );
+			}else{
+				p1 = get_point_on_grid(path.poses[goal_index - 1].pose.position, resolution, center, robot );
+				p2 = get_point_on_grid(path.poses[goal_index + 0].pose.position, resolution, center, robot );
+			}
+			double c = hypot(p1.x - point.x, p1.y - point.y);
+			double b = hypot(p2.x - point.x, p2.y - point.y);
+			double a = hypot(p1.x - p2.x, p1.y - p2.y);
+			double p = (a + b + c)/2.0;
+			double h = 2.0*sqrt(p * (p-a) * (p-b) * (p-c))/a;
+			double a1 = sqrt(b*b - h*h);
+			double a2 = sqrt(c*c - h*h);
+			double A = a1 + a2;
+			bool on_line = h <= dist;
+			bool in_segment = fabs(A-a) < 0.001;
+
+			if( on_line and in_segment ) return true;
+
+			goal_index ++;
+		}
+		return false;
+	}
+
+	struct bool_array_manager{
+		bool* &p;
+		bool_array_manager(bool*&p, size_t data_size):p(p){
+			p = new bool[data_size];
+			memset(p,0,data_size*sizeof(bool));
+		}
+		~bool_array_manager(){ delete[] p; p=0; }
+	};
+	struct points_pool{
+		point_t* next;
+		point_t* r;
+		point_t* w;
+		points_pool(size_t size)
+			: next ( (point_t*)(new char[sizeof(point_t)*size]) )
+			, r(next)
+			, w(next)
+		{
+			memset(next,0,size*sizeof(point_t));
+		}
+		~points_pool()
+		{
+			delete[] next; next=0;
+		}
+		void push_back(const point_t& p){ *w = p; w++; }
+		const point_t& front()const{ return *r; }
+		void pop_front(){ r++; }
+		bool empty()const{ return not( r<w ); }
+	};
+
+	inline
+	bool search_nearest_reachable_point(
+			const size_t data_size,
+			const size_t w, const size_t h,
+			const point_t& goal_cell,
+			const nav_msgs::Path& path,
+			const size_t& goal_index,
+			const nav_msgs::OccupancyGrid& global_map,
+			const point_t& center, const point_t& _robot,
+			const bool* reachable,
+			const bool check_on_way,
+			point_t& best
+	)
+	{
+		bool* search_visited;
+		bool_array_manager sfc(search_visited, data_size);
+		points_pool next_for_search(w*h);
+		point_t current(0,0);
+
+		next_for_search.push_back(goal_cell);
+		while( not next_for_search.empty() ){
+			current = next_for_search.front();
+			next_for_search.pop_front();
+
+			//FOR ALL NAIGHBORS
+			for(int iy=-1;iy<=1;iy++)for(int ix=-1;ix<=1;ix++){
+				if( ix==0 and iy==0 ) 						continue;
+				point_t nei(current.x+ix,current.y+iy);
+
+				if( nei.inside(w, h) == false ) 			continue;
+				if( search_visited[ nei.index(w, h) ] ) 	continue;
+
+				if( check_on_way ){
+					bool _on_way =
+							on_way( path, goal_index, nei, 5, global_map.info.resolution, center, _robot  );
+					if( not _on_way )						continue;
+				}
+
+				if( reachable[ nei.index(w, h) ] ){
+					best = nei;
+					return true;
+				}
+
+				search_visited[ nei.index(w, h) ] = true;
+				next_for_search.push_back(nei);
+			}
+		}
+		return false;
+	}
+
 	bool make_goal_reachable(
 		geometry_msgs::PoseStamped& goal, int& goal_index,
 		const nav_msgs::Path& path,
@@ -169,15 +292,29 @@ namespace{
 		int data_size =global_map.data.size();
 		int w = global_map.info.width;
 		int h = global_map.info.height;
-		bool* reachable = new bool[data_size]; memset(reachable,0,data_size*sizeof(bool));
-		std::list<point_t> next;
-		point_t center(w/2,h/2);
+
+		//NOTE: don't use vector<T> or list<T> for "reachable" and "next" arrays;
+		//      them implementation is too slow.
+
+		bool* reachable;
+		bool_array_manager rc(reachable, data_size);
+		points_pool next(w*h);
+
+		point_t _robot(pos.pose.pose.position.x/global_map.info.resolution, pos.pose.pose.position.y/global_map.info.resolution);
+
+		//point_t center(w/2,h/2);
+		point_t center = _robot;
+
+		point_t goal_cell = get_point_on_grid(goal.pose.position, global_map.info.resolution, center, _robot);
+
 		try{
 			reachable[center.index(w,h)] = true;																					// select all reachable cells
 			next.push_back(center);
 			while(next.empty()==false){
 				point_t current = next.front(); next.pop_front();
+				//FOR ALL NAIGHBORS
 				for(int iy=-1;iy<=1;iy++)for(int ix=-1;ix<=1;ix++){
+					if( ix==0 and iy==0 ) 											continue;
 					point_t nei(current.x+ix,current.y+iy);
 					if/*outside of map*/	(nei.inside(w,h)==false) 				continue;
 					if/*already checked*/	(reachable[nei.index(w,h)]) 			continue;
@@ -189,7 +326,7 @@ namespace{
 			}
 			for(int y=0;y<h;y++)for(int x=0;x<w;x++){
 				point_t current = point_t(x,y);
-				bool v = global_map.data[current.index(w,h)]>10;
+				bool v = global_map.data[current.index(w,h)]>10;/*is occupied*/
 				if(v){
 					for(int iy=-1;iy<=1;iy++)for(int ix=-1;ix<=1;ix++){
 						point_t nei(current.x+ix,current.y+iy);
@@ -199,42 +336,80 @@ namespace{
 				}
 			}
 #			if SHOW_CV_RESULTS==1
-				cv::Mat show(h,w, CV_8UC3);
+				static cv::Mat show; if(show.empty()) cv::namedWindow("REACHABLE", CV_WINDOW_NORMAL);
+				show = cv::Mat(h,w, CV_8UC3);
 				for(int y=0;y<h;y++)for(int x=0;x<w;x++){
 					uchar v = reachable[point_t(x,y).index(w,h)] ? 255 : 0;
 					show.at<cv::Vec3b>(h-y-1,x) = cv::Vec3b(v,v,v);
 				}
-				cv::namedWindow("REACHABLE", CV_WINDOW_NORMAL);
 #			endif
-			point_t _goal(goal.pose.position.x/global_map.info.resolution, goal.pose.position.y/global_map.info.resolution);
-			point_t _robot(pos.pose.pose.position.x/global_map.info.resolution, pos.pose.pose.position.y/global_map.info.resolution);
-			point_t goal_cell(_goal.x-_robot.x+center.x, _goal.y-_robot.y+center.y);													// calculate cell of current goal
+
 			bool is_reachable = goal_cell.inside(w,h) and reachable[goal_cell.index(w,h)];
+
 			if( not is_reachable ){																									// if the cell is not reachable then
-				point_t best(0,0);																									//		search nearest to the cell reachable point, change goal and return true
-				double best_dist=hypot(w,h);
-				for(int y=0;y<h;y++)for(int x=0;x<w;x++){
-					point_t p(x,y);
-					if( not reachable[p.index(w,h)] ) continue;
-					double dist = hypot(p.x-goal_cell.x, p.y-goal_cell.y);
-					if(best_dist > dist){ best_dist=dist; best=p; }
+				point_t best(0,0);
+
+				bool best_found =
+						search_nearest_reachable_point(
+								data_size,
+								w, h,
+								goal_cell,
+								path,
+								goal_index,
+								global_map,
+								center, _robot,
+								reachable,
+								true,
+
+								best
+						);
+
+				//If all path is blocked, select just available and nearest to the last goal point
+				if( best_found == false ){
+
+					goal_cell = get_point_on_grid( path.poses.back().pose.position, global_map.info.resolution, center, _robot);
+					best_found =
+						search_nearest_reachable_point(
+							data_size,
+							w, h,
+							goal_cell,
+							path,
+							goal_index,
+							global_map,
+							center, _robot,
+							reachable,
+							false,
+
+							best
+					);
+
 				}
+
 				goal.pose.position.x = (best.x-center.x) * global_map.info.resolution + pos.pose.pose.position.x;
 				goal.pose.position.y = (best.y-center.y) * global_map.info.resolution + pos.pose.pose.position.y;
+
 #				if SHOW_CV_RESULTS==1
 					show.at<cv::Vec3b>(h-goal_cell.y-1,goal_cell.x) = cv::Vec3b(100,255,200);
 					show.at<cv::Vec3b>(h-best.y-1,best.x) = cv::Vec3b(255,0,0);
-					cv::imshow("REACHABLE",show);
-					cv::waitKey(10);
 #				endif
+
 				result = true;
 			}
 			else { result = false; }																								// else return false
 
-		}catch (...) {}
-		delete[] reachable;
+#			if SHOW_CV_RESULTS==1
+				cv::imshow("REACHABLE",show);
+				cv::waitKey(10);
+#			endif
+
+		}catch (...) {
+			std::cout<<"[e] exception during "<<__FUNCTION__<<std::endl;
+		}
 		return result;
 	}
+
+	//=========================== MAKE GOAL REACHABLE : END =====================================
+
 
 	boost::thread_group threads;
 	actionlib_msgs::GoalID last_nav_goal_id;
