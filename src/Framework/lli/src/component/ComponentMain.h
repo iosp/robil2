@@ -15,13 +15,14 @@
 #include <signal.h>
 #include <string.h>
 #include "../QinetiQ_IO/LLICtrl.h"
+#include <boost/thread.hpp>
 
 using namespace std;
 
 class RosComm;
 class ComponentMain {
 	RosComm*    _roscomm;
-	CLLI_Ctrl * _lliCtrl;
+	boost::thread* _driver_thread;
 	timer_t     gTimerid;
 public:
 	ComponentMain(int argc,char** argv);
@@ -35,10 +36,10 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
-
-	void Init ();
-	void StartTimer(void);
-	void TimerCallback (int sig);
+	static void        lliCtrlLoop();
+	//void Init ();
+	//void StartTimer(void);
+	//void TimerCallback (int sig);
 //	void TimerCallback (const ros::TimerEvent&);
 
 };

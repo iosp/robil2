@@ -119,5 +119,6 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ROS_INFO("Starting lli...");
 	Fsmlli(&context, &events);
+	ROS_INFO("After Starting lli...");
 
 }

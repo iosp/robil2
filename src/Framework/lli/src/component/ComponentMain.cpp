@@ -7,110 +7,34 @@
  */
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
-#include <ros/ros.h>
-//#include <std_msgs/String.h>
-//#include <iostream>
-#include <stdio.h>
- 
-extern char kbKey;
+#include "lliCtrlManager.h"
+
+#include <boost/thread.hpp>
+
+
 
 ComponentMain::ComponentMain(int argc,char** argv)
 {
-	char ipAddr[16];
-	// qinetiq IP
-	   string tmpStr = "192.168.101.3";
-
-//        string tmpStr = "132.4.6.60";
-
-        //string tmpStr = "172.23.1.142";
-
-        // my IP
-        //string tmpStr = "172.23.1.154";
-
-    strcpy (ipAddr, tmpStr.c_str());
-
-	int lPort = 5355;
-	int rPort = 4660;
-
-    struct timeval start, end;
-	long mtime, seconds, useconds;
-	gettimeofday(&start, NULL);
-
-	_roscomm = NULL;
-	//_roscomm = new RosComm(this,argc, argv);
-	_lliCtrl = new CLLI_Ctrl ();
-
-
-	_lliCtrl->Init(ipAddr, lPort, rPort);
-
-
-	while (1) {
-		sleep(0.01);
-		if (!_lliCtrl->PeriodicActivity())
-			break;
-	}
-
-    printf ("Return from ComponentMain\n");
-	if (_lliCtrl)
-		delete _lliCtrl;
-
-	if (_roscomm)
-		delete _roscomm;
+	_roscomm = new RosComm(this,argc, argv);
+	//lliCtrlManager *tt_p = new lliCtrlManager();
+	//lliCtrlManager tt();
+	//boost::thread lliloopTh(&lliCtrlManager::lliCtrlLoop);
+	//lliloopTh.join();
+	_driver_thread = new boost::thread(&ComponentMain::lliCtrlLoop);
 
 //	sleep (3);
 	//ros::Timer timer = nh.createTimer(ros::Duration(0.01), TimerCallback);
-
 }
 
-ComponentMain::~ComponentMain()
-{
-	printf ("ComponentMain: destructor\n");
-	if(_roscomm) {
-		delete _roscomm;
-		_roscomm = 0;
-	}
-
-	if (_lliCtrl) {
-		delete _lliCtrl;
-		_lliCtrl = 0;
-	}
+ComponentMain::~ComponentMain() {
+	if(_roscomm) delete _roscomm;
+	_roscomm=0;
 }
-/*
-void ComponentMain::Init ()
-{
-	(void) signal(SIGALRM, TimerCallback);
-	StartTimer();
-}
-*/
-
-void ComponentMain::StartTimer(void)
-{
-
-struct itimerspec value;
-
-value.it_value.tv_sec = 0;
-value.it_value.tv_nsec = 10000000;
-
-value.it_interval.tv_sec = 0;
-value.it_interval.tv_nsec = 10000000;
-
-timer_create (CLOCK_REALTIME, NULL, &gTimerid);
-
-timer_settime (gTimerid, 0, &value, NULL);
-
-}
-
-void ComponentMain::TimerCallback(int sig)
-//void ComponentMain::TimerCallback(const ros::TimerEvent& event)
- {
-	_lliCtrl->PeriodicActivity();
-
- }
-
 
 void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
+
 }
 	
 
@@ -126,7 +50,6 @@ void ComponentMain::handleEffortsJn(const config::LLI::sub::EffortsJn& msg)
 }
 	
 
-/*
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	_roscomm->publishTransform(_tf, srcFrame, distFrame);
 }
@@ -139,4 +62,34 @@ void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
 	_roscomm->publishDiagnostic(header, _report);
 }
-*/
+
+void ComponentMain::lliCtrlLoop()
+{
+	 boost::posix_time::seconds workTime(3);
+#ifdef LLICTRLLOOP
+	//Init QinetiQ IP
+	char ipAddr[16];
+    string tmpStr = "192.168.101.3";
+
+    strcpy (ipAddr, tmpStr.c_str());
+
+   int lPort = 5355;
+   int rPort = 4660;
+
+   struct timeval start, end;
+   long mtime, seconds, useconds;
+   gettimeofday(&start, NULL);
+
+
+   CLLI_Ctrl *clli = new CLLI_Ctrl ();
+    clli->Init(ipAddr, lPort, rPort);
+
+	while(1){
+		sleep(0.01);
+		if (!clli->PeriodicActivity())
+			break;
+	}
+#endif
+	boost::this_thread::sleep(workTime);
+
+}
