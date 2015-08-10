@@ -243,6 +243,8 @@ void Mapper::handleLocation(const config::PER::sub::Location& msg)
   position = Vec3D(pose.position.x, pose.position.y, pose.position.z);
   myQuat = Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
   myRot = GetRotation(myQuat);
+  //if (myRot.yaw < 0)
+  //  myRot.yaw += 3.14159;
   ibeoRot = myRot.add(Rotation(0, 0.284, -0));
   leftSickRot = Rotation(myRot.pitch, myRot.roll, myRot.yaw+1.57);
   rightSickRot = Rotation(-myRot.pitch, -myRot.roll, myRot.yaw-1.57);

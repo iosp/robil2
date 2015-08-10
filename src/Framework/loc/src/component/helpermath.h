@@ -2,6 +2,7 @@
 #define HELPERMATH__H
 #include <string>
 #include "ros/ros.h"
+#include <geometry_msgs/Quaternion.h>
 using std::string;
 #define v_PI 3.14159
 class Vec3D
