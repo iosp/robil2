@@ -29,7 +29,7 @@
 	<!-- == NAVIGATION == -->
 	<include file="$(find pp)/launch/navigation.launch" />
 	<node name="llc_node" type="llc_node" pkg="llc" output="screen" respawn="true"/>
-        <node name="lli_node" type="lli_node" pkg="lli" output="screen" respawn="true"/>
-	<!-- ================ -->
+        <!--node name="lli_node" type="lli_node" pkg="lli" output="screen" respawn="true"/>
+	 ================ -->
 
 </launch>
