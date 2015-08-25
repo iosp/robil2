@@ -7,7 +7,7 @@
  */
 #include "ComponentMain.h"
 #include "../roscomm/RosComm.h"
-#include "lliCtrlManager.h"
+//#include "lliCtrlManager.h"
 
 #include <boost/thread.hpp>
 
