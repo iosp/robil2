@@ -22,8 +22,8 @@ TrajectoryPlannerROS:
 
   # pdist_scale: 1.0
 
-  sim_time: 5.0
-  sim_granularity: 0.0125
+  sim_time: 15.0
+  sim_granularity: 0.02
   angular_sim_granularity: 0.05
   # vtheta_samples: 40
   # vx_samples: 6
