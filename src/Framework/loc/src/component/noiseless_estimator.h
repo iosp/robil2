@@ -51,6 +51,7 @@ private:
     robil_msgs::GpsSpeed speedMeasurement;
     bool first_GPS_flag;
     double dx, dy;
+    int _ready;
     /**
     * set GPS coordinates
     */

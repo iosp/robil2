@@ -4,6 +4,7 @@
 #include "GPS2file.h"
 Observer::Observer()
 {
+	_ready = 0;
 	dx = 0; dy = 0;
 	this->first_GPS_flag = 1;
 	this->estimatedPose.pose.pose.position.x = 0;
@@ -27,6 +28,7 @@ Observer::Observer()
 Observer::~Observer()
 {
 	std::cout << "Localization says: bye bye!!" << std::endl;
+	ros::param::set("/LOC/Ready",0);
 }
 void Observer::setInitGPS(sensor_msgs::NavSatFix initGPS)
 {
@@ -95,7 +97,10 @@ bool isNan(geometry_msgs::TwistStamped avg)
   
 }
 void Observer::estimator()
-{
+{	
+	if(_ready == 11)
+	  ros::param::set("/LOC/Ready",1);
+	_ready++;
 	/* non KF estimation*/
 	this->lastPose = this->estimatedPose;
 	double d = calcDistance(GPSmeasurement,initialGPS);
