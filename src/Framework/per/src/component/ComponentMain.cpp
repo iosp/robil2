@@ -97,12 +97,16 @@ void ComponentMain::handleSensorSICK1(const config::PER::sub::SensorSICK1& msg)
 }
 void ComponentMain::handleSensorSICK2(const config::PER::sub::SensorSICK2& msg)
 {
+  
   Mapper::handleSickL(msg);
 }
 	
 
 void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msg)
 {
+  int check=0; 
+  ros::param::param("/LOC/Ready",check,0);
+  if(!check) return;
   Mapper::handleIBEO(msg);
 }
 	

@@ -35,6 +35,7 @@ void Mapper::MainLoop()
   while(1)
   {
     boost::this_thread::sleep(boost::posix_time::milliseconds(100)); //10hz cycle
+    int check; ros::param::param("/LOC/Ready",check,0); if(!check) continue;
     if(++i < 30) continue;
     //printf("MAPPER\n");
     lock.lock();

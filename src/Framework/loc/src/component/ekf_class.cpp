@@ -5,7 +5,8 @@
 #include "GPS2file.h"
 ekf::ekf() : _Egps(100),_Eimu(100)
 {
-  
+	//ros::param::set("/LOC/Ready",0); 
+	_ready = 0;
 	_while_standing = false;
 	std::cout << "setting properties" << std::endl;
 	__init__props(0);
@@ -14,12 +15,12 @@ ekf::ekf() : _Egps(100),_Eimu(100)
 	this->IMU_flag = 1;
 	this->estimatedPose.pose.pose.position.x = 0;
 	this->estimatedPose.pose.pose.position.y = 0;
-	this->estimatedPose.pose.pose.position.z = 0;
+	this->estimatedPose.pose.pose.position.z = 1.65;
 
 	this->estimatedPose.pose.pose.orientation.x = 0;
 	this->estimatedPose.pose.pose.orientation.y = 0;
 	this->estimatedPose.pose.pose.orientation.z = 0;
-	this->estimatedPose.pose.pose.orientation.w = 0;
+	this->estimatedPose.pose.pose.orientation.w = 1;
 
 	this->velocity.twist.linear.x = 0;
 	this->velocity.twist.linear.y = 0;
@@ -32,6 +33,7 @@ ekf::ekf() : _Egps(100),_Eimu(100)
 ekf::~ekf()
 {
 	std::cout << "EKF says: bye bye!!" << std::endl;
+	ros::param::set("/LOC/Ready",0);
 }
 
 void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
@@ -106,7 +108,11 @@ void ekf::setGPSSpeedMeasurement(robil_msgs::GpsSpeed _speed)
 void ekf::estimator()
 {
 	if(_Eimu.set || _Egps.set)
-		return;
+	    return;
+	
+	if(_ready == 11)
+	    ros::param::set("/LOC/Ready",1); 
+	_ready++;
 	/*
 	 * Kalman filter
 	 * -------------
