@@ -898,7 +898,7 @@ SYNCH
 			}else
 			if(robil_map.data[i].type==robil_msgs::MapCell::type_clear){
 				continue;
-				fz = 0;
+				fz = -1;
 			}else
 			if(robil_map.data[i].type==robil_msgs::MapCell::type_unscanned){
 				continue;
@@ -930,7 +930,7 @@ SYNCH
 		fake_scan.ranges.resize(ranges_count);
 		for(int i=0;i<ranges_count;i++) fake_scan.ranges[i]=30;
 	}
-	if(fk_iter%10==0) fakeLaserPublisher.publish(fake_scan);
+	if(fk_iter%1000==0) fakeLaserPublisher.publish(fake_scan);
 	mapPublisher.publish(map);
 
 #endif
