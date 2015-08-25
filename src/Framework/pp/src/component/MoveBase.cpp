@@ -29,6 +29,16 @@
 #define SYNCH 	boost::recursive_mutex::scoped_lock locker(mtx);
 #define REMOVE_Z(vA) vA.setZ(0)
 
+#include <fstream>
+ofstream dbg_cout("/tmp/pp_log");
+
+#define DBG_INFO_ONCE( X ) ROS_INFO_STREAM_ONCE(X); dbg_cout <<"[I] "<< X << std::endl;
+#define DBG_INFO( X ) ROS_INFO_STREAM(X); dbg_cout <<"[I] "<< X << std::endl;
+#define DBG_ERROR( X ) ROS_ERROR_STREAM(X); dbg_cout <<"[E] "<< X << std::endl;
+#define DBG_WARN( X ) ROS_WARN_STREAM(X); dbg_cout <<"[W] "<< X << std::endl;
+
+
+
 namespace{
 
 	long goal_counter =0;
@@ -161,6 +171,10 @@ namespace{
 		point_t(int x,int y):x(x),y(y){}
 		int index(int w,int h)const{return y*w+x;}
 		bool inside(int w,int h)const{ return 0<=x and x<w and 0<=y and y<h; }
+		string str()const{
+		  std::stringstream s; s<<"("<<x<<","<<y<<")";
+		  return s.str();
+		}
 	};
 
 	inline
@@ -287,7 +301,7 @@ namespace{
 		bool& path_is_finished
 	)
 	{
-#		define SHOW_CV_RESULTS 0
+#		define SHOW_CV_RESULTS 1
 		bool result(false);
 		int data_size =global_map.data.size();
 		int w = global_map.info.width;
@@ -302,10 +316,12 @@ namespace{
 
 		point_t _robot(pos.pose.pose.position.x/global_map.info.resolution, pos.pose.pose.position.y/global_map.info.resolution);
 
-		//point_t center(w/2,h/2);
-		point_t center = _robot;
+		point_t center(w/2,h/2);
+		//point_t center = _robot;
 
 		point_t goal_cell = get_point_on_grid(goal.pose.position, global_map.info.resolution, center, _robot);
+		
+		//DBG_INFO_ONCE("Navigation: cells: robot="<<_robot.str()<<", center="<<center.str()<<", goal="<<goal_cell.str() << ": "<<pos.pose.pose.position.x<<","<<pos.pose.pose.position.y<<"; "<<goal.pose.position.x<<","<<goal.pose.position.y);
 
 		try{
 			reachable[center.index(w,h)] = true;																					// select all reachable cells
@@ -336,11 +352,20 @@ namespace{
 				}
 			}
 #			if SHOW_CV_RESULTS==1
-				static cv::Mat show; if(show.empty()) cv::namedWindow("REACHABLE", CV_WINDOW_NORMAL);
-				show = cv::Mat(h,w, CV_8UC3);
-				for(int y=0;y<h;y++)for(int x=0;x<w;x++){
-					uchar v = reachable[point_t(x,y).index(w,h)] ? 255 : 0;
-					show.at<cv::Vec3b>(h-y-1,x) = cv::Vec3b(v,v,v);
+				static cv::Mat show; 
+				static ros::NodeHandle pnode("~");
+				static int param_show_cv_results = 0;
+				pnode.getParamCached("show_cv_results",param_show_cv_results);
+				if(param_show_cv_results)
+				{
+				    if(show.empty()) cv::namedWindow("REACHABLE", CV_WINDOW_NORMAL);
+				    show = cv::Mat(h,w, CV_8UC3);
+				    for(int y=0;y<h;y++)for(int x=0;x<w;x++){
+					    uchar v = reachable[point_t(x,y).index(w,h)] ? 255 : 150;
+					    show.at<cv::Vec3b>(h-y-1,x) = cv::Vec3b(v,v,v);
+				    }
+				    show.at<cv::Vec3b>(h-center.y-1,center.x) = cv::Vec3b(255,0,0);
+				    show.at<cv::Vec3b>(h-goal_cell.y-1,goal_cell.x) = cv::Vec3b(0,0,255);
 				}
 #			endif
 
@@ -389,8 +414,11 @@ namespace{
 				goal.pose.position.y = (best.y-center.y) * global_map.info.resolution + pos.pose.pose.position.y;
 
 #				if SHOW_CV_RESULTS==1
+				if(param_show_cv_results)
+				{
 					show.at<cv::Vec3b>(h-goal_cell.y-1,goal_cell.x) = cv::Vec3b(100,255,200);
 					show.at<cv::Vec3b>(h-best.y-1,best.x) = cv::Vec3b(255,0,0);
+				}
 #				endif
 
 				result = true;
@@ -398,12 +426,15 @@ namespace{
 			else { result = false; }																								// else return false
 
 #			if SHOW_CV_RESULTS==1
+			if(param_show_cv_results)
+			{
 				cv::imshow("REACHABLE",show);
 				cv::waitKey(10);
+			}
 #			endif
 
 		}catch (...) {
-			std::cout<<"[e] exception during "<<__FUNCTION__<<std::endl;
+			DBG_INFO_ONCE( "[E] Navigation: [e] exception during "<<__FUNCTION__ );
 		}
 		return result;
 	}
@@ -425,12 +456,12 @@ namespace{
 void on_GlobalCostMap( const nav_msgs::OccupancyGrid::ConstPtr& cost_map){
 	boost::mutex::scoped_lock l(global_map_mutex);
 	global_cost_map = *cost_map;
-	//ROS_INFO("Navigation: Global occupancy cost grid gotten");
+	//DBG_INFO("Navigation: Global occupancy cost grid gotten");
 }
 void on_speed(const geometry_msgs::Twist::ConstPtr& msg){
 	bool moving = msg->linear.x + msg->linear.y + msg->angular.z;
 	if(not moving){
-		//ROS_INFO_STREAM( "Navigation: ROBOTE IS STOPPED" );
+		//DBG_INFO( "Navigation: ROBOTE IS STOPPED" );
 	}
 }
 
@@ -472,7 +503,7 @@ void MoveBase::on_move_base_status(const actionlib_msgs::GoalStatusArray::ConstP
 	for(size_t i=0;i<n;i++){
 		const actionlib_msgs::GoalStatus& status = msg->status_list[i];
 		if( status.text == "" or status.text == "''" ){
-			//ROS_WARN_STREAM("Navigation: move_base status is empty => aborted?");
+			//DBG_WARN("Navigation: move_base status is empty => aborted?");
 			//on_error_from_move_base();
 		}
 	}
@@ -485,20 +516,23 @@ void MoveBase::on_log_message(const LogMessage::ConstPtr& msg){
 }
 void MoveBase::on_log_message(int type, string message){
 	if(type == LogMessage::WARN){
-		ROS_DEBUG_STREAM("move base: warning: "<<message);
+		DBG_INFO_ONCE("Navigation: move base: warning: "<<message);
 	}else
 	if(type == LogMessage::ERROR){
-		ROS_DEBUG_STREAM("move base: error: "<<message);
-		on_error_from_move_base();
+		bool skip = message.find("Aborting because a valid plan could not be found")!=string::npos;
+		
+		DBG_INFO_ONCE("Navigation: move base: error: "<<message<<(skip?" : skip this error":""));
+		
+		if(not skip) on_error_from_move_base();
 	}else
 	if(type == LogMessage::FATAL){
-		ROS_DEBUG_STREAM("move base: fatal: "<<message);
+		DBG_INFO_ONCE("Navigation: move base: fatal: "<<message);
 		on_error_from_move_base();
 	}
 }
 
 void MoveBase::on_error_from_move_base(){
-	ROS_ERROR("Navigation: path is aborted. send event and clear current path.");
+	DBG_ERROR("Navigation: path is aborted. send event and clear current path.");
 	stop_navigation(false);
 }
 void MoveBase::stop_navigation(bool success){
@@ -533,13 +567,13 @@ void MoveBase::on_sub_commands(const std_msgs::String::ConstPtr& msg){
 	SYNCH
 	std::string command = msg->data;
 	if(command == "clear"){
-		ROS_INFO_STREAM("Navigation: on command CLEAR");
+		DBG_INFO("Navigation: on command CLEAR");
 		this->gl_defined = false;
 		this->gnp_defined= false;
 		this->gp_defined = false;
 	}
 	if(command == "cancel"){
-		ROS_INFO_STREAM("Navigation: on command CANCEL");
+		DBG_INFO("Navigation: on command CANCEL");
 		this->cancel();
 	}
 }
@@ -561,7 +595,7 @@ void MoveBase::notify_path_is_finished(bool success)const{
 
 void MoveBase::on_position_update(const config::PP::sub::Location& location){
 SYNCH
-	//ROS_INFO_STREAM("\t on_position_update( "<<location.pose.pose.position.x<<","<<location.pose.pose.position.y<<" )");
+	//DBG_INFO("\t on_position_update( "<<location.pose.pose.position.x<<","<<location.pose.pose.position.y<<" )");
 	gotten_location = location;
 	gl_defined=true;
 	if(all_data_defined()) calculate_goal();
@@ -572,13 +606,13 @@ SYNCH
 void MoveBase::on_path(const config::PP::sub::GlobalPath& goal_path){
 SYNCH
 
-	ROS_INFO_STREAM("Navigation: Global path gotten. Number of way points is "<<goal_path.waypoints.poses.size()<<" ");
+	DBG_INFO("Navigation: Global path gotten. Number of way points is "<<goal_path.waypoints.poses.size()<<" ");
 	if(goal_path.waypoints.poses.size()==0) return;
 	gotten_path = goal_path;
 	gp_defined=true;
 
 	if(not is_active){
-		ROS_WARN_STREAM("New Global Path is rejected, because navigation is deactivated");
+		DBG_WARN("Navigation: New Global Path is rejected, because navigation is deactivated");
 		return;
 	}
 	if(all_data_defined()) calculate_goal();
@@ -586,13 +620,13 @@ SYNCH
 void MoveBase::on_path(const nav_msgs::Path& goal_path){
 SYNCH
 
-	ROS_INFO_STREAM("Navigation: Global path gotten. Number of way points is "<<goal_path.poses.size()<<" ");
+	DBG_INFO("Navigation: Global path gotten. Number of way points is "<<goal_path.poses.size()<<" ");
 	if(goal_path.poses.size()==0) return;
 	gotten_nav_path = goal_path;
 	gnp_defined=true;
 
 	if(not is_active){
-		ROS_WARN_STREAM("New Global Path is rejected, because navigation is deactivated");
+		DBG_WARN("Navigation: New Global Path is rejected, because navigation is deactivated");
 		return;
 	}
 	if(all_data_defined()) calculate_goal();
@@ -617,13 +651,13 @@ void MoveBase::activate(){
 	is_active=true;
 	is_canceled=false;
 	last_nav_goal = move_base_msgs::MoveBaseActionGoal();
-	ROS_INFO("Navigation is active. you can send Global Path.");
+	DBG_INFO("Navigation: navigation is active. you can send Global Path.");
 	if(clear_path_on_activate){
 		this->gnp_defined= false;
 		this->gp_defined = false;
-		ROS_INFO("  the previous path is deleted");
+		DBG_INFO("Navigation:   the previous path is deleted");
 	}else{
-		ROS_INFO("  the previous path is restored.");
+		DBG_INFO("Navigation:   the previous path is restored.");
 	}
 }
 void MoveBase::deactivate(bool clear_last_goals){
@@ -631,7 +665,7 @@ void MoveBase::deactivate(bool clear_last_goals){
 	is_active=false;
 	clear_path_on_activate = clear_last_goals;
 	cancel();
-	ROS_INFO("Navigation is deactivated. The driver is stopped and each new Global Path will rejected up to activation.");
+	DBG_INFO("Navigation: navigation is deactivated. The driver is stopped and each new Global Path will rejected up to activation.");
 }
 
 void path_publishing(ComponentMain* comp, boost::recursive_mutex* mtx, bool* is_canceled, bool* is_path_calculated){
@@ -682,10 +716,11 @@ void MoveBase::calculate_goal(){
 	globalPathPublisher.publish(gotten_global_path);
 	selectedPathPublisher.publish(gotten_global_path);
 
+	//DBG_INFO_ONCE("Navigation: calculate next waypoint");
 	goal = search_next_waypoint(gotten_global_path, get_unvisited_index(path_id), gotten_location, is_path_finished, goal_index);
 
 	if(is_path_finished){
-		ROS_INFO("Navigation: path is finished. send event and clear current path.");
+		DBG_INFO("Navigation: path is finished. send event and clear current path.");
 		stop_navigation(true);
 		return;
 	}
@@ -698,14 +733,14 @@ void MoveBase::calculate_goal(){
 		geometry_msgs::PoseStamped first_original_goal = goal;
 		static bool prev_send_original(true);
 		bool send_original = false;
-		//ROS_INFO_STREAM("Navigation: check goal on reachability ...");
+		//DBG_INFO_ONCE("Navigation: check goal on reachability ...");
 		while(
 				not is_path_finished
 				and
 				make_goal_reachable(goal, goal_index, gotten_global_path, gotten_location, gmap, is_path_finished)
 		){
 			send_original = true;
-			//ROS_INFO_STREAM("Navigation: ... original goal("<<original_goal.pose.position.x<<","<<original_goal.pose.position.y<<") is not reachable. it's changed to near one("<<goal.pose.position.x<<","<<goal.pose.position.y<<").");
+			//DBG_INFO_ONCE("Navigation: ... original goal("<<original_goal.pose.position.x<<","<<original_goal.pose.position.y<<") is not reachable. it's changed to near one("<<goal.pose.position.x<<","<<goal.pose.position.y<<").");
 			gotten_global_path.poses[goal_index] = goal;
 			selectedPathPublisher.publish(gotten_global_path);
 
@@ -718,21 +753,21 @@ void MoveBase::calculate_goal(){
 			first_original_goal.header.stamp = ros::Time::now();
 			originalGoalPublisher.publish(first_original_goal);
 			if(send_original!=prev_send_original){
-				ROS_INFO_STREAM("Navigation: Goal changed from original to reachable");
+				DBG_INFO("Navigation: Goal changed from original to reachable");
 			}
 		}else{
 			if(send_original!=prev_send_original){
-				ROS_INFO_STREAM("Navigation: Original goal is used");
+				DBG_INFO("Navigation: Original goal is used");
 			}
 		}
 		prev_send_original=send_original;
-		//ROS_INFO_STREAM("Navigation: ... done");
+		//DBG_INFO("Navigation: ... done");
 	}else{
-		ROS_WARN("Navigation: Global occupancy cost map is not defined");
+		DBG_WARN("Navigation: Global occupancy cost map is not defined");
 	}
 
 	if(is_path_finished){
-		ROS_INFO("Navigation: path is finished (case2). send event and clear current path.");
+		DBG_INFO("Navigation: path is finished (after tries to make it reachable). send event and clear current path.");
 		stop_navigation(true);
 		return;
 	}
@@ -789,7 +824,7 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 		last_nav_goal.goal.target_pose.pose.position.x == robil_goal_x and
 		last_nav_goal.goal.target_pose.pose.position.y == robil_goal_y
 	){
-		//ROS_INFO_STREAM("Navigation: goal is rejected. The same one.");
+		//DBG_INFO("Navigation: goal is rejected. The same one.");
 		return;
 	}
 
@@ -813,7 +848,7 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	
 	goal.goal.target_pose = ps_goal;
 	
-	//ROS_INFO_STREAM("Navigation: set new goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y);
+	//DBG_INFO("Navigation: set new goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y);
 	last_nav_goal_id = goal.goal_id;
 	last_nav_goal = goal;
 	goalPublisher.publish(goal);
