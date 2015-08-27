@@ -40,6 +40,7 @@ public:
 private:
 	RosComm*    _roscomm;
 	boost::thread* _driver_thread;
+	CLLI_Ctrl *_clli;
 	static ComponentMain *_this;
 };
 #endif /* COMPONENTMAIN_H_ */

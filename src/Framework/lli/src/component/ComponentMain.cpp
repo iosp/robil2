@@ -65,6 +65,7 @@ void ComponentMain::workerFunc()
 void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
+	_clli->SetThrottelRequest(msg.data);
 
 }
 	
@@ -72,12 +73,17 @@ void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
 void ComponentMain::handleEffortsSt(const config::LLI::sub::EffortsSt& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
+	_clli->SetSteeringRequest(msg.data);
 }
 	
 
 void ComponentMain::handleEffortsJn(const config::LLI::sub::EffortsJn& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
+	//TODO NOT CLEAR
+//	_clli->SetJointRequest((short)msg.effort,(short)msg.effort);
+
+//	_clli->SetJointRequest((short)msg.position, (short)msg.velocity);
 }
 	
 
@@ -111,22 +117,23 @@ void ComponentMain::lliCtrlLoop()
 	   gettimeofday(&start, NULL);
 
 
-	   CLLI_Ctrl *clli = new CLLI_Ctrl ();
-	    clli->Init(ipAddr, lPort, rPort);
+	  // CLLI_Ctrl *clli = new CLLI_Ctrl ();
+	   _clli = new CLLI_Ctrl ();
+	    _clli->Init(ipAddr, lPort, rPort);
 
 	for(;;)
 		{
 		    sleep(0.01);
-			try
-			{
-				if (!clli->PeriodicActivity())
+//			try
+//			{
+			if (!_clli->PeriodicActivity())
 							break;
-			}
-			catch(boost::thread_interrupted&)
-			{
-				std::cout << "Thread has stopped. Problems with QinetiQ" << std::endl;
-				return;
-			}
+//			}
+//			catch(boost::thread_interrupted&)
+//			{
+//				std::cout << "Thread has stopped. Problems with QinetiQ" << std::endl;
+//				return;
+//			}
 		}
 #ifdef STAM
 	 boost::posix_time::seconds workTime(3);
