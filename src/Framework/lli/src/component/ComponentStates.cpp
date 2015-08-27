@@ -93,7 +93,7 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 	return TaskResult::SUCCESS();
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	COMPONENT->workerFunc();
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){

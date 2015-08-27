@@ -15,20 +15,51 @@
 
 ComponentMain::ComponentMain(int argc,char** argv)
 {
+	//sleep (3);
 	_roscomm = new RosComm(this,argc, argv);
-	//lliCtrlManager *tt_p = new lliCtrlManager();
-	//lliCtrlManager tt();
-	//boost::thread lliloopTh(&lliCtrlManager::lliCtrlLoop);
-	//lliloopTh.join();
-	_driver_thread = new boost::thread(&ComponentMain::lliCtrlLoop);
 
-//	sleep (3);
+
+	//ComponentMain::_this = this;
+
+
+   // _driver_thread = new boost::thread(&ComponentMain::lliCtrlLoop);
+
+    _driver_thread = (boost::thread *) NULL;
+
+
+
+//
 	//ros::Timer timer = nh.createTimer(ros::Duration(0.01), TimerCallback);
 }
 
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm;
 	_roscomm=0;
+
+}
+
+void ComponentMain::workerFunc()
+{
+#ifdef STAM
+	char ipAddr[16];
+    string tmpStr = "192.168.101.3";
+
+    strcpy (ipAddr, tmpStr.c_str());
+
+   int lPort = 5355;
+   int rPort = 4660;
+
+   struct timeval start, end;
+   long mtime, seconds, useconds;
+   gettimeofday(&start, NULL);
+
+
+ //  CLLI_Ctrl *clli = new CLLI_Ctrl ();
+  //  clli->Init(ipAddr, lPort, rPort);
+#endif
+  _driver_thread = new boost::thread(boost::bind(&ComponentMain::lliCtrlLoop, this));
+
+  //  boost::thread some_thread(boost::bind(&ComponentMain::lliCtrlLoop,this));
 }
 
 void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
@@ -65,31 +96,51 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 
 void ComponentMain::lliCtrlLoop()
 {
-	 boost::posix_time::seconds workTime(3);
-#ifdef LLICTRLLOOP
+	std::cout << "Welcome to lliCtrlLoop Thread " << std::endl;
 	//Init QinetiQ IP
-	char ipAddr[16];
-    string tmpStr = "192.168.101.3";
+		char ipAddr[16];
+	    string tmpStr = "192.168.101.3";
 
-    strcpy (ipAddr, tmpStr.c_str());
+	    strcpy (ipAddr, tmpStr.c_str());
 
-   int lPort = 5355;
-   int rPort = 4660;
+	   int lPort = 5355;
+	   int rPort = 4660;
 
-   struct timeval start, end;
-   long mtime, seconds, useconds;
-   gettimeofday(&start, NULL);
+	   struct timeval start, end;
+	   long mtime, seconds, useconds;
+	   gettimeofday(&start, NULL);
 
 
-   CLLI_Ctrl *clli = new CLLI_Ctrl ();
-    clli->Init(ipAddr, lPort, rPort);
+	   CLLI_Ctrl *clli = new CLLI_Ctrl ();
+	    clli->Init(ipAddr, lPort, rPort);
+
+	for(;;)
+		{
+		    sleep(0.01);
+			try
+			{
+				if (!clli->PeriodicActivity())
+							break;
+			}
+			catch(boost::thread_interrupted&)
+			{
+				std::cout << "Thread has stopped. Problems with QinetiQ" << std::endl;
+				return;
+			}
+		}
+#ifdef STAM
+	 boost::posix_time::seconds workTime(3);
+	 while (1) {;}
+
+	    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
 	while(1){
 		sleep(0.01);
 		if (!clli->PeriodicActivity())
 			break;
 	}
-#endif
+
 	boost::this_thread::sleep(workTime);
 
+#endif
 }

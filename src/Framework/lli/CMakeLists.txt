@@ -30,6 +30,7 @@ add_library(LLICtrl
 add_library(lli_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
+ ## src/component/lliCtrlManager.cpp
 )
 
 add_executable(lli_node src/main.cpp)

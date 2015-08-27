@@ -17,16 +17,15 @@
 #include "../QinetiQ_IO/LLICtrl.h"
 #include <boost/thread.hpp>
 
-using namespace std;
-
 class RosComm;
+
 class ComponentMain {
-	RosComm*    _roscomm;
-	boost::thread* _driver_thread;
-	timer_t     gTimerid;
+
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
+	void lliCtrlLoop();
+	void workerFunc();
 	void handleEffortsTh(const config::LLI::sub::EffortsTh& msg);
 	void handleEffortsSt(const config::LLI::sub::EffortsSt& msg);
 	void handleEffortsJn(const config::LLI::sub::EffortsJn& msg);
@@ -36,11 +35,11 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
-	static void        lliCtrlLoop();
-	//void Init ();
-	//void StartTimer(void);
-	//void TimerCallback (int sig);
-//	void TimerCallback (const ros::TimerEvent&);
 
+
+private:
+	RosComm*    _roscomm;
+	boost::thread* _driver_thread;
+	static ComponentMain *_this;
 };
 #endif /* COMPONENTMAIN_H_ */

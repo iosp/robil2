@@ -23,7 +23,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_sub_EffortsJn=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLI","EffortsJn","sub"), 10, &RosComm::EffortsJnCallback,this));
 
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
-	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
+//	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
 }
 RosComm::~RosComm()
 {
