@@ -89,15 +89,17 @@ FSM(lli)
 }
 
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	COMPONENT->setNotReady();
 	return TaskResult::SUCCESS();
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
 	COMPONENT->workerFunc();
+	Event e("EndOfInit");
+	events.raiseEvent(e);
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	COMPONENT->setReady();
 	return TaskResult::SUCCESS();
 }
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
