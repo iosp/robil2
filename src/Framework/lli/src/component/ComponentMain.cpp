@@ -65,7 +65,9 @@ void ComponentMain::workerFunc()
 void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
-	_clli->SetThrottelRequest(msg.data);
+	short data;
+	data = 100*msg.data;
+	_clli->SetThrottelRequest(data);
 
 }
 	
@@ -73,7 +75,9 @@ void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
 void ComponentMain::handleEffortsSt(const config::LLI::sub::EffortsSt& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
-	_clli->SetSteeringRequest(msg.data);
+	short data;
+	data = 100*msg.data;
+	_clli->SetSteeringRequest(data);
 }
 	
 
@@ -84,6 +88,14 @@ void ComponentMain::handleEffortsJn(const config::LLI::sub::EffortsJn& msg)
 //	_clli->SetJointRequest((short)msg.effort,(short)msg.effort);
 
 //	_clli->SetJointRequest((short)msg.position, (short)msg.velocity);
+	short data1, data2;
+
+
+		//= msg.position[i];
+			data1 = msg.effort[1];
+			data2 = msg.effort[2];
+			_clli->SetJointRequest(data1, data2);
+
 }
 	
 

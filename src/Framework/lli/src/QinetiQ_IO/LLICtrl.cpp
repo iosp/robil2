@@ -435,7 +435,7 @@ void CLLI_Ctrl::SetThrottelRequest (short reqVal)
 
 	reqThrottel_Val = JausRealToShort (valScaledTmp, -100, 100);
 
-	printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqSteering_Val);
+	printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqThrottel_Val);
 
 	ResetLocalTimeTag (m_DriveCurrentState.effortTT);
 }
