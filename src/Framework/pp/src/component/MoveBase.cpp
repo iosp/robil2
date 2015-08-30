@@ -277,7 +277,7 @@ namespace{
 
 				if( check_on_way ){
 					bool _on_way =
-							on_way( path, goal_index, nei, 5, global_map.info.resolution, center, _robot  );
+							on_way( path, goal_index, nei, 1, global_map.info.resolution, center, _robot  );
 					if( not _on_way )						continue;
 				}
 
@@ -330,11 +330,11 @@ namespace{
 				point_t current = next.front(); next.pop_front();
 				//FOR ALL NAIGHBORS
 				for(int iy=-1;iy<=1;iy++)for(int ix=-1;ix<=1;ix++){
-					if( ix==0 and iy==0 ) 											continue;
+					if( ix==0 and iy==0 ) 						continue;
 					point_t nei(current.x+ix,current.y+iy);
-					if/*outside of map*/	(nei.inside(w,h)==false) 				continue;
-					if/*already checked*/	(reachable[nei.index(w,h)]) 			continue;
-					if/*occupied*/			(global_map.data[nei.index(w,h)]>10) 	continue;
+					if/*outside of map*/	(nei.inside(w,h)==false) 		continue;
+					if/*already checked*/	(reachable[nei.index(w,h)]) 		continue;
+					if/*occupied*/		(global_map.data[nei.index(w,h)]>70) 	continue;
 					/*else*/
 					reachable[nei.index(w,h)] = true;
 					next.push_back(nei);
@@ -342,7 +342,7 @@ namespace{
 			}
 			for(int y=0;y<h;y++)for(int x=0;x<w;x++){
 				point_t current = point_t(x,y);
-				bool v = global_map.data[current.index(w,h)]>10;/*is occupied*/
+				bool v = global_map.data[current.index(w,h)]>70;/*is occupied*/
 				if(v){
 					for(int iy=-1;iy<=1;iy++)for(int ix=-1;ix<=1;ix++){
 						point_t nei(current.x+ix,current.y+iy);
@@ -515,18 +515,27 @@ void MoveBase::on_log_message(const LogMessage::ConstPtr& msg){
 	}
 }
 void MoveBase::on_log_message(int type, string message){
+	stringstream pose_info;
+	pose_info <<"; POSE["
+	    <<"goal=("<<last_nav_goal.goal.target_pose.pose.position.x<<","<<last_nav_goal.goal.target_pose.pose.position.y<<"), "
+	    <<"loc=(" <<gotten_location.pose.pose.position.x<<","<<gotten_location.pose.pose.position.y<<")"
+	    <<"]"
+	;
 	if(type == LogMessage::WARN){
-		DBG_INFO_ONCE("Navigation: move base: warning: "<<message);
+		bool rate_of = message.find("rate of")!=string::npos;
+		
+		DBG_INFO_ONCE("Navigation: move base: warning: "<<message<<(rate_of?string(""):pose_info.str()) );
+		
 	}else
 	if(type == LogMessage::ERROR){
 		bool skip = message.find("Aborting because a valid plan could not be found")!=string::npos;
 		
-		DBG_INFO_ONCE("Navigation: move base: error: "<<message<<(skip?" : skip this error":""));
+		DBG_INFO_ONCE("Navigation: move base: error: "<<message<<(skip?" : skip this error":"")<< pose_info.str() );
 		
 		if(not skip) on_error_from_move_base();
 	}else
 	if(type == LogMessage::FATAL){
-		DBG_INFO_ONCE("Navigation: move base: fatal: "<<message);
+		DBG_INFO_ONCE("Navigation: move base: fatal: "<<message<< pose_info.str() );
 		on_error_from_move_base();
 	}
 }
@@ -610,6 +619,31 @@ SYNCH
 	if(goal_path.waypoints.poses.size()==0) return;
 	gotten_path = goal_path;
 	gp_defined=true;
+	
+	if(gotten_path.waypoints.poses.size()>1){
+	    geometry_msgs::Pose last = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-1].pose;
+	    geometry_msgs::Pose llast = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-2].pose;
+	    geometry_msgs::Point p;
+	    p.x = last.position.x-llast.position.x;
+	    p.y = last.position.y-llast.position.y;
+	    double len = hypot(p.x,p.y);
+	    if(len>0.001){
+		p.x /= len;
+		p.y /= len;
+		p.x *= 0.5;
+		p.y *= 0.5;
+		p.x += last.position.x;
+		p.y += last.position.y;
+		geometry_msgs::PoseStamped npose = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-1];
+		npose.pose.position = p;
+		gotten_path.waypoints.poses.push_back( npose );
+		DBG_INFO("Navigation: path extended by adding additional tail point");
+	    }
+	}
+	BOOST_FOREACH( const geometry_msgs::PoseStamped& p , gotten_path.waypoints.poses )
+	{
+	    DBG_INFO("Navigation: ...... "<<p.pose.position.x<<","<<p.pose.position.y);
+	}
 
 	if(not is_active){
 		DBG_WARN("Navigation: New Global Path is rejected, because navigation is deactivated");
@@ -621,10 +655,35 @@ void MoveBase::on_path(const nav_msgs::Path& goal_path){
 SYNCH
 
 	DBG_INFO("Navigation: Global path gotten. Number of way points is "<<goal_path.poses.size()<<" ");
+
 	if(goal_path.poses.size()==0) return;
 	gotten_nav_path = goal_path;
 	gnp_defined=true;
-
+	
+	if(gotten_nav_path.poses.size()>1){
+	    geometry_msgs::Pose last = gotten_nav_path.poses[gotten_nav_path.poses.size()-1].pose;
+	    geometry_msgs::Pose llast = gotten_nav_path.poses[gotten_nav_path.poses.size()-2].pose;
+	    geometry_msgs::Point p;
+	    p.x = last.position.x-llast.position.x;
+	    p.y = last.position.y-llast.position.y;
+	    double len = hypot(p.x,p.y);
+	    if(len>0.001){
+		p.x /= len;
+		p.y /= len;
+		p.x *= 0.5;
+		p.y *= 0.5;
+		p.x += last.position.x;
+		p.y += last.position.y;
+		geometry_msgs::PoseStamped npose = gotten_nav_path.poses[gotten_nav_path.poses.size()-1];
+		npose.pose.position = p;
+		gotten_nav_path.poses.push_back( npose );
+		DBG_INFO("Navigation: path extended by adding additional tail point");
+	    }
+	}
+	BOOST_FOREACH( const geometry_msgs::PoseStamped& p , gotten_nav_path.poses )
+	{
+	    DBG_INFO("Navigation: ...... "<<p.pose.position.x<<","<<p.pose.position.y);
+	}
 	if(not is_active){
 		DBG_WARN("Navigation: New Global Path is rejected, because navigation is deactivated");
 		return;
@@ -820,12 +879,27 @@ void MoveBase::diagnostic_publish_new_goal(const string& path_id, const geometry
 void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	double robil_goal_x = fround<1>(robil_goal.pose.position.x);
 	double robil_goal_y = fround<1>(robil_goal.pose.position.y);
+	double distance_prev_and_new_goal = hypot( last_nav_goal.goal.target_pose.pose.position.x-robil_goal_x , last_nav_goal.goal.target_pose.pose.position.y-robil_goal_y);
+	double distance_to_gaol = hypot( gotten_location.pose.pose.position.x-robil_goal_x , gotten_location.pose.pose.position.y-robil_goal_y);
+	static int rejection_counter=0;
 	if(
-		last_nav_goal.goal.target_pose.pose.position.x == robil_goal_x and
-		last_nav_goal.goal.target_pose.pose.position.y == robil_goal_y
+//		last_nav_goal.goal.target_pose.pose.position.x == robil_goal_x and
+//		last_nav_goal.goal.target_pose.pose.position.y == robil_goal_y
+	  
+		( rejection_counter < 50 and distance_prev_and_new_goal < 1.5 )
+		or 
+		distance_to_gaol > 90
+		
 	){
-		//DBG_INFO("Navigation: goal is rejected. The same one.");
-		return;
+	    if( distance_prev_and_new_goal > 0.5 )
+	    {
+		DBG_INFO_ONCE("Navigation: goal is rejected. the goal is "<<(distance_prev_and_new_goal<1.5?" same one.":"")<<(distance_to_gaol > 90?"too far":"")<<" goal="<<robil_goal_x<<","<<robil_goal_y);
+	    }
+	    rejection_counter++;
+	    return;
+	}else{
+	   DBG_INFO("Navigation: goal is accepted. prev="<<last_nav_goal.goal.target_pose.pose.position.x<<","<<last_nav_goal.goal.target_pose.pose.position.y<<", new="<<robil_goal_x<<","<<robil_goal_y);
+	   rejection_counter=0;
 	}
 
 	move_base_msgs::MoveBaseActionGoal goal;
@@ -898,7 +972,7 @@ SYNCH
 			}else
 			if(robil_map.data[i].type==robil_msgs::MapCell::type_clear){
 				continue;
-				fz = -1;
+				fz = -1; //0
 			}else
 			if(robil_map.data[i].type==robil_msgs::MapCell::type_unscanned){
 				continue;
@@ -930,7 +1004,7 @@ SYNCH
 		fake_scan.ranges.resize(ranges_count);
 		for(int i=0;i<ranges_count;i++) fake_scan.ranges[i]=30;
 	}
-	if(fk_iter%1000==0) fakeLaserPublisher.publish(fake_scan);
+	if(fk_iter%100==0) fakeLaserPublisher.publish(fake_scan);
 	mapPublisher.publish(map);
 
 #endif
@@ -960,6 +1034,10 @@ void MoveBase::remove_memory_about_path(string path_id){
 void MoveBase::update_unvisited_index(string path_id, size_t new_index){
 	if(path_id=="") return;
 	boost::recursive_mutex::scoped_lock l(mtx);
+	if(unvisited_index[path_id] != new_index)
+	{
+	    DBG_INFO_ONCE("Navigation: new waypoint index is "<<new_index);
+	}
 	unvisited_index[path_id] = new_index;
 }
 
