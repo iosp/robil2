@@ -27,6 +27,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
    // _driver_thread = new boost::thread(&ComponentMain::lliCtrlLoop);
 
     _driver_thread = (boost::thread *) NULL;
+    _mythread = (pthread_t)NULL;
 
 
 
@@ -39,6 +40,11 @@ ComponentMain::~ComponentMain() {
 	_roscomm=0;
 	if(_clli) delete _clli;
 	_clli=0;
+	if (_mythread) {
+		std::cout<< "destructor _mythread" << std::endl;
+		pthread_cancel(_mythread);
+		_mythread = 0;
+	}
 }
 
 void ComponentMain::workerFunc()
@@ -48,7 +54,7 @@ void ComponentMain::workerFunc()
 
 	pthread_t t;
 
-	pthread_create(&t, NULL, &callPThread, this);
+	pthread_create(&_mythread, NULL, &callPThread, this);
 
 }
 

@@ -16,6 +16,7 @@
 #include <string.h>
 #include "../QinetiQ_IO/LLICtrl.h"
 #include <boost/thread.hpp>
+#include <pthread.h>
 
 class RosComm;
 
@@ -44,6 +45,7 @@ private:
 	boost::thread* _driver_thread;
 	CLLI_Ctrl *_clli;
 	static ComponentMain *_this;
+	pthread_t _mythread;
 	bool is_ready;
 };
 #endif /* COMPONENTMAIN_H_ */

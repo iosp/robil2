@@ -20,5 +20,5 @@ int main(int argc,char** argv)
 
     runComponent(argc,argv, comp);
 
-    return 0;
+     return 0;
 }
