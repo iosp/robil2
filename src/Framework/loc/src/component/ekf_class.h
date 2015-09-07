@@ -89,6 +89,7 @@ public:
 private:
 	Egps _Egps;
 	Eimu _Eimu;
+	int _ready;
 	bool _received_gps;
 	geometry_msgs::PoseWithCovarianceStamped estimatedPose,last_pose;
 	geometry_msgs::TwistStamped velocity;

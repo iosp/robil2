@@ -118,6 +118,11 @@ namespace gazebo
       _lastTime = 0;
       physics::PhysicsEnginePtr engine =  _model->GetWorld()->GetPhysicsEngine();
       
+
+
+
+
+
       //sensors::SensorPtr sensorGPS;
       sensors::SensorPtr sensorIMU;
       
@@ -159,6 +164,8 @@ namespace gazebo
     // Called by the world update start event
     void OnUpdate(const common::UpdateInfo & _info)
     {
+	int noise = 0;  	
+	ros::param::param("/LOC/Noise",noise,1);
       //manage frequency
       common::Time simTime = _info.simTime;
       if(simTime.Double()-_lastTime.Double() < 1.0/_frequency) return;
@@ -171,8 +178,8 @@ namespace gazebo
 		math::Pose pose=_model->GetWorldPose();
 		gazebo::math::Vector3 pos = pose.pos;
 		
-		pos.x += add_gps_noise();
-		pos.y += add_gps_noise();
+		pos.x += noise*add_gps_noise();
+		pos.y += noise*add_gps_noise();
 		double other_dist = (pos - _init_pos).GetLength();
 		double dist = sqrt((pos.x-_init_pos.x)*(pos.x-_init_pos.x)+(pos.y-_init_pos.y)*(pos.y-_init_pos.y));
 		//std::cout << "x= " << pos.x << "  y= " << pos.y <<"   init.x= "<<_init_pos.x<<"   init.y= "<<_init_pos.y<<"   dist= "<<dist <<"   my_dist= " << my_dist<<std::endl;
@@ -204,18 +211,18 @@ namespace gazebo
 		msg_imu.orientation.z = pose.rot.z;
 		msg_imu.orientation.w = pose.rot.w;
 		
-		msg_imu.angular_velocity.x = _imu->GetAngularVelocity().x;+_gy_bias+_gy_noise*sampleNormal();
-		msg_imu.angular_velocity.y = _imu->GetAngularVelocity().y;+_gy_bias+_gy_noise*sampleNormal();
-		msg_imu.angular_velocity.z = _imu->GetAngularVelocity().z;+_gy_bias+_gy_noise*sampleNormal();
+		msg_imu.angular_velocity.x = _imu->GetAngularVelocity().x+(_gy_bias+_gy_noise*sampleNormal())*noise;
+		msg_imu.angular_velocity.y = _imu->GetAngularVelocity().y+(_gy_bias+_gy_noise*sampleNormal())*noise;
+		msg_imu.angular_velocity.z = _imu->GetAngularVelocity().z+(_gy_bias+_gy_noise*sampleNormal())*noise;
 		
-		msg_imu.linear_acceleration.x = _imu->GetLinearAcceleration().x+_acc_bias+_acc_noise*sampleNormal();
-		msg_imu.linear_acceleration.y = _imu->GetLinearAcceleration().y+_acc_bias+_acc_noise*sampleNormal();
-		msg_imu.linear_acceleration.z = _imu->GetLinearAcceleration().z+_acc_bias+_acc_noise*sampleNormal();
+		msg_imu.linear_acceleration.x = _imu->GetLinearAcceleration().x+(_acc_bias+_acc_noise*sampleNormal())*noise;
+		msg_imu.linear_acceleration.y = _imu->GetLinearAcceleration().y+(_acc_bias+_acc_noise*sampleNormal())*noise;
+		msg_imu.linear_acceleration.z = _imu->GetLinearAcceleration().z+(_acc_bias+_acc_noise*sampleNormal())*noise;
 
 		msg_spd.header.seq = _seq;
 		msg_spd.header.stamp = ros::Time::now();
 		msg_spd.header.frame_id = "gps_ins";
-		msg_spd.speed = sqrt(_model->GetWorldLinearVel().x * _model->GetWorldLinearVel().x + _model->GetWorldLinearVel().y * _model->GetWorldLinearVel().y + _model->GetWorldLinearVel().z * _model->GetWorldLinearVel().z) + _spd_noise*sampleNormal();
+		msg_spd.speed = sqrt(_model->GetWorldLinearVel().x * _model->GetWorldLinearVel().x + _model->GetWorldLinearVel().y * _model->GetWorldLinearVel().y + _model->GetWorldLinearVel().z * _model->GetWorldLinearVel().z) + _spd_noise*sampleNormal()*noise;
 
 		
 		_publisherIMU.publish(msg_imu);	
@@ -260,6 +267,7 @@ namespace gazebo
     double _start_latitude, _start_longitude;
     double _gps_noise,_rp_noise, _yaw_noise, _gy_noise, _acc_noise, _acc_bias, _gy_bias, _spd_noise;
     int  _frequency;
+
     common::Time		_lastTime;
     int 			_seq;
     void startStopGPS(const std_msgs::Int8& msg)

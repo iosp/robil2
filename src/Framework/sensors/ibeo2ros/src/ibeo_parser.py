@@ -7,6 +7,14 @@ import time
 import curses
 from to_console import *
 
+IBEO_IP = '192.168.0.6'
+PORT = 12002
+if len(sys.argv) > 1:
+    IBEO_IP = sys.argv[1]
+if len(sys.argv) > 2:
+    PORT = sys.argv[2]
+
+
 SIZE = 1024*1024*1024
 
 rospy.init_node('real_ibeo')
@@ -71,7 +79,7 @@ def sendToParser(data):
 #----Opening socket to IBEO sensor -----#
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.settimeout(10)
-server_address = ('192.168.0.13', 12002)
+server_address = (IBEO_IP, PORT)
 print 'Trying to open connection...'
 sock.connect(server_address)
 #sock.setblocking(1)

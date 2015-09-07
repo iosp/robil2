@@ -11,5 +11,9 @@ CTestTestfile.cmake
 CMakeCache.txt
 cmake_install.cmake
 *~
-
-
+*.pyc
+install/*
+src/CMakeLists.txt
+*.idea*
+/src/monitoring/plp_waypoint/nbproject/private/
+.metadata/*

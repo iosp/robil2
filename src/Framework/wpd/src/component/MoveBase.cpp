@@ -92,6 +92,15 @@ void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 	tw.header.frame_id="/map";
 	tw.header.stamp = ros::Time::now();
 	tw.twist = msg;
+	
+	double angle_scale=5.0;
+	ros::param::param("/wpd/angle_scale",angle_scale,5.0);
+	tw.twist.angular.z*=angle_scale;
+	
+	double lin_scale=1.0;
+	ros::param::param("/wpd/lin_scale",lin_scale,1.0);
+	tw.twist.linear.x*=lin_scale;
+	
 	comp->publishWPDVelocity(tw);
 }
 

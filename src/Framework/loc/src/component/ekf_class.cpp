@@ -5,7 +5,8 @@
 #include "GPS2file.h"
 ekf::ekf() : _Egps(100),_Eimu(100)
 {
-  
+	//ros::param::set("/LOC/Ready",0); 
+	_ready = 0;
 	_while_standing = false;
 	std::cout << "setting properties" << std::endl;
 	__init__props(0);
@@ -14,12 +15,12 @@ ekf::ekf() : _Egps(100),_Eimu(100)
 	this->IMU_flag = 1;
 	this->estimatedPose.pose.pose.position.x = 0;
 	this->estimatedPose.pose.pose.position.y = 0;
-	this->estimatedPose.pose.pose.position.z = 0;
+	this->estimatedPose.pose.pose.position.z = 1.65;
 
 	this->estimatedPose.pose.pose.orientation.x = 0;
 	this->estimatedPose.pose.pose.orientation.y = 0;
 	this->estimatedPose.pose.pose.orientation.z = 0;
-	this->estimatedPose.pose.pose.orientation.w = 0;
+	this->estimatedPose.pose.pose.orientation.w = 1;
 
 	this->velocity.twist.linear.x = 0;
 	this->velocity.twist.linear.y = 0;
@@ -32,6 +33,7 @@ ekf::ekf() : _Egps(100),_Eimu(100)
 ekf::~ekf()
 {
 	std::cout << "EKF says: bye bye!!" << std::endl;
+	ros::param::set("/LOC/Ready",0);
 }
 
 void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
@@ -86,26 +88,31 @@ void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
 	this->IMUmeasurement = measurement;
 	Quaternion qut2(measurement.orientation);
 	Rotation rot2 = GetRotation(qut2);
-	z.at<double>(5,0) = (measurement.linear_acceleration.x - Eacc) * cos(xk.at<double>(9,0));
-	z.at<double>(6,0) = (measurement.linear_acceleration.x - Eacc) * sin(xk.at<double>(9,0));
-	z.at<double>(7,0) = rot2.roll;
-	z.at<double>(8,0) = rot2.pitch;
-	z.at<double>(9,0) = rot2.yaw;
-	z.at<double>(10,0) = measurement.angular_velocity.x;
-	z.at<double>(11,0) = measurement.angular_velocity.y;
-	z.at<double>(12,0) = measurement.angular_velocity.z;
+	z.at<double>(5,0) = (measurement.linear_acceleration.x - Eacc) * cos(rot2.yaw);
+	z.at<double>(6,0) = (measurement.linear_acceleration.x - Eacc) * sin(rot2.yaw);
+	z.at<double>(7,0) = qut2.x;
+	z.at<double>(8,0) = qut2.y;
+	z.at<double>(9,0) = qut2.z;
+	z.at<double>(10,0) = qut2.w;
+	z.at<double>(11,0) = measurement.angular_velocity.x;
+	z.at<double>(12,0) = measurement.angular_velocity.y;
+	z.at<double>(13,0) = measurement.angular_velocity.z;
 
 }
 void ekf::setGPSSpeedMeasurement(robil_msgs::GpsSpeed _speed)
 {
-	z.at<double>(3,0) = _speed.speed * cos(xk.at<double>(9,0));
-	z.at<double>(4,0) = _speed.speed * sin(xk.at<double>(9,0));
+	z.at<double>(3,0) = _speed.speed;// * cos(xk.at<double>(9,0));
+	z.at<double>(4,0) = _speed.speed;// * sin(xk.at<double>(9,0));
 }
 
 void ekf::estimator()
 {
 	if(_Eimu.set || _Egps.set)
-		return;
+	    return;
+	
+	if(_ready == 11)
+	    ros::param::set("/LOC/Ready",1); 
+	_ready++;
 	/*
 	 * Kalman filter
 	 * -------------
@@ -119,20 +126,20 @@ void ekf::estimator()
 	
 	this->velocity.twist.linear.x = xk.at<double>(3,0);
 	this->velocity.twist.linear.y = xk.at<double>(4,0);
-	this->velocity.twist.angular.x = xk.at<double>(10,0);
-	this->velocity.twist.angular.y = xk.at<double>(11,0);
-	this->velocity.twist.angular.z = xk.at<double>(12,0);
+	this->velocity.twist.angular.x = xk.at<double>(11,0);
+	this->velocity.twist.angular.y = xk.at<double>(12,0);
+	this->velocity.twist.angular.z = xk.at<double>(13,0);
 	this->velocity.header.stamp = time;
 
 	this->estimatedPose.pose.pose.position.x = xk.at<double>(0,0);
 	this->estimatedPose.pose.pose.position.y = xk.at<double>(1,0);
 	this->estimatedPose.pose.pose.position.z = xk.at<double>(2,0);
-	Rotation rot2(xk.at<double>(7,0), xk.at<double>(8,0), xk.at<double>(9,0));
-	Quaternion quat2 = GetFromRPY(rot2);
-	this->estimatedPose.pose.pose.orientation.x = quat2.x;
-	this->estimatedPose.pose.pose.orientation.y = quat2.y;
-	this->estimatedPose.pose.pose.orientation.z = quat2.z;
-	this->estimatedPose.pose.pose.orientation.w = quat2.w;
+	// Rotation rot2(xk.at<double>(7,0), xk.at<double>(8,0), xk.at<double>(9,0));
+	// Quaternion quat2 = GetFromRPY(rot2);
+	this->estimatedPose.pose.pose.orientation.x = xk.at<double>(7,0);
+	this->estimatedPose.pose.pose.orientation.y = xk.at<double>(8,0);
+	this->estimatedPose.pose.pose.orientation.z = xk.at<double>(9,0);
+	this->estimatedPose.pose.pose.orientation.w = xk.at<double>(10,0);
 	this->estimatedPose.header.stamp = time;
 
 	this->estimatedPose.pose.covariance = boost::assign::list_of (P.at<double>(0,0)) (P.at<double>(1,0)) (P.at<double>(2,0)) (P.at<double>(5,0)) (P.at<double>(6,0)) (P.at<double>(7,0))
@@ -154,7 +161,7 @@ void ekf::measurement_update()
 
 void ekf::time_propagation()
 {
-	xk1 = F*xk + B*u;
+	xk1 = F*xk;// + B*u;
 	P1 = F*P*F.t() + Q;
 }
 void ekf::setGasPedalState(std_msgs::Float64 value)

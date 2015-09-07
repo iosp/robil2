@@ -570,6 +570,7 @@ namespace tf_geometry{
 		}
 
 	};
+	inline
 	Pose apply(const Pose& p, const Scale& s){
 		return p*s;
 	}
@@ -577,7 +578,9 @@ namespace tf_geometry{
 #if USE_AFFINE == 1
 	template<class AFF>
 	AFF operator%(const Affine& a1, const AFF& a2){ return a2*a1; }
+	inline
 	Position operator%(const Position& a1, const Pose& a2){ return a2*a1; }
+	inline
 	Orientation operator%(const Orientation& a1, const Pose& a2){ return a2*a1; }
 #endif
 

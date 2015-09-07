@@ -1,0 +1,15 @@
+header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+mission_id: '4412332'
+mission_description: 'Testing a navigation and manipulation sequence'
+tasks:
+- task_id: '441'
+- task_id: '442'
+- task_id: '332'
+- task_id: '441'
+- task_id: '442'
+

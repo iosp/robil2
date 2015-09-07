@@ -121,15 +121,8 @@ BYTE LLI_SetJointEffortMsg[] = { 0x06, 0x02, 0x01, 0x06, 0x01, 0x69, 0x01, 0xC8,
 #endif
 
 
-//#ifdef _ARIK_TEST_
-// Temporary transmit flag
-//bool tmpTxFlag = false;
-//#endif
-
 //extern CSharedTimerMeas *		m_glbTimeMeas;
 CLLI_Ctrl::CLLI_Ctrl() {
-
-	//m_currState = lli_State_Off;
 
 	clock_gettime(CLOCK_REALTIME, &myTc);
 
@@ -151,19 +144,18 @@ CLLI_Ctrl::CLLI_Ctrl() {
 }
 
 CLLI_Ctrl::~CLLI_Ctrl() {
-	//m_IsTerminateThread = true;
+
+	if (!m_IsTerminateThread)
+	   m_IsTerminateThread = true;
+
 	//std::this_thread::sleep_for(10s);
 	sleep(1);
 	//if (m_hThread)
 	//TerminateThread (m_hThread, 1);
 }
 
-#ifdef NT
-bool CLLI_Ctrl::Init (CString addr, unsigned int lPortID, unsigned int rPortID)
-#else
 bool CLLI_Ctrl::Init(char *addr, unsigned int lPortID, unsigned int rPortID)
-#endif
-		{
+{
 	bool resVal = false;
 	rxCount = 0;
 	txCount = 0;
@@ -178,13 +170,8 @@ bool CLLI_Ctrl::Init(char *addr, unsigned int lPortID, unsigned int rPortID)
 	m_HeartBeatResponseReq = false;
 	m_qineticConnectionActive = false;
 	m_txReady = false;
-//	m_DriveReq = 0;
-//	m_ManipReq = 0;
-//	m_DriveReqCount = 0;
-//	m_ManipReqCount = 0;
 
 	memset (&m_TxSpooler, 0, TX_SPOOLER_SIZE * sizeof (unsigned short));
-
 
 	ctrCodeWait2Responce[lli_Ctrl_Drive] = 0x0000;
 	ctrCodeWait2Responce[lli_Ctrl_Manip] = 0x0000;
@@ -200,10 +187,6 @@ bool CLLI_Ctrl::Init(char *addr, unsigned int lPortID, unsigned int rPortID)
 
 	int place;
 	bool IsOk = false;
-
-//   Qunetiq ip addr:  
-//   local port:	2010
-//   remote pport:      4997
 
 	memcpy(udpIP, addr, strlen(addr));  // UDP IP "132.4.6.60"
 	udpLP = lPortID; // 2010;
@@ -240,15 +223,6 @@ bool CLLI_Ctrl::Init(char *addr, unsigned int lPortID, unsigned int rPortID)
 
 	CommThreadCreate();
 	printf("after CommThreadCreate\n");
-	//m_currState = lli_State_Init;
-
-
-	/*
-	 printf ("press any key\n");
-	 while (!kbhit()) {
-	 ch = getch();
-	 }
-	 */
 
 	//TimerCreate ();
 	return true;
@@ -331,33 +305,6 @@ int CLLI_Ctrl::ReceiveData() {
 	return 0;
 }
 
-/*
-bool CLLI_Ctrl::TransmitData(void *buf, short bufSize) {
-
-	unsigned char * pBuf = (unsigned char *)buf;
-	double currTime;
-
-	clock_gettime(CLOCK_REALTIME, &myTc);
-	currTime = myTc.tv_sec + myTc.tv_nsec / 1E9;
-
-
-	sendto(socketFd, pBuf, bufSize, 0,
-			(struct sockaddr *) &si_Remote, sizeof(si_Remote));
-
-
-	if (kbKey == 't' || kbKey == 'a') {
-
-		printf("[%.6f]Trx:", currTime);
-		for (int i = 0; i < bufSize; i++) {
-			printf("%02X  ", *(pBuf + 1));
-		}
-		printf("\n");
-	}
-
-
-	return true;
-}
-*/
 
 bool CLLI_Ctrl::TransmitData(short bufSize) {
 
@@ -366,14 +313,8 @@ bool CLLI_Ctrl::TransmitData(short bufSize) {
 	clock_gettime(CLOCK_REALTIME, &myTc);
 	currTime = myTc.tv_sec + myTc.tv_nsec / 1E9;
 
-//#ifdef _ARIK_TEST_
-  //   if (tmpTxFlag) {
-    //	 printf ("buf=%d\n", bufSize);
-//#endif
-
     sendto(socketFd, txBuf, bufSize, 0,
 			(struct sockaddr *) &si_Remote, sizeof(si_Remote));
-  //   }
 
 	if (dbgKey == 't' || dbgKey == 'f') {
 
@@ -383,89 +324,10 @@ bool CLLI_Ctrl::TransmitData(short bufSize) {
 		}
 		printf("\n");
 	}
-
-
 	return true;
 }
-
-
 
 /*
-bool CLLI_Ctrl::CommandPreparation(unsigned long cnt) {
-
-	switch (m_currState) {
-
-	case lli_State_Standby:
-		// if (m_stateReq == lli_State_Ready)
-		//   m_currState = lli_State_Ready;
-		break;
-
-	case lli_State_Ready:
-		// if (m_stateReq == lli_State_Standby)
-		//  m_currState = lli_State_Standby;
-		//  else {
-
-		//    m_DriveReq = false;
-		 //    m_ManipReq = false;
-		 //
-		switch (cnt % 10) {
-		case 1:
-			// throttelVal & steeringVal - taken from ROS topic
-			TransmitWrenchEffortMsg(0, 0);
-			break;
-
-		case 3:
-			// throttelVal & steeringVal - taken from ROS topic
-			TransmitJoinEffortMsg(0, 0);
-			break;
-
-		case 5:
-			if (m_DriveReq > 0 && m_DriveReqCount == 0) {
-				TransmitDriveCtrlMsg(100);
-				if (m_DriveReqCount++ > 3)
-					m_DriveReqCount = 0;
-			}
-			break;
-
-		case 6:
-			if (m_DriveReq == 255 && m_DriveReqCount == 0) {
-				TransmitStopDriveCtrlMsg();
-				if (m_DriveReqCount++ > 3)
-					m_DriveReqCount = 0;
-			}
-			break;
-
-		case 7:
-			if (m_ManipReq > 0 && m_ManipReqCount == 0) {
-				TransmitManipulatorCtrlMsg(100);
-				if (m_ManipReqCount++ > 3)
-					m_ManipReqCount = 0;
-			}
-			break;
-
-		case 8:
-			if (m_ManipReq == 255 && m_ManipReqCount == 0) {
-				TransmitStopManipulatorCtrlMsg();
-				if (m_ManipReqCount++ > 3)
-					m_ManipReqCount = 0;
-			}
-			break;
-
-		}
-
-		//   }
-		break;
-
-	case lli_State_Init:
-	case lli_State_Off:
-	default:
-		break;
-	}
-
-	return true;
-}
-*/
-
 bool CLLI_Ctrl::ResponcePreparation() {
 	// for test only
 	static long tmpCount = 0;
@@ -474,18 +336,11 @@ bool CLLI_Ctrl::ResponcePreparation() {
 		m_HeartBeatResponseReq = false;
 		//memcpy (txBuf, LLI_ReportQueryHeartbeatMsg, sizeof (LLI_ReportQueryHeartbeatMsg));
 		m_txReady = true;
-
 	}
-	/*
-	 else {
-	 if (tmpCount++%10==3)
-	 m_txReady = true;
-	 // for test only
-	 }
-	 */
+
 	return m_txReady;
 }
-
+*/
 
 bool CLLI_Ctrl::SetDeviceRequest (LLI_CONTROL_DEVICE devCtrl, LLI_STATE stateReq)
 {
@@ -500,7 +355,6 @@ bool CLLI_Ctrl::SetDeviceRequest (LLI_CONTROL_DEVICE devCtrl, LLI_STATE stateReq
 		bVal = false;
 
     return bVal;
-
 }
 
 
@@ -536,12 +390,13 @@ bool CLLI_Ctrl::SetMsgId_To_TxSpooler (unsigned short msgId)
 
 }
 
-	/*
-unsigned short CLLI_Ctrl::GetMsgId_From_TxSpooler ()
+/*
+	 unsigned short CLLI_Ctrl::GetMsgId_From_TxSpooler ()
 {
 	// tbd
    return 0;
-}*/
+}
+*/
 
 void CLLI_Ctrl::ResetThrottelRequest ()
 {
@@ -569,11 +424,8 @@ void CLLI_Ctrl::ResetJointRequest ()
 
 }
 
-
 void CLLI_Ctrl::SetThrottelRequest (short reqVal)
 {
-
-
 	short valScaledTmp;
 
 	if (reqVal >= 0)
@@ -583,10 +435,9 @@ void CLLI_Ctrl::SetThrottelRequest (short reqVal)
 
 	reqThrottel_Val = JausRealToShort (valScaledTmp, -100, 100);
 
-	printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqSteering_Val);
+	printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqThrottel_Val);
 
 	ResetLocalTimeTag (m_DriveCurrentState.effortTT);
-
 }
 
 void CLLI_Ctrl::SetSteeringRequest (short reqVal)
@@ -604,6 +455,7 @@ void CLLI_Ctrl::SetSteeringRequest (short reqVal)
 
 	ResetLocalTimeTag (m_DriveCurrentState.effortTT);
 }
+
 
 void CLLI_Ctrl::SetJointRequest (short reqVal1, short reqVal2)
 {
@@ -627,9 +479,6 @@ void CLLI_Ctrl::SetJointRequest (short reqVal1, short reqVal2)
 
 	printf ("SetJointRequest: Scaling: %d --> %d       %d --> %d\n",
 			reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
-
-
-
 }
 
 
@@ -640,14 +489,12 @@ void CLLI_Ctrl::PritnOfStatePassed (LLI_SM * devSM)
     if (prevState[devSM->ctrlDevId] != devSM->currState) {
     	printf ("[%.3f]Device #%d:  %d ---> %d state\n", m_currTT, devSM->ctrlDevId, prevState[devSM->ctrlDevId], devSM->currState);
     	prevState[devSM->ctrlDevId] = devSM->currState;
-
     }
 }
 
+
 bool CLLI_Ctrl::StateMachineSwitch(LLI_SM * devSM)
 {
-
-
 	PritnOfStatePassed (devSM);
 
 	switch (devSM->currState) {
@@ -753,19 +600,10 @@ bool CLLI_Ctrl::StateMachineSwitch(LLI_SM * devSM)
 	   default:
 		   break;
 
-
 	} // switch
-
 
 	return true;
 }
-
-
-//void CLLI_Ctrl::WaitForControlPreprocessor (LLI_CONTROL_DEVICE dev2Ctrl)
-//void CLLI_Ctrl::WaitForControlPreprocessor (LLI_SM * devSM)
-//{
-
-//}
 
 
 unsigned short CLLI_Ctrl::RequestComponentControl (LLI_CONTROL_DEVICE dev2Ctrl)
@@ -775,22 +613,10 @@ unsigned short CLLI_Ctrl::RequestComponentControl (LLI_CONTROL_DEVICE dev2Ctrl)
 	unsigned short L_AutorityCode[2] = { 0x38, 0x38 };
 
 	if (dev2Ctrl == lli_Ctrl_Drive) {
-//#ifdef _ARIK_TEST
-  //     tmpTxFlag = true;
-//#endif
 		TransmitDriveCtrlMsg (L_AutorityCode[lli_Ctrl_Drive]);
-//#ifdef _ARIK_TEST_
-	//	tmpTxFlag = false;
-//#endif
 	}
 	else if (dev2Ctrl == lli_Ctrl_Manip) {
-//#ifdef _ARIK_TEST_
-	//	tmpTxFlag = true;
-//#endif
 		TransmitManipulatorCtrlMsg (L_AutorityCode[lli_Ctrl_Manip]);
-//#ifdef _ARIK_TEST_
-	//	tmpTxFlag = false;
-//#endif
 	}
 	else retVal = 0xFFFF;
 
@@ -808,22 +634,10 @@ unsigned short CLLI_Ctrl::RequestComponentRelease (LLI_CONTROL_DEVICE dev2Ctrl)
 	unsigned short retVal = 0;
 
  	if (dev2Ctrl == lli_Ctrl_Drive) {
-//#ifdef _ARIK_TEST_
- //		tmpTxFlag = true;
-//#endif
 		TransmitReleaseDriveCtrlMsg ();
-//#ifdef _ARIK_TEST_
-	//	tmpTxFlag = false;
-//#endif
  	}
 	else if (dev2Ctrl == lli_Ctrl_Manip) {
-//#ifdef _ARIK_TEST_
-	//	tmpTxFlag = true;
-//#endif
 		TransmitReleaseManipulatorCtrlMsg ();
-//#ifdef _ARIK_TEST_
-	//	tmpTxFlag = false;
-//#endif
 	}
 
 	else retVal = 0xFFFF;
@@ -850,15 +664,7 @@ bool CLLI_Ctrl::SetEffortControl (LLI_CONTROL_DEVICE dev2Ctrl)
 	if (dev2Ctrl == lli_Ctrl_Drive)
 		TransmitWrenchEffortMsg ();
 	else if (dev2Ctrl == lli_Ctrl_Manip) {
-//#ifdef _ARIK_TEST
-		//tmpTxFlag = true;
-		//printf ("tmpTxFlag = %d -->\n", tmpTxFlag);
-//#endif
 		TransmitJoinEffortMsg ();
-//#ifdef _ARIK_TEST
-		//tmpTxFlag = false;
-		//printf ("tmpTxFlag = %d <--\n\n", tmpTxFlag);
-//#endif
 	}
 	else retVal = 0xFFFF;
 
@@ -880,9 +686,6 @@ void CLLI_Ctrl::ResetEffortRequest (LLI_CONTROL_DEVICE dev2Ctrl)
 		ResetJointRequest ();
 }
 
-
-
-
 bool CLLI_Ctrl::TimerCreate() {
 	// T B D
 	return false;
@@ -901,42 +704,27 @@ bool CLLI_Ctrl::PeriodicActivity() {
 	static long periodicCount = 0;
 	char ch;
 
-//#ifdef _ARIK_TEST_
 	static short jointsValTest[2] = {0};
+	static short jointId = 0;
 	static short steeringValTest = 0;
 	static short throttelValTest = 0;
-//#endif
+
 	m_txDone = false;
 	SetCurrentTimeTag ();
 
 	m_qineticConnectionActive = GetQinetiqActived ();
-
 
 	// Keyboard command simulation
 	if (Kb_hit() != 0) {
 		ch = getchar();
 		kbKey = ch;
 
-		/*
 
-		if ((ch >= '0' && ch <= '9') || (ch == 27)) {
-			kbKey = (kbKey == ch) ? '\0' : ch;
-//#ifdef _ARIK_TEST_
-			printf("kbKey = %c\n", kbKey);
-//#endif
-		}
-		else if (ch >= 'a' && ch <= 'z') {
-			dbgKey = (dbgKey) ? '\0' : ch;
-//#ifdef _ARIK_TEST_
-			printf("dbgKey = %c\n", dbgKey);
-//#endif
-		}
-*/
 		switch (kbKey) {
 
 		   case 27:					// Terminate
 			   m_IsTerminateThread = true;
-//			   kbKey = '\0';
+
 			   return false;
 
 		   case 'r':  // received messages print
@@ -951,103 +739,112 @@ bool CLLI_Ctrl::PeriodicActivity() {
 			   m_DriveCurrentState.currState = lli_State_Standby;
 			   m_ManipulatorCurrentState.reqState = lli_State_Standby;
 			   m_ManipulatorCurrentState.currState = lli_State_Standby;
-	//		   kbKey = '\0';
+
 			   break;
 
 		   case '3':				// Ready State Request
 		       m_DriveCurrentState.reqState = lli_State_Ready;
-		//	   kbKey = '\0';
+
 			   break;
 
 		   case '4':				// Ready State Request
-		       //m_DriveCurrentState.reqState = lli_State_Ready;
 		       m_ManipulatorCurrentState.reqState = lli_State_Ready;
-			//   kbKey = '\0';
+
 			   break;
 
            // Throttel control
 		   case 'a':
-			   //jointsValTest[1] -= 10;
 			   throttelValTest  -= 10;
 			   printf ("Throttel preparation: %d\n", throttelValTest);
-			  // kbKey = '\0';
 		       break;
 
 		   case 's':
-			   //jointsValTest[1] = 0;
 			   throttelValTest  = 0;
 			   SetThrottelRequest (throttelValTest);
 			   printf ("Throttel preparation: %d\n", throttelValTest);
-			   //kbKey = '\0';
 		       break;
 
 		   case 'd':
 			   throttelValTest  += 10;
 			   printf ("Throttel preparation: %d\n", throttelValTest);
-			   //jointsValTest[1] += 10;
-			   //kbKey = '\0';
-		       break;
+         		       break;
 
 		   case 'w':
-			   //jointsValTest[1] -= 10;
-//			   printf "Throttel preparation: %d\n", throttelValTest);
-			   //kbKey = '\0';
-			   //SetJointRequest (jointsValTest[0], jointsValTest[1]);
 			   SetThrottelRequest (throttelValTest);
-		       //SetSteeringRequest (steeringValTest);
-		       break;
+    		           break;
 
 
+  
            // Steering control
 		   case 'j':
 			   steeringValTest  -= 10;
 			   printf ("Steering preparation: %d\n", steeringValTest);
-			   //kbKey = '\0';
 		       break;
 
 		   case 'k':
 			   steeringValTest  = 0;
 			   SetSteeringRequest (steeringValTest);
 			   printf ("Steering preparation: %d\n", steeringValTest);
-			   //kbKey = '\0';
 		       break;
 
 		   case 'l':
 			   steeringValTest  += 10;
 			   printf ("Steering preparation: %d\n", steeringValTest);
-			   //jointsValTest[1] += 10;
-			   //kbKey = '\0';
 		       break;
 
 		   case 'i':
-			   //kbKey = '\0';
-			   //SetJointRequest (jointsValTest[0], jointsValTest[1]);
 		       SetSteeringRequest (steeringValTest);
 		       break;
 
+		   case 'z':
+			   jointsValTest[jointId] += 10;
+			   printf ("Joint #%d preparation: %d\n", jointId, jointsValTest[jointId]);
+			   break;
 
+		   case 'x':
+			   jointsValTest[jointId] = 0;
+			   SetJointRequest (jointsValTest[0], jointsValTest[1]);
+			   printf ("Joint #%d preparation: %d\n", jointId, jointsValTest[jointId]);
+			   break;
+
+		   case 'c':
+			   jointsValTest[jointId] -= 10;
+			   printf ("Joint #%d preparation: %d\n", jointId, jointsValTest[jointId]);
+			   break;
+
+		   case 'v':
+			   SetJointRequest (jointsValTest[0], jointsValTest[1]);
+			   break;
+
+		   case 'b':
+			   jointsValTest[jointId] = 0;
+			   SetJointRequest (jointsValTest[0], jointsValTest[1]);
+			   jointId =  1 - jointId;
+			   printf ("Joint ID switch to $d: %d\n", jointId, steeringValTest);
+			   break;
 
 		   case '8':				// Drive Control Release Request
 			   reqDevCtrlRelease[lli_Ctrl_Drive] = true;
-			   //kbKey = '\0';
+
 			   break;
 
 		   case '9':				// Manipulator Control Release Request
 			   reqDevCtrlRelease[lli_Ctrl_Manip] = true;
-			   //kbKey = '\0';
+
 			   break;
 
-		  // case ''
+		   default:
+			   break;
 
 		} // switch (...
 
 		if (kbKey != '\0') {
-			printf ("kbKey switched to %c\n", kbKey);
+			//printf ("kbKey switched to %c\n", kbKey);
 			kbKey = '\0';
 		}
 
-
 	} // if (Kb_hit...
+
 
 	// Get of ROS Command
 	// T B D
@@ -1492,5 +1289,42 @@ short CLLI_Ctrl::JausRealToShort (short realVal, short lowerLimit, short upperLi
 		   2. * ( ((double)(TWO_EXP_16/2 - 1)) / (upperLimit - lowerLimit) ));
 
    return usVal;
+
+}
+
+void CLLI_Ctrl::DriveControlRequest ()
+{
+    m_DriveCurrentState.reqState = lli_State_Ready;
+
+}
+
+
+void CLLI_Ctrl::ManipulatorControlRequest ()
+{
+    m_ManipulatorCurrentState.reqState = lli_State_Ready;
+}
+
+
+void CLLI_Ctrl::DriveControlRelease ()
+{
+   reqDevCtrlRelease[lli_Ctrl_Drive] = true;
+}
+
+
+void CLLI_Ctrl::ManipulatorControlRelease ()
+{
+   reqDevCtrlRelease[lli_Ctrl_Manip] = true;
+
+}
+
+LLI_STATE CLLI_Ctrl::GetDriveCurrentState ()
+{
+	return m_DriveCurrentState.currState;
+
+}
+
+LLI_STATE CLLI_Ctrl::GetManipulatorCurrentState ()
+{
+	return m_ManipulatorCurrentState.currState;
 
 }
