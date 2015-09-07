@@ -48,6 +48,9 @@ DEF_PUB( SENSORS, SensorSICK2, types::Laser )
 DEF_PUB( SENSORS, SensorIBEO, types::MultiLaser )
 DEF_PUB( SENSORS, SensorGpsSpeed, types::GpsSpeed )
 
+DEF_PUB( SHIFFON2ROS, INS, types::Imu )
+DEF_PUB( SHIFFON2ROS, GPS, types::GPS )
+DEF_PUB( SHIFFON2ROS, GpsSpeed, types::GpsSpeed )
 
 //SUBSCRIPTIONS
 DEF_SUB( IEDSIM, CustomIED, OCU )

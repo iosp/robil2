@@ -68,6 +68,11 @@ PP_sub_Location: 'LOC'
 
 PP_pub_LocalPath: '/PP/Path'
 
+#SHIFFON2ROS
+SHIFFON2ROS_pub_GPS: '/SENSORS/GPS'
+SHIFFON2ROS_pub_INS: '/SENSORS/INS'
+SHIFFON2ROS_pub_GpsSpeed: '/SENSORS/GPS/Speed'
+
 #SMME
 SMME_sub_AssignNavTask: 'OCU'
 SMME_sub_AssignManTask: 'OCU'

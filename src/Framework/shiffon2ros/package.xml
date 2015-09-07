@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package>
+  <name>shiffon2ros</name>
+  <version>0.0.0</version>
+  <description>The shiffon2ros package</description>
+  <maintainer email="yuval@todo.todo">yuval</maintainer>
+  <license>TODO</license>
+  <buildtool_depend>catkin</buildtool_depend>
+	<build_depend>roscpp</build_depend>
+	<build_depend>robil2conf</build_depend>
+	<build_depend>decision_making</build_depend>
+	<build_depend>decision_making_parser</build_depend>
+	<run_depend>roscpp</run_depend>
+	<run_depend>robil2conf</run_depend>
+	<run_depend>decision_making</run_depend>
+	<run_depend>decision_making_parser</run_depend>
+  <export>
+  </export>
+</package>
