@@ -435,7 +435,7 @@ void CLLI_Ctrl::SetThrottelRequest (short reqVal)
 
 	reqThrottel_Val = JausRealToShort (valScaledTmp, -100, 100);
 
-	printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqSteering_Val);
+	printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqThrottel_Val);
 
 	ResetLocalTimeTag (m_DriveCurrentState.effortTT);
 }
@@ -719,10 +719,12 @@ bool CLLI_Ctrl::PeriodicActivity() {
 		ch = getchar();
 		kbKey = ch;
 
+
 		switch (kbKey) {
 
 		   case 27:					// Terminate
 			   m_IsTerminateThread = true;
+
 			   return false;
 
 		   case 'r':  // received messages print
@@ -737,14 +739,17 @@ bool CLLI_Ctrl::PeriodicActivity() {
 			   m_DriveCurrentState.currState = lli_State_Standby;
 			   m_ManipulatorCurrentState.reqState = lli_State_Standby;
 			   m_ManipulatorCurrentState.currState = lli_State_Standby;
+
 			   break;
 
 		   case '3':				// Ready State Request
 		       m_DriveCurrentState.reqState = lli_State_Ready;
+
 			   break;
 
 		   case '4':				// Ready State Request
 		       m_ManipulatorCurrentState.reqState = lli_State_Ready;
+
 			   break;
 
            // Throttel control
@@ -762,13 +767,14 @@ bool CLLI_Ctrl::PeriodicActivity() {
 		   case 'd':
 			   throttelValTest  += 10;
 			   printf ("Throttel preparation: %d\n", throttelValTest);
-		       break;
+         		       break;
 
 		   case 'w':
 			   SetThrottelRequest (throttelValTest);
-		       break;
+    		           break;
 
 
+  
            // Steering control
 		   case 'j':
 			   steeringValTest  -= 10;
@@ -819,10 +825,12 @@ bool CLLI_Ctrl::PeriodicActivity() {
 
 		   case '8':				// Drive Control Release Request
 			   reqDevCtrlRelease[lli_Ctrl_Drive] = true;
+
 			   break;
 
 		   case '9':				// Manipulator Control Release Request
 			   reqDevCtrlRelease[lli_Ctrl_Manip] = true;
+
 			   break;
 
 		   default:
@@ -834,6 +842,7 @@ bool CLLI_Ctrl::PeriodicActivity() {
 			//printf ("kbKey switched to %c\n", kbKey);
 			kbKey = '\0';
 		}
+
 	} // if (Kb_hit...
 
 

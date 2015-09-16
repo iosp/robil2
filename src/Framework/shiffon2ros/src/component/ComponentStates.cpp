@@ -17,7 +17,7 @@ public:
 };
 
 //// ============== WRITE FSM HERE ========================= /////
-FSM(lli_ON)
+FSM(shiffon2ros_ON)
 {
 	FSM_STATES
 	{
@@ -40,14 +40,14 @@ FSM(lli_ON)
 		{
 			FSM_CALL_TASK(READY)
 			FSM_TRANSITIONS{
-				FSM_ON_EVENT("/lli/Standby", FSM_NEXT(STANDBY));
+				FSM_ON_EVENT("/shiffon2ros/Standby", FSM_NEXT(STANDBY));
 			}
 		}
 		FSM_STATE(STANDBY)
 		{
 			FSM_CALL_TASK(STANDBY)
 			FSM_TRANSITIONS{
-				FSM_ON_EVENT("/lli/Resume", FSM_NEXT(READY));
+				FSM_ON_EVENT("/shiffon2ros/Resume", FSM_NEXT(READY));
 			}
 		}
 
@@ -55,7 +55,7 @@ FSM(lli_ON)
 	FSM_END
 }
 
-FSM(lli)
+FSM(shiffon2ros)
 {
 	FSM_STATES
 	{
@@ -71,16 +71,16 @@ FSM(lli)
 			FSM_TRANSITIONS
 			{	
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-				FSM_ON_EVENT("/lli/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/shiffon2ros/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(lli_ON)
+			FSM_CALL_FSM(shiffon2ros_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-				FSM_ON_EVENT("/lli/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/shiffon2ros/Shutdown", FSM_NEXT(OFF));
 			}
 		}
 
@@ -89,17 +89,15 @@ FSM(lli)
 }
 
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
-	COMPONENT->setNotReady();
+	PAUSE(10000);
 	return TaskResult::SUCCESS();
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
-	COMPONENT->workerFunc();
-	Event e("EndOfInit");
-	events.raiseEvent(e);
+	PAUSE(10000);
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
-	COMPONENT->setReady();
+	PAUSE(10000);
 	return TaskResult::SUCCESS();
 }
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
@@ -119,8 +117,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("READY",state_READY);
 	LocalTasks::registration("STANDBY",state_STANDBY);
 
-	ROS_INFO("Starting lli...");
-	Fsmlli(&context, &events);
-	ROS_INFO("After Starting lli...");
+	ROS_INFO("Starting shiffon2ros...");
+	Fsmshiffon2ros(&context, &events);
 
 }
