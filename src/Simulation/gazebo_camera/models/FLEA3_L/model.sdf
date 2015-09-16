@@ -16,7 +16,7 @@
         </visual>
         
         <sensor name='flea3cam' type='camera'>
-	  <visualize>1</visualize>
+	  <visualize>0</visualize>
 	 <update_rate>15.0</update_rate>
 	  <camera name="head">
 	    <horizontal_fov>1.3962634</horizontal_fov>
