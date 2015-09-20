@@ -100,6 +100,8 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
 	COMPONENT->setReady();
+	//Event e("/lli/Standby");
+	//events.raiseEvent(e);
 	return TaskResult::SUCCESS();
 }
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){

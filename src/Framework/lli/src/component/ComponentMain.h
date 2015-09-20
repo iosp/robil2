@@ -37,8 +37,9 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
-    void setReady() {is_ready=true;}
+    void setReady();
     void setNotReady(){is_ready=false;}
+    bool IsReady(){return is_ready;}
 
 private:
 	RosComm*    _roscomm;

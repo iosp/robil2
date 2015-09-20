@@ -47,6 +47,21 @@ ComponentMain::~ComponentMain() {
 	}
 }
 
+void ComponentMain::setReady() {
+	//Add Semaphore here
+    int count=0;
+	if (_clli->GetDriveCurrentState() == lli_State_Standby)
+		_clli->DriveControlRequest();
+	//if (_clli->GetManipulatorCurrentState() == lli_State_Standby)
+	//	_clli->ManipulatorControlRequest();
+
+	while (_clli->GetDriveCurrentState() != lli_State_Ready) {
+		sleep(0.1);
+		_clli->DriveControlRequest();
+	}
+	is_ready=true;
+}
+
 void ComponentMain::workerFunc()
 {
 
@@ -151,6 +166,7 @@ void ComponentMain::lliCtrlLoop()
 		    sleep(0.01);
 //			try
 //			{
+
 			if (!_clli->PeriodicActivity())
 							break;
 //			}
@@ -159,6 +175,7 @@ void ComponentMain::lliCtrlLoop()
 //				std::cout << "Thread has stopped. Problems with QinetiQ" << std::endl;
 //				return;
 //			}
+
 		}
 #ifdef STAM
 	 boost::posix_time::seconds workTime(3);

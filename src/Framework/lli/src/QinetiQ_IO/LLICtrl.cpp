@@ -194,7 +194,7 @@ bool CLLI_Ctrl::Init(char *addr, unsigned int lPortID, unsigned int rPortID)
 	place = 0;
 	char ch;
 
-	printf("INIT --- IP = %s\n");
+	printf("INIT --- IP = %s\n", addr);
 
 	//m_currState == lli_State_Init;
 	resVal = CommConnect();
@@ -278,21 +278,32 @@ bool CLLI_Ctrl::CommConnect() {
 	if (inet_aton(udpIP, &si_Remote.sin_addr) == 0) {
 		//cout << "inet_aton() failed\n";
 		printf("inet_aton() failed\n");
+		return false;
 	}
+
+
 
 	memset((char *) &si_Local, 0, sizeof(si_Local));
 	si_Local.sin_family = AF_INET;
 	si_Local.sin_port = htons(udpLP);
+	//if (inet_aton("192.168.101.101", &si_Local.sin_addr) == 0) {
+	//			//cout << "inet_aton() failed\n";
+	//			printf("inet_aton() failed\n");
+	//			return false;
+	//		}
+
 	si_Local.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	if (setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,
 			reinterpret_cast<char*>(&tv), sizeof(timeval))) {
 		printf("setsockopt() failed\n");
+		return false;
 	}
 
 	retV = bind(socketFd, (struct sockaddr *) &si_Local, sizeof(si_Local));
 	if (retV == -1) {
-		printf("bind error\n");
+		perror("bind error\n");
+		return false;
 	}
 	sleep(0.5);
 //    printf ("socketFd = %d\n", socketFd);
