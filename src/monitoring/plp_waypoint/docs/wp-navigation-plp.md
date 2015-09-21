@@ -53,7 +53,19 @@ _Later, we will replace this with "natural" PLP for the entire system. That PLP 
 ## Side Effects
 * Fuel: `FUEL_CONSUMPTION_RATE * distanceToWaypoint * (heightVariablity * hvFactor)`
 
-## Goal
+## Lifecycle <span style="background:#FFFF88; padding: 3px; border-radius:3px">new</span>
+
+### Trigger
+* Nav task active
+* Received local path
+* Enough data already gathered (minimap, position, etc.)
+
+### Monitoring
+* Remaining path length _(English: Sample `distanceToWaypoint` every 10 seconds. Expect a decrease.)_
+  * Every: `10 sec`
+  * Expect: `decrease( distanceToWaypoint )`
+
+### Goal
 * `distanceToWaypoint < 1m`
 
 ## Result
@@ -71,10 +83,6 @@ _The calculation result describes the probabilities and time for each known outc
 * confidence `A number in the range of 0..1`
 
 ## Robil Integration
-### Trigger
-* Nav task active
-* Received local path
-* Enough data already gathered (minimap, position, etc.)
 
 ### Abort
 * Getting a new local path
