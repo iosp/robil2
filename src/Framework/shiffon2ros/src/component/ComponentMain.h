@@ -10,9 +10,13 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+#include "../Shiphon_IO/Shiphon_IO.h"
+#include "../roscomm/RosComm.h"
+
 class RosComm;
 class ComponentMain {
-	RosComm* _roscomm;
+	RosComm* 		_roscomm;
+	Shiphon_Ctrl * 	_shiphonCtrl;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
