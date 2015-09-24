@@ -59,20 +59,20 @@ bool Shiphon_Ctrl::Init(char *addr, unsigned int lPortID, unsigned int rPortID)
 	memset (&Phs_periodic1hzmessage, 0, sizeof (PHS_PERIODIC1HZMESSAGE));
 
 
-	printf("INIT --- IP = %s\n", udpIP);
+	printf("Shiphon IP = %s  \n", udpIP);
 
 	resVal = CommConnect();
 	if (resVal)
-		printf("Connection is OK\n");
+		ROS_INFO("Shiphon Connection is OK");
 	else
-		printf("Connection was failed");
+		ROS_ERROR("Shiphon failed");
 	sleep(0.1);
 
 	if (resVal) {
-		printf("before CommThreadCreate\n");
+//		printf("before CommThreadCreate\n");
 	    sleep(0.1);
 	    CommThreadCreate();
-	    printf("after CommThreadCreate\n");
+//	    printf("after CommThreadCreate\n");
 	}
 
 	return resVal;
@@ -173,11 +173,12 @@ void * Shiphon_Ctrl::Comm4RcvThread(void * pParam) {
 
 	Shiphon_Ctrl *myHandle = (Shiphon_Ctrl *) (pParam);
 
-	printf("before ThreadFunc\n");
+	//printf("before ThreadFunc\n");
 	myHandle->ThreadFunc();
-	printf("after ThreadFunc\n");
+	//printf("after ThreadFunc\n");
 
 }
+
 
 void Shiphon_Ctrl::ThreadFunc() {
 	unsigned char bufTmp[256] = { 0 };
@@ -195,6 +196,7 @@ void Shiphon_Ctrl::ThreadFunc() {
 
 	unsigned char MsgID;
 
+	m_IsTerminateThread = false;
 	while (!m_IsTerminateThread) {
 
 		try {
@@ -258,7 +260,7 @@ void Shiphon_Ctrl::ThreadFunc() {
 			 	m_ShiphonConnectionActive = false;
 			 }
 		 }
-
+/*
 		 if (m_ShiphonConnectionActive && loopCount % 100 == 1) {
 			 printf ("Lat: %.6f   Lon: %.6f   Alt: %.2f\n",
 					 Phs_periodic100hzmessage.LAT_Egi * 180.,
@@ -285,7 +287,9 @@ void Shiphon_Ctrl::ThreadFunc() {
 					 Phs_periodic100hzmessage.Acc_Y_Egi,
 					 Phs_periodic100hzmessage.Acc_Z_Egi);
 		 }
-		 sleep (0.001);
+ */
+
+ 		 sleep (0.001);
 
 	} // while
 	printf("Comm4RcvThread was therminated\n");

@@ -253,7 +253,8 @@ public:
 
 private:
        // Flag for the Receive Thread
-	   unsigned char	m_IsTerminateThread;
+	   //unsigned char	m_IsTerminateThread;
+	   bool m_IsTerminateThread;
 
 	   // UDP IP, local port number and remote port number
 	   char 				udpIP[16];
@@ -308,6 +309,9 @@ public:
 	   unsigned short		ParseData ();
 	   bool					MsgVerification (unsigned short msgId);
 	   void					CheckConnectionActive (bool valid, unsigned short msgCount);
+
+	   inline PHS_PERIODIC100HZMESSAGE get_PERIODIC100HZMESSAGE() { return(Phs_periodic100hzmessage); }
+
 
 private:
 	  void					RxBufferInit ();

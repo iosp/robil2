@@ -28,5 +28,11 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+
+	void InitShiphonConection();
+	void ReadAndPub_ShiphonGPS();
+	void ReadAndPub_ShiphonINS();
+	void ReadAndPub_ShiphonGpsSpeed();
+
 };
 #endif /* COMPONENTMAIN_H_ */

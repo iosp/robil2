@@ -29,38 +29,35 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
 }
+
 RosComm::~RosComm()
 {
 }
+
 bool RosComm::init(int argc,char** argv){
 	ros::init(argc,argv,"LLC_node");
 	return true;
 }
-
 
 void RosComm::WPDVelocityCallback(const config::LLC::sub::WPDVelocity::ConstPtr &msg)
 {
 	_comp->handleWPDVelocity(*msg);
 }
 	
-
 void RosComm::WSMVelocityCallback(const config::LLC::sub::WSMVelocity::ConstPtr &msg)
 {
 	_comp->handleWSMVelocity(*msg);
 }
-	
 
 void RosComm::BladePositionCommandCallback(const config::LLC::sub::BladePositionCommand::ConstPtr &msg)
 {
 	_comp->handleBladePositionCommand(*msg);
 }
 	
-
 void RosComm::LocationCallback(const config::LLC::sub::Location::ConstPtr &msg)
 {
 	_comp->handleLocation(*msg);
 }
-	
 
 void RosComm::PerVelocityCallback(const config::LLC::sub::PerVelocity::ConstPtr &msg)
 {
@@ -85,10 +82,13 @@ void RosComm::publishEffortsJn( config::LLC::pub::EffortsJn &msg)
 	_pub_EffortsJn.publish(msg);
 }
 
+
 void RosComm::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	static tf::TransformBroadcaster br;
 	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));
 }
+
+
 tf::StampedTransform RosComm::getLastTrasform(std::string srcFrame, std::string distFrame){
 	tf::StampedTransform _tf;
 	static tf::TransformListener listener;
@@ -100,6 +100,7 @@ tf::StampedTransform RosComm::getLastTrasform(std::string srcFrame, std::string 
 	}
 	return _tf;
 }
+
 void RosComm::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report){
 	diagnostic_msgs::DiagnosticArray msg;
 	msg.status.push_back(_report);
