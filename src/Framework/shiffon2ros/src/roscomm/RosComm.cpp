@@ -38,12 +38,14 @@ bool RosComm::init(int argc,char** argv){
 void RosComm::publishGPS( config::SHIFFON2ROS::pub::GPS &msg)
 {
 	_pub_GPS.publish(msg);
+
 }
 	
 
 void RosComm::publishINS( config::SHIFFON2ROS::pub::INS &msg)
 {
 	_pub_INS.publish(msg);
+
 }
 	
 
@@ -52,6 +54,10 @@ void RosComm::publishGpsSpeed( config::SHIFFON2ROS::pub::GpsSpeed &msg)
 	_pub_GpsSpeed.publish(msg);
 }
 	
+
+
+
+
 void RosComm::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	static tf::TransformBroadcaster br;
 	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));
