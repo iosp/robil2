@@ -33,7 +33,7 @@ FSM(lli_ON)
 			FSM_CALL_TASK(INIT)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
+				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(STANDBY));
 			}
 		}
 		FSM_STATE(READY)
@@ -48,6 +48,7 @@ FSM(lli_ON)
 			FSM_CALL_TASK(STANDBY)
 			FSM_TRANSITIONS{
 				FSM_ON_EVENT("/lli/Resume", FSM_NEXT(READY));
+				FSM_ON_EVENT("/lli_ready", FSM_NEXT(READY));
 			}
 		}
 
@@ -89,23 +90,50 @@ FSM(lli)
 }
 
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
-	COMPONENT->setNotReady();
+	COMPONENT->releaseDriverAndManipulator();
 	return TaskResult::SUCCESS();
 }
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
+	int counter=0;
 	COMPONENT->workerFunc();
+	ros::Duration oneSec(1.0);
+	oneSec.sleep();
+	while (COMPONENT->IsCLLIStillInInit()){
+		if (counter > 10000) break;
+		sleep(1);
+		counter++;
+	}
+	if (counter > 10000){
+		printf("LLI STOPPED WO INITIALIZATION COMPLETED\n");
+		Event e("/lli/Shutdown");
+		events.raiseEvent(e);
+		return TaskResult::FAIL();
+	}
+
 	Event e("EndOfInit");
 	events.raiseEvent(e);
 	return TaskResult::SUCCESS();
 }
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
-	COMPONENT->setReady();
-	//Event e("/lli/Standby");
-	//events.raiseEvent(e);
+	if(!ros::ok()){			/* checks whether the node failed */
+		ROS_INFO("LLI STOPPED");
+		Event e("/lli/Shutdown");
+		events.raiseEvent(e);
+		return TaskResult::TERMINATED();
+	}
+
 	return TaskResult::SUCCESS();
 }
+
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	ros::Rate r(10);
+	COMPONENT->setReady();
+	COMPONENT->checkReady();
+	while (COMPONENT->StateNotReady()){
+		COMPONENT->checkReady();
+	}
+	Event e("/lli_ready");
+	events.raiseEvent(e);
 	return TaskResult::SUCCESS();
 }
 
