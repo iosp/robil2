@@ -1097,117 +1097,130 @@
  <!-- Transmissions for ROS Control -->
   <transmission name="tran1">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="front_right_wheel_joint"/>
-    <actuator name="motor1">
+    <joint name="front_right_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
+    </joint>
+    <actuator name="motor1">
+     <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran2">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="front_left_wheel_joint"/>
-    <actuator name="motor2">
+    <joint name="front_left_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran3">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="back_right_wheel_joint"/>
-    <actuator name="motor3">
+    <joint name="back_right_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor3">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran4">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="back_left_wheel_joint"/>
-    <actuator name="motor4">
+    <joint name="back_left_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor4">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran5">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="base_arm_joint"/>
-    <actuator name="motor5">
+    <joint name="base_arm_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor5">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran6">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="main_arm_joint"/>
-    <actuator name="motor6">
+    <joint name="main_arm_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor6">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran7">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="back_shaft_joint"/>
-    <actuator name="motor7">
+    <joint name="back_shaft_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor7">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran8">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="supporter_joint"/>
-    <actuator name="motor8">
+    <joint name="supporter_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor8">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran9">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="front_cylinder_joint"/>
-    <actuator name="motor9">
+    <joint name="front_cylinder_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor9">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran10">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="loader_joint"/>
-    <actuator name="motor10">
+    <joint name="loader_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor10">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran11">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="front_shaft_joint"/>
+    <joint name="front_shaft_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
     <actuator name="motor11">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran12">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="brackets_joint"/>
-    <actuator name="motor12">
+    <joint name="brackets_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor12">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran12">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="back_cylinder_joint"/>
-    <actuator name="motor12">
+    <joint name="back_cylinder_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor12">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>

@@ -9,6 +9,8 @@ using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
 
+
+
 class Params: public CallContextParameters{
 public:
 	ComponentMain* comp;
@@ -17,7 +19,7 @@ public:
 };
 
 //// ============== WRITE FSM HERE ========================= /////
-FSM(lli_ON)
+FSM(shiffon2ros_ON)
 {
 	FSM_STATES
 	{
@@ -33,22 +35,21 @@ FSM(lli_ON)
 			FSM_CALL_TASK(INIT)
 			FSM_TRANSITIONS
 			{
-				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(STANDBY));
+				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
 			}
 		}
 		FSM_STATE(READY)
 		{
 			FSM_CALL_TASK(READY)
 			FSM_TRANSITIONS{
-				FSM_ON_EVENT("/lli/Standby", FSM_NEXT(STANDBY));
+				FSM_ON_EVENT("/shiffon2ros/Standby", FSM_NEXT(STANDBY));
 			}
 		}
 		FSM_STATE(STANDBY)
 		{
 			FSM_CALL_TASK(STANDBY)
 			FSM_TRANSITIONS{
-				FSM_ON_EVENT("/lli/Resume", FSM_NEXT(READY));
-				FSM_ON_EVENT("/lli_ready", FSM_NEXT(READY));
+				FSM_ON_EVENT("/shiffon2ros/Resume", FSM_NEXT(READY));
 			}
 		}
 
@@ -56,7 +57,7 @@ FSM(lli_ON)
 	FSM_END
 }
 
-FSM(lli)
+FSM(shiffon2ros)
 {
 	FSM_STATES
 	{
@@ -72,68 +73,53 @@ FSM(lli)
 			FSM_TRANSITIONS
 			{	
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-				FSM_ON_EVENT("/lli/Activation", FSM_NEXT(ON));
+				FSM_ON_EVENT("/shiffon2ros/Activation", FSM_NEXT(ON));
 			}
 		}
 		FSM_STATE(ON)
 		{
-			FSM_CALL_FSM(lli_ON)
+			FSM_CALL_FSM(shiffon2ros_ON)
 			FSM_TRANSITIONS
 			{
 				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-				FSM_ON_EVENT("/lli/Shutdown", FSM_NEXT(OFF));
+				FSM_ON_EVENT("/shiffon2ros/Shutdown", FSM_NEXT(OFF));
 			}
 		}
-
 	}
 	FSM_END
 }
 
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
-	COMPONENT->releaseDriverAndManipulator();
+	PAUSE(10000);
 	return TaskResult::SUCCESS();
 }
+
+
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
-	int counter=0;
-	COMPONENT->workerFunc();
-	ros::Duration oneSec(1.0);
-	oneSec.sleep();
-	while (COMPONENT->IsCLLIStillInInit()){
-		if (counter > 10000) break;
-		sleep(1);
-		counter++;
-	}
-	if (counter > 10000){
-		printf("LLI STOPPED WO INITIALIZATION COMPLETED\n");
-		Event e("/lli/Shutdown");
-		events.raiseEvent(e);
-		return TaskResult::FAIL();
-	}
+	ROS_INFO("shiffon2ros Init !!");
+
+	COMPONENT->InitShiphonConection();
+	PAUSE(300);
 
 	Event e("EndOfInit");
 	events.raiseEvent(e);
 	return TaskResult::SUCCESS();
 }
+
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
-	if(!ros::ok()){			/* checks whether the node failed */
-		ROS_INFO("LLI STOPPED");
-		Event e("/lli/Shutdown");
-		events.raiseEvent(e);
-		return TaskResult::TERMINATED();
-	}
+	ROS_INFO("shiffon2ros Ready !!");
+
+	while (ros::ok()) {
+		COMPONENT->ReadAndPub_ShiphonGPS();
+		COMPONENT->ReadAndPub_ShiphonINS();
+		COMPONENT->ReadAndPub_ShiphonGpsSpeed();
+    }
 
 	return TaskResult::SUCCESS();
 }
 
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
-	ros::Rate r(10);
-	COMPONENT->setReady();
-	COMPONENT->checkReady();
-	while (COMPONENT->StateNotReady()){
-		COMPONENT->checkReady();
-	}
-	Event e("/lli_ready");
-	events.raiseEvent(e);
+	PAUSE(10000);
 	return TaskResult::SUCCESS();
 }
 
@@ -149,8 +135,10 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("READY",state_READY);
 	LocalTasks::registration("STANDBY",state_STANDBY);
 
-	ROS_INFO("Starting lli...");
-	Fsmlli(&context, &events);
-	ROS_INFO("After Starting lli...");
+	ROS_INFO("Starting shiffon2ros...");
+	Fsmshiffon2ros(&context, &events);
+
+
+	Shiphon_Ctrl * 	_shiphonCtrl;
 
 }
