@@ -21,7 +21,9 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 
 	_pub_GPS=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GPS>(fetchParam(&_nh,"SHIFFON2ROS","GPS","pub"),10));
 	_pub_INS=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::INS>(fetchParam(&_nh,"SHIFFON2ROS","INS","pub"),10));
+	_pub_INS2=ros::Publisher(_nh.advertise<std_msgs::Float64>("SENSORS/INSSPEED",10));
 	_pub_GpsSpeed=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GpsSpeed>(fetchParam(&_nh,"SHIFFON2ROS","GpsSpeed","pub"),10));
+	_pub_GpsSpeed2=ros::Publisher(_nh.advertise<std_msgs::Float64>("SENSORS/GPSSPEED2",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
 }
@@ -48,13 +50,21 @@ void RosComm::publishINS( config::SHIFFON2ROS::pub::INS &msg)
 
 }
 	
+void RosComm::publishINS2( std_msgs::Float64 &msg)
+{
+	_pub_INS2.publish(msg);
+
+}
 
 void RosComm::publishGpsSpeed( config::SHIFFON2ROS::pub::GpsSpeed &msg)
 {
 	_pub_GpsSpeed.publish(msg);
 }
 	
-
+void RosComm::publishGpsSpeed2( std_msgs::Float64 &msg)
+{
+	_pub_GpsSpeed2.publish(msg);
+}
 
 
 

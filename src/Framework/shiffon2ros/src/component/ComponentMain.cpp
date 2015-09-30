@@ -69,10 +69,19 @@ void ComponentMain::ReadAndPub_ShiphonINS(){
 	INS_msg.header.stamp = ros::Time::now();
 
 	publishINS(INS_msg);
+
+	std_msgs::Float64 INS_msg2;
+	INS_msg2.data = (float)((_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_DEG);
+	publishINS2(INS_msg2);
+
 }
 
 void ComponentMain::publishINS(config::SHIFFON2ROS::pub::INS& msg) {
 	_roscomm->publishINS(msg);
+}
+
+void ComponentMain::publishINS2(std_msgs::Float64& msg) {
+	_roscomm->publishINS2(msg);
 }
 
 void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
@@ -85,8 +94,18 @@ void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 	GpsSpeed_msg.header.stamp = ros::Time::now();
 
 	publishGpsSpeed(GpsSpeed_msg);
-}
 
+
+	//Temporary
+	std_msgs::Float64 GpsSpeed2_msg;
+	GpsSpeed2_msg.data = GpsSpeed_msg.speed;
+	publishGpsSpeed2(GpsSpeed2_msg);
+
+}
+void ComponentMain::publishGpsSpeed2(std_msgs::Float64& msg)
+{
+	_roscomm->publishGpsSpeed2(msg);
+}
 
 void ComponentMain::publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg)
 {

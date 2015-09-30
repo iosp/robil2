@@ -23,7 +23,9 @@ public:
 
 	void publishGPS(config::SHIFFON2ROS::pub::GPS& msg);
 	void publishINS(config::SHIFFON2ROS::pub::INS& msg);
+	void publishINS2(std_msgs::Float64& msg);
 	void publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg);
+	void publishGpsSpeed2(std_msgs::Float64& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
