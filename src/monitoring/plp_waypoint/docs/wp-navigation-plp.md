@@ -41,6 +41,7 @@ This PLP calculates the success probability of navigating to the end of a local 
 
 ### Concurrency Conditions
 _Later, we will replace this with "natural" PLP for the entire system. That PLP will maintain an "everything is OK" statement_
+
 * `Bobcat_OK`
 * `IBEO_OK`
 * `INS_OK`
@@ -57,6 +58,7 @@ _Later, we will replace this with "natural" PLP for the entire system. That PLP 
 ## Lifecycle (new!)
 
 ### Trigger
+
 * Nav task active
 * Received local path
 * Enough data already gathered (minimap, position, etc.)
@@ -71,6 +73,7 @@ _Later, we will replace this with "natural" PLP for the entire system. That PLP 
 
 ## Result
 _The calculation result describes the probabilities and time for each known outcome: success, and various types of failures._
+
 * success
   * probability: `(explicit subset of the PLP parameters)`
   * time
