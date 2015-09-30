@@ -2,7 +2,7 @@
 import rospy
 from robil_msgs.msg import Map, Path, AssignNavTask, AssignMission
 # from nav_msgs.msg import Path
-from geometry_msgs.msg import PoseWithCovarianceStamped, PoseWithCovariance
+from geometry_msgs.msg import PoseWithCovarianceStamped
 
 from plp_waypoint.msg import PlpMessage
 from std_msgs.msg import String, Header # TODO replace with the plp message
@@ -19,9 +19,9 @@ class PlpWaypointRosHarness:
 
     def __init__(self):
         # Init internal PLP
-        self.plp = PlpWaypoint( {"MIN_LOC_ERROR": 5, #m
+        self.plp = PlpWaypoint( {"MIN_LOC_ERROR": 5, # meters
                                  "BOBCAT_SIZE": (3.5, 2, 1.7),  # L x H x W, in meters
-                                 "MIN_BLADE_CLEARANCE": 1,  # m
+                                 "MIN_BLADE_CLEARANCE": 1,  # meters
                                  "FUEL_CONSUMPTION_RATE": 10000, # m/liter
                                  "BOBCAT_AVERAGE_SPEED": 20000 # m/hour
                                  } )
@@ -70,12 +70,12 @@ class PlpWaypointRosHarness:
     def state_machine_change(self, eventString):
         comps = eventString.data.split("/")
         # Test for the triggering of a task.
-        if ( len(comps) == 8 and 
-             comps[1]=="mission" and 
-             comps[3]=="TaskActive" and
-             comps[5]=="TaskSpooling" ):
+        if (len(comps) == 8 and
+            comps[1]=="mission" and
+            comps[3]=="TaskActive" and
+            comps[5]=="TaskSpooling"):
             mission_id = comps[2]
-            
+
             if ( self.mission_state.has_key( mission_id ) ):
                 self.mission_state[mission_id] += 1
             else:
@@ -85,10 +85,10 @@ class PlpWaypointRosHarness:
 
             # test if the task is a navigtion task
             rospy.loginfo("Task #{0} of mission {1} spooling".format(task_index, mission_id) )
-            if ( self.missions.has_key(mission_id) ):
+            if self.missions.has_key(mission_id):
                 mission = self.missions[mission_id]
                 task_id = mission.tasks[task_index].task_id
-                if ( self.nav_tasks.has_key(task_id) ):
+                if self.nav_tasks.has_key(task_id):
                     rospy.loginfo("Will attempt calculation once local path is ready")
                     self.trigger_local_path_published = False
                     self.trigger_nav_task_active = True
