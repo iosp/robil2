@@ -32,16 +32,22 @@ class PlpWaypointRosHarness:
         self.nav_tasks = {} # id -> nav_task
         self.missions = {} # id -> mission
         self.mission_state = {} # mission_id -> current task index.
+        self.monitor_active = False
 
         #Init the ROS stuff
         rospy.init_node("plp_waypoint", anonymous=False)
         self.publisher = rospy.Publisher(PLP_TOPIC, PlpMessage, queue_size=5)
         rospy.Subscriber("/PER/MiniMap", Map, self.map_updated)
-        rospy.Subscriber("/PP/Path", Path, self.path_updated)
-        rospy.Subscriber("/Loc/Pose", PoseWithCovarianceStamped, self.position_updated)
-        rospy.Subscriber("/OCU/SMME/NavigationTask", AssignNavTask, self.nav_task_assigned)
-        rospy.Subscriber("/OCU/SMME/MissionPlan", AssignMission, self.mission_assigned)
-        rospy.Subscriber("/decision_making/events", String, self.state_machine_change)
+        rospy.Subscriber("/PP/Path",
+                    Path, self.path_updated)
+        rospy.Subscriber("/LOC/Pose",
+                    PoseWithCovarianceStamped, self.position_updated)
+        rospy.Subscriber("/OCU/SMME/NavigationTask",
+                    AssignNavTask, self.nav_task_assigned)
+        rospy.Subscriber("/OCU/SMME/MissionPlan",
+                    AssignMission, self.mission_assigned)
+        rospy.Subscriber("/decision_making/events",
+                    String, self.state_machine_change)
 
         rospy.loginfo("Started")
 
@@ -50,13 +56,17 @@ class PlpWaypointRosHarness:
         self.plp.update_path(msg)
         self.trigger_local_path_published = True
         self.attempt_estimation()
+        if self.monitor_active:
+            rospy.loginfo("remaning path:{0}pts {1}m"
+                    .format(len(self.plp.path.waypoints.poses),
+                            self.plp.calc_local_path_distance()))
 
     def map_updated(self, msg):
         # rospy.loginfo("PlpWaypointRosHarness: Updating Map")
         self.plp.update_map(msg)
 
     def position_updated(self, msg):
-        rospy.loginfo("Position updated")
+        # rospy.loginfo("Position updated")
         self.plp.update_position(msg)
 
     def nav_task_assigned(self, nav_task):
@@ -114,6 +124,7 @@ class PlpWaypointRosHarness:
 
             # Estimate and publish.
             rospy.loginfo("Activating PLP")
+            self.monitor_active = True  # TODO turm the monitor off when no nav task is active
             if self.plp.can_estimate:
                 res = self.plp.get_estimation()
                 self.publisher.publish( PlpMessage(None, "Waypoint", "Estimation", repr(res)) )
@@ -127,7 +138,7 @@ if __name__ == '__main__':
         harness = PlpWaypointRosHarness()
 
         # DuckTape: Adding a fake position. TODO: remove once /Loc/Pose is active
-        harness.position_updated( PoseWithCovarianceStamped() )
+        # harness.position_updated( PoseWithCovarianceStamped() )
 
         rospy.loginfo("started")
         rospy.spin()
