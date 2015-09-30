@@ -2,6 +2,7 @@
 - v1 2015-01-12
 - v2 2015-01-28
 - v3 2015-05-18 Updated to reflect the python code and the recent presentations.
+- v4 2015-09-21 Added monitoring, and rearranged "trigger", "monitoring" and "goal" to be under "Lifecycle"
 
 ## About
 This PLP calculates the success probability of navigating to the end of a local path.
@@ -53,7 +54,19 @@ _Later, we will replace this with "natural" PLP for the entire system. That PLP 
 ## Side Effects
 * Fuel: `FUEL_CONSUMPTION_RATE * distanceToWaypoint * (heightVariablity * hvFactor)`
 
-## Goal
+## Lifecycle (new!)
+
+### Trigger
+* Nav task active
+* Received local path
+* Enough data already gathered (minimap, position, etc.)
+
+### Monitoring
+* Remaining path length _(English: Sample `distanceToWaypoint` every 10 seconds. Expect a decrease.)_
+  * Every: `10 sec`
+  * Expect: `decrease( distanceToWaypoint )`
+
+### Goal
 * `distanceToWaypoint < 1m`
 
 ## Result
@@ -71,10 +84,6 @@ _The calculation result describes the probabilities and time for each known outc
 * confidence `A number in the range of 0..1`
 
 ## Robil Integration
-### Trigger
-* Nav task active
-* Received local path
-* Enough data already gathered (minimap, position, etc.)
 
 ### Abort
 * Getting a new local path
