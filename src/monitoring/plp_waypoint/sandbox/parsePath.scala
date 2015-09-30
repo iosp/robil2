@@ -22,4 +22,4 @@ rawLines.foreach( line => {
 }})
 
 // Print path
-points.zipWithIndex.foreach( p => print( s"${p._2}\t${p._1.x}\t${p._1.y}\n") )
+points.zipWithIndex.foreach( p => print( Array(p._2, p._1.x, p._1.y).mkString("\t")+"\n") )
