@@ -1,25 +1,24 @@
 val rawLines=scala.io.Source.fromFile("path-clean.yaml").getLines.map( _.trim ).toSeq
 
 // Parsing to points
-var x=0.0
-var y=0.0
-var inPoint=false
+case class Position( val x:Double, val y:Double, val z:Double )
+case class Orientation( val x:Double, val y:Double, val z:Double, val w:Double )
+case class Point( val pos:Position, val orientation: Orientation )
 
-case class Point( val x:Double, val y:Double )
-val points = scala.collection.mutable.ListBuffer[Point]()
+val yamlVal = (x:String) => x.split(":")(1).toDouble
 
-rawLines.foreach( line => {
-  val parts = line.split(":")
-  parts(0) match {
-    case "pose" => inPoint=true
-    case "x" => x = parts(1).toDouble
-    case "y" => { if (inPoint) {
-      y = parts(1).toDouble
-      points += Point(x,y)
-      inPoint = false
-    }}
-    case _ => null
-}})
+val rawGroups = rawLines.foldRight(List(List[String]())
+    )( (i,l) => { if (i == "pose:") List[String]()::l
+            else (i +: l.head) :: l.tail }
+    ).tail
 
+val points = rawGroups.map( rg => Point( Position( yamlVal(rg(1)), yamlVal(rg(2)), yamlVal(rg(3))),
+                             Orientation(yamlVal(rg(5)), yamlVal(rg(6)), yamlVal(rg(7)), yamlVal(rg(8)))))
 // Print path
-points.zipWithIndex.foreach( p => print( Array(p._2, p._1.x, p._1.y).mkString("\t")+"\n") )
+println
+println
+print("TSV of the positions")
+println
+print("idx\tx\ty\tz" )
+println
+points.zipWithIndex.foreach( pi => print( Array(pi._2.toString, pi._1.pos.x, pi._1.pos.y, pi._1.pos.z).mkString("\t")+"\n") )
