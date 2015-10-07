@@ -3,6 +3,7 @@
 - v2 2015-01-28
 - v3 2015-05-18 Updated to reflect the python code and the recent presentations.
 - v4 2015-09-21 Added monitoring, and rearranged "trigger", "monitoring" and "goal" to be under "Lifecycle"
+- v5 2015-10-07 Restructured, "lifecycle" removed.
 
 ## About
 This PLP calculates the success probability of navigating to the end of a local path.
@@ -15,11 +16,6 @@ This PLP calculates the success probability of navigating to the end of a local 
 * `positionError` &larr; `/Loc/Pose` (obtained from the covariance component of `position`)
 * `mapError` &larr; `TBD` Current assume map error=0. Error will become interesting when we use visual data.
 
-### Variables
-* `distanceToWaypoint` local path length to WP
-* `mapOccupancy` percentage of occupied cells in MiniMap
-* `heightVariablity` height variability in `map`
-
 ### Constants
 * `MIN_LOC_ERROR` Minimal error under which it is unsafe to drive
 * `BOBCAT_SIZE` Size of the bobcat
@@ -27,9 +23,18 @@ This PLP calculates the success probability of navigating to the end of a local 
 * `FUEL_CONSUMPTION_RATE`
 * `BOBCAT_AVERAGE_SPEED`
 
+### Variables
+_Calculated based on parameters and constants._
+* `distanceToWaypoint` local path length to WP
+* `mapOccupancy` percentage of occupied cells in MiniMap
+* `heightVariablity` height variability in `map`
+
 ## Natural Preconditions
-* `bladeDof[0] in ([x,y]...) and bladeDof[1] in ([x,y]....) and bladeDof[2] in ([x,y]...)`
-    - Ensuring that the IBEO can see the road
+- Ensuring that the IBEO can see the road
+  * `bladeDof[0] in ([x,y]...) and bladeDof[1] in ([x,y]....) and bladeDof[2] in ([x,y]...)`
+
+## Goal
+* `distanceToWaypoint < 1m`
 
 ## Application Context
 ### Resources
@@ -40,7 +45,7 @@ This PLP calculates the success probability of navigating to the end of a local 
 * `positionError < MIN_LOC_ERROR`
 
 ### Concurrency Conditions
-_Later, we will replace this with "natural" PLP for the entire system. That PLP will maintain an "everything is OK" statement_
+_Later, we will replace this with "health" PLP for the entire system_
 
 * `Bobcat_OK`
 * `IBEO_OK`
@@ -52,24 +57,14 @@ _Later, we will replace this with "natural" PLP for the entire system. That PLP 
 ### Concurrent Modules
 * blade minimum height preserver
 
+### Advancement measures
+* Remaining path length _(English: Sample `distanceToWaypoint` every time the path is published. Expect a decrease.)_
+  * Every: `path` publication
+  * Expect: `decrease( distanceToWaypoint )`
+
 ## Side Effects
 * Fuel: `FUEL_CONSUMPTION_RATE * distanceToWaypoint * (heightVariablity * hvFactor)`
 
-## Lifecycle (new!)
-
-### Trigger
-
-* Nav task active
-* Received local path
-* Enough data already gathered (minimap, position, etc.)
-
-### Monitoring
-* Remaining path length _(English: Sample `distanceToWaypoint` every 10 seconds. Expect a decrease.)_
-  * Every: `10 sec`
-  * Expect: `decrease( distanceToWaypoint )`
-
-### Goal
-* `distanceToWaypoint < 1m`
 
 ## Result
 _The calculation result describes the probabilities and time for each known outcome: success, and various types of failures._
@@ -88,11 +83,14 @@ _The calculation result describes the probabilities and time for each known outc
 
 ## Robil Integration
 
+### Trigger
+* Nav task active
+* Received local path
+* Enough data already gathered (minimap, position, etc.)
+
 ### Abort
 * Getting a new local path
-
-### Pause/Resume
-* Pausing and resuming tasks according to the task manager.
+* Task being paused/aborted
 
 ### Output
-Send a message describing a result to a ROS topic. Exact details TBD.
+* Predictions and advance measure warnings sent to the `plp/messages` ROS topic.

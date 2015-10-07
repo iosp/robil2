@@ -137,9 +137,6 @@ if __name__ == '__main__':
         rospy.loginfo("Starting plp_waypoint node...")
         harness = PlpWaypointRosHarness()
 
-        # DuckTape: Adding a fake position. TODO: remove once /Loc/Pose is active
-        # harness.position_updated( PoseWithCovarianceStamped() )
-
         rospy.loginfo("started")
         rospy.spin()
 
