@@ -100,7 +100,7 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 	oneSec.sleep();
 	while (COMPONENT->IsCLLIStillInInit()){
 		if (counter > 10000) break;
-		sleep(1);
+		oneSec.sleep();
 		counter++;
 	}
 	if (counter > 10000){
