@@ -171,6 +171,3 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(rate2effort src/rate2effort_node.cpp)
 target_link_libraries(rate2effort ${catkin_LIBRARIES})
 
-add_executable(rate2effort_150909 src/rate2effort_node_150909.cpp)
-target_link_libraries(rate2effort_150909 ${catkin_LIBRARIES})
-
