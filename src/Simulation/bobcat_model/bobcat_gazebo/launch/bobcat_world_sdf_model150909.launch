@@ -36,7 +36,7 @@
 					  supporter_position_controller
                                           brackets_position_controller"/>
 
- <node name="RateToEffort" pkg="rate2effort" type="rate2effort_150909" cwd="node" output="screen" /> 
+ <node name="RateToEffort" pkg="rate2effort" type="rate2effort" cwd="node" output="screen" /> 
 
 </launch>
 
