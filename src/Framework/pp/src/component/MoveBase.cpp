@@ -479,6 +479,7 @@ MoveBase::MoveBase(ComponentMain* comp)
 	speedSubscriber = node.subscribe("/cmd_vel", 1, &on_speed);
 	globalPathPublisher = node.advertise<nav_msgs::Path>("/pp/global_path",1);
 	selectedPathPublisher = node.advertise<nav_msgs::Path>("/pp/selected_path",1);
+	pathVisualizationPublisher = node.advertise<sensor_msgs::PointCloud>("/path_visualization", 5, false);
 	//moveBaseStatusSubscriber = node.subscribe("/move_base/status", 1, &MoveBase::on_move_base_status, this);
 	diagnosticPublisher = node.advertise<diagnostic_msgs::DiagnosticArray>(DIAGNOSTIC_TOPIC_NAME, 100);
 
@@ -619,7 +620,7 @@ SYNCH
 	if(goal_path.waypoints.poses.size()==0) return;
 	gotten_path = goal_path;
 	gp_defined=true;
-	
+
 	if(gotten_path.waypoints.poses.size()>1){
 	    geometry_msgs::Pose last = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-1].pose;
 	    geometry_msgs::Pose llast = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-2].pose;
@@ -642,7 +643,7 @@ SYNCH
 	}
 	BOOST_FOREACH( const geometry_msgs::PoseStamped& p , gotten_path.waypoints.poses )
 	{
-	    DBG_INFO("Navigation: ...... "<<p.pose.position.x<<","<<p.pose.position.y);
+	    DBG_INFO("Navigation: ...... "<<STR(p.pose.position));
 	}
 
 	if(not is_active){
@@ -691,6 +692,26 @@ SYNCH
 	if(all_data_defined()) calculate_goal();
 }
 
+void MoveBase::publish_global_gotten_path_visualization(nav_msgs::Path global_gotten_path){
+	//publish the gotten goal as PointCloud message, for better visualization.
+	sensor_msgs::PointCloud path_visualization;
+
+	for(int i=0; i<global_gotten_path.poses.size(); ++i){
+		geometry_msgs::Point32 vis_point;
+		geometry_msgs::PoseStamped_<std::allocator<void> > path_point = global_gotten_path.poses.at(i);
+
+		vis_point.x = path_point.pose.position.x;
+		vis_point.y = path_point.pose.position.y;
+		vis_point.z = path_point.pose.position.z;
+
+		path_visualization.points.push_back(vis_point);
+	}
+
+	path_visualization.header.frame_id = global_gotten_path.header.frame_id;
+	path_visualization.header.stamp =ros::Time::now();
+
+	pathVisualizationPublisher.publish(path_visualization);
+}
 
 void MoveBase::cancel(bool clear_last_goals){
 	SYNCH
@@ -774,6 +795,7 @@ void MoveBase::calculate_goal(){
 	gotten_global_path.header.stamp = ros::Time(0) ;
 	globalPathPublisher.publish(gotten_global_path);
 	selectedPathPublisher.publish(gotten_global_path);
+	publish_global_gotten_path_visualization(gotten_global_path);
 
 	//DBG_INFO_ONCE("Navigation: calculate next waypoint");
 	goal = search_next_waypoint(gotten_global_path, get_unvisited_index(path_id), gotten_location, is_path_finished, goal_index);
@@ -883,17 +905,20 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	double distance_to_gaol = hypot( gotten_location.pose.pose.position.x-robil_goal_x , gotten_location.pose.pose.position.y-robil_goal_y);
 	static int rejection_counter=0;
 	if(
+
+//		true
+
 //		last_nav_goal.goal.target_pose.pose.position.x == robil_goal_x and
 //		last_nav_goal.goal.target_pose.pose.position.y == robil_goal_y
 	  
 		( rejection_counter < 50 and distance_prev_and_new_goal < 1.5 )
-		or 
+		or
 		distance_to_gaol > 90
-		
+
 	){
 	    if( distance_prev_and_new_goal > 0.5 )
 	    {
-		DBG_INFO_ONCE("Navigation: goal is rejected. the goal is "<<(distance_prev_and_new_goal<1.5?" same one.":"")<<(distance_to_gaol > 90?"too far":"")<<" goal="<<robil_goal_x<<","<<robil_goal_y);
+		//DBG_INFO_ONCE("Navigation: goal is rejected. the goal is "<<(distance_prev_and_new_goal<1.5?" same one.":"")<<(distance_to_gaol > 90?"too far":"")<<" goal="<<robil_goal_x<<","<<robil_goal_y);
 	    }
 	    rejection_counter++;
 	    return;
@@ -915,8 +940,9 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	ps_goal.header = goal.header;
 
 	std::stringstream sid ;
+	static long send_counter=0; send_counter++;
 	sid<<"[i] goal #"<< boost::lexical_cast<std::string>(goal_counter) <<": "
-					 << ps_goal.pose.position.x<<","<<ps_goal.pose.position.y;
+					 << ps_goal.pose.position.x<<","<<ps_goal.pose.position.y<<";"<<send_counter;
 	goal.goal_id.id = sid.str();
 	goal.goal_id.stamp = goal.header.stamp;
 	
@@ -925,6 +951,8 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	//DBG_INFO("Navigation: set new goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y);
 	last_nav_goal_id = goal.goal_id;
 	last_nav_goal = goal;
+
+//	goalCancelPublisher.publish(last_nav_goal_id);
 	goalPublisher.publish(goal);
 
 
