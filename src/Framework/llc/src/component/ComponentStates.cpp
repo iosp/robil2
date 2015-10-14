@@ -8,6 +8,8 @@
 #include <gazebo_msgs/GetModelState.h>
 #include "aux_functions.h"
 #include <bondcpp/bond.h>
+#include <llc/ControlParamsConfig.h>
+#include <dynamic_reconfigure/server.h>
 
 using namespace std;
 using namespace decision_making;
@@ -15,6 +17,8 @@ using namespace decision_making;
 
 double hb_time = 0 ;
 const double t_out = 20.0 ;
+static double Kp = 1.3 , Kd = 0.0 , Ki = 0.0   ; 				/* PID constants of linear x */
+static double Kpz = -1.8 , Kdz = 0.01 , Kiz = -0.1   ;		/* PID constants of angular z */
 
 class Params: public CallContextParameters{
 public:
@@ -22,7 +26,6 @@ public:
 	Params(ComponentMain* comp):comp(comp){}
 	std::string str()const{return "";}
 };
-
 FSM(llc_ON)
 {
 	FSM_STATES
@@ -117,6 +120,7 @@ void hb_callback (const std_msgs::Bool &msg)
 		hb_time = t_out + 1.0;
 }
 
+
 geometry_msgs::Twist Translate(geometry_msgs::PoseWithCovarianceStamped model_state , geometry_msgs::Twist model_speed){
 
 	std_msgs::Float64 x[3] ;
@@ -161,17 +165,25 @@ geometry_msgs::Twist Translate(geometry_msgs::PoseWithCovarianceStamped model_st
 
 }
 
+void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t level) {
+
+	Kp=config.linearVelocity_P;
+	Ki=config.linearVelocity_I;
+	Kd=config.linearVelocity_D;
+	Kpz=config.angularVelocity_P;
+	Kiz=config.angularVelocity_I;
+	Kdz=config.angularVelocity_D;
+}
+
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
 
 //	#define LLC_USE_LOCALIZATION
 
 	ROS_INFO("LLC Ready");
 
-	double Kp = 0.6 , Kd = 0 , Ki = 0.0   ; 				/* PID constants of linear x */
-	double Kpz = -1.2 , Kdz = -0.0  , Kiz = -0.0   ;		/* PID constants of angular z */
 	double integral [2] = {} ; 								/* integration part */
 	double der [2] = {} ;  									/* the derivative of the error */
-	double integral_limit [2] = {1,-0.1};					/* emergency stop */
+	double integral_limit [2] = {1,-0.3};					/* emergency stop */
 	double angular_filter[1024] = {} ;
 	double old_err = 0;
 	int E_stop = 1;
@@ -179,8 +191,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 #ifdef LLC_USE_LOCALIZATION
 
-	Kp = 0.12 ; Kd = 0.0 ; Ki = 0.0 ;
-	Kpz = -1.2 ; Kdz = 0.0 ; Kiz = 0.0 ;
+	Kp = 0.12 ; Kd = 0.0 ; Ki = 0.1 ;
+	Kpz = -1.32 ; Kdz = 0.0 ; Kiz = -0.3 ;
 
 	geometry_msgs::Twist per_speed ;
 	geometry_msgs::PoseWithCovarianceStamped per_location ;
@@ -226,6 +238,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	/* get measurements and calculate error signal */
 
 #ifndef LLC_USE_LOCALIZATION
+
 	    ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
 	    gazebo_msgs::GetModelState getmodelstate;
 	    getmodelstate.request.model_name ="Sahar";
@@ -235,6 +248,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	    t = Translate(gigi, getmodelstate.response.twist);
 
 #else
+
 	    per_location = COMPONENT->Per_pose ;
 	    per_speed = COMPONENT->Per_measured_speed;
 	    t = Translate(per_location, per_speed);
@@ -249,6 +263,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				cur_error.twist.linear.x = (COMPONENT->WSM_desired_speed.twist.linear.x) - t.linear.x;
 				cur_error.twist.angular.z = ((COMPONENT->WSM_desired_speed.twist.angular.z) - t.angular.z);
 			}
+
+
 
 			Push_elm(angular_filter,1024,cur_error.twist.angular.z);
 			//cur_error.twist.angular.z = _medianfilter(angular_filter,201);
@@ -271,9 +287,39 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				integral[k] = -integral_limit[k] ;
 	}
 
-	Throttle_rate.data = (Kp*cur_error.twist.linear.x + Ki*integral[0] - Kd*der[0]) ;
-	Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
 
+
+		//Kpz=Kpz*(1+abs(t.linear.x));
+//ROS_INFO("%f",Throttle_rate.data);
+	  	
+		//Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;  
+	
+	 
+	Throttle_rate.data = Kp*cur_error.twist.linear.x + Ki*integral[0] + Kd*der[0] ;
+	Steering_rate.data = Kpz*cur_error.twist.angular.z+Kdz*der[1]+Kiz*integral[1] ; 
+	
+
+
+/*/or controlers test
+if(COMPONENT->WPD_desired_speed.twist.angular.z>0){
+Steering_rate.data = E_stop*(Kpz*(cur_error.twist.angular.z+0.2) + Kiz*integral[1] - Kdz*der[1]) ;
+}
+if(COMPONENT->WPD_desired_speed.twist.angular.z<0){
+Steering_rate.data = E_stop*(Kpz*(cur_error.twist.angular.z-0.2) + Kiz*integral[1] - Kdz*der[1]) ;
+}
+if(COMPONENT->WPD_desired_speed.twist.angular.z==0){
+
+}
+*/
+
+
+	/*
+// stops (or's test)
+	if((COMPONENT->WPD_desired_speed.twist.linear.x==0 && COMPONENT->WPD_desired_speed.twist.angular.z==0)|| !(COMPONENT->WPD_desired_speed.twist.linear.x ||COMPONENT->WPD_desired_speed.twist.angular.z )){
+	Throttle_rate.data = 0; 
+	Steering_rate.data = 0;
+	}
+*/
 	/* publish */
 		COMPONENT->publishEffortsTh(Throttle_rate);
 		COMPONENT->publishEffortsSt(Steering_rate);
@@ -320,6 +366,8 @@ TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& even
 
 void runComponent(int argc, char** argv, ComponentMain& component){
 
+
+	ros::init(argc, argv, "llc");
 	ros_decision_making_init(argc, argv);
 	RosEventQueue events;
 	CallContext context;
@@ -329,6 +377,12 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	LocalTasks::registration("INIT",state_INIT);
 	LocalTasks::registration("READY",state_READY);
 	LocalTasks::registration("STANDBY",state_STANDBY);
+
+    dynamic_reconfigure::Server<llc::ControlParamsConfig> server;
+    dynamic_reconfigure::Server<llc::ControlParamsConfig>::CallbackType f;
+
+    f = boost::bind(&dynamic_Reconfiguration_callback, _1, _2);
+    server.setCallback(f);
 
 	ROS_INFO("Starting llc...");
 	Fsmllc(&context, &events);
