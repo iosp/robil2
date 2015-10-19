@@ -50,6 +50,15 @@
 
 namespace move_base {
 
+namespace{
+  	  inline
+  	  double NOW(){
+		  static boost::posix_time::ptime start_sys_time = boost::posix_time::second_clock::local_time();
+		  return double((double)(boost::posix_time::second_clock::local_time() - start_sys_time).total_microseconds()/(double)1000000.0);
+	  }
+  }
+
+
   MoveBase::MoveBase(tf::TransformListener& tf) :
     tf_(tf),
     as_(NULL),
@@ -582,12 +591,10 @@ namespace move_base {
       planner_plan_->clear();
 
       static std::ofstream log_file("/tmp/cogni_move_base.log");
-      static boost::posix_time::ptime start_sys_time = boost::posix_time::second_clock::local_time();
-      #define NOW double((double)(boost::posix_time::second_clock::local_time() - start_sys_time).total_microseconds()/(double)1000000.0)
 
-      log_file << "starting calculation for new plan " << NOW << "\n";
+      log_file << "starting calculation for new plan " << NOW() << "\n";
       bool gotPlan = n.ok() && makePlan(temp_goal, *planner_plan_);
-      log_file << "got plan? " << gotPlan << " " << NOW << "\n";
+      log_file << "got plan? " << gotPlan << " " << NOW() << "\n";
       log_file.flush();
 
       if(gotPlan){
@@ -788,12 +795,11 @@ namespace move_base {
     return hypot(p1.pose.position.x - p2.pose.position.x, p1.pose.position.y - p2.pose.position.y);
   }
 
+
   bool MoveBase::executeCycle(geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& global_plan){
     boost::recursive_mutex::scoped_lock ecl(configuration_mutex_);
 
     static std::ofstream error_file("/tmp/move_base_error.log");
-    static boost::posix_time::ptime start_sys_time = boost::posix_time::second_clock::local_time();
-    #define NOW double((double)(boost::posix_time::second_clock::local_time() - start_sys_time).total_microseconds()/(double)1000000.0)
 
 
 
@@ -826,7 +832,7 @@ namespace move_base {
     if(!controller_costmap_ros_->isCurrent()){
       ROS_WARN("[%s]:Sensor data is out of date, we're not going to allow commanding of the base for safety",ros::this_node::getName().c_str());
 
-      error_file << NOW << " : Sensor data is out of date, we're not going to allow commanding of the base for safety\n";
+      error_file << NOW() << " : Sensor data is out of date, we're not going to allow commanding of the base for safety\n";
       error_file.flush();
 
 
@@ -852,10 +858,6 @@ namespace move_base {
 
 
 
-
-
-
-
       //Publish the original path (controller plan) before using dampening algorithm.
 		nav_msgs::Path original_path;
 		original_path.header = controller_plan_->at(0).header;
@@ -868,128 +870,21 @@ namespace move_base {
 		original_global_path_publisher_.publish(original_path);
 
 
-		//currently, last_path holds the last published plan, and controller_plan holds the new plan.
-		if(last_path_plan!=NULL){
-			//perform dampening of current path with last path.
+      if( last_path_plan ){
+		  path_filter(
+				  *last_path_plan,
+				  *controller_plan_,
+				  goal,
 
-			tf::Stamped<tf::Pose> global_pose;
-			planner_costmap_ros_->getRobotPose(global_pose);
-			geometry_msgs::PoseStamped current_position;
-			tf::poseStampedTFToMsg(global_pose, current_position);
+				  *controller_plan_
+		  );
+      }
+      else
+      {
+    	  last_path_plan = new Path();
+      }
 
-			PathPlanAlphaBetaFilter::Point rob_point;
-			rob_point.x = current_position.pose.position.x;
-			rob_point.y = current_position.pose.position.z;
-
-			PathPlanAlphaBetaFilter::Path old_path = PathPlanAlphaBetaFilter::path_from_pose_stamped_vector_path(*last_path_plan);
-			PathPlanAlphaBetaFilter::Path current_path = PathPlanAlphaBetaFilter::path_from_pose_stamped_vector_path(*controller_plan_);
-
-
-			ros::NodeHandle node("~");
-
-		    if (!node.getParamCached("dampening/alpha", dampening_alpha)) {
-				dampening_alpha = 0.8;
-			}
-			if (!node.getParamCached("dampening/smooth_resolution", dampening_smooth_resolution)) {
-				dampening_smooth_resolution = 0.5;
-			}
-
-			dampening_result_path_step = 0.3; //TODO: distance between first and second points
-
-
-
-			static std::ofstream dampening_file("/tmp/dampening.log");
-
-			dampening_file<< " start: " << NOW;
-			std::vector<PathPlanAlphaBetaFilter::Point> dampening_plan =
-					dampening_filter.update(
-							rob_point,
-							old_path,
-							current_path,
-							dampening_alpha,
-							dampening_result_path_step, //0.3
-							dampening_smooth_resolution //0.5
-					);
-
-			dampening_file<< "\t end: " << NOW << "\n";
-
-			dampening_file.flush();
-
-
-			///////////////////////////////
-			////// write to file
-			//////////////////////////////
-			static std::ofstream file("/tmp/path.log");
-			static long path_id=0;
-
-			file << "id = " << (path_id++) << " -------- " << std::endl;
-			file << "   prev.  path : "<<std::endl;
-			for(size_t i=0;i<old_path.size();i++)
-				file <<"      "<<old_path[i].x << ", "<<old_path[i].y << std::endl;
-			file << "   new.   path : "<<std::endl;
-			for(size_t i=0;i<current_path.size();i++)
-				file <<"      "<<current_path[i].x << ", "<<current_path[i].y << std::endl;
-
-
-
-			file << "   result path : "<<std::endl;
-			for(size_t i=0;i<dampening_plan.size();i++)
-				file <<"      "<<dampening_plan[i].x << ", "<<dampening_plan[i].y << std::endl;
-
-
-			file << "===========	TIMESTAMP FOR RESULT PATH:  " << NOW <<std::endl;
-			file.flush();
-
-			///////////////////////////////
-			////// END OF write to file
-			//////////////////////////////
-
-
-
-			//copy the dampening plan into the current path plan
-			std_msgs::Header points_header = controller_plan_->at(0).header;
-			controller_plan_->clear();
-
-			for(int i=0; i<dampening_plan.size(); ++i){
-				geometry_msgs::PoseStamped point;
-
-				point.pose.position.x = dampening_plan.at(i).x;
-				point.pose.position.y = dampening_plan.at(i).y;
-
-				point.header = points_header;
-
-				//assign the orientation according to the next point.
-				if(i< dampening_plan.size()-1){
-					//this point has a "next point", to calculate angle from.
-					geometry_msgs::Point diff_from_next_point;
-					diff_from_next_point.x = dampening_plan.at(i+1).x - point.pose.position.x;
-					diff_from_next_point.y = dampening_plan.at(i+1).y - point.pose.position.y;
-
-					double yaw = atan2(diff_from_next_point.y, diff_from_next_point.x);
-					tf::Quaternion orientation =  tf::Quaternion(yaw, 0, 0);
-					point.pose.orientation.x =orientation.x();
-					point.pose.orientation.y =orientation.y();
-					point.pose.orientation.z =orientation.z();
-					point.pose.orientation.w =orientation.w();
-				} else {
-					//this point has no "next point" to calculate angle from. take the goal as angle.
-					point.pose.orientation = goal.pose.orientation;
-				}
-
-				controller_plan_->push_back(point);
-			}
-
-			//clear last path, and save the new one
-			last_path_plan->clear();
-			(*last_path_plan) = (*controller_plan_);
-		} else {
-			//this is the first plan - do not perform dampening, and take only the new plan.
-			//no need for clearing.
-			last_path_plan = new std::vector<geometry_msgs::PoseStamped>();
-			(*last_path_plan) = (*controller_plan_);
-		}
-
-
+      *last_path_plan = *controller_plan_;
 
 
 
@@ -997,7 +892,7 @@ namespace move_base {
         //ABORT and SHUTDOWN COSTMAPS
         ROS_ERROR("Failed to pass global plan to the controller, aborting.");
 
-        error_file << NOW << " : Failed to pass global plan to the controller, aborting.";
+        error_file << NOW() << " : Failed to pass global plan to the controller, aborting.";
         error_file.flush();
 
 
@@ -1126,7 +1021,7 @@ namespace move_base {
           if(recovery_trigger_ == CONTROLLING_R){
             ROS_ERROR("Aborting because a valid control could not be found. Even after executing all recovery behaviors");
 
-            error_file << NOW << " : Aborting because a valid control could not be found. Even after executing all recovery behaviors.";
+            error_file << NOW() << " : Aborting because a valid control could not be found. Even after executing all recovery behaviors.";
             error_file.flush();
 
 
@@ -1136,7 +1031,7 @@ namespace move_base {
           else if(recovery_trigger_ == PLANNING_R){
             ROS_ERROR("Aborting because a valid plan could not be found. Even after executing all recovery behaviors");
 
-            error_file << NOW << " : Aborting because a valid plan could not be found. Even after executing all recovery behaviors";
+            error_file << NOW() << " : Aborting because a valid plan could not be found. Even after executing all recovery behaviors";
             error_file.flush();
 
             as_->setAborted(move_base_msgs::MoveBaseResult(), "Failed to find a valid plan. Even after executing recovery behaviors.");
@@ -1144,7 +1039,7 @@ namespace move_base {
           else if(recovery_trigger_ == OSCILLATION_R){
             ROS_ERROR("Aborting because the robot appears to be oscillating over and over. Even after executing all recovery behaviors");
 
-            error_file << NOW << " : Aborting because the robot appears to be oscillating over and over. Even after executing all recovery behaviors";
+            error_file << NOW() << " : Aborting because the robot appears to be oscillating over and over. Even after executing all recovery behaviors";
 			error_file.flush();
 
             as_->setAborted(move_base_msgs::MoveBaseResult(), "Robot is oscillating. Even after executing recovery behaviors.");
@@ -1156,7 +1051,7 @@ namespace move_base {
       default:
         ROS_ERROR("This case should never be reached, something is wrong, aborting");
 
-        error_file << NOW << " : This case should never be reached, something is wrong, aborting";
+        error_file << NOW() << " : This case should never be reached, something is wrong, aborting";
 		error_file.flush();
 
 
@@ -1169,12 +1064,144 @@ namespace move_base {
         return true;
     }
 
-
-	#undef NOW
     //we aren't done yet
     return false;
   }
 
+
+  /**
+   * return: error code. 0 is OK
+   */
+  int MoveBase::path_filter(
+		  const MoveBase::Path& last_path_plan,
+		  const MoveBase::Path & controller_plan,
+		  const geometry_msgs::PoseStamped& goal,
+		  MoveBase::Path& resulted_plan
+  )
+  {
+	  //currently, last_path holds the last published plan, and controller_plan holds the new plan.
+//	  		if(last_path_plan!=NULL){
+	  			//perform dampening of current path with last path.
+
+	  			tf::Stamped<tf::Pose> global_pose;
+	  			planner_costmap_ros_->getRobotPose(global_pose);
+	  			geometry_msgs::PoseStamped current_position;
+	  			tf::poseStampedTFToMsg(global_pose, current_position);
+
+	  			PathPlanAlphaBetaFilter::Point rob_point;
+	  			rob_point.x = current_position.pose.position.x;
+	  			rob_point.y = current_position.pose.position.z;
+
+	  			PathPlanAlphaBetaFilter::Path old_path = PathPlanAlphaBetaFilter::path_from_pose_stamped_vector_path(last_path_plan);
+	  			PathPlanAlphaBetaFilter::Path current_path = PathPlanAlphaBetaFilter::path_from_pose_stamped_vector_path(controller_plan);
+
+
+	  			ros::NodeHandle node("~");
+
+	  		    if (!node.getParamCached("dampening/alpha", dampening_alpha)) {
+	  				dampening_alpha = 0.0;
+	  			}
+	  			if (!node.getParamCached("dampening/smooth_resolution", dampening_smooth_resolution)) {
+	  				dampening_smooth_resolution = 0.5;
+	  			}
+
+	  			dampening_result_path_step = 0.3; //TODO: distance between first and second points
+
+
+
+	  			static std::ofstream dampening_file("/tmp/dampening.log");
+
+	  			dampening_file<< " start: " << NOW();
+	  			std::vector<PathPlanAlphaBetaFilter::Point> dampening_plan =
+	  					dampening_filter.update(
+	  							rob_point,
+	  							old_path,
+	  							current_path,
+	  							dampening_alpha,
+	  							dampening_result_path_step, //0.3
+	  							dampening_smooth_resolution //0.8
+	  					);
+
+	  			dampening_file<< "\t end: " << NOW() << "\n";
+
+	  			dampening_file.flush();
+
+
+	  			///////////////////////////////
+	  			////// write to file
+	  			//////////////////////////////
+	  			static std::ofstream file("/tmp/path.log");
+	  			static long path_id=0;
+
+	  			file << "id = " << (path_id++) << " -------- " << std::endl;
+	  			file << "   prev.  path : "<<std::endl;
+	  			for(size_t i=0;i<old_path.size();i++)
+	  				file <<"      "<<old_path[i].x << ", "<<old_path[i].y << std::endl;
+	  			file << "   new.   path : "<<std::endl;
+	  			for(size_t i=0;i<current_path.size();i++)
+	  				file <<"      "<<current_path[i].x << ", "<<current_path[i].y << std::endl;
+
+
+
+	  			file << "   result path : "<<std::endl;
+	  			for(size_t i=0;i<dampening_plan.size();i++)
+	  				file <<"      "<<dampening_plan[i].x << ", "<<dampening_plan[i].y << std::endl;
+
+
+	  			file << "===========	TIMESTAMP FOR RESULT PATH:  " << NOW() <<std::endl;
+	  			file.flush();
+
+	  			///////////////////////////////
+	  			////// END OF write to file
+	  			//////////////////////////////
+
+
+
+	  			//copy the dampening plan into the current path plan
+	  			std_msgs::Header points_header = controller_plan.at(0).header;
+	  			resulted_plan.clear();
+
+	  			for(int i=0; i<dampening_plan.size(); ++i){
+	  				geometry_msgs::PoseStamped point;
+
+	  				point.pose.position.x = dampening_plan.at(i).x;
+	  				point.pose.position.y = dampening_plan.at(i).y;
+
+	  				point.header = points_header;
+
+	  				//assign the orientation according to the next point.
+	  				if(i< dampening_plan.size()-1){
+	  					//this point has a "next point", to calculate angle from.
+	  					geometry_msgs::Point diff_from_next_point;
+	  					diff_from_next_point.x = dampening_plan.at(i+1).x - point.pose.position.x;
+	  					diff_from_next_point.y = dampening_plan.at(i+1).y - point.pose.position.y;
+
+	  					double yaw = atan2(diff_from_next_point.y, diff_from_next_point.x);
+	  					tf::Quaternion orientation =  tf::Quaternion(yaw, 0, 0);
+	  					point.pose.orientation.x =orientation.x();
+	  					point.pose.orientation.y =orientation.y();
+	  					point.pose.orientation.z =orientation.z();
+	  					point.pose.orientation.w =orientation.w();
+	  				} else {
+	  					//this point has no "next point" to calculate angle from. take the goal as angle.
+	  					point.pose.orientation = goal.pose.orientation;
+	  				}
+
+	  				resulted_plan.push_back(point);
+	  			}
+
+	  			//clear last path, and save the new one
+//	  			last_path_plan->clear();
+//	  			(*last_path_plan) = (*controller_plan_);
+//	  		} else {
+//	  			//this is the first plan - do not perform dampening, and take only the new plan.
+//	  			//no need for clearing.
+//
+//	  			last_path_plan = new std::vector<geometry_msgs::PoseStamped>();
+//	  			(*last_path_plan) = (*controller_plan_);
+//	  		}
+	  			return 0;
+  }
   bool MoveBase::loadRecoveryBehaviors(ros::NodeHandle node){
     XmlRpc::XmlRpcValue behavior_list;
     if(node.getParam("recovery_behaviors", behavior_list)){

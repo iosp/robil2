@@ -176,6 +176,16 @@ namespace move_base {
        */
       void wakePlanner(const ros::TimerEvent& event);
 
+
+      typedef std::vector<geometry_msgs::PoseStamped> Path;
+
+
+      int path_filter(
+    		  const Path& old_path, const Path& current_path,
+			  const geometry_msgs::PoseStamped& goal,
+    		  Path& dampening_plan);
+
+
       tf::TransformListener& tf_;
 
       MoveBaseActionServer* as_;
