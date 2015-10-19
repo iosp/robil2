@@ -453,6 +453,7 @@ namespace move_base {
     delete planner_plan_;
     delete latest_plan_;
     delete controller_plan_;
+    delete last_path_plan;
 
     planner_.reset();
     tc_.reset();
@@ -579,7 +580,15 @@ namespace move_base {
 
       //run planner
       planner_plan_->clear();
+
+      static std::ofstream log_file("/tmp/cogni_move_base.log");
+      static boost::posix_time::ptime start_sys_time = boost::posix_time::second_clock::local_time();
+      #define NOW double((double)(boost::posix_time::second_clock::local_time() - start_sys_time).total_microseconds()/(double)1000000.0)
+
+      log_file << "starting calculation for new plan " << NOW << "\n";
       bool gotPlan = n.ok() && makePlan(temp_goal, *planner_plan_);
+      log_file << "got plan? " << gotPlan << " " << NOW << "\n";
+      log_file.flush();
 
       if(gotPlan){
         ROS_DEBUG_NAMED("move_base_plan_thread","Got Plan with %zu points!", planner_plan_->size());
@@ -620,15 +629,15 @@ namespace move_base {
       //take the mutex for the next iteration
       lock.lock();
 
-      //setup sleep interface if needed
-      if(planner_frequency_ > 0){
-        ros::Duration sleep_time = (start_time + ros::Duration(1.0/planner_frequency_)) - ros::Time::now();
-        if (sleep_time > ros::Duration(0.0)){
-          wait_for_wake = true;
-          timer = n.createTimer(sleep_time, &MoveBase::wakePlanner, this);
-        }
-      }
-    }
+		//setup sleep interface if needed
+		if (planner_frequency_ > 0) {
+			ros::Duration sleep_time = (start_time + ros::Duration(1.0 / planner_frequency_)) - ros::Time::now();
+			if (sleep_time > ros::Duration(0.0)) {
+				wait_for_wake = true;
+				timer = n.createTimer(sleep_time, &MoveBase::wakePlanner, this);
+			}
+		}
+	}
   }
 
   void MoveBase::executeCb(const move_base_msgs::MoveBaseGoalConstPtr& move_base_goal)
@@ -781,6 +790,13 @@ namespace move_base {
 
   bool MoveBase::executeCycle(geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& global_plan){
     boost::recursive_mutex::scoped_lock ecl(configuration_mutex_);
+
+    static std::ofstream error_file("/tmp/move_base_error.log");
+    static boost::posix_time::ptime start_sys_time = boost::posix_time::second_clock::local_time();
+    #define NOW double((double)(boost::posix_time::second_clock::local_time() - start_sys_time).total_microseconds()/(double)1000000.0)
+
+
+
     //we need to be able to publish velocity commands
     geometry_msgs::Twist cmd_vel;
 
@@ -809,6 +825,11 @@ namespace move_base {
     //check that the observation buffers for the costmap are current, we don't want to drive blind
     if(!controller_costmap_ros_->isCurrent()){
       ROS_WARN("[%s]:Sensor data is out of date, we're not going to allow commanding of the base for safety",ros::this_node::getName().c_str());
+
+      error_file << NOW << " : Sensor data is out of date, we're not going to allow commanding of the base for safety\n";
+      error_file.flush();
+
+
       publishZeroVelocity();
       return false;
     }
@@ -867,7 +888,7 @@ namespace move_base {
 			ros::NodeHandle node("~");
 
 		    if (!node.getParamCached("dampening/alpha", dampening_alpha)) {
-				dampening_alpha = 0.5;
+				dampening_alpha = 0.8;
 			}
 			if (!node.getParamCached("dampening/smooth_resolution", dampening_smooth_resolution)) {
 				dampening_smooth_resolution = 0.5;
@@ -878,8 +899,6 @@ namespace move_base {
 
 
 			static std::ofstream dampening_file("/tmp/dampening.log");
-			static boost::posix_time::ptime start_sys_time = boost::posix_time::second_clock::local_time();
-			#define NOW double((double)(boost::posix_time::second_clock::local_time() - start_sys_time).total_microseconds()/(double)1000000.0)
 
 			dampening_file<< " start: " << NOW;
 			std::vector<PathPlanAlphaBetaFilter::Point> dampening_plan =
@@ -895,7 +914,6 @@ namespace move_base {
 			dampening_file<< "\t end: " << NOW << "\n";
 
 			dampening_file.flush();
-			#undef NOW
 
 
 			///////////////////////////////
@@ -918,6 +936,8 @@ namespace move_base {
 			for(size_t i=0;i<dampening_plan.size();i++)
 				file <<"      "<<dampening_plan[i].x << ", "<<dampening_plan[i].y << std::endl;
 
+
+			file << "===========	TIMESTAMP FOR RESULT PATH:  " << NOW <<std::endl;
 			file.flush();
 
 			///////////////////////////////
@@ -961,11 +981,12 @@ namespace move_base {
 
 			//clear last path, and save the new one
 			last_path_plan->clear();
-			last_path_plan = controller_plan_;
+			(*last_path_plan) = (*controller_plan_);
 		} else {
 			//this is the first plan - do not perform dampening, and take only the new plan.
 			//no need for clearing.
-			last_path_plan = controller_plan_;
+			last_path_plan = new std::vector<geometry_msgs::PoseStamped>();
+			(*last_path_plan) = (*controller_plan_);
 		}
 
 
@@ -975,6 +996,11 @@ namespace move_base {
       if(!tc_->setPlan(*controller_plan_)){
         //ABORT and SHUTDOWN COSTMAPS
         ROS_ERROR("Failed to pass global plan to the controller, aborting.");
+
+        error_file << NOW << " : Failed to pass global plan to the controller, aborting.";
+        error_file.flush();
+
+
         resetState();
 
         //disable the planner thread
@@ -1099,14 +1125,28 @@ namespace move_base {
 
           if(recovery_trigger_ == CONTROLLING_R){
             ROS_ERROR("Aborting because a valid control could not be found. Even after executing all recovery behaviors");
+
+            error_file << NOW << " : Aborting because a valid control could not be found. Even after executing all recovery behaviors.";
+            error_file.flush();
+
+
             as_->setAborted(move_base_msgs::MoveBaseResult(), "Failed to find a valid control. Even after executing recovery behaviors.");
+
           }
           else if(recovery_trigger_ == PLANNING_R){
             ROS_ERROR("Aborting because a valid plan could not be found. Even after executing all recovery behaviors");
+
+            error_file << NOW << " : Aborting because a valid plan could not be found. Even after executing all recovery behaviors";
+            error_file.flush();
+
             as_->setAborted(move_base_msgs::MoveBaseResult(), "Failed to find a valid plan. Even after executing recovery behaviors.");
           }
           else if(recovery_trigger_ == OSCILLATION_R){
             ROS_ERROR("Aborting because the robot appears to be oscillating over and over. Even after executing all recovery behaviors");
+
+            error_file << NOW << " : Aborting because the robot appears to be oscillating over and over. Even after executing all recovery behaviors";
+			error_file.flush();
+
             as_->setAborted(move_base_msgs::MoveBaseResult(), "Robot is oscillating. Even after executing recovery behaviors.");
           }
           resetState();
@@ -1115,6 +1155,11 @@ namespace move_base {
         break;
       default:
         ROS_ERROR("This case should never be reached, something is wrong, aborting");
+
+        error_file << NOW << " : This case should never be reached, something is wrong, aborting";
+		error_file.flush();
+
+
         resetState();
         //disable the planner thread
         boost::unique_lock<boost::mutex> lock(planner_mutex_);
@@ -1124,6 +1169,8 @@ namespace move_base {
         return true;
     }
 
+
+	#undef NOW
     //we aren't done yet
     return false;
   }
