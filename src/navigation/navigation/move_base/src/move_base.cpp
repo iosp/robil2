@@ -1131,7 +1131,7 @@ namespace{
 	  			ros::NodeHandle node("~");
 
 	  		    if (!node.getParamCached("dampening/alpha", dampening_alpha)) {
-	  				dampening_alpha = 0.3;
+	  				dampening_alpha = 0.4;
 	  			}
 	  			if (!node.getParamCached("dampening/smooth_resolution", dampening_smooth_resolution)) {
 	  				dampening_smooth_resolution = 0.5;
