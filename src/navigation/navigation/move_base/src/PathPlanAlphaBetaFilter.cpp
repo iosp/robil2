@@ -9,6 +9,16 @@
 #include <vector>
 #include <iostream>
 
+#include <boost/thread.hpp>
+
+
+class TimeoutException: public std::exception{};
+inline
+void check_time_limit( boost::posix_time::ptime time_limit)
+{
+	if(boost::posix_time::microsec_clock::local_time() > time_limit) throw TimeoutException();
+}
+
 PathPlanAlphaBetaFilter::PathPlanAlphaBetaFilter() {
 
 }
@@ -77,7 +87,7 @@ namespace
 }
 
 	PathPlanAlphaBetaFilter::Path
-		approx( const PathPlanAlphaBetaFilter::Path& path, double step )
+		approx( const PathPlanAlphaBetaFilter::Path& path, double step, boost::posix_time::ptime& time_limit )
 	{
 		if(path.size()<2) return path;
 
@@ -93,6 +103,7 @@ namespace
 
 		while(true)
 		{
+			check_time_limit(time_limit);
 
 			int ni = goal_index; //nearest_index(path, pose);
 			bool is_last_point = ni == path.size()-1;
@@ -108,6 +119,8 @@ namespace
 				{
 					while( dist < step*0.5 and goal_index != path.size()-1)
 					{
+						check_time_limit(time_limit);
+
 						goal_index++;
 						goal = path[goal_index];
 						dist = (goal-pose).len();
@@ -130,11 +143,13 @@ namespace
 		return res_path;
 	}
 
-	double len( const PathPlanAlphaBetaFilter::Path& path )
+	double len( const PathPlanAlphaBetaFilter::Path& path, boost::posix_time::ptime& time_limit )
 	{
 		double sum=0;
 		for(size_t i=1;i<path.size();i++)
 		{
+			check_time_limit(time_limit);
+
 			sum += (path[i]-path[i-1]).len();
 		}
 		return sum;
@@ -186,6 +201,7 @@ namespace
 
 PathPlanAlphaBetaFilter::Path
 	PathPlanAlphaBetaFilter::update(
+		int& error,
 		const Point& current_position,
 		const Path& _old_path,
 		const Path& _new_path,
@@ -194,31 +210,54 @@ PathPlanAlphaBetaFilter::Path
 		double smooth_resolution
 )
 {
+	const boost::posix_time::time_duration time_duration = boost::posix_time::microsec(1E6 * 0.25);
+	boost::posix_time::ptime start_time = boost::posix_time::microsec_clock::local_time();
+	boost::posix_time::ptime time_limit= start_time + time_duration;
+
 	Path old_path = _old_path;
 	Path new_path = _new_path;
 
-	if(old_path.size()==0) old_path = new_path;
-	if(new_path.size()==0) new_path = old_path;
+	error = 1;
+	try{
 
-	PathPlanAlphaBetaFilter::Path resulted_path;
 
-	double op_len = len(old_path);
-	double np_len = len(new_path);
-	double min_len = fmin(op_len, np_len);
+		if(old_path.size()==0) old_path = new_path;
+		if(new_path.size()==0) new_path = old_path;
 
-	if(min_len<smooth_resolution) return old_path;
+		PathPlanAlphaBetaFilter::Path resulted_path;
 
-	int num_of_points = min_len/smooth_resolution;
+		double op_len = len(old_path, time_limit);
+		double np_len = len(new_path, time_limit);
+		double min_len = fmin(op_len, np_len);
 
-	old_path = approx(old_path, op_len/num_of_points);
-	new_path = approx(new_path, np_len/num_of_points);
+		error = 2;
+		if(min_len<smooth_resolution) return new_path;
 
-	for(int i=0;i<num_of_points;i++)
-	{
-		Point p = old_path[i]*Point(alpha) + new_path[i]*Point(1.0-alpha);
-		resulted_path.push_back(p);
+		int num_of_points = min_len/smooth_resolution;
+
+		error = 3;
+		if(num_of_points < 3) return new_path;
+
+		old_path = approx(old_path, op_len/(double)num_of_points, time_limit);
+		new_path = approx(new_path, np_len/(double)num_of_points, time_limit);
+
+		for(int i=0;i<num_of_points;i++)
+		{
+			Point p = old_path[i]*Point(alpha) + new_path[i]*Point(1.0-alpha);
+			resulted_path.push_back(p);
+
+			check_time_limit(time_limit);
+		}
+
+		error = 0;
+		return approx( resulted_path, result_path_step, time_limit );
+
 	}
-	return approx( resulted_path, result_path_step );
+	catch( const std::exception& ex )
+	{
+		error += 10;
+		return new_path;
+	}
 }
 
 

@@ -189,6 +189,9 @@ namespace{
     dsrv_ = new dynamic_reconfigure::Server<move_base::MoveBaseConfig>(ros::NodeHandle("~"));
     dynamic_reconfigure::Server<move_base::MoveBaseConfig>::CallbackType cb = boost::bind(&MoveBase::reconfigureCB, this, _1, _2);
     dsrv_->setCallback(cb);
+
+    trajectory_parameters_publisher = nh.advertise<dynamic_reconfigure::Config>("/move_base/TrajectoryPlannerROS/parameter_updates",1);
+
   }
 
   void MoveBase::reconfigureCB(move_base::MoveBaseConfig &config, uint32_t level){
@@ -887,6 +890,18 @@ namespace{
       *last_path_plan = *controller_plan_;
 
 
+      dynamic_reconfigure::Config param_msg;
+      dynamic_reconfigure::DoubleParameter val_msg;
+      val_msg.name = "sim_time";
+      if( controller_plan_->size() > 20){
+    	  val_msg.value = 10;
+      }else{
+    	  val_msg.value = 3;
+      }
+      param_msg.doubles.push_back(val_msg);
+      trajectory_parameters_publisher.publish(param_msg);
+
+
 
       if(!tc_->setPlan(*controller_plan_)){
         //ABORT and SHUTDOWN COSTMAPS
@@ -1068,6 +1083,23 @@ namespace{
     return false;
   }
 
+  std::ostream& operator<<( std::ostream& cout, const std::vector<PathPlanAlphaBetaFilter::Point>& path)
+  {
+
+	  cout<<"Path: size = "<<path.size()<<std::endl;
+	  for(size_t i=0;i<path.size();i++)
+	  {
+		  cout<<"   "<<i<<".\t"<<path[i].x<<", "<<path[i].y<<std::endl;
+	  }
+
+	  return cout;
+  }
+
+  std::ostream& operator<<( std::ostream& cout, const PathPlanAlphaBetaFilter::Point& point)
+  {
+	  return cout <<"("<<point.x<<", "<<point.y<<")";
+  }
+
 
   /**
    * return: error code. 0 is OK
@@ -1090,7 +1122,7 @@ namespace{
 
 	  			PathPlanAlphaBetaFilter::Point rob_point;
 	  			rob_point.x = current_position.pose.position.x;
-	  			rob_point.y = current_position.pose.position.z;
+	  			rob_point.y = current_position.pose.position.y;
 
 	  			PathPlanAlphaBetaFilter::Path old_path = PathPlanAlphaBetaFilter::path_from_pose_stamped_vector_path(last_path_plan);
 	  			PathPlanAlphaBetaFilter::Path current_path = PathPlanAlphaBetaFilter::path_from_pose_stamped_vector_path(controller_plan);
@@ -1099,7 +1131,7 @@ namespace{
 	  			ros::NodeHandle node("~");
 
 	  		    if (!node.getParamCached("dampening/alpha", dampening_alpha)) {
-	  				dampening_alpha = 0.0;
+	  				dampening_alpha = 0.3;
 	  			}
 	  			if (!node.getParamCached("dampening/smooth_resolution", dampening_smooth_resolution)) {
 	  				dampening_smooth_resolution = 0.5;
@@ -1108,21 +1140,38 @@ namespace{
 	  			dampening_result_path_step = 0.3; //TODO: distance between first and second points
 
 
+	  			assert( dampening_alpha >= 0.0 and dampening_alpha <= 1.0 );
+	  			assert( dampening_smooth_resolution >= 0.01 and dampening_smooth_resolution <= 100.0 );
+	  			assert( dampening_result_path_step >= 0.01 and dampening_result_path_step <= 100.0 );
+
+
 
 	  			static std::ofstream dampening_file("/tmp/dampening.log");
 
-	  			dampening_file<< " start: " << NOW();
+	  			dampening_file<< NOW() << " :  starting calculation: \n";
+	  			dampening_file<< "\t  rob_point: " << rob_point << "\n";
+	  			dampening_file<< "\t  old_path: " << old_path << "\n";
+	  			dampening_file<< "\t  current_path: " << current_path << "\n";
+	  			dampening_file<< "\t  dampening_alpha: " << dampening_alpha << "\n";
+	  			dampening_file<< "\t  dampening_smooth_resolution: " << dampening_smooth_resolution << "\n";
+	  			dampening_file.flush();
+
+	  			int error=0;
 	  			std::vector<PathPlanAlphaBetaFilter::Point> dampening_plan =
 	  					dampening_filter.update(
+	  							error,
 	  							rob_point,
 	  							old_path,
 	  							current_path,
 	  							dampening_alpha,
 	  							dampening_result_path_step, //0.3
-	  							dampening_smooth_resolution //0.8
+	  							dampening_smooth_resolution
 	  					);
 
-	  			dampening_file<< "\t end: " << NOW() << "\n";
+	  			dampening_file<< "\t end: " << NOW();
+	  			if(error){ dampening_file<<" with error "<<error; }else{ dampening_file << " OK"; }
+				dampening_file<<"\n";
+	  			dampening_file<< "\t  result path: " << dampening_plan << "\n";
 
 	  			dampening_file.flush();
 

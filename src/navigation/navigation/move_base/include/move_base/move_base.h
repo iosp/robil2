@@ -216,6 +216,8 @@ namespace move_base {
       std::vector<geometry_msgs::PoseStamped>* last_path_plan;
       PathPlanAlphaBetaFilter dampening_filter;
 
+      ros::Publisher trajectory_parameters_publisher;
+
       //dampening / smoothing  parameters.
 	double dampening_alpha, dampening_result_path_step, dampening_smooth_resolution;
 

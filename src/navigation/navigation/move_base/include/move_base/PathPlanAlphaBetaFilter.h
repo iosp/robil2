@@ -11,6 +11,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <cmath>
 #include <vector>
+#include <boost/thread.hpp>
 
 class PathPlanAlphaBetaFilter {
 public:
@@ -54,8 +55,15 @@ public:
 	PathPlanAlphaBetaFilter();
 	virtual ~PathPlanAlphaBetaFilter();
 
-	Path update(const Point& current_position, const Path& old_path, const Path& new_path, double alpha, double result_path_step = 5, double smooth_resolution =
-			5);
+	Path update(
+			int& error,
+			const Point& current_position,
+			const Path& old_path,
+			const Path& new_path,
+			double alpha,
+			double result_path_step = 5,
+			double smooth_resolution = 5
+			);
 
 	/**
 	 * Copies a nav_msgs::Path into a PathPlanAlphaBetaFilter::Path
@@ -65,8 +73,8 @@ public:
 ;
 
 PathPlanAlphaBetaFilter::Path
-approx(const PathPlanAlphaBetaFilter::Path& path, double step);
+approx(const PathPlanAlphaBetaFilter::Path& path, double step, boost::posix_time::ptime& time_limit);
 
-double len(const PathPlanAlphaBetaFilter::Path& path);
+double len(const PathPlanAlphaBetaFilter::Path& path, boost::posix_time::ptime& time_limit);
 
 #endif /* SRC_PATHPLANALPHABETAFILTER_H_ */
