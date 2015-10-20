@@ -4,9 +4,21 @@
 #include <fstream>
 #include <stdio.h>
 #include <vector>
+
 using namespace std;
 using namespace cv;
 
+#define ENT_WIN_SIZE 9
+double entropyPrecalc[ENT_WIN_SIZE * ENT_WIN_SIZE + 1];
+void calculate_entropy_values()
+{
+  double sum = ENT_WIN_SIZE*ENT_WIN_SIZE+1;
+  for (int i=0; i<sum;i++)
+    if (i == 0) 
+      entropyPrecalc[i] = 0;
+    else 
+      entropyPrecalc[i] = -(i / sum) * log(i / sum);
+}
 struct Pair
 {
    int x;
@@ -17,8 +29,8 @@ struct Pair
 struct entropyArray
 {
   int id;
-  vector<double> entropy;
-  Mat hist;
+  double entropy;
+  //int* hist;
 };
 
 void printEntro(vector<double> EP)
@@ -27,55 +39,44 @@ void printEntro(vector<double> EP)
     cout << EP[i] <<"   ";
   cout << endl;
 }
+//ask oded how do i compare enthrophies and hist
 
-bool compareEntropies(vector<double> EP, vector<double> EP2) //entropyProperties
+bool compareEntropies(double EP, double EP2, double AT) //entropyProperties
 {
-  double AT = 5; //avarageThreshold
-  double VT = 5; // varianceThreshold
-
-  if( abs(EP[0]-EP2[0]) > AT || abs(EP[1]-EP2[1]) > AT || abs(EP[2]-EP2[2]) > AT)
-    return false;
-  else if( abs(EP[3]-EP2[3]) > VT || abs(EP[4]-EP2[4]) > VT || abs(EP[5]-EP2[5]) > VT)
-    return false;
-  return true;
+  return (abs(EP-EP2)<AT);
 }
-vector<double> calcEntropy(Mat w)
+
+bool compareHist;
+
+void calculateHistogram(Mat* image, int *values){
+  int  i, j;
+
+  
+ 
+  for(i=0; i<image->rows; i++)
+    for(j=0; j<image->cols; j++) {
+      Scalar colour = image->at<uchar>(Point(j, i));
+      values[(int)colour.val[0]]+=1; //increments the coressponding value in the array **CHECKED**
+    }
+}
+
+double calcEntropy(Mat image)
 {
-  vector<double> res;
-  double Ra,Ga,Ba, Rs,Gs,Bs;
-  Vec3b intensity;
-  for (int i=0; i < w.rows;i++)
+  int  i, values[256];
+  double res=0;
+  for(i=0; i < 256 ; i++)
+    values[i]=0;
+  calculateHistogram(&image, values);
+  for(int i = 0; i<256; i++)
   {
-    for(int j=0; j < w.cols;j++)
-    {
-      
-      intensity = w.at<Vec3b>(i,j);
-      Ra += intensity[0];
-      Ga += intensity[1];
-      Ba += intensity[2];
+    int N = values[i];
+    if(N > 35*35) {
+      res = 0;
+      break;
     }
+    res += entropyPrecalc[N];
   }
-  Ra = Ra/(w.rows*w.cols);
-  Ga = Ga/(w.rows*w.cols);
-  Ba = Ba/(w.rows*w.cols);
-  
-  for (int i=0; i < w.rows;i++)
-  {
-    for(int j=0; j < w.cols;j++)
-    {
-      
-      intensity = w.at<Vec3b>(i,j);
-      Rs += abs(intensity[0] - Ra);
-      Gs += abs(intensity[1] - Ga);
-      Bs += abs(intensity[2] - Ba);
-    }
-  }
-  Rs = Rs/(w.rows*w.cols);
-  Gs = Gs/(w.rows*w.cols);
-  Bs = Bs/(w.rows*w.cols);
-  
-  res.push_back(Ra);res.push_back(Ga);res.push_back(Ba);
-  res.push_back(Rs);res.push_back(Gs);res.push_back(Bs);
+
   return res;
 }
 
@@ -117,48 +118,13 @@ int getMax(int v1,int v2)
   return v2;
 }
 
-Mat calculateHistogram(cv::Mat const& image,std::string const& name="")
-{
-    // Set histogram bins count
-    //cvtColor(image, image, CV_RGB2GRAY);
-    int bins = 256;
-    int histSize[] = {bins};
-    // Set ranges for histogram bins
-    float lranges[] = {0, 256};
-    const float* ranges[] = {lranges};
-    // create matrix for histogram
-    cv::Mat hist;
-    int channels[] = {0};
 
-    // create matrix for histogram visualization
-    int const hist_height = 256;
-    cv::Mat3b hist_image = cv::Mat3b::zeros(hist_height, bins);
-
-    cv::calcHist(&image, 1, channels, cv::Mat(), hist, 1, histSize, ranges, true, false);
-    
-    if(!name.empty())
-    {
-      double max_val=0;
-      minMaxLoc(hist, 0, &max_val);
-
-      // visualize each bin
-      for(int b = 0; b < bins; b++) {
-	  float const binVal = hist.at<float>(b);
-	  int   const height = cvRound(binVal*hist_height/max_val);
-	  cv::line
-	      ( hist_image
-	      , cv::Point(b, hist_height-height), cv::Point(b, hist_height)
-	      , cv::Scalar::all(255)
-	      );
-      }
-      cv::imshow(name, hist_image);
-    }
-    normalize( hist, hist, 0, 1, NORM_MINMAX, -1, Mat() );
-    return hist;
-}
 
 int kMax(int arr[],int size,int k=1)
 {
+  /*
+   * Finds the index with the largest components
+   */
   int I=0,i,max = 9999999;
   for(int j=0;j<k;j++)
   {
@@ -174,6 +140,9 @@ int kMax(int arr[],int size,int k=1)
 
 Mat createEntropyImage(entropyArray **arr,int rs,int cls,int size,int ID,int sx,int sy)
 {
+  /*
+   * Create an image with the given index
+   */
   Mat dest = Mat(sy, sx, CV_8U);
   uchar color;
   
@@ -186,7 +155,7 @@ Mat createEntropyImage(entropyArray **arr,int rs,int cls,int size,int ID,int sx,
     {
       rec.x = i*size;
       rec.y = j*size;
-      if(arr[i][j].id == ID)
+      if(arr[i][j].id != ID)
 	dest(rec).setTo(Scalar(0,0,0));
       else
 	dest(rec).setTo(Scalar(255,255,255));

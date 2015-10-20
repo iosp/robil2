@@ -1,39 +1,84 @@
-#include <opencv2/opencv.hpp>
-#include <vector>
-
-using namespace std;
-using namespace cv;
-
-double power_x(double x,int powX)
+#include "boost/assign.hpp"
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/odeint.hpp>
+template<typename T>
+std::vector<T> polyval( const std::vector<T>& oCoeff, 
+	const std::vector<T>& oX )
 {
-	double val = 1;
-	for (int i=0;i<powX;i++)
-		val *= x;
-	return val;
+	size_t nCount =  oX.size();
+	size_t nDegree = oCoeff.size();
+	std::vector<T>	oY( nCount );
+ 
+	for ( size_t i = 0; i < nCount; i++ )
+	{
+		T nY = 0;
+		T nXT = 1;
+		T nX = oX[i];
+		for ( size_t j = 0; j < nDegree; j++ )
+		{
+			// multiply current x by a coefficient
+			nY += oCoeff[j] * nXT;
+			// power up the X
+			nXT *= nX;
+		}
+		oY[i] = nY;
+	}
+ 
+	return oY;
 }
 
-double calculate_m(vector<Point> Ps, int powX, int powY, int size)
+template<typename T>
+std::vector<T> polyfit( const std::vector<T>& oX, 
+	const std::vector<T>& oY, int nDegree )
 {
-	double m = 0;
-	for (int i=0;i<size;i++)
-		m += power_x(Ps[i].y,powX) * power_x(Ps[i].x,powY);
-	return m;	
+	using namespace boost::numeric::ublas;
+ 
+	if ( oX.size() != oY.size() )
+		throw std::invalid_argument( "X and Y vector sizes do not match" );
+ 
+	// more intuative this way
+	nDegree++;
+	
+	size_t nCount =  oX.size();
+	matrix<T> oXMatrix( nCount, nDegree );
+	matrix<T> oYMatrix( nCount, 1 );
+	
+	// copy y matrix
+	for ( size_t i = 0; i < nCount; i++ )
+	{
+		oYMatrix(i, 0) = oY[i];
+	}
+ 
+	// create the X matrix
+	for ( size_t nRow = 0; nRow < nCount; nRow++ )
+	{
+		T nVal = 1.0f;
+		for ( int nCol = 0; nCol < nDegree; nCol++ )
+		{
+			oXMatrix(nRow, nCol) = nVal;
+			nVal *= oX[nRow];
+		}
+	}
+ 
+	// transpose X matrix
+	matrix<T> oXtMatrix( trans(oXMatrix) );
+	// multiply transposed X matrix with X matrix
+	matrix<T> oXtXMatrix( prec_prod(oXtMatrix, oXMatrix) );
+	// multiply transposed X matrix with Y matrix
+	matrix<T> oXtYMatrix( prec_prod(oXtMatrix, oYMatrix) );
+ 
+	// lu decomposition
+	permutation_matrix<int> pert(oXtXMatrix.size1());
+	const std::size_t singular = lu_factorize(oXtXMatrix, pert);
+	// must be singular
+	BOOST_ASSERT( singular == 0 );
+ 
+	// backsubstitution
+	lu_substitute(oXtXMatrix, pert, oXtYMatrix);
+ 
+	// copy the result to coeff
+	return std::vector<T>( oXtYMatrix.data().begin(), oXtYMatrix.data().end() );
 }
 
-void polyfit(double *a, vector<Point> Ps, int size)
-{
-	double m1 = calculate_m(Ps,1,0,size);
-	double m2 = calculate_m(Ps,2,0,size);
-	double m3 = calculate_m(Ps,3,0,size);
-	double m4 = calculate_m(Ps,4,0,size);
-	double my = calculate_m(Ps,0,1,size);
-	double mxy = calculate_m(Ps,1,1,size);
-	double mx2y = calculate_m(Ps,2,1,size);
-	double al = m4*m1*m1 - 2*m1*m2*m3 + m2*m2*m2 - m4*size*m2 + size*m3*m3;
-	double b1 = m1*m4 - m2*m3;
-	double b2 = m2*m2 - m1*m3;
-	double b3 = size*m3 - m1*m2;
-	a[0] = ((m3*m3 - m2*m4)*my + mxy*b1 + mx2y*b2)/al;
-	a[1] = (b1*my + (m2*m2 - size*m4)*mxy + b3*mx2y)/al;
-	a[2] = (b2*my + b3*mxy + (m1*m1 - size*m2)*mx2y)/al;
-}
+
