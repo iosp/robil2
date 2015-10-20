@@ -76,6 +76,7 @@ protected:
 	ros::Publisher fakeLaserPublisher;
 	ros::Publisher globalPathPublisher;
 	ros::Publisher selectedPathPublisher;
+	ros::Publisher pathVisualizationPublisher;
 	ros::Subscriber pathSubscriber;
 	ros::Subscriber sub_log;
 	ros::Subscriber moveBaseStatusSubscriber;
@@ -102,6 +103,7 @@ protected:
 	string last_diagnostic_message_id;
 	void diagnostic_publish_new_goal(const string& path_id, const geometry_msgs::PoseStamped& goal, size_t goal_index, const config::PP::sub::Location& gotten_location);
 
+	void publish_global_gotten_path_visualization(nav_msgs::Path global_gotten_path);
 
 //FOR TEST ONLY
 public:
