@@ -619,7 +619,7 @@ int main(int argc, char **argv)
   ros::Subscriber WP_command = n.subscribe("/WP_command", 100, WP_callback); 
 
   ros::Subscriber GPS_data = n.subscribe("/SENSORS/GPS", 100, GPS_callback); 
-  ros::Subscriber IMU_data = n.subscribe("/SENSORS/IMU", 100, IMU_callback); 
+  ros::Subscriber IMU_data = n.subscribe("/SENSORS/INS", 100, IMU_callback); 
   ros::Subscriber SICK_data = n.subscribe("/front_sick/scan", 100, SICK_callback);
     
   init_nav_data(); // a loop that waits for reception of GPS and INS data

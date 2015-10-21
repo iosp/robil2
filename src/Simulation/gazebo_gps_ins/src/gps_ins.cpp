@@ -27,7 +27,7 @@
 
 #define TOPIC_NAME_GPS 		"/SENSORS/GPS"
 #define TOPIC_NAME_SPEED	"/SENSORS/GPS/Speed"
-#define TOPIC_NAME_IMU 		"/SENSORS/IMU"
+#define TOPIC_NAME_IMU 		"/SENSORS/INS"
 #define SENSOR_GPS_NAME		"gps_component"
 #define SENSOR_IMU_NAME		"imu_component"
 

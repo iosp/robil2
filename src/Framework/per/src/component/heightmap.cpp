@@ -316,7 +316,7 @@ void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
 
 void HeightMap::calculateTypes()
 {
-  const double obs_thresh = 0.2;
+  const double obs_thresh = 0.4;
   const int road_thresh = 5;
   for(int i = 1; i < _width-1; i++)
     for(int j = 1; j < _height-1; j++)
