@@ -57,6 +57,7 @@ struct LLI_SM {
 	LLI_COTROL_SWITCH       devResponce;
 	double					timeTag;
 	double					effortTT;
+	double					lastCmdTT;
 };
 
 struct LLI_TX_SPOOLER {
@@ -94,6 +95,11 @@ private:
    double       	m_rxTT;
    double       	m_currTT;
    double			m_txTT;
+
+   double			m_TrottelReqTT;
+   double			m_SteeringReqTT;
+   double			m_JointReqTT;
+
 
    bool			m_qineticConnectionActive;
    bool			m_HeartBeatResponseReq;
