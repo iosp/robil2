@@ -133,6 +133,7 @@ CLLI_Ctrl::CLLI_Ctrl() {
 	m_DriveCurrentState.devResponce = lli_RR__None;
 	m_DriveCurrentState.timeTag = 0.;
 	m_DriveCurrentState.effortTT = 0;
+	m_DriveCurrentState.lastCmdTT = 0;
 	m_ManipulatorCurrentState.ctrlDevId = lli_Ctrl_Manip;
 	m_ManipulatorCurrentState.currState = lli_State_Off;
 //	m_ManipulatorCurrentState.respRequest = lli_RR__None;
@@ -140,6 +141,7 @@ CLLI_Ctrl::CLLI_Ctrl() {
 	m_ManipulatorCurrentState.devResponce = lli_RR__None;
 	m_ManipulatorCurrentState.timeTag = 0.; //m_DriveCurrentState.timeTag;
 	m_ManipulatorCurrentState.effortTT = 0;
+	m_ManipulatorCurrentState.lastCmdTT = 0;
 
 }
 
@@ -194,7 +196,7 @@ bool CLLI_Ctrl::Init(char *addr, unsigned int lPortID, unsigned int rPortID)
 	place = 0;
 	char ch;
 
-	printf("INIT --- IP = %s\n");
+	printf("INIT --- IP = %s\n", addr);
 
 	//m_currState == lli_State_Init;
 	resVal = CommConnect();
@@ -210,14 +212,16 @@ bool CLLI_Ctrl::Init(char *addr, unsigned int lPortID, unsigned int rPortID)
 	m_DriveCurrentState.currState = lli_State_Init;
 	m_DriveCurrentState.respRequest = lli_RR__None;
 	m_DriveCurrentState.devResponce = lli_RR__None;
-	m_DriveCurrentState.timeTag = 0.; //m_currTT;
-	m_DriveCurrentState.effortTT = 0.; //m_currTT;
+	m_DriveCurrentState.timeTag = 0.;
+	m_DriveCurrentState.effortTT = 0.;
+	m_DriveCurrentState.lastCmdTT = 0.;
 	m_ManipulatorCurrentState.reqState = lli_State_Init;
 	m_ManipulatorCurrentState.currState = lli_State_Init;
 	m_ManipulatorCurrentState.respRequest = lli_RR__None;
 	m_ManipulatorCurrentState.devResponce = lli_RR__None;
-	m_ManipulatorCurrentState.timeTag = 0; // m_currTT;
-	m_ManipulatorCurrentState.effortTT = 0; // m_currTT;
+	m_ManipulatorCurrentState.timeTag = 0;
+	m_ManipulatorCurrentState.effortTT = 0;
+	m_ManipulatorCurrentState.lastCmdTT = 0;
 
 	sleep(0.1);
 
@@ -278,21 +282,32 @@ bool CLLI_Ctrl::CommConnect() {
 	if (inet_aton(udpIP, &si_Remote.sin_addr) == 0) {
 		//cout << "inet_aton() failed\n";
 		printf("inet_aton() failed\n");
+		return false;
 	}
+
+
 
 	memset((char *) &si_Local, 0, sizeof(si_Local));
 	si_Local.sin_family = AF_INET;
 	si_Local.sin_port = htons(udpLP);
+	//if (inet_aton("192.168.101.101", &si_Local.sin_addr) == 0) {
+	//			//cout << "inet_aton() failed\n";
+	//			printf("inet_aton() failed\n");
+	//			return false;
+	//		}
+
 	si_Local.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	if (setsockopt(socketFd, SOL_SOCKET, SO_RCVTIMEO,
 			reinterpret_cast<char*>(&tv), sizeof(timeval))) {
 		printf("setsockopt() failed\n");
+		return false;
 	}
 
 	retV = bind(socketFd, (struct sockaddr *) &si_Local, sizeof(si_Local));
 	if (retV == -1) {
-		printf("bind error\n");
+		perror("bind error\n");
+		return false;
 	}
 	sleep(0.5);
 //    printf ("socketFd = %d\n", socketFd);
@@ -438,6 +453,9 @@ void CLLI_Ctrl::SetThrottelRequest (short reqVal)
 	printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqThrottel_Val);
 
 	ResetLocalTimeTag (m_DriveCurrentState.effortTT);
+	m_DriveCurrentState.lastCmdTT = m_DriveCurrentState.effortTT;
+
+
 }
 
 void CLLI_Ctrl::SetSteeringRequest (short reqVal)
@@ -454,6 +472,8 @@ void CLLI_Ctrl::SetSteeringRequest (short reqVal)
 	printf ("SetSteeringRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqSteering_Val);
 
 	ResetLocalTimeTag (m_DriveCurrentState.effortTT);
+	m_DriveCurrentState.lastCmdTT = m_DriveCurrentState.effortTT;
+
 }
 
 
@@ -476,6 +496,8 @@ void CLLI_Ctrl::SetJointRequest (short reqVal1, short reqVal2)
 	reqJoints_Val[1] = JausRealToShort (valScaledTmp, -100, 100);
 
 	ResetLocalTimeTag (m_ManipulatorCurrentState.effortTT);
+	m_ManipulatorCurrentState.lastCmdTT = m_ManipulatorCurrentState.effortTT;
+
 
 	printf ("SetJointRequest: Scaling: %d --> %d       %d --> %d\n",
 			reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
@@ -850,12 +872,24 @@ bool CLLI_Ctrl::PeriodicActivity() {
 	// T B D
 
 
+	if (m_currTT - m_DriveCurrentState.lastCmdTT > 0.3) {
+		if (reqThrottel_Val != 0)
+		   ResetThrottelRequest ();
+		if (reqSteering_Val != 0)
+		   ResetSteeringRequest ();
+	}
+
+	if (m_currTT - m_ManipulatorCurrentState.lastCmdTT > 0.3) {
+
+		if (reqJoints_Val[0] * reqJoints_Val[1] != 0)
+		   ResetJointRequest ();
+	}
+
 	if (m_qineticConnectionActive && m_HeartBeatResponseReq ) {
 
 		TransmitResponceHeartBit();
    		m_HeartBeatResponseReq = false;
    		m_txDone = true;
-
      }
 
 

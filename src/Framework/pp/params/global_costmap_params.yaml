@@ -2,14 +2,17 @@ global_costmap:
   publish_voxel_map: false
   global_frame: /map
   robot_base_frame: /base_link
-  update_frequency: 0.5
-  publish_frequency: 20.0
+  update_frequency: 1.0
+  publish_frequency: 1.0
+  transform_tolerance: 10
   static_map: false
   rolling_window: true
-  width: 150
-  height: 150
-  origin_x: -75
-  origin_y: -75
-  resolution: 0.30
-  inflation_radius: 5.5
-  transform_tolerance: 5
+  width: 300
+  height: 300
+  origin_x: -150
+  origin_y: -150
+  resolution: 0.60
+  inflation_radius: 5.0
+  cost_scaling_factor: 1.0
+  #footprint: [[3.1, 2.8], [-3.6, 2.8], [-3.6, -2.8], [3.1, -2.8]]
+  footprint: [[2.1, 1.8], [-2.6, 1.8], [-2.6, -1.8], [2.1, -1.8]]

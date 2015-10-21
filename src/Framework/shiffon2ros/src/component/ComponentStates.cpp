@@ -9,6 +9,8 @@ using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
 
+
+
 class Params: public CallContextParameters{
 public:
 	ComponentMain* comp;
@@ -83,7 +85,6 @@ FSM(shiffon2ros)
 				FSM_ON_EVENT("/shiffon2ros/Shutdown", FSM_NEXT(OFF));
 			}
 		}
-
 	}
 	FSM_END
 }
@@ -92,14 +93,31 @@ TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 	PAUSE(10000);
 	return TaskResult::SUCCESS();
 }
+
+
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	ROS_INFO("shiffon2ros Init !!");
+
+	COMPONENT->InitShiphonConection();
+	PAUSE(300);
+
+	Event e("EndOfInit");
+	events.raiseEvent(e);
 	return TaskResult::SUCCESS();
 }
+
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
-	PAUSE(10000);
+	ROS_INFO("shiffon2ros Ready !!");
+
+	while (ros::ok()) {
+		COMPONENT->ReadAndPub_ShiphonGPS();
+		COMPONENT->ReadAndPub_ShiphonINS();
+		COMPONENT->ReadAndPub_ShiphonGpsSpeed();
+    }
+
 	return TaskResult::SUCCESS();
 }
+
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
 	PAUSE(10000);
 	return TaskResult::SUCCESS();
@@ -119,5 +137,8 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ROS_INFO("Starting shiffon2ros...");
 	Fsmshiffon2ros(&context, &events);
+
+
+	Shiphon_Ctrl * 	_shiphonCtrl;
 
 }

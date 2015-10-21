@@ -13,14 +13,13 @@
 #include <boost/thread.hpp>
 
 
-
-
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	//sleep (3);
 	_roscomm = new RosComm(this,argc, argv);
     _clli = (CLLI_Ctrl *) NULL;
     is_ready = false;
+    SetState(State_Off);
 	//ComponentMain::_this = this;
 
 
@@ -47,14 +46,89 @@ ComponentMain::~ComponentMain() {
 	}
 }
 
+void ComponentMain::setNotReady(){
+    _clli->DriveControlRelease();
+    _clli->ManipulatorControlRelease();
+	is_ready=false;
+	SetState(State_Standby);
+}
+
+void ComponentMain::setReady() {
+	//Add Semaphore here
+	SetState(State_Standby);
+	if (_clli->GetDriveCurrentState() == lli_State_Standby)
+		_clli->DriveControlRequest();
+
+	if (_clli->GetManipulatorCurrentState() == lli_State_Standby)
+		_clli->ManipulatorControlRequest();
+
+	if ((_clli->GetDriveCurrentState() == lli_State_Ready) &&
+			(_clli->GetManipulatorCurrentState() == lli_State_Ready ))
+				is_ready=true;
+}
+
+
+void ComponentMain::checkReady(){
+	int count=0;
+
+	if (is_ready == true){
+		SetState(State_Ready);
+		return;
+	}
+	else setReady();
+}
+
+void ComponentMain::SetState(CS_STATE inState){
+	_state=inState;
+}
+
+bool ComponentMain::StateNotReady(){
+	bool retval=true;
+	if (_state==State_Ready){
+		retval=false;
+	}
+	return retval;
+}
+
+bool ComponentMain::StateIsInit(){
+	bool retval=false;
+	if (_state==State_Init){
+		retval=true;
+	}
+	return retval;
+}
+
+CS_STATE ComponentMain::GetComponentState()
+{
+
+	return _state;
+}
+
+bool ComponentMain::IsCLLIStillInInit()
+{
+	bool retval = false;
+	if (_clli->GetDriveCurrentState() == lli_State_Init) retval=true;
+	if (_clli->GetManipulatorCurrentState() == lli_State_Init) retval=true;
+
+	return retval;
+}
+
+void ComponentMain::releaseDriverAndManipulator()
+{
+	_clli->DriveControlRelease();
+	_clli->ManipulatorControlRelease();
+}
 void ComponentMain::workerFunc()
 {
 
   //_driver_thread = new boost::thread(boost::bind(&ComponentMain::lliCtrlLoop, this));
-
+    SetState(State_Init);
 	pthread_t t;
 
 	pthread_create(&_mythread, NULL, &callPThread, this);
+
+//	pthread_join(_mythread, NULL);
+  //The thread dealing with QinetiQ has exited for some reason.
 
 }
 
@@ -131,6 +205,7 @@ void ComponentMain::lliCtrlLoop()
 	//Init QinetiQ IP
 		char ipAddr[16];
 	    string tmpStr = "192.168.101.3";
+	    bool retval;
 
 	    strcpy (ipAddr, tmpStr.c_str());
 
@@ -144,35 +219,32 @@ void ComponentMain::lliCtrlLoop()
 
 	  // CLLI_Ctrl *clli = new CLLI_Ctrl ();
 	   _clli = new CLLI_Ctrl ();
-	    _clli->Init(ipAddr, lPort, rPort);
+	   retval=_clli->Init(ipAddr, lPort, rPort);
+	   if (retval == false){
+		   //Failing to Init CLLI_Ctrl
+		   return;
+	   }
+
+	   //QinitiQ has been properly initialized.
 
 	for(;;)
 		{
+
 		    sleep(0.01);
-//			try
-//			{
+
 			if (!_clli->PeriodicActivity())
 							break;
-//			}
-//			catch(boost::thread_interrupted&)
-//			{
-//				std::cout << "Thread has stopped. Problems with QinetiQ" << std::endl;
-//				return;
-//			}
-		}
-#ifdef STAM
-	 boost::posix_time::seconds workTime(3);
-	 while (1) {;}
 
-	    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+			/***
+			if ((is_ready == false) && (_state == State_Ready)){
+				if (_clli->GetDriveCurrentState() != lli_State_Ready)
+										_clli->DriveControlRequest();
+				if (_clli->GetManipulatorCurrentState() != lli_State_Ready)
+										_clli->ManipulatorControlRequest();
+			}
+			****/
+			//if (_clli->GetDriveCurrentState() == lli_State_Init) SetState(State_Wait_Response);
+			//if (_clli->GetManipulatorCurrentState() == lli_State_Init) SetState(State_Init);
+    	}
 
-	while(1){
-		sleep(0.01);
-		if (!clli->PeriodicActivity())
-			break;
-	}
-
-	boost::this_thread::sleep(workTime);
-
-#endif
 }
