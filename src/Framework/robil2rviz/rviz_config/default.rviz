@@ -111,115 +111,13 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        Ibeo_link:
-          Value: true
-        back_left_wheel:
-          Value: true
-        back_right_wheel:
-          Value: true
-        base_arm:
-          Value: true
-        base_link:
-          Value: true
-        base_link_center:
-          Value: true
-        body:
-          Value: true
-        brackets:
-          Value: true
-        cabin:
-          Value: true
-        cameraL_frame:
-          Value: true
-        cameraR_frame:
-          Value: true
-        camera_frame:
-          Value: true
-        front_left_wheel:
-          Value: true
-        front_right_wheel:
-          Value: true
-        front_sick_link:
-          Value: true
-        gps_ins:
-          Value: true
-        ibeo:
-          Value: true
-        laser:
-          Value: true
-        laser_frame:
-          Value: true
-        left_sick_link:
-          Value: true
-        loader:
-          Value: true
-        main_arm:
-          Value: true
-        map:
-          Value: true
-        odom:
-          Value: true
-        right_sick_link:
-          Value: true
-        supporter:
-          Value: true
-        supporter_hinge:
-          Value: true
-        world:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        world:
-          body:
-            back_left_wheel:
-              {}
-            back_right_wheel:
-              {}
-            base_arm:
-              main_arm:
-                loader:
-                  brackets:
-                    {}
-                supporter:
-                  {}
-            cabin:
-              Ibeo_link:
-                {}
-            cameraL_frame:
-              {}
-            cameraR_frame:
-              {}
-            front_left_wheel:
-              {}
-            front_right_wheel:
-              {}
-            front_sick_link:
-              {}
-            gps_ins:
-              {}
-            ibeo:
-              {}
-            left_sick_link:
-              {}
-            right_sick_link:
-              {}
-            supporter_hinge:
-              {}
-          camera_frame:
-            {}
-          laser_frame:
-            {}
-          map:
-            laser:
-              {}
-            odom:
-              base_link:
-                base_link_center:
-                  {}
+        {}
       Update Interval: 0
       Value: true
     - Class: rviz/Axes
@@ -336,13 +234,13 @@ Visualization Manager:
       Marker Topic: visualization_marker
       Name: Marker
       Namespaces:
-        basic_shapes: true
+        {}
       Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: map
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:

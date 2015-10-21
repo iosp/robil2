@@ -12,7 +12,7 @@ ros::Publisher marker_pub;
 
 void pathCallBack(const robil_msgs::AssignNavTask& path)
 {
-  //ROS_INFO(" I AM !!!!!!!!!!!!!!!! ");
+  ROS_DEBUG(" Recieved Global Path ");
 	 wayps = path;
  // x = wayps.waypoints[0].pose.pose.position.x;
  // y = wayps.waypoints[0].pose.pose.position.y;
@@ -64,7 +64,7 @@ void markersTimerCallBack (const ros::TimerEvent&)
 	    marker.color.a = 1.0;
 
 	    marker.lifetime = ros::Duration(5.0);
-		sleep(1);
+		
 	    // Publish the marker
 	    while (marker_pub.getNumSubscribers() < 1)
 	    {
@@ -74,7 +74,7 @@ void markersTimerCallBack (const ros::TimerEvent&)
 	      sleep(1);
 	      }
 	    }
-   
+   ROS_DEBUG("Marker's X =  %f , Marker's Y =  %f",marker.pose.position.x,marker.pose.position.y);
     marker_pub.publish(marker);
 	}
 
@@ -94,7 +94,7 @@ int main( int argc, char** argv )
   ros::Subscriber sub = n.subscribe("/OCU/SMME/NavigationTask", 1000, pathCallBack);
   marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
   
-  ros::Timer markers_timer = n.createTimer(ros::Duration(3), markersTimerCallBack);
+  ros::Timer markers_timer = n.createTimer(ros::Duration(1.0), markersTimerCallBack);
   
   ros::spin();
 }
