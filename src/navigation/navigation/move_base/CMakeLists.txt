@@ -20,6 +20,13 @@ generate_dynamic_reconfigure_options(
     cfg/MoveBase.cfg
 )
 
+# Declare the service files to be built
+add_service_files(FILES
+  VersionService.srv
+)
+
+generate_messages()
+  
 catkin_package(
     CATKIN_DEPENDS
         roscpp

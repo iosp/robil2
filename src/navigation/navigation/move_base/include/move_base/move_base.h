@@ -61,10 +61,13 @@
 
 #include "PathPlanAlphaBetaFilter.h"
 
+#include "move_base/VersionService.h"
 
 namespace move_base {
   //typedefs to help us out with the action server so that we don't hace to type so much
   typedef actionlib::SimpleActionServer<move_base_msgs::MoveBaseAction> MoveBaseActionServer;
+
+  #define VERSION "Cogniteam_1.0"
 
   enum MoveBaseState {
     PLANNING,
@@ -217,6 +220,9 @@ namespace move_base {
       PathPlanAlphaBetaFilter dampening_filter;
 
       ros::Publisher trajectory_parameters_publisher;
+      ros::ServiceServer version_srv;
+
+      bool versionServiceCallback(move_base::VersionService::Request& request, move_base::VersionService::Response& response);
 
       //dampening / smoothing  parameters.
 	double dampening_alpha, dampening_result_path_step, dampening_smooth_resolution;

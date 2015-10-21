@@ -16,6 +16,7 @@
 
 #include <tf_geometry/tf_geometry.h>
 
+#include <move_base/VersionService.h>
 
 #define CREATE_MAP_FOR_NAV 0
 #define CREATE_POINTCLOUD2_FOR_NAV 0
@@ -463,6 +464,38 @@ void on_speed(const geometry_msgs::Twist::ConstPtr& msg){
 	if(not moving){
 		//DBG_INFO( "Navigation: ROBOTE IS STOPPED" );
 	}
+}
+
+/**
+ * Checks the version of move_base by using the service.
+ * (for standard move_base it won't work - we need Cogniteam's move_base).
+ */
+bool checkMoveBaseVersion(){
+	move_base::VersionService version;
+	if(ros::service::call("move_base/version" , version)){
+		std::string wantedPrefix = "Cogniteam";
+		std::string versionPrefix = version.response.version.substr(0, wantedPrefix.size());
+		if(versionPrefix == wantedPrefix){
+			return true;
+		} else {
+			ROS_ERROR("Wrong version for move_base detected: expected prefix %s, found %s" , wantedPrefix.c_str() , versionPrefix.c_str());
+			return false;
+		}
+	}
+	else {
+		// no service found - this is not cogniteam's version.
+		ROS_ERROR("No version for move_base detected");
+		return false;
+	}
+}
+
+void showMoveBaseInstallationInstructions() {
+	std::string instructions = "ERROR: WRONG VERSION OF move_base DETECTED! "
+			"\n Make sure that Cogniteam's version of move_base is in the workspace. That version can be obtained from iosp's robil2 repository."
+			"\n For using Cogniteam's version, please make sure move_base is installed by running:"
+			"\n    sudo apt-get install ros-indigo-move-base"
+			"\n Also, before recompiling, it is advised to delete build/ and devel/  ";
+	ROS_ERROR("%s" , instructions.c_str());
 }
 
 
@@ -926,6 +959,13 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	   DBG_INFO("Navigation: goal is accepted. prev="<<last_nav_goal.goal.target_pose.pose.position.x<<","<<last_nav_goal.goal.target_pose.pose.position.y<<", new="<<robil_goal_x<<","<<robil_goal_y);
 	   rejection_counter=0;
 	}
+
+	//check version, since it is likely that move_base is running in this point.
+	if (!checkMoveBaseVersion()) {
+		showMoveBaseInstallationInstructions();
+		exit(1);
+	}
+
 
 	move_base_msgs::MoveBaseActionGoal goal;
 	geometry_msgs::PoseStamped ps_goal;

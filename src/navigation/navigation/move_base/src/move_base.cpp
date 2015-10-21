@@ -165,6 +165,8 @@ namespace{
     //advertise a service for clearing the costmaps
     clear_costmaps_srv_ = private_nh.advertiseService("clear_costmaps", &MoveBase::clearCostmapsService, this);
 
+    version_srv = private_nh.advertiseService("version", &MoveBase::versionServiceCallback, this);
+
     //if we shutdown our costmaps when we're deactivated... we'll do that now
     if(shutdown_costmaps_){
       ROS_DEBUG_NAMED("move_base","Stopping costmaps initially");
@@ -1251,6 +1253,14 @@ namespace{
 //	  		}
 	  			return 0;
   }
+
+  bool MoveBase::versionServiceCallback(move_base::VersionService::Request& request, move_base::VersionService::Response& response){
+	  response.version = VERSION;
+	  return true;
+  }
+
+
+
   bool MoveBase::loadRecoveryBehaviors(ros::NodeHandle node){
     XmlRpc::XmlRpcValue behavior_list;
     if(node.getParam("recovery_behaviors", behavior_list)){
