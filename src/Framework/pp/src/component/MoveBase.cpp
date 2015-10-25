@@ -16,6 +16,7 @@
 
 #include <tf_geometry/tf_geometry.h>
 
+#include <move_base/VersionService.h>
 
 #define CREATE_MAP_FOR_NAV 0
 #define CREATE_POINTCLOUD2_FOR_NAV 0
@@ -465,6 +466,38 @@ void on_speed(const geometry_msgs::Twist::ConstPtr& msg){
 	}
 }
 
+/**
+ * Checks the version of move_base by using the service.
+ * (for standard move_base it won't work - we need Cogniteam's move_base).
+ */
+bool checkMoveBaseVersion(){
+	move_base::VersionService version;
+	if(ros::service::call("move_base/version" , version)){
+		std::string wantedPrefix = "Cogniteam";
+		std::string versionPrefix = version.response.version.substr(0, wantedPrefix.size());
+		if(versionPrefix == wantedPrefix){
+			return true;
+		} else {
+			ROS_ERROR("Wrong version for move_base detected: expected prefix %s, found %s" , wantedPrefix.c_str() , versionPrefix.c_str());
+			return false;
+		}
+	}
+	else {
+		// no service found - this is not cogniteam's version.
+		ROS_ERROR("No version for move_base detected");
+		return false;
+	}
+}
+
+void showMoveBaseInstallationInstructions() {
+	std::string instructions = "ERROR: WRONG VERSION OF move_base DETECTED! "
+			"\n Make sure that Cogniteam's version of move_base is in the workspace. That version can be obtained from iosp's robil2 repository."
+			"\n For using Cogniteam's version, please make sure move_base is installed by running:"
+			"\n    sudo apt-get install ros-indigo-move-base"
+			"\n Also, before recompiling, it is advised to delete build/ and devel/  ";
+	ROS_ERROR("%s" , instructions.c_str());
+}
+
 
 MoveBase::MoveBase(ComponentMain* comp)
 	:is_active(true), gp_defined(false),gnp_defined(false), gl_defined(false), comp(comp), is_canceled(true), is_path_calculated(false)
@@ -479,6 +512,7 @@ MoveBase::MoveBase(ComponentMain* comp)
 	speedSubscriber = node.subscribe("/cmd_vel", 1, &on_speed);
 	globalPathPublisher = node.advertise<nav_msgs::Path>("/pp/global_path",1);
 	selectedPathPublisher = node.advertise<nav_msgs::Path>("/pp/selected_path",1);
+	pathVisualizationPublisher = node.advertise<sensor_msgs::PointCloud>("/path_visualization", 5, false);
 	//moveBaseStatusSubscriber = node.subscribe("/move_base/status", 1, &MoveBase::on_move_base_status, this);
 	diagnosticPublisher = node.advertise<diagnostic_msgs::DiagnosticArray>(DIAGNOSTIC_TOPIC_NAME, 100);
 
@@ -619,7 +653,7 @@ SYNCH
 	if(goal_path.waypoints.poses.size()==0) return;
 	gotten_path = goal_path;
 	gp_defined=true;
-	
+
 	if(gotten_path.waypoints.poses.size()>1){
 	    geometry_msgs::Pose last = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-1].pose;
 	    geometry_msgs::Pose llast = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-2].pose;
@@ -642,7 +676,7 @@ SYNCH
 	}
 	BOOST_FOREACH( const geometry_msgs::PoseStamped& p , gotten_path.waypoints.poses )
 	{
-	    DBG_INFO("Navigation: ...... "<<p.pose.position.x<<","<<p.pose.position.y);
+	    DBG_INFO("Navigation: ...... "<<STR(p.pose.position));
 	}
 
 	if(not is_active){
@@ -691,6 +725,26 @@ SYNCH
 	if(all_data_defined()) calculate_goal();
 }
 
+void MoveBase::publish_global_gotten_path_visualization(nav_msgs::Path global_gotten_path){
+	//publish the gotten goal as PointCloud message, for better visualization.
+	sensor_msgs::PointCloud path_visualization;
+
+	for(int i=0; i<global_gotten_path.poses.size(); ++i){
+		geometry_msgs::Point32 vis_point;
+		geometry_msgs::PoseStamped_<std::allocator<void> > path_point = global_gotten_path.poses.at(i);
+
+		vis_point.x = path_point.pose.position.x;
+		vis_point.y = path_point.pose.position.y;
+		vis_point.z = path_point.pose.position.z;
+
+		path_visualization.points.push_back(vis_point);
+	}
+
+	path_visualization.header.frame_id = global_gotten_path.header.frame_id;
+	path_visualization.header.stamp =ros::Time::now();
+
+	pathVisualizationPublisher.publish(path_visualization);
+}
 
 void MoveBase::cancel(bool clear_last_goals){
 	SYNCH
@@ -774,6 +828,7 @@ void MoveBase::calculate_goal(){
 	gotten_global_path.header.stamp = ros::Time(0) ;
 	globalPathPublisher.publish(gotten_global_path);
 	selectedPathPublisher.publish(gotten_global_path);
+	publish_global_gotten_path_visualization(gotten_global_path);
 
 	//DBG_INFO_ONCE("Navigation: calculate next waypoint");
 	goal = search_next_waypoint(gotten_global_path, get_unvisited_index(path_id), gotten_location, is_path_finished, goal_index);
@@ -883,17 +938,20 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	double distance_to_gaol = hypot( gotten_location.pose.pose.position.x-robil_goal_x , gotten_location.pose.pose.position.y-robil_goal_y);
 	static int rejection_counter=0;
 	if(
+
+//		true
+
 //		last_nav_goal.goal.target_pose.pose.position.x == robil_goal_x and
 //		last_nav_goal.goal.target_pose.pose.position.y == robil_goal_y
 	  
 		( rejection_counter < 50 and distance_prev_and_new_goal < 1.5 )
-		or 
+		or
 		distance_to_gaol > 90
-		
+
 	){
 	    if( distance_prev_and_new_goal > 0.5 )
 	    {
-		DBG_INFO_ONCE("Navigation: goal is rejected. the goal is "<<(distance_prev_and_new_goal<1.5?" same one.":"")<<(distance_to_gaol > 90?"too far":"")<<" goal="<<robil_goal_x<<","<<robil_goal_y);
+		//DBG_INFO_ONCE("Navigation: goal is rejected. the goal is "<<(distance_prev_and_new_goal<1.5?" same one.":"")<<(distance_to_gaol > 90?"too far":"")<<" goal="<<robil_goal_x<<","<<robil_goal_y);
 	    }
 	    rejection_counter++;
 	    return;
@@ -901,6 +959,13 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	   DBG_INFO("Navigation: goal is accepted. prev="<<last_nav_goal.goal.target_pose.pose.position.x<<","<<last_nav_goal.goal.target_pose.pose.position.y<<", new="<<robil_goal_x<<","<<robil_goal_y);
 	   rejection_counter=0;
 	}
+
+	//check version, since it is likely that move_base is running in this point.
+	if (!checkMoveBaseVersion()) {
+		showMoveBaseInstallationInstructions();
+		exit(1);
+	}
+
 
 	move_base_msgs::MoveBaseActionGoal goal;
 	geometry_msgs::PoseStamped ps_goal;
@@ -915,8 +980,9 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	ps_goal.header = goal.header;
 
 	std::stringstream sid ;
+	static long send_counter=0; send_counter++;
 	sid<<"[i] goal #"<< boost::lexical_cast<std::string>(goal_counter) <<": "
-					 << ps_goal.pose.position.x<<","<<ps_goal.pose.position.y;
+					 << ps_goal.pose.position.x<<","<<ps_goal.pose.position.y<<";"<<send_counter;
 	goal.goal_id.id = sid.str();
 	goal.goal_id.stamp = goal.header.stamp;
 	
@@ -925,6 +991,8 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	//DBG_INFO("Navigation: set new goal : "<<ps_goal.pose.position.x<<","<<ps_goal.pose.position.y);
 	last_nav_goal_id = goal.goal_id;
 	last_nav_goal = goal;
+
+//	goalCancelPublisher.publish(last_nav_goal_id);
 	goalPublisher.publish(goal);
 
 
