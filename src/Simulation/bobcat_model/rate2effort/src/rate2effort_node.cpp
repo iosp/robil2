@@ -86,7 +86,7 @@ effort_pub.publish(effort);
 /////
 */
 effort.linear.x=3*lin.data;
-effort.angular.z=1.5*ang.data;
+effort.angular.z=1*ang.data;
 effort_pub.publish(effort);
 }
 
