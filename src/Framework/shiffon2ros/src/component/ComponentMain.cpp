@@ -7,8 +7,14 @@
  */
 #include "ComponentMain.h"
 #include "ros/time.h"
+#include "tf/LinearMath/Matrix3x3.h"
 
-const double MILS_2_DEG = 0.05625; // (360/6400)
+
+const double PI = 3.14159;
+const double MILS_2_DEG = 0.056250000; // (360/6400)
+const double MILS_2_RAD = PI/6400;
+const double PI_2_DEG = 180; //
+
 
 
 ComponentMain::ComponentMain(int argc,char** argv)
@@ -41,8 +47,8 @@ ComponentMain::~ComponentMain() {
 void ComponentMain::ReadAndPub_ShiphonGPS(){
 	config::SHIFFON2ROS::pub::GPS GPS_msg;
 
-	GPS_msg.latitude  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LAT_Egi * 180;
-	GPS_msg.longitude =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LONG_Egi * 180;
+	GPS_msg.latitude  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LAT_Egi * PI_2_DEG;
+	GPS_msg.longitude =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LONG_Egi * PI_2_DEG;
 	GPS_msg.altitude  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Altitude_MSL_EGI;
 
 	GPS_msg.header.stamp = ros::Time::now();
@@ -62,16 +68,32 @@ void ComponentMain::ReadAndPub_ShiphonINS(){
 	INS_msg.linear_acceleration.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Y_Egi;
 	INS_msg.linear_acceleration.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Z_Egi;
 	
-	INS_msg.angular_velocity.x  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_rate_X_PD_Egi * MILS_2_DEG;
-	INS_msg.angular_velocity.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_rate_Y_PD_Egi * MILS_2_DEG;
-	INS_msg.angular_velocity.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_DEG;
+	INS_msg.angular_velocity.x  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_rate_X_PD_Egi * MILS_2_RAD;
+	INS_msg.angular_velocity.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_rate_Y_PD_Egi * MILS_2_RAD;
+	INS_msg.angular_velocity.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD;
+
+	float Roll = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_PD_Egi * MILS_2_RAD;
+	float Pitch = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_PD_Egi * MILS_2_RAD;
+	float Yaw = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_PD_geographic * MILS_2_RAD;
+
+	tf::Matrix3x3 obs_mat;
+	obs_mat.setEulerYPR(Yaw,Pitch,Roll);
+
+	tf::Quaternion q_tf;
+	obs_mat.getRotation(q_tf);
+
+	INS_msg.orientation.x = q_tf.getX();
+	INS_msg.orientation.y = q_tf.getY();
+	INS_msg.orientation.z = q_tf.getZ();
+	INS_msg.orientation.w = q_tf.getW();
+
 
 	INS_msg.header.stamp = ros::Time::now();
 
 	publishINS(INS_msg);
 
 	std_msgs::Float64 INS_msg2;
-	INS_msg2.data = (float)((_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_DEG);
+	INS_msg2.data = (float)((_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD);
 	publishINS2(INS_msg2);
 
 }
