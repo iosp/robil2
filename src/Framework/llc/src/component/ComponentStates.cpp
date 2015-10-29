@@ -19,6 +19,7 @@ double hb_time = 0 ;
 const double t_out = 20.0 ;
 static double Kp = 1.3 , Kd = 0.0 , Ki = 0.0   ; 				/* PID constants of linear x */
 static double Kpz = -1.8 , Kdz = 0.01 , Kiz = -0.1   ;		/* PID constants of angular z */
+ 
 
 class Params: public CallContextParameters{
 public:
@@ -207,10 +208,12 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	geometry_msgs::TwistStamped old_error ; 			/* stores the last error signal */
 	geometry_msgs::Twist t ;							/* used for co-ordinates transform */
 	ros::Subscriber link_to_platform ;
-
+	ros::Publisher linear_error_publisher;
+	ros::Publisher angular_error_publisher;
 	ros::NodeHandle n;
 	link_to_platform = n.subscribe("/Sahar/link_with_platform" , 1000, hb_callback);
-
+	linear_error_publisher = n.advertise<std_msgs::Float64>("/linear_error", 100);
+        angular_error_publisher = n.advertise<std_msgs::Float64>("/angular_error", 100);
 	COMPONENT->WPD_desired_speed.twist.linear.x = 0;
 	COMPONENT->WPD_desired_speed.twist.angular.z = 0;
 	COMPONENT->WSM_desired_speed.twist.linear.x = 0;
@@ -263,8 +266,12 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				cur_error.twist.linear.x = (COMPONENT->WSM_desired_speed.twist.linear.x) - t.linear.x;
 				cur_error.twist.angular.z = ((COMPONENT->WSM_desired_speed.twist.angular.z) - t.angular.z);
 			}
-
-
+	std_msgs::Float64 angular_error;
+	std_msgs::Float64 linear_error;
+	angular_error.data=cur_error.twist.angular.z;
+	linear_error.data=cur_error.twist.linear.x;
+	linear_error_publisher.publish(linear_error);
+	angular_error_publisher.publish(angular_error);
 
 			Push_elm(angular_filter,1024,cur_error.twist.angular.z);
 			//cur_error.twist.angular.z = _medianfilter(angular_filter,201);
@@ -295,8 +302,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 		//Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;  
 	
 	 
-	Throttle_rate.data = Kp*cur_error.twist.linear.x + Ki*integral[0] + Kd*der[0] ;
-	Steering_rate.data = Kpz*cur_error.twist.angular.z+Kdz*der[1]+Kiz*integral[1] ; 
+	Throttle_rate.data =COMPONENT->WPD_desired_speed.twist.linear.x+ Kp*cur_error.twist.linear.x + Ki*integral[0] + Kd*der[0] ;
+	Steering_rate.data =COMPONENT->WSM_desired_speed.twist.angular.z+ Kpz*cur_error.twist.angular.z+Kdz*der[1]+Kiz*integral[1] ; 
 	
 
 
@@ -323,6 +330,7 @@ if(COMPONENT->WPD_desired_speed.twist.angular.z==0){
 	/* publish */
 		COMPONENT->publishEffortsTh(Throttle_rate);
 		COMPONENT->publishEffortsSt(Steering_rate);
+
 
 	/* WSM blade controller */
 

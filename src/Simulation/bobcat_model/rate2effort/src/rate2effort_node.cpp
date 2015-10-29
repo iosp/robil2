@@ -12,7 +12,7 @@
   int movie = 1 ;
   int emergancy = 1 ;
   ros::Publisher effort_pub;
- 
+
   
   ros::Publisher platform_hb_pub_;
 
@@ -86,7 +86,7 @@ effort_pub.publish(effort);
 /////
 */
 effort.linear.x=3*lin.data;
-effort.angular.z=1.5*ang.data;
+effort.angular.z=1*ang.data;
 effort_pub.publish(effort);
 }
 
