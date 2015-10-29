@@ -72,7 +72,7 @@ class HeightMap
 	 * This function attempts to (for now) classify each map cell as
 	 * passable, obstacle or unknown. Expected to work at lightning speed.
 	 */
-        void 	calculateTypes();
+        void 	calculateTypes(Vec3D position);
 	
 	/**
 	 * These functions receive the bobcat x and y coordinates (as real world coordinates)

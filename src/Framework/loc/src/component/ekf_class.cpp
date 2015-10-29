@@ -161,7 +161,12 @@ void ekf::measurement_update()
 
 void ekf::time_propagation()
 {
-	xk1 = F*xk;// + B*u;
+    int mod;
+    ros::param::param("/LOC/Model",mod,0);
+    if (mod)
+        xk1 = F*xk + B*u;
+    else
+        xk1 = F*xk;
 	P1 = F*P*F.t() + Q;
 }
 void ekf::setGasPedalState(std_msgs::Float64 value)
