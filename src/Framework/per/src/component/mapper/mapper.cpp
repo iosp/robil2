@@ -22,7 +22,7 @@ RosComm* Mapper::roscomm;
 
 /// walrus declares:
 Mat _lanes;
-#define IBEO_PITCH 0.284
+#define IBEO_PITCH 0.210
 #define IBEO_X -0.375
 #define IBEO_Y 0.055
 #define IBEO_Z 1.89
@@ -144,10 +144,10 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
   
   double incrtop = msg.angle_increment;
   double incrbottom = msg.angle_increment;
-  
+
     for(int i = 0; i < msg.ranges_t2.size(); i++) 
     {
-      if(msg.ranges_t2[i] < 0.3*msg.range_max)
+      //if(msg.ranges_t2[i] < 0.3*msg.range_max)
       ProjectLaserRange(
 			height_map, 
 			t2right, 
@@ -159,7 +159,7 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
     
     for(int i = 0; i < msg.ranges_t1.size(); i++) 
     {
-      if(msg.ranges_t1[i] < 0.3*msg.range_max)
+      //if(msg.ranges_t1[i] < 0.3*msg.range_max)
       ProjectLaserRange(
 			height_map, 
 			t1right, 
@@ -170,7 +170,7 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
     }
     for(int i = 0; i < msg.ranges_b1.size(); i++) 
     {
-      if(msg.ranges_b1[i] < 0.3*msg.range_max)
+      //if(msg.ranges_b1[i] < 0.3*msg.range_max)
       ProjectLaserRange(
 		      height_map, 
 		      b1right, 
@@ -181,7 +181,7 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
     }
     for(int i = 0; i < msg.ranges_b2.size(); i++) 
     {
-      if(msg.ranges_b2[i] < 0.3*msg.range_max)
+      //if(msg.ranges_b2[i] < 0.3*msg.range_max)
       ProjectLaserRange(
 		      height_map, 
 		      b2right, 
