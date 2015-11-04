@@ -342,9 +342,13 @@ void HeightMap::calculateTypes(Vec3D position)
             //if (abs(height - position.z) > 0.8) _types[j*_width+i] = TYPE_OBSTACLE;
             if(heighty2 != HEIGHT_UNKNOWN && heighty1 != HEIGHT_UNKNOWN && heightx2 != HEIGHT_UNKNOWN && heightx1 != HEIGHT_UNKNOWN)
             {
-                if(abs(heighty2-heighty1)/2 > obs_thresh || abs(heightx2-heightx1)/2 > obs_thresh) _types[j*_width+i] = TYPE_OBSTACLE;
+                if (abs(heighty2-heighty1)/2 > obs_thresh || abs(heightx2-heightx1)/2 > obs_thresh) _types[j*_width+i] = TYPE_OBSTACLE;
+                if ((height - position.z) > 0.5 && (height - position.z) < 3) 
+                    _types[j*_width+i] = TYPE_OBSTACLE;
                 else _types[j*_width+i] = TYPE_CLEAR;
             }
+            else if ((height - position.z) > 0.5 && (height - position.z) < 3)
+                _types[j*_width+i] = TYPE_OBSTACLE;
             else _types[j*_width+i] = TYPE_UNSCANNED;
             //_types[j*_width+i] = TYPE_CLEAR;
 
