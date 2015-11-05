@@ -92,6 +92,13 @@ void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 	tw.header.frame_id="/map";
 	tw.header.stamp = ros::Time::now();
 	tw.twist = msg;
+
+	//check validity of the message. Some values must be 0.
+	if (tw.twist.angular.x or tw.twist.angular.y or tw.twist.linear.z or tw.twist.linear.y)
+	{
+		ROS_WARN_STREAM ("Invalid values in speed message : " << tw.twist);
+		tw.twist.angular.x = tw.twist.angular.y = tw.twist.linear.z = tw.twist.linear.y = 0;
+	}
 	
 	double angle_scale=5.0;
 	ros::param::param("/wpd/angle_scale",angle_scale,5.0);
