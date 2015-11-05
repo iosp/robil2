@@ -886,7 +886,13 @@ void MoveBase::calculate_goal(){
 	}
 
 
-	static boost::posix_time::ptime time_since_path_not_finished_last_time; //hold timestamp for last path that was not finished
+	if(is_path_finished){
+			DBG_INFO("Navigation: path is finished (after tries to make it reachable). send event and clear current path.");
+			stop_navigation(true);
+			return;
+	}
+
+	/*static boost::posix_time::ptime time_since_path_not_finished_last_time; //hold timestamp for last path that was not finished
 
 	if (is_path_finished)
 	{
@@ -903,7 +909,7 @@ void MoveBase::calculate_goal(){
 	else
 	{
 		time_since_path_not_finished_last_time = boost::get_system_time();
-	}
+	}*/
 
 
 	diagnostic_publish_new_goal(path_id, goal, goal_index, gotten_location);
