@@ -45,7 +45,7 @@ void Mapper::MainLoop()
     //printf("MAPPER\n");
     lock.lock();
      
-    height_map->calculateTypes(position);
+    height_map->calculateTypes(position, myRot.pitch);
     
     if(camL && camR) 
     {
@@ -96,7 +96,7 @@ void Mapper::VisualizeLoop()
 	  imshow("stereo", stereo);
       }
       lock.unlock();
-      waitKey(100);
+      waitKey(20);
     }
   }
 }
