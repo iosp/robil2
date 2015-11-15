@@ -45,6 +45,7 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 	}
 	if (first_GPS_flag)
 	{
+	    //z.at<double>(2,0) = measurement.altitude;
 		std::cout << "setting first GPS location as (0,0)" << std::endl;
 		setInitGPS(measurement);
 		first_GPS_flag = 0;
@@ -69,7 +70,7 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 	double y = d * sin(theta);
 	z.at<double>(0,0) = x;
 	z.at<double>(1,0) = y;
-	z.at<double>(2,0) = measurement.altitude;
+	z.at<double>(2,0) = measurement.altitude;//z.at<double>(2,0);
 	_received_gps = true;
 }
 

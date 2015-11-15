@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 
 using namespace cv;
-#define OBSTACLE_THRESH 0.3
+#define OBSTACLE_THRESH 0.4
 #define HEIGHT_UNKNOWN -100.0
 
 HeightMap::HeightMap(int width, int height)
@@ -263,7 +263,16 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
         imshow(name, image);
 
 }
+void onMouseClick(int event, int x, int y, int flags, void *param)
+{
 
+      Mat *img = ((Mat *)param);
+
+      if (event == CV_EVENT_LBUTTONDOWN)
+      {
+	 cout << "x: " << x << " y: " << y << "\t" << img->size() <<endl;
+      }
+}
 
 void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
 {
@@ -310,19 +319,30 @@ void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
             }
         }
     }
+    setMouseCallback("TerrainTypeUI", onMouseClick, &image);
     imshow("TerrainTypeUI", image);
-    cv::waitKey(1);
+    
+    cv::waitKey(200);
 }
 
-void HeightMap::calculateTypes(Vec3D position)
+void HeightMap::calculateTypes(Vec3D position, double pitch)
 {
-    double obs_thresh;
+    //cout << position.z << ", " << pitch << endl;
+    double obs_diff, obs_thresh, mul = 1;
+    ros::param::param("/PER/Obstacle/Diff",obs_diff,OBSTACLE_THRESH);
     ros::param::param("/PER/Obstacle/Thresh",obs_thresh,OBSTACLE_THRESH);
     const int road_thresh = 5;
     for(int i = 1; i < _width-1; i++)
         for(int j = 1; j < _height-1; j++)
         {
             //if(_types[j*_width+i] != TYPE_UNSCANNED) continue;
+	    double x = (_width/2 - position.x * 5 + _refPoint.x);
+	    double y = (_height/2 - position.y * 5 + _refPoint.y);
+	    double dist = sqrt((x-i) * (x-i) + (y-j) * (y-j));
+	    if (dist < 30)
+	      mul = 1;
+	    else
+	      mul = 2;
             double height = _at(i, j);
             double heightx1 = _at(i-1, j);
             double heightx2 = _at(i+1, j);
@@ -342,9 +362,13 @@ void HeightMap::calculateTypes(Vec3D position)
             //if (abs(height - position.z) > 0.8) _types[j*_width+i] = TYPE_OBSTACLE;
             if(heighty2 != HEIGHT_UNKNOWN && heighty1 != HEIGHT_UNKNOWN && heightx2 != HEIGHT_UNKNOWN && heightx1 != HEIGHT_UNKNOWN)
             {
-                if(abs(heighty2-heighty1)/2 > obs_thresh || abs(heightx2-heightx1)/2 > obs_thresh) _types[j*_width+i] = TYPE_OBSTACLE;
+                if (abs(heighty2-heighty1)/2 > obs_diff*mul || abs(heightx2-heightx1)/2 > obs_diff*mul) _types[j*_width+i] = TYPE_OBSTACLE;
+                else if ((height - position.z) > obs_thresh*mul && (height - position.z) < 1.1) 
+                    _types[j*_width+i] = TYPE_OBSTACLE;
                 else _types[j*_width+i] = TYPE_CLEAR;
             }
+            else if ((height - position.z) > obs_thresh*mul && (height - position.z) < 1.1)
+                _types[j*_width+i] = TYPE_OBSTACLE;
             else _types[j*_width+i] = TYPE_UNSCANNED;
             //_types[j*_width+i] = TYPE_CLEAR;
 
