@@ -19,6 +19,10 @@ ros::Publisher pose_2_pub;
 ros::Subscriber laser_1_sub;
 ros::Publisher laser_2_pub;
 
+geometry_msgs::Twist last_published_speed_message;
+bool published_speed_message_before;
+double angular_z_dampening_alpha;
+double linear_x_dampening_alpha;
 
 void on_speed_reg_callback(const geometry_msgs::Twist::ConstPtr& m){
 	config::WPD::pub::WPDVelocity o;
@@ -60,6 +64,8 @@ MoveBase::MoveBase(ComponentMain* comp)
 	sub_location = node.subscribe("/test/location", 10, &MoveBase::on_sub_loc, this);
 	sub_location_cov = node.subscribe("/test/location_cov", 10, &MoveBase::on_sub_loc_cov, this);
 	sub_speed = node.subscribe("/cmd_vel", 10, &MoveBase::on_sub_speed, this);
+
+	published_speed_message_before = false;
 
 	init_speed_patch(node);
 }
@@ -108,7 +114,20 @@ void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 	ros::param::param("/wpd/lin_scale",lin_scale,1.0);
 	tw.twist.linear.x*=lin_scale;
 	
+	//perform dampening according to last twist message
+	if(published_speed_message_before){
+		ros::param::param("/wpd/angular_dampening_alpha",angular_z_dampening_alpha,0.8);
+		ros::param::param("/wpd/linear_x_dampening_alpha",linear_x_dampening_alpha,0.8);
+
+		tw.twist.angular.z = (last_published_speed_message.angular.z * angular_z_dampening_alpha) +
+						(tw.twist.angular.z * (1-angular_z_dampening_alpha));
+		tw.twist.linear.x = (last_published_speed_message.linear.x * linear_x_dampening_alpha) +
+				(tw.twist.linear.x * (1-linear_x_dampening_alpha));
+	}
 	comp->publishWPDVelocity(tw);
+
+	last_published_speed_message = tw.twist;
+	published_speed_message_before = true;
 }
 
 void send_static_ziro_tf_links(ComponentMain* comp){
