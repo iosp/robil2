@@ -7,6 +7,7 @@ class PlpWaypointParameters(object):
     """ Stores the parameterd for the waypoint PLP."""
 
     def __init__(self):
+        self.callback = None
         self.map = None
         self.path = None
         self.position = None
@@ -16,13 +17,16 @@ class PlpWaypointParameters(object):
 
     def set_map(self, a_map):
         self.map = a_map
+        if self.callback: self.callback.parameters_updated()
 
     def set_position(self, a_position):
         self.position = a_position.pose.pose
         self.position_error = a_position.pose.covariance
+        if self.callback: self.callback.parameters_updated()
 
     def set_path(self, a_path):
         self.path = a_path
+        if self.callback: self.callback.parameters_updated()
 
 
 class PlpWaypointVariables(object):

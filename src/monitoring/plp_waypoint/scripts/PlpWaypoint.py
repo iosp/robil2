@@ -13,7 +13,7 @@ class PlpWaypoint(object):
     The PLP also emits progress monitoring messages.
     """
 
-    def __init__(self, constant_map, start_data, callback):
+    def __init__(self, constant_map, parameters, callback):
         """
         :param constant_map: constants used in the calculation.
             See docs (in the docs folder).
@@ -27,12 +27,9 @@ class PlpWaypoint(object):
         # We should sent estimation only once per request.
         self.estimation_sent = False
 
-        # Inputs
-        self.map_error = start_data.map_error
-        self.map = start_data.map
-        self.path = start_data.path
-        self.position = start_data.position
-        self.position_error = start_data.position_error
+        # Input parameters
+        self.parameters = parameters
+        parameters.callback = self
 
         # variables
         self.variables_history = list()
@@ -47,6 +44,7 @@ class PlpWaypoint(object):
         if self.can_estimate():
             res = self.get_estimation()
             if res != None:
+                self.estimation_sent = True
                 self.callback.plp_estimation(res)
             else:
                 self.callback.plp_no_preconditions()
@@ -100,13 +98,13 @@ class PlpWaypoint(object):
         Checks to see if this object has enough data calculate the estimation
         :return: True iff there is enough data; False otherwise.
         """
-        return not((self.map is None)
-                   or (self.path is None)
-                   or (self.position is None)
-                   or (self.position_error is None))
+        return not((self.parameters.map is None)
+                   or (self.parameters.path is None)
+                   or (self.parameters.position is None)
+                   or (self.parameters.position_error is None))
 
     def validate_preconditions(self):
-        return self.local_path_distance > 1 and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
+        return self.variables().local_path_distance > 1 and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
 
 
     # Monitoring ###################################################
@@ -158,7 +156,7 @@ class PlpWaypoint(object):
         """
         occupied_cells = 0
         vacant_cells = 0
-        for cell in self.map.data:
+        for cell in self.parameters.map.data:
             if cell.type == 1:
                 vacant_cells += 1
             elif cell.type == 2:
@@ -175,7 +173,7 @@ class PlpWaypoint(object):
         """
         # first, we collect the values for easy manipulation
         values = []
-        for cell in self.map.data:
+        for cell in self.parameters.map.data:
             if cell.type == 1:
                 values.append(cell.height)
 
@@ -194,41 +192,27 @@ class PlpWaypoint(object):
         """
         :return: Euclidean distance to the next waypoint, in Meters.
         """
-        local_planned_path = map(lambda p: p.pose, self.path.waypoints.poses)
-        local_actual_path = chain([self.position], local_planned_path)
+        local_planned_path = map(lambda p: p.pose, self.parameters.path.waypoints.poses)
+        local_actual_path = chain([self.parameters.position], local_planned_path)
         pairs = izip(local_actual_path, local_planned_path)
         dist_between_points = imap(PlpWaypoint.dist_between_tuple, pairs)
 
         return sum(dist_between_points)
 
     def calc_aerial_distance(self):
-        destPos = self.path.waypoints.poses[len(self.path.waypoints.poses)-1]
-        self.dist_between(self.position, destPos.pose)
+        destPos = self.parameters.path.waypoints.poses[len(self.parameters.path.waypoints.poses)-1]
+        self.dist_between(self.parameters.position, destPos.pose)
 
 
     # Updaters ##############################
-    
-    def data_updated(self) :
-        """Called when data are updated.
+
+    def parameters_updated(self) :
+        """Called when parameters are updated.
            Can trigger monitoring and/or estimation"""
         if not self.estimation_sent:
             self.request_estimation()
 
         self.monitor_progress()
-
-
-    def set_map(self, a_map):
-        self.map = a_map
-        self.data_updated()
-
-    def set_position(self, a_position):
-        self.position = a_position.pose.pose
-        self.position_error = a_position.pose.covariance
-        self.data_updated()
-
-    def set_path(self, a_path):
-        self.path = a_path
-        self.data_updated()
 
 
     # Utility methods ##############################

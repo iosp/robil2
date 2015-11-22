@@ -13,23 +13,22 @@ from PlpWaypointClasses import *
 PLP_TOPIC = "/plp/messages"
 
 class PlpWaypointRosHarness(object):
-    """
-    A harness for a PlpWaypoint in a ROS/RobIL system. Listens to the
-    right topics, feeds the data to the PLP objects, and emits predictions
-    when possible.
-    """
+    """ A harness for a PlpWaypoint in a ROS/RobIL system. Listens to the
+        right topics, feeds the data to the PLP objects, and emits predictions
+        when possible."""
 
     def __init__(self):
         # The constants table is defined in the PLP document
         # under "Values/Constants"
-        self.plp_constants = {"MIN_LOC_ERROR": 5, # meters
-                                 "BOBCAT_SIZE": (3.5, 2, 1.7),  # LxHxW, meters
-                                 "MIN_BLADE_CLEARANCE": 1,  # meters
-                                 "FUEL_CONSUMPTION_RATE": 10000, # m/liter
-                                 "BOBCAT_AVERAGE_SPEED": 20000, # m/hour
-                                 "RATE_PATH_LENGTH": 0.85, # 0..1
-                                 "RATE_AERIAL_DISTANCE": 0.95 # 0..1
-                                 }
+        self.plp_constants = {
+                                "MIN_LOC_ERROR": 5, # meters
+                                "BOBCAT_SIZE": (3.5, 2, 1.7),  # LxHxW, meters
+                                "MIN_BLADE_CLEARANCE": 1,  # meters
+                                "FUEL_CONSUMPTION_RATE": 10000, # m/liter
+                                "BOBCAT_AVERAGE_SPEED": 20000, # m/hour
+                                "RATE_PATH_LENGTH": 0.85, # 0..1
+                                "RATE_AERIAL_DISTANCE": 0.95 # 0..1
+                            }
 
         self.nav_tasks = {} # id -> nav_task
         self.missions = {} # id -> mission
@@ -59,15 +58,15 @@ class PlpWaypointRosHarness(object):
 
 
     def path_updated(self, msg):
-        (self.plp if self.plp else self.plp_params).set_path(msg)
+        self.plp_params.set_path(msg)
         self.trigger_local_path_published = True
         self.consider_trigger()
 
     def map_updated(self, msg):
-        (self.plp if self.plp else self.plp_params).set_map(msg)
+        self.plp_params.set_map(msg)
 
     def position_updated(self, msg):
-        (self.plp if self.plp else self.plp_params).set_position(msg)
+        self.plp_params.set_position(msg)
 
     def nav_task_assigned(self, nav_task):
         rospy.loginfo("navtask {0} stored".format(nav_task.task_id))
@@ -115,10 +114,8 @@ class PlpWaypointRosHarness(object):
 
 
     def consider_trigger(self):
-        """
-        Test the status of the fields. If all preconditions are met,
-        trigger the plp.
-        """
+        """Test the status of the fields. If all preconditions are met,
+            trigger the plp."""
         if self.trigger_nav_task_active and self.trigger_local_path_published:
             self.trigger_local_path_published = False
             self.trigger_nav_task_active = False
@@ -126,15 +123,14 @@ class PlpWaypointRosHarness(object):
 
 
     def trigger_plp_task(self):
-        """
-        Creates a PLP and starts the monitoring, if there's no PLP yet.
-        """
+        """Creates a PLP and starts the monitoring, if there's no PLP yet."""
         rospy.loginfo("Activating PLP")
         self.plp = PlpWaypoint(self.plp_constants, self.plp_params, self)
         self.plp.request_estimation()
 
     def reset_harness_data(self):
         self.plp = None
+        self.plp_params.callback = None
         self.plp_params = PlpWaypointParameters()
         self.trigger_local_path_published = False
         self.trigger_nav_task_active = False
@@ -142,40 +138,32 @@ class PlpWaypointRosHarness(object):
 
     # PLP Callback methods #####################################
     def plp_estimation(self, plp_achieve_result):
-        """
-        The PLP is active, and gives an estimation.
-        """
+        """ The PLP is active, and gives an estimation. """
         self.publisher.publish(
             PlpMessage(None, "Waypoint", "estimation",
                         repr(plp_achieve_result)))
 
     def plp_goal_achieved(self):
-        """
-        The goal for the PLP has been achieved.
-        Deletes the current PLP, resets the harness.
-        """
+        """ The goal for the PLP has been achieved.
+            Deletes the current PLP, resets the harness. """
         rospy.loginfo("PLP goal achieved")
         self.publisher.publish(
             PlpMessage(None, "Waypoint", "achieve", "PLP goal achieved"))
         self.reset_harness_data()
 
     def plp_no_preconditions(self):
-        """
-        Called when the PLP is active and would have given an estimation,
-        except that the PLP preconditions have not been met.
-        """
+        """ Called when the PLP is active and would have given an estimation,
+            except that the PLP preconditions have not been met. """
         self.publisher.publish(PlpMessage(None, "Waypoint", "info", "PLP triggered, but its preconditions have not been met (yet)"))
 
     def plp_missing_data(self):
-        """
-        Called by the PLP when it should have delivered an estimation,
-        but there is not enough data (e.g. map is missing).
-        """
+        """ Called by the PLP when it should have delivered an estimation,
+            but there is not enough data (e.g. map is missing). """
         self.publisher.publish(PlpMessage(None, "Waypoint", "info", "PLP triggered, but its missing some data"))
 
     def plp_monitor_message(self, message):
         self.publisher.publish(
-            PlpMessage(None, "Waypoint", "monitor", 
+            PlpMessage(None, "Waypoint", "monitor",
                         repr(message)))
 
 
