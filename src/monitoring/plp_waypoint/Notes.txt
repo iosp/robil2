@@ -4,7 +4,6 @@ This package contains the waypoint PLP - the PLP responsible for predicting the 
 ## Running the node
 Command to run the node:
 
-    rosnode plp_waypoint PlpWaypointRosHarness.py
+    rosrun plp_waypoint PlpWaypointRosHarness.py
 
 The node will listen to the proper topics, and issue a prediction on the first time a planned path is published, once a navigation task has become active. The prediction is sent to topic `plp/messages`.
-

@@ -1,11 +1,11 @@
 # WP Navigation PLP
 
-- v1 2015-01-12
-- v2 2015-01-28
-- v3 2015-05-18 Updated to reflect the python code and the recent presentations.
-- v4 2015-09-21 Added monitoring, and rearranged "trigger", "monitoring" and "goal" to be under "Lifecycle"
-- v5 2015-10-07 Restructured, "lifecycle" removed.
-- v6 2015-11-22 Added new advancement measurement
+1. 2015-01-12
+1. 2015-01-28
+1. 2015-05-18 Updated to reflect the python code and the recent presentations.
+1. 2015-09-21 Added monitoring, and rearranged "trigger", "monitoring" and "goal" to be under "Lifecycle"
+1. 2015-10-07 Restructured, "lifecycle" removed.
+1. 2015-11-22 Added new advancement measurement
 
 ## About
 This PLP calculates the success probability of navigating to the end of a local path.
@@ -24,8 +24,8 @@ This PLP calculates the success probability of navigating to the end of a local 
 * `MIN_BLADE_CLEARANCE` Minimal blade clearance for driving
 * `FUEL_CONSUMPTION_RATE`
 * `BOBCAT_AVERAGE_SPEED`
-* `RATE_PATH_LENGTH` &larr; Rate of expected decrease in the path length, during advancement measurement.
-* `RATE_AERIAL_DISTANCE` &larr; Rate of expected decrease in the aerial distance to the waypoint, during advancement measurement.
+* `RATE_PATH_LENGTH` Rate of expected decrease in the path length, during advancement measurement.
+* `RATE_AERIAL_DISTANCE` Rate of expected decrease in the aerial distance to the waypoint, during advancement measurement.
 
 ### Variables
 _Calculated based on parameters and constants._

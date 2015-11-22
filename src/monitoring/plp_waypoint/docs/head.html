@@ -10,18 +10,25 @@
       border-bottom: 1px solid black;
     }
     em {
-      background-color: #AAFFAA;
-      color: #080;
+      color: #060;
     }
-    ul:first-of-type {
+    body > ol:first-of-type {
       font-family: Monaco, Courier, monospace;
-      background-color: #DDD;
+      background-color: #EEE;
+      position: relative;
+      padding-top: 2em;
     }
-    ul:first-of-type::before {
+    body > ol:first-of-type::before {
       content:"Change Table";
       font-weight: bold;
       display: block;
       border-bottom: 1px dotted black;
+      padding: 0.3em;
+      position: absolute;
+      top: 0;
+      left:0;
+      right:0;
+      height: 1em;
     }
   </style>
   <body>

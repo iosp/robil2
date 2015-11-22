@@ -1,35 +1,62 @@
 from math import sqrt
 from itertools import izip, imap, chain
 from PlpAchieveResult import *
+from PlpWaypointData import *
 
 
-class PlpWaypoint:
+class PlpWaypoint(object):
     """
-    Off-line calculation of the success probability of making it to the next waypoint.
+    Off-line calculation of the success probability of
+    making it to the next waypoint.
     The PLP also emits progress monitoring messages.
     """
 
-    def __init__(self, constant_map):
+    def __init__(self, constant_map, start_data, callback):
         """
-        :param constant_map: constants used in the calculation. See docs (in the docs folder).
+        :param constant_map: constants used in the calculation.
+            See docs (in the docs folder).
+        :param start_data: initial state for the fields
+        :param callback: progress monitoring callbacks are send here
         :return: a new PlpWaypoint object
         """
-        # constants
+        # constants and fields
         self.constants = constant_map
+        self.callback = callback
 
         # Inputs
-        self.map_error = 0  # Currently there's no error. When visual location will be added, there will be.
-        self.map = None
-        self.path = None
-        self.position = None
-        self.position_error = None
+        self.map_error = start_data.map_error
+        self.map = start_data.map
+        self.path = start_data.path
+        self.position = start_data.position
+        self.position_error = start_data.position_error
 
         # variables
         self.map_occupancy = None
         self.local_path_distance = None
         self.height_variability = None
+        self.aerial_distance = None
+
+    def request_estimation(self):
+        """
+        Manually trigger estimation attempt.
+        Typical client code use is from the harness,
+        immediately after instantiating the PLP object.
+        """
+        if self.can_estimate():
+            res = self.get_estimation()
+            if res != None:
+                self.callback.plp_estimation(res)
+            else:
+                self.callback.plp_no_preconditions()
+        else:
+            self.callback.plp_missing_data()
+
 
     def get_estimation(self):
+        """
+        Generate an estimation iff the preconditions are met.
+        Otherwise, return None.
+        """
         self.calculate_variables()
         if self.validate_preconditions():
             return self.estimate()
@@ -38,10 +65,13 @@ class PlpWaypoint:
 
     def estimate(self):
         """
-        Estimates the probability of getting to the next point, and the side effects it may have.
-        Assumes parameters have been calculated, preconditions have been met, etc.
-        This is a "private" function, call get_estimation for the full preparation, validation and calculation.
-        :return: An estimation of the success and side effects of getting to the next point.
+        Estimates the probability of getting to the next point, and the side
+        effects it may have. Assumes parameters have been calculated,
+        preconditions have been met, etc.
+        This is a "private" function, call get_estimation for the full
+        preparation, validation and calculation.
+        :return: An estimation of the success and side effects of
+                 getting to the next point.
         """
         # TODO: This is a dummy implementation
         result = PlpAchieveResult()
@@ -83,6 +113,7 @@ class PlpWaypoint:
         self.map_occupancy = self.calc_map_occupancy()
         self.height_variability = self.calc_map_height_variability()
         self.local_path_distance = self.calc_local_path_distance()
+        self.aerial_distance = self.calc_aerial_distance()
 
     def calc_map_occupancy(self):
         """
@@ -113,7 +144,7 @@ class PlpWaypoint:
                 values.append(cell.height)
 
         # Average
-        if ( len(values) == 0 ):
+        if len(values) == 0:
             return 1
 
         total = sum(values)
@@ -127,12 +158,16 @@ class PlpWaypoint:
         """
         :return: Euclidean distance to the next waypoint, in Meters.
         """
-        local_planned_path = map( lambda p: p.pose, self.path.waypoints.poses)
+        local_planned_path = map(lambda p: p.pose, self.path.waypoints.poses)
         local_actual_path = chain([self.position], local_planned_path)
         pairs = izip(local_actual_path, local_planned_path)
-        dist_between_points = imap( PlpWaypoint.dist_between_tuple, pairs )
+        dist_between_points = imap(PlpWaypoint.dist_between_tuple, pairs)
 
         return sum(dist_between_points)
+
+    def calc_aerial_distance(self):
+        destPos = self.path.waypoints.poses[len(self.path.waypoints.poses)-1]
+        self.dist_between(self.position, destPos.pose)
 
     # Utility methods ##############################
 
@@ -142,7 +177,7 @@ class PlpWaypoint:
         return sqrt(pow(x_error, 2)+pow(y_error, 2))
 
     @staticmethod
-    def dist_between_tuple( tpl ):
+    def dist_between_tuple(tpl):
         return PlpWaypoint.dist_between(tpl[0], tpl[1])
 
     @staticmethod
@@ -158,12 +193,12 @@ class PlpWaypoint:
 
     # Updaters ##############################
 
-    def update_map(self, a_map):
+    def set_map(self, a_map):
         self.map = a_map
 
-    def update_position(self, a_position):
+    def set_position(self, a_position):
         self.position = a_position.pose.pose
         self.position_error = a_position.pose.covariance
 
-    def update_path(self, a_path):
+    def set_path(self, a_path):
         self.path = a_path

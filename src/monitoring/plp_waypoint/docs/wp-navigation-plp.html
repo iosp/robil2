@@ -10,31 +10,38 @@
       border-bottom: 1px solid black;
     }
     em {
-      background-color: #AAFFAA;
-      color: #080;
+      color: #060;
     }
-    ul:first-of-type {
+    body > ol:first-of-type {
       font-family: Monaco, Courier, monospace;
-      background-color: #DDD;
+      background-color: #EEE;
+      position: relative;
+      padding-top: 2em;
     }
-    ul:first-of-type::before {
+    body > ol:first-of-type::before {
       content:"Change Table";
       font-weight: bold;
       display: block;
       border-bottom: 1px dotted black;
+      padding: 0.3em;
+      position: absolute;
+      top: 0;
+      left:0;
+      right:0;
+      height: 1em;
     }
   </style>
   <body>
 <h1>WP Navigation PLP</h1>
 
-<ul>
-<li>v1 2015-01-12</li>
-<li>v2 2015-01-28</li>
-<li>v3 2015-05-18 Updated to reflect the python code and the recent presentations.</li>
-<li>v4 2015-09-21 Added monitoring, and rearranged "trigger", "monitoring" and "goal" to be under "Lifecycle"</li>
-<li>v5 2015-10-07 Restructured, "lifecycle" removed.</li>
-<li>v6 2015-11-22 Added new advancement measurement</li>
-</ul>
+<ol>
+<li>2015-01-12</li>
+<li>2015-01-28</li>
+<li>2015-05-18 Updated to reflect the python code and the recent presentations.</li>
+<li>2015-09-21 Added monitoring, and rearranged "trigger", "monitoring" and "goal" to be under "Lifecycle"</li>
+<li>2015-10-07 Restructured, "lifecycle" removed.</li>
+<li>2015-11-22 Added new advancement measurement</li>
+</ol>
 
 <h2>About</h2>
 
@@ -60,8 +67,8 @@
 <li><code>MIN_BLADE_CLEARANCE</code> Minimal blade clearance for driving</li>
 <li><code>FUEL_CONSUMPTION_RATE</code></li>
 <li><code>BOBCAT_AVERAGE_SPEED</code></li>
-<li><code>RATE_PATH_LENGTH</code> &larr; Rate of expected decrease in the path length, during advancement measurement.</li>
-<li><code>RATE_AERIAL_DISTANCE</code> &larr; Rate of expected decrease in the aerial distance to the waypoint, during advancement measurement.</li>
+<li><code>RATE_PATH_LENGTH</code> Rate of expected decrease in the path length, during advancement measurement.</li>
+<li><code>RATE_AERIAL_DISTANCE</code> Rate of expected decrease in the aerial distance to the waypoint, during advancement measurement.</li>
 </ul>
 
 <h3>Variables</h3>
