@@ -6,13 +6,7 @@ from PlpAchieveResult import *
 class PlpWaypoint:
     """
     Off-line calculation of the success probability of making it to the next waypoint.
-
-    The self.position_error field is a covariance matrix. From ROS' PoseWithCovariance.msg:
-    # Row-major representation of the 6x6 covariance matrix
-    # The orientation parameters use a fixed-axis representation.
-    # In order, the parameters are:
-    # (x, y, z, rotation about X axis, rotation about Y axis, rotation about Z axis)
-
+    The PLP also emits progress monitoring messages.
     """
 
     def __init__(self, constant_map):

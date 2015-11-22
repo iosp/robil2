@@ -19,11 +19,14 @@ class PlpWaypointRosHarness:
 
     def __init__(self):
         # Init internal PLP
+        # The constants table is defined in the PLP document under "Values/Constants"
         self.plp = PlpWaypoint( {"MIN_LOC_ERROR": 5, # meters
                                  "BOBCAT_SIZE": (3.5, 2, 1.7),  # L x H x W, in meters
                                  "MIN_BLADE_CLEARANCE": 1,  # meters
                                  "FUEL_CONSUMPTION_RATE": 10000, # m/liter
-                                 "BOBCAT_AVERAGE_SPEED": 20000 # m/hour
+                                 "BOBCAT_AVERAGE_SPEED": 20000, # m/hour
+                                 "RATE_PATH_LENGTH": 0.85, # 0..1
+                                 "RATE_AERIAL_DISTANCE": 0.95 # 0..1
                                  } )
 
         # Init harness state
