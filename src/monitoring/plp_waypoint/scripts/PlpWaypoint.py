@@ -1,8 +1,10 @@
 from math import sqrt
 from itertools import izip, imap, chain
-from PlpAchieveResult import *
-from PlpWaypointData import *
+from PlpAchieveClasses import *
+from PlpWaypointClasses import *
 
+# Number of frames of variable history needed for monitoring.
+PLP_WAYPOINT_HISTORY_LENGTH = 2
 
 class PlpWaypoint(object):
     """
@@ -33,10 +35,7 @@ class PlpWaypoint(object):
         self.position_error = start_data.position_error
 
         # variables
-        self.map_occupancy = None
-        self.local_path_distance = None
-        self.height_variability = None
-        self.aerial_distance = None
+        self.variables_history = list()
 
     def request_estimation(self):
         """
@@ -78,19 +77,20 @@ class PlpWaypoint(object):
         """
         # TODO: This is a dummy implementation
         result = PlpAchieveResult()
-        result.success = (1-self.map_occupancy)*pow(3, -0.01*self.local_path_distance)
-        result.success_time = (1+self.map_occupancy)*self.local_path_distance*self.constants["BOBCAT_AVERAGE_SPEED"]
-        result.side_effects["fuel"] = self.local_path_distance \
-                                      * self.constants["FUEL_CONSUMPTION_RATE"] \
-                                      * self.height_variability * 1.7
+        vars = self.variables()
+        result.success = (1-vars.map_occupancy)*pow(3, -0.01*vars.local_path_distance)
+        result.success_time = (1+vars.map_occupancy)*vars.local_path_distance*vars.constants["BOBCAT_AVERAGE_SPEED"]
+        result.side_effects["fuel"] = vars.local_path_distance \
+                                      * vars.constants["FUEL_CONSUMPTION_RATE"] \
+                                      * vars.height_variability * 1.7
         result.add_failure(PlpAchieveResultFailureScenario("bobcat_stuck",
-                                                           sqrt(self.map_occupancy),
-                                                           self.map_occupancy * self.local_path_distance
-                                                           * self.constants["BOBCAT_AVERAGE_SPEED"]))
+                                                           sqrt(vars.map_occupancy),
+                                                           vars.map_occupancy * vars.local_path_distance
+                                                           * vars.constants["BOBCAT_AVERAGE_SPEED"]))
         result.add_failure(PlpAchieveResultFailureScenario("bobcat_turned_over",
-                                                           0.005 * sqrt(self.map_occupancy),
-                                                           0.5 * self.map_occupancy * self.local_path_distance
-                                                           * pow(self.constants["BOBCAT_AVERAGE_SPEED"], 2)))
+                                                           0.005 * sqrt(vars.map_occupancy),
+                                                           0.5 * vars.map_occupancy * vars.local_path_distance
+                                                           * pow(vars.constants["BOBCAT_AVERAGE_SPEED"], 2)))
         result.confidence = 0.7
 
         return result
@@ -111,20 +111,45 @@ class PlpWaypoint(object):
 
     # Monitoring ###################################################
     def monitor_progress(self):
-        # TODO complete this!
-        pass
+        self.monitor_remaining_path_length()
+        self.monitor_distance_to_target()
+
+    def monitor_remaining_path_length(self):
+        if len(self.variables_history) > 1:
+            cur = self.variables_history[0].local_path_distance
+            prv = self.variables_history[1].local_path_distance
+            is_ok = prv*self.contants["RATE_PATH_LENGTH"] >= cur
+            self.callback.plp_monitor_message( PlpMonitorMessage("Path Length Monitor", is_ok, ""))
+
+    def monitor_distance_to_target(self):
+        if len(self.variables_history) > 1:
+            cur = self.variables_history[0].aerial_distance
+            prv = self.variables_history[1].aerial_distance
+            is_ok = prv*self.contants["RATE_AERIAL_DISTANCE"] >= cur
+            self.callback.plp_monitor_message( PlpMonitorMessage("Distance to Target Monitor", is_ok, ""))
+
 
     # Methods to calculate the PLP variables #######################
 
     def calculate_variables(self):
         """
-        Initializes the PLP variables (see docs) based on the current state of the inputs.
+        Calculates the PLP variables (see docs) based on the current state of the inputs.
+        Also manages the variable history.
         :return: None - changes are made on the object's state.
         """
-        self.map_occupancy = self.calc_map_occupancy()
-        self.height_variability = self.calc_map_height_variability()
-        self.local_path_distance = self.calc_local_path_distance()
-        self.aerial_distance = self.calc_aerial_distance()
+        variables = PlpWaypointVariables()
+        variables.map_occupancy = self.calc_map_occupancy()
+        variables.height_variability = self.calc_map_height_variability()
+        variables.local_path_distance = self.calc_local_path_distance()
+        variables.aerial_distance = self.calc_aerial_distance()
+        if len(self.variables_history) >= PLP_WAYPOINT_HISTORY_LENGTH:
+            self.variables_history = [variables] + self.variables_history[0:-1]
+        else
+            self.variables_history = [variables] + self.variables_history
+
+    def variables(self):
+        """Returns the current variables"""
+        return self.variables_history[0]
 
     def calc_map_occupancy(self):
         """
@@ -182,6 +207,7 @@ class PlpWaypoint(object):
 
 
     # Updaters ##############################
+    
     def data_updated(self) :
         """Called when data are updated.
            Can trigger monitoring and/or estimation"""
@@ -193,13 +219,16 @@ class PlpWaypoint(object):
 
     def set_map(self, a_map):
         self.map = a_map
+        self.data_updated()
 
     def set_position(self, a_position):
         self.position = a_position.pose.pose
         self.position_error = a_position.pose.covariance
+        self.data_updated()
 
     def set_path(self, a_path):
         self.path = a_path
+        self.data_updated()
 
 
     # Utility methods ##############################

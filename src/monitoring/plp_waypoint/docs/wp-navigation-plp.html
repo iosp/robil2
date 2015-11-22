@@ -41,6 +41,7 @@
 <li>2015-09-21 Added monitoring, and rearranged "trigger", "monitoring" and "goal" to be under "Lifecycle"</li>
 <li>2015-10-07 Restructured, "lifecycle" removed.</li>
 <li>2015-11-22 Added new advancement measurement</li>
+<li>2015-11-22 Monitoring constants implicitly defines history frame count.</li>
 </ol>
 
 <h2>About</h2>
@@ -132,6 +133,8 @@
 </ul>
 
 <h3>Advancement measures</h3>
+
+<p><em>Defined measurements require 2 frames of variables. This is caputred in the <code>PLP_WAYPOINT_HISTORY_LENGTH</code> constant.</em></p>
 
 <ul>
 <li>Remaining path length <em>(English: Sample <code>distanceToWaypoint</code> every time the path is published. Expect a decrease.)</em>

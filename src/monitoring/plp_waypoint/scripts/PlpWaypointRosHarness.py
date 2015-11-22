@@ -8,7 +8,7 @@ from plp_waypoint.msg import PlpMessage
 from std_msgs.msg import String, Header # TODO replace with the plp message
 
 from PlpWaypoint import *
-from PlpWaypointData import *
+from PlpWaypointClasses import *
 
 PLP_TOPIC = "/plp/messages"
 
@@ -133,14 +133,21 @@ class PlpWaypointRosHarness(object):
         self.plp = PlpWaypoint(self.plp_constants, self.plp_params, self)
         self.plp.request_estimation()
 
-    ### PLP Callback methods
+    def reset_harness_data(self):
+        self.plp = None
+        self.plp_params = PlpWaypointParameters()
+        self.trigger_local_path_published = False
+        self.trigger_nav_task_active = False
+
+
+    # PLP Callback methods #####################################
     def plp_estimation(self, plp_achieve_result):
         """
         The PLP is active, and gives an estimation.
         """
         self.publisher.publish(
             PlpMessage(None, "Waypoint", "estimation",
-                       repr(plp_achieve_result)))
+                        repr(plp_achieve_result)))
 
     def plp_goal_achieved(self):
         """
@@ -148,6 +155,8 @@ class PlpWaypointRosHarness(object):
         Deletes the current PLP, resets the harness.
         """
         rospy.loginfo("PLP goal achieved")
+        self.publisher.publish(
+            PlpMessage(None, "Waypoint", "achieve", "PLP goal achieved"))
         self.reset_harness_data()
 
     def plp_no_preconditions(self):
@@ -164,31 +173,10 @@ class PlpWaypointRosHarness(object):
         """
         self.publisher.publish(PlpMessage(None, "Waypoint", "info", "PLP triggered, but its missing some data"))
 
-
-    def reset_harness_data(self):
-        self.plp = None
-        self.plp_params = PlpWaypointParameters()
-        self.trigger_local_path_published = False
-        self.trigger_nav_task_active = False
-
-    # def attempt_estimation(self):
-    #     """
-    #     Attempts to get estimation from the PLP. May fail if the PLP does not have
-    #     enough information.
-    #     """
-    #     if ( self.trigger_nav_task_active and self.trigger_local_path_published ):
-    #         # turn trigger off
-    #         self.trigger_local_path_published = False
-    #         self.trigger_nav_task_active = False
-    #
-    #         # Estimate and publish.
-    #         rospy.loginfo("Activating PLP")
-    #         self.monitor_active = True  # TODO turn the monitor off when no nav task is active
-    #         if self.plp.can_estimate:
-    #             res = self.plp.get_estimation()
-    #             self.publisher.publish( PlpMessage(None, "Waypoint", "Estimation", repr(res)) )
-    #         else:
-    #             self.publisher.publish( PlpMessage(None, "Waypoint", "error", "PLP triggered, but not enough data available") )
+    def plp_monitor_message(self, message):
+        self.publisher.publish(
+            PlpMessage(None, "Waypoint", "monitor", 
+                        repr(message)))
 
 
 if __name__ == '__main__':

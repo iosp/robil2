@@ -33,6 +33,3 @@ class PlpWaypointVariables(object):
         self.mapOccupancy = None
         self.heightVariablity = None
         self.aerialDistanceToWaypoint = None
-
-
-    

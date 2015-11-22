@@ -6,6 +6,7 @@
 1. 2015-09-21 Added monitoring, and rearranged "trigger", "monitoring" and "goal" to be under "Lifecycle"
 1. 2015-10-07 Restructured, "lifecycle" removed.
 1. 2015-11-22 Added new advancement measurement
+1. 2015-11-22 Monitoring constants implicitly defines history frame count.
 
 ## About
 This PLP calculates the success probability of navigating to the end of a local path.
@@ -64,6 +65,8 @@ _Later, we will replace this with "health" PLP for the entire system_
 * blade minimum height preserver
 
 ### Advancement measures
+_Defined measurements require 2 frames of variables. This is caputred in the `PLP_WAYPOINT_HISTORY_LENGTH` constant._
+
 * Remaining path length _(English: Sample `distanceToWaypoint` every time the path is published. Expect a decrease.)_
   * Every: `path` publication
   * Expect: `decrease( distanceToWaypoint, RATE_PATH_LENGTH )`
