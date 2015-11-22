@@ -22,6 +22,8 @@ class PlpWaypoint(object):
         # constants and fields
         self.constants = constant_map
         self.callback = callback
+        # We should sent estimation only once per request.
+        self.estimation_sent = False
 
         # Inputs
         self.map_error = start_data.map_error
@@ -42,6 +44,7 @@ class PlpWaypoint(object):
         Typical client code use is from the harness,
         immediately after instantiating the PLP object.
         """
+        self.estimation_sent = False
         if self.can_estimate():
             res = self.get_estimation()
             if res != None:
@@ -104,6 +107,14 @@ class PlpWaypoint(object):
 
     def validate_preconditions(self):
         return self.local_path_distance > 1 and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
+
+
+    # Monitoring ###################################################
+    def monitor_progress(self):
+        # TODO complete this!
+        pass
+
+    # Methods to calculate the PLP variables #######################
 
     def calculate_variables(self):
         """
@@ -169,6 +180,28 @@ class PlpWaypoint(object):
         destPos = self.path.waypoints.poses[len(self.path.waypoints.poses)-1]
         self.dist_between(self.position, destPos.pose)
 
+
+    # Updaters ##############################
+    def data_updated(self) :
+        """Called when data are updated.
+           Can trigger monitoring and/or estimation"""
+        if not self.estimation_sent:
+            self.request_estimation()
+
+        self.monitor_progress()
+
+
+    def set_map(self, a_map):
+        self.map = a_map
+
+    def set_position(self, a_position):
+        self.position = a_position.pose.pose
+        self.position_error = a_position.pose.covariance
+
+    def set_path(self, a_path):
+        self.path = a_path
+
+
     # Utility methods ##############################
 
     def location_error_in_meters(self):
@@ -190,15 +223,3 @@ class PlpWaypoint(object):
         return sqrt(pow(point_a.position.x-point_b.position.x, 2)
                     + pow(point_a.position.y-point_b.position.y, 2)
                     + pow(point_a.position.z-point_b.position.z, 2))
-
-    # Updaters ##############################
-
-    def set_map(self, a_map):
-        self.map = a_map
-
-    def set_position(self, a_position):
-        self.position = a_position.pose.pose
-        self.position_error = a_position.pose.covariance
-
-    def set_path(self, a_path):
-        self.path = a_path

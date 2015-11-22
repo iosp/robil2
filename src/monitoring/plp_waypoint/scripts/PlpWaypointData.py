@@ -1,9 +1,10 @@
-"""Module for the PlpWaypointData class"""
+"""Data the PLP needs, as defined in the PLP document.
+Classes in this module should be generated automatically from the plp.xml,
+once we get to it.
+"""
 
-class PlpWaypointData(object):
-    """ Stores all the data needed by the waypoint PLP.
-    Can be auto-generated completely by the code gen, when we get to it.
-    """
+class PlpWaypointParameters(object):
+    """ Stores the parameterd for the waypoint PLP."""
 
     def __init__(self):
         self.map = None
@@ -22,3 +23,16 @@ class PlpWaypointData(object):
 
     def set_path(self, a_path):
         self.path = a_path
+
+
+class PlpWaypointVariables(object):
+    """Stores the variables (as defined in the PLP doc)"""
+
+    def __init__(self):
+        self.distanceToWaypoint = None
+        self.mapOccupancy = None
+        self.heightVariablity = None
+        self.aerialDistanceToWaypoint = None
+
+
+    

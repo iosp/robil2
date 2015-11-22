@@ -38,7 +38,7 @@ class PlpWaypointRosHarness(object):
         self.trigger_nav_task_active = False
         self.trigger_local_path_published = False
         self.plp = None
-        self.plp_data = PlpWaypointData()
+        self.plp_params = PlpWaypointParameters()
 
         # Init the ROS stuff
         rospy.init_node("plp_waypoint", anonymous=False)
@@ -59,15 +59,15 @@ class PlpWaypointRosHarness(object):
 
 
     def path_updated(self, msg):
-        (self.plp if self.plp else self.plp_data).set_path(msg)
+        (self.plp if self.plp else self.plp_params).set_path(msg)
         self.trigger_local_path_published = True
         self.consider_trigger()
 
     def map_updated(self, msg):
-        (self.plp if self.plp else self.plp_data).set_map(msg)
+        (self.plp if self.plp else self.plp_params).set_map(msg)
 
     def position_updated(self, msg):
-        (self.plp if self.plp else self.plp_data).set_position(msg)
+        (self.plp if self.plp else self.plp_params).set_position(msg)
 
     def nav_task_assigned(self, nav_task):
         rospy.loginfo("navtask {0} stored".format(nav_task.task_id))
@@ -130,7 +130,7 @@ class PlpWaypointRosHarness(object):
         Creates a PLP and starts the monitoring, if there's no PLP yet.
         """
         rospy.loginfo("Activating PLP")
-        self.plp = PlpWaypoint(self.plp_constants, self.plp_data, self)
+        self.plp = PlpWaypoint(self.plp_constants, self.plp_params, self)
         self.plp.request_estimation()
 
     ### PLP Callback methods
@@ -167,7 +167,7 @@ class PlpWaypointRosHarness(object):
 
     def reset_harness_data(self):
         self.plp = None
-        self.plp_data = PlpWaypointData()
+        self.plp_params = PlpWaypointParameters()
         self.trigger_local_path_published = False
         self.trigger_nav_task_active = False
 
