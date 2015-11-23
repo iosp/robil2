@@ -3,14 +3,13 @@ import rospy
 from robil_msgs.msg import Map, Path, AssignNavTask, AssignMission
 # from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseWithCovarianceStamped
-
 from plp_waypoint.msg import PlpMessage
-from std_msgs.msg import String, Header # TODO replace with the plp message
-
+from std_msgs.msg import String, Header  # TODO replace with the plp message
 from PlpWaypoint import *
 from PlpWaypointClasses import *
 
 PLP_TOPIC = "/plp/messages"
+
 
 class PlpWaypointRosHarness(object):
     """ A harness for a PlpWaypoint in a ROS/RobIL system. Listens to the
@@ -21,18 +20,18 @@ class PlpWaypointRosHarness(object):
         # The constants table is defined in the PLP document
         # under "Values/Constants"
         self.plp_constants = {
-                                "MIN_LOC_ERROR": 5, # meters
-                                "BOBCAT_SIZE": (3.5, 2, 1.7),  # LxHxW, meters
-                                "MIN_BLADE_CLEARANCE": 1,  # meters
-                                "FUEL_CONSUMPTION_RATE": 10000, # m/liter
-                                "BOBCAT_AVERAGE_SPEED": 20000, # m/hour
-                                "RATE_PATH_LENGTH": 0.85, # 0..1
-                                "RATE_AERIAL_DISTANCE": 0.95 # 0..1
-                            }
+            "MIN_LOC_ERROR": 5,  # meters
+            "BOBCAT_SIZE": (3.5, 2, 1.7),  # LxHxW, meters
+            "MIN_BLADE_CLEARANCE": 1,  # meters
+            "FUEL_CONSUMPTION_RATE": 10000,  # m/liter
+            "BOBCAT_AVERAGE_SPEED": 20000,  # m/hour
+            "RATE_PATH_LENGTH": 0.85,  # 0..1
+            "RATE_AERIAL_DISTANCE": 0.95  # 0..1
+        }
 
-        self.nav_tasks = {} # id -> nav_task
-        self.missions = {} # id -> mission
-        self.mission_state = {} # mission_id -> current task index.
+        self.nav_tasks = {}  # id -> nav_task
+        self.missions = {}  # id -> mission
+        self.mission_state = {}  # mission_id -> current task index.
 
         self.trigger_nav_task_active = False
         self.trigger_local_path_published = False
@@ -44,18 +43,17 @@ class PlpWaypointRosHarness(object):
         self.publisher = rospy.Publisher(PLP_TOPIC, PlpMessage, queue_size=5)
         rospy.Subscriber("/PER/MiniMap", Map, self.map_updated)
         rospy.Subscriber("/PP/Path",
-                    Path, self.path_updated)
+                         Path, self.path_updated)
         rospy.Subscriber("/LOC/Pose",
-                    PoseWithCovarianceStamped, self.position_updated)
+                         PoseWithCovarianceStamped, self.position_updated)
         rospy.Subscriber("/OCU/SMME/NavigationTask",
-                    AssignNavTask, self.nav_task_assigned)
+                         AssignNavTask, self.nav_task_assigned)
         rospy.Subscriber("/OCU/SMME/MissionPlan",
-                    AssignMission, self.mission_assigned)
+                         AssignMission, self.mission_assigned)
         rospy.Subscriber("/decision_making/events",
-                    String, self.state_machine_change)
+                         String, self.state_machine_change)
 
-        rospy.loginfo("Waypoinrt PLP Harness - Started")
-
+        rospy.loginfo("Waypoint PLP Harness - Started")
 
     def path_updated(self, msg):
         self.plp_params.set_path(msg)
@@ -80,9 +78,9 @@ class PlpWaypointRosHarness(object):
         comps = event_string.data.split("/")
         # Test for the triggering of a task.
         if (len(comps) == 8 and
-            comps[1] == "mission" and
-            comps[3] == "TaskActive" and
-            comps[5] == "TaskSpooling" ) :
+                    comps[1] == "mission" and
+                    comps[3] == "TaskActive" and
+                    comps[5] == "TaskSpooling"):
             mission_id = comps[2]
 
             if self.mission_state.has_key(mission_id):
@@ -104,14 +102,13 @@ class PlpWaypointRosHarness(object):
                     self.trigger_nav_task_active = True
 
         elif (len(comps) == 4 and
-               comps[1] == "mission") :
+                      comps[1] == "mission"):
             mission_id = comps[2]
             event = comps[3]
             if event in {"AbortMission", "CompleteMission", "ClearMission"}:
                 if self.mission_state.has_key(mission_id):
                     del self.mission_state[mission_id]
                     self.reset_harness_data()
-
 
     def consider_trigger(self):
         """Test the status of the fields. If all preconditions are met,
@@ -120,7 +117,6 @@ class PlpWaypointRosHarness(object):
             self.trigger_local_path_published = False
             self.trigger_nav_task_active = False
             self.trigger_plp_task()
-
 
     def trigger_plp_task(self):
         """Creates a PLP and starts the monitoring, if there's no PLP yet."""
@@ -135,13 +131,12 @@ class PlpWaypointRosHarness(object):
         self.trigger_local_path_published = False
         self.trigger_nav_task_active = False
 
-
     # PLP Callback methods #####################################
     def plp_estimation(self, plp_achieve_result):
         """ The PLP is active, and gives an estimation. """
         self.publisher.publish(
             PlpMessage(None, "Waypoint", "estimation",
-                        repr(plp_achieve_result)))
+                       repr(plp_achieve_result)))
 
     def plp_goal_achieved(self):
         """ The goal for the PLP has been achieved.
@@ -154,7 +149,8 @@ class PlpWaypointRosHarness(object):
     def plp_no_preconditions(self):
         """ Called when the PLP is active and would have given an estimation,
             except that the PLP preconditions have not been met. """
-        self.publisher.publish(PlpMessage(None, "Waypoint", "info", "PLP triggered, but its preconditions have not been met (yet)"))
+        self.publisher.publish(
+            PlpMessage(None, "Waypoint", "info", "PLP triggered, but its preconditions have not been met (yet)"))
 
     def plp_missing_data(self):
         """ Called by the PLP when it should have delivered an estimation,
@@ -164,7 +160,7 @@ class PlpWaypointRosHarness(object):
     def plp_monitor_message(self, message):
         self.publisher.publish(
             PlpMessage(None, "Waypoint", "monitor",
-                        repr(message)))
+                       repr(message)))
 
 
 if __name__ == '__main__':

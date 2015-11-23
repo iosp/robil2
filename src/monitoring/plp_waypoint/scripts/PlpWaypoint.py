@@ -3,10 +3,9 @@ from itertools import izip, imap, chain
 from PlpAchieveClasses import *
 from PlpWaypointClasses import *
 
-import rospy # TODO remove
-
 # Number of frames of variable history needed for monitoring.
 PLP_WAYPOINT_HISTORY_LENGTH = 2
+
 
 class PlpWaypoint(object):
     """
@@ -19,7 +18,7 @@ class PlpWaypoint(object):
         """
         :param constant_map: constants used in the calculation.
             See docs (in the docs folder).
-        :param start_data: initial state for the fields
+        :param parameters: parameters object for this PLP.
         :param callback: progress monitoring callbacks are send here
         :return: a new PlpWaypoint object
         """
@@ -36,8 +35,6 @@ class PlpWaypoint(object):
         # variables
         self.variables_history = list()
 
-        print( repr(self.constants) )
-
     def request_estimation(self):
         """
         Manually trigger estimation attempt.
@@ -47,14 +44,13 @@ class PlpWaypoint(object):
         self.estimation_sent = False
         if self.can_estimate():
             res = self.get_estimation()
-            if res != None:
+            if res is not None:
                 self.estimation_sent = True
                 self.callback.plp_estimation(res)
             else:
                 self.callback.plp_no_preconditions()
         else:
             self.callback.plp_missing_data()
-
 
     def get_estimation(self):
         """
@@ -79,23 +75,24 @@ class PlpWaypoint(object):
         """
         # TODO: This is a dummy implementation
         result = PlpAchieveResult()
-        vars = self.variables()
-        result.success = (1-vars.map_occupancy) \
-                                * pow(3, -0.01*vars.local_path_distance)
-        result.success_time = (1+vars.map_occupancy) \
-                                * vars.local_path_distance  \
-                                * self.constants["BOBCAT_AVERAGE_SPEED"]
-        result.side_effects["fuel"] = vars.local_path_distance \
+        current_vars = self.variables()
+        result.success = (1 - current_vars.map_occupancy) \
+                         * pow(3, -0.01 * current_vars.local_path_distance)
+        result.success_time = (1 + current_vars.map_occupancy) \
+                              * current_vars.local_path_distance \
+                              * self.constants["BOBCAT_AVERAGE_SPEED"]
+        result.side_effects["fuel"] = current_vars.local_path_distance \
                                       * self.constants["FUEL_CONSUMPTION_RATE"] \
-                                      * vars.height_variability * 1.7
+                                      * current_vars.height_variability * 1.7
         result.add_failure(PlpAchieveResultFailureScenario("bobcat_stuck",
-                                                           sqrt(vars.map_occupancy),
-                                                           vars.map_occupancy * vars.local_path_distance
+                                                           sqrt(current_vars.map_occupancy),
+                                                           current_vars.map_occupancy * current_vars.local_path_distance
                                                            * self.constants["BOBCAT_AVERAGE_SPEED"]))
         result.add_failure(PlpAchieveResultFailureScenario("bobcat_turned_over",
-                                                           0.005 * sqrt(vars.map_occupancy),
-                                                           0.5 * vars.map_occupancy * vars.local_path_distance
-                                                           * pow(self.constants["BOBCAT_AVERAGE_SPEED"], 2)))
+                                                           0.005 * sqrt(current_vars.map_occupancy),
+                                                           0.5 * current_vars.map_occupancy *
+                                                           current_vars.local_path_distance *
+                                                           pow(self.constants["BOBCAT_AVERAGE_SPEED"], 2)))
         result.confidence = 0.7
         return result
 
@@ -104,19 +101,19 @@ class PlpWaypoint(object):
         Checks to see if this object has enough data calculate the estimation
         :return: True iff there is enough data; False otherwise.
         """
-        return not((self.parameters.map is None)
-                   or (self.parameters.path is None)
-                   or (self.parameters.position is None)
-                   or (self.parameters.position_error is None))
+        return not ((self.parameters.map is None)
+                    or (self.parameters.path is None)
+                    or (self.parameters.position is None)
+                    or (self.parameters.position_error is None))
 
     def validate_preconditions(self):
         return self.variables().local_path_distance > 1 \
-                 and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
+               and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
 
-
+    #
     # Monitoring ###################################################
+
     def monitor_progress(self):
-        rospy.loginfo("[u] monitoring progress") # TODO remove
         self.calculate_variables()
         self.monitor_remaining_path_length()
         self.monitor_distance_to_target()
@@ -125,23 +122,24 @@ class PlpWaypoint(object):
         if len(self.variables_history) > 1:
             cur = self.variables_history[0].local_path_distance
             prv = self.variables_history[1].local_path_distance
-            is_ok = prv*self.constants["RATE_PATH_LENGTH"] >= cur
+            expected = prv * self.constants["RATE_PATH_LENGTH"]
+            is_ok = expected >= cur
+            msg = "" if is_ok else ("path length should be <= %s" % expected)
             self.callback.plp_monitor_message(
-                        PlpMonitorMessage("Path Length Monitor", is_ok, ""))
+                PlpMonitorMessage("Path Length Monitor", is_ok, msg))
 
     def monitor_distance_to_target(self):
         if len(self.variables_history) > 1:
             cur = self.variables_history[0].aerial_distance
             prv = self.variables_history[1].aerial_distance
-            if prv:
-                is_ok = prv*self.constants["RATE_AERIAL_DISTANCE"] >= cur
-                self.callback.plp_monitor_message(
-                        PlpMonitorMessage("Distance to Target Monitor", is_ok, ""))
-            else:
-                print "monitor distance to target: prv is None"
+            expected = prv * self.constants["RATE_AERIAL_DISTANCE"]
+            is_ok = expected >= cur
+            msg = "" if is_ok else ("distance should be <= %s" % expected)
+            self.callback.plp_monitor_message(
+                PlpMonitorMessage("Distance to Target Monitor", is_ok, msg))
 
-
-    # Methods to calculate the PLP variables #######################
+    #
+    #  Methods to calculate the PLP variables #######################
 
     def calculate_variables(self):
         """
@@ -158,8 +156,6 @@ class PlpWaypoint(object):
             self.variables_history = [variables] + self.variables_history[0:-1]
         else:
             self.variables_history = [variables] + self.variables_history
-
-        rospy.loginfo("Var history: " + repr(self.variables_history))
 
     def variables(self):
         """Returns the current variables"""
@@ -181,7 +177,7 @@ class PlpWaypoint(object):
         if occupied_cells + vacant_cells == 0:
             return 0  # corner case, where no scans were made
 
-        return float(vacant_cells)/float(vacant_cells+occupied_cells)
+        return float(vacant_cells) / float(vacant_cells + occupied_cells)
 
     def calc_map_height_variability(self):
         """
@@ -198,10 +194,10 @@ class PlpWaypoint(object):
             return 1
 
         total = sum(values)
-        average = total/ float(len(values))
-        diffs = map(lambda x: pow(x-average, 2), values)
+        average = total / float(len(values))
+        diffs = map(lambda x: pow(x - average, 2), values)
         total_diff = sum(diffs)
-        average_diff = total_diff/len(diffs)
+        average_diff = total_diff / len(diffs)
         return pow(average_diff, 0.5)
 
     def calc_local_path_distance(self):
@@ -216,28 +212,27 @@ class PlpWaypoint(object):
         return sum(dist_between_points)
 
     def calc_aerial_distance(self):
-        destPos = self.parameters.path.waypoints.poses[len(self.parameters.path.waypoints.poses)-1]
-        self.dist_between(self.parameters.position, destPos.pose)
+        dest_pos = self.parameters.path.waypoints.poses[len(self.parameters.path.waypoints.poses) - 1]
+        return self.dist_between(self.parameters.position, dest_pos.pose)
 
-
+    #
     # Updaters ##############################
 
-    def parameters_updated(self) :
+    def parameters_updated(self):
         """Called when parameters are updated.
            Can trigger monitoring and/or estimation"""
-        rospy.loginfo("[u] parameters updated")# TODO remove
         if not self.estimation_sent:
             self.request_estimation()
 
         self.monitor_progress()
 
-
+    #
     # Utility methods ##############################
 
     def location_error_in_meters(self):
         x_error = self.parameters.position_error[0]
-        y_error = self.parameters.position_error[6+1]
-        return sqrt(pow(x_error, 2)+pow(y_error, 2))
+        y_error = self.parameters.position_error[6 + 1]
+        return sqrt(pow(x_error, 2) + pow(y_error, 2))
 
     @staticmethod
     def dist_between_tuple(tpl):
@@ -250,6 +245,6 @@ class PlpWaypoint(object):
         :param point_b:
         :return: Euclidean distance between point_a and point_b.
         """
-        return sqrt(pow(point_a.position.x-point_b.position.x, 2)
-                    + pow(point_a.position.y-point_b.position.y, 2)
-                    + pow(point_a.position.z-point_b.position.z, 2))
+        return sqrt(pow(point_a.position.x - point_b.position.x, 2) +
+                    pow(point_a.position.y - point_b.position.y, 2) +
+                    pow(point_a.position.z - point_b.position.z, 2))
