@@ -3,6 +3,8 @@ from itertools import izip, imap, chain
 from PlpAchieveClasses import *
 from PlpWaypointClasses import *
 
+import rospy # TODO remove
+
 # Number of frames of variable history needed for monitoring.
 PLP_WAYPOINT_HISTORY_LENGTH = 2
 
@@ -33,6 +35,8 @@ class PlpWaypoint(object):
 
         # variables
         self.variables_history = list()
+
+        print( repr(self.constants) )
 
     def request_estimation(self):
         """
@@ -76,21 +80,23 @@ class PlpWaypoint(object):
         # TODO: This is a dummy implementation
         result = PlpAchieveResult()
         vars = self.variables()
-        result.success = (1-vars.map_occupancy)*pow(3, -0.01*vars.local_path_distance)
-        result.success_time = (1+vars.map_occupancy)*vars.local_path_distance*vars.constants["BOBCAT_AVERAGE_SPEED"]
+        result.success = (1-vars.map_occupancy) \
+                                * pow(3, -0.01*vars.local_path_distance)
+        result.success_time = (1+vars.map_occupancy) \
+                                * vars.local_path_distance  \
+                                * self.constants["BOBCAT_AVERAGE_SPEED"]
         result.side_effects["fuel"] = vars.local_path_distance \
-                                      * vars.constants["FUEL_CONSUMPTION_RATE"] \
+                                      * self.constants["FUEL_CONSUMPTION_RATE"] \
                                       * vars.height_variability * 1.7
         result.add_failure(PlpAchieveResultFailureScenario("bobcat_stuck",
                                                            sqrt(vars.map_occupancy),
                                                            vars.map_occupancy * vars.local_path_distance
-                                                           * vars.constants["BOBCAT_AVERAGE_SPEED"]))
+                                                           * self.constants["BOBCAT_AVERAGE_SPEED"]))
         result.add_failure(PlpAchieveResultFailureScenario("bobcat_turned_over",
                                                            0.005 * sqrt(vars.map_occupancy),
                                                            0.5 * vars.map_occupancy * vars.local_path_distance
-                                                           * pow(vars.constants["BOBCAT_AVERAGE_SPEED"], 2)))
+                                                           * pow(self.constants["BOBCAT_AVERAGE_SPEED"], 2)))
         result.confidence = 0.7
-
         return result
 
     def can_estimate(self):
@@ -104,11 +110,14 @@ class PlpWaypoint(object):
                    or (self.parameters.position_error is None))
 
     def validate_preconditions(self):
-        return self.variables().local_path_distance > 1 and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
+        return self.variables().local_path_distance > 1 \
+                 and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
 
 
     # Monitoring ###################################################
     def monitor_progress(self):
+        rospy.loginfo("[u] monitoring progress") # TODO remove
+        self.calculate_variables()
         self.monitor_remaining_path_length()
         self.monitor_distance_to_target()
 
@@ -116,15 +125,20 @@ class PlpWaypoint(object):
         if len(self.variables_history) > 1:
             cur = self.variables_history[0].local_path_distance
             prv = self.variables_history[1].local_path_distance
-            is_ok = prv*self.contants["RATE_PATH_LENGTH"] >= cur
-            self.callback.plp_monitor_message( PlpMonitorMessage("Path Length Monitor", is_ok, ""))
+            is_ok = prv*self.constants["RATE_PATH_LENGTH"] >= cur
+            self.callback.plp_monitor_message(
+                        PlpMonitorMessage("Path Length Monitor", is_ok, ""))
 
     def monitor_distance_to_target(self):
         if len(self.variables_history) > 1:
             cur = self.variables_history[0].aerial_distance
             prv = self.variables_history[1].aerial_distance
-            is_ok = prv*self.contants["RATE_AERIAL_DISTANCE"] >= cur
-            self.callback.plp_monitor_message( PlpMonitorMessage("Distance to Target Monitor", is_ok, ""))
+            if prv:
+                is_ok = prv*self.constants["RATE_AERIAL_DISTANCE"] >= cur
+                self.callback.plp_monitor_message(
+                        PlpMonitorMessage("Distance to Target Monitor", is_ok, ""))
+            else:
+                print "monitor distance to target: prv is None"
 
 
     # Methods to calculate the PLP variables #######################
@@ -142,8 +156,10 @@ class PlpWaypoint(object):
         variables.aerial_distance = self.calc_aerial_distance()
         if len(self.variables_history) >= PLP_WAYPOINT_HISTORY_LENGTH:
             self.variables_history = [variables] + self.variables_history[0:-1]
-        else
+        else:
             self.variables_history = [variables] + self.variables_history
+
+        rospy.loginfo("Var history: " + repr(self.variables_history))
 
     def variables(self):
         """Returns the current variables"""
@@ -209,6 +225,7 @@ class PlpWaypoint(object):
     def parameters_updated(self) :
         """Called when parameters are updated.
            Can trigger monitoring and/or estimation"""
+        rospy.loginfo("[u] parameters updated")# TODO remove
         if not self.estimation_sent:
             self.request_estimation()
 
@@ -218,8 +235,8 @@ class PlpWaypoint(object):
     # Utility methods ##############################
 
     def location_error_in_meters(self):
-        x_error = self.position_error[0]
-        y_error = self.position_error[6+1]
+        x_error = self.parameters.position_error[0]
+        y_error = self.parameters.position_error[6+1]
         return sqrt(pow(x_error, 2)+pow(y_error, 2))
 
     @staticmethod
