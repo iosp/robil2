@@ -56,11 +56,16 @@ void init_speed_patch(ros::NodeHandle& node){
 }
 
 MoveBase::MoveBase(ComponentMain* comp)
-:
-	comp(comp), resend_thread(0)
-
+: comp(comp)
+, resend_thread(0)
+, pub_frequancy (5)
+, last_move_base_vel_ok (false)
+, last_real_vel_ok (false)
 {
 	ros::NodeHandle node;
+
+	boost::thread auto_vel_republisher (&MoveBase::running, this);
+
 	sub_location = node.subscribe("/test/location", 10, &MoveBase::on_sub_loc, this);
 	sub_location_cov = node.subscribe("/test/location_cov", 10, &MoveBase::on_sub_loc_cov, this);
 	sub_speed = node.subscribe("/cmd_vel", 10, &MoveBase::on_sub_speed, this);
@@ -68,6 +73,7 @@ MoveBase::MoveBase(ComponentMain* comp)
 	published_speed_message_before = false;
 
 	init_speed_patch(node);
+
 }
 
 MoveBase::~MoveBase() {
@@ -99,6 +105,8 @@ void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 	tw.header.stamp = ros::Time::now();
 	tw.twist = msg;
 
+	set_last_move_base_vel(msg);
+
 	//check validity of the message. Some values must be 0.
 	if (tw.twist.angular.x or tw.twist.angular.y or tw.twist.linear.z or tw.twist.linear.y)
 	{
@@ -125,6 +133,7 @@ void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 				(tw.twist.linear.x * (1-linear_x_dampening_alpha));
 	}
 	comp->publishWPDVelocity(tw);
+	set_last_real_vel (tw);
 
 	last_published_speed_message = tw.twist;
 	published_speed_message_before = true;
@@ -169,4 +178,124 @@ void MoveBase::resend(){
 		boost::this_thread::sleep(boost::posix_time::millisec(50));
 	}
 }
+
+
+
+
+
+#define VAR_MUTEX boost::mutex var_mutex;
+#define VAR_MUTEX_LOCK boost::mutex::scoped_lock l_for_var_mutex (var_mutex);
+VAR_MUTEX
+
+void MoveBase::set_last_move_base_vel (const geometry_msgs::Twist & new_move_base_vel){
+	VAR_MUTEX_LOCK
+	last_move_base_vel = new_move_base_vel;
+	last_move_base_vel_ok = true;
+}
+
+void MoveBase::set_last_real_vel (const geometry_msgs::TwistStamped & new_real_vel){
+	VAR_MUTEX_LOCK
+	last_real_vel.linear.x = new_real_vel.twist.linear.x;
+	last_real_vel.linear.y = new_real_vel.twist.linear.y;
+	last_real_vel.linear.z = new_real_vel.twist.linear.z;
+	last_real_vel.angular.x = new_real_vel.twist.angular.x;
+	last_real_vel.angular.y = new_real_vel.twist.angular.y;
+	last_real_vel.angular.z = new_real_vel.twist.angular.z;
+	last_real_vel_ok = true;
+}
+
+geometry_msgs::Twist MoveBase::get_last_move_base_vel (){
+	VAR_MUTEX_LOCK
+	return last_move_base_vel;
+}
+
+geometry_msgs::Twist MoveBase::get_last_real_vel (){
+	VAR_MUTEX_LOCK
+	return last_real_vel;
+}
+
+void MoveBase::set_min_real_vel (const geometry_msgs::Twist & new_min_real_vel){
+	VAR_MUTEX_LOCK
+	min_real_vel = new_min_real_vel;
+}
+
+geometry_msgs::Twist MoveBase::get_min_real_vel (){
+	VAR_MUTEX_LOCK
+	return min_real_vel;
+}
+
+
+void MoveBase::set_pub_frequancy (const double new_pub_frequancy){
+	VAR_MUTEX_LOCK
+	pub_frequancy = new_pub_frequancy;
+}
+
+double MoveBase::get_pub_frequancy (){
+	VAR_MUTEX_LOCK
+	return pub_frequancy;
+}
+
+
+
+void MoveBase::load_param (){
+	ros::NodeHandle node;
+	double min_linear = 0.15;
+	double min_angular = 0.15;
+	node.getParamCached ("/wpd/min_linear", min_linear);
+	node.getParamCached ("/wpd/min_angular", min_angular);
+	geometry_msgs::Twist min_real_vel;
+	min_real_vel.linear.x = min_linear;
+	min_real_vel.angular.z = min_angular;
+	set_min_real_vel(min_real_vel);
+
+	double pub_frequancy = get_pub_frequancy();
+	node.getParamCached ("/wpd/pub_frequancy", pub_frequancy);
+	set_pub_frequancy (pub_frequancy);
+}
+
+void MoveBase::running (){
+	while (ros::ok()){
+//		std::cout << "started = " << started << std::endl;
+//		std::cout << "last_vel_ok = " << last_vel_ok << std::endl;
+//		std::cout << "min_vel_ok = " << min_vel_ok << std::endl;
+
+		load_param();
+		geometry_msgs::Twist local_last_real_vel = get_last_real_vel();
+		geometry_msgs::Twist local_min_real_vel = get_min_real_vel();
+//		std::cout << "min_real_vel = " << local_min_real_vel.linear.x << ", " << local_min_real_vel.angular.z << std::endl;
+		geometry_msgs::Twist local_last_move_base_vel = get_last_move_base_vel();
+//		std::cout << fabs(local_last_real_vel.linear.x) << ">=" << fabs(local_min_real_vel.linear.x) <<
+//		" | " <<  fabs(local_last_real_vel.angular.z) << ">=" << fabs(local_min_real_vel.angular.z) << std::endl;
+		if ((fabs(local_last_real_vel.linear.x) >= fabs(local_min_real_vel.linear.x) or fabs(local_last_real_vel.angular.z) >= fabs(local_min_real_vel.angular.z))
+			 and last_move_base_vel_ok and last_real_vel_ok){
+
+			on_speed (local_last_move_base_vel);
+
+			std::cout << "Redundant velocity is published" << std::endl;
+		} else
+			if (last_move_base_vel_ok and last_real_vel_ok){
+				// pubslish stop velocity and stop republishing
+				geometry_msgs::TwistStamped stop_vel;
+				stop_vel.header.frame_id="/map";
+				stop_vel.header.stamp = ros::Time::now();
+				stop_vel.twist.linear.x = 0;
+				stop_vel.twist.linear.y = 0;
+				stop_vel.twist.linear.z = 0;
+				stop_vel.twist.angular.x = 0;
+				stop_vel.twist.angular.y = 0;
+				stop_vel.twist.angular.z = 0;
+//				cmd_vel_pub.publish(stop_vel);
+				comp->publishWPDVelocity(stop_vel);
+				last_move_base_vel_ok = false;
+				last_real_vel_ok = false;
+				std::cout << "Stop velocity is published" << std::endl;
+			}
+		double local_pub_frequancy = get_pub_frequancy();
+		double pub_interval = round (1 / local_pub_frequancy * 1000);
+		boost::this_thread::sleep(boost::posix_time::milliseconds(pub_interval));
+	}
+}
+
+
+
 
