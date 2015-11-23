@@ -279,7 +279,7 @@
         <geometry>
           <cylinder>
             <length>0.5</length>
-            <radius>0.1</radius>
+            <radius>0.13</radius>
           </cylinder>
         </geometry>
       </collision>
@@ -346,7 +346,7 @@
         <geometry>
           <cylinder>
             <length>0.5</length>
-            <radius>0.1</radius>
+            <radius>0.13</radius>
           </cylinder>
         </geometry>
       </collision>
@@ -757,7 +757,7 @@
         <geometry>
           <cylinder>
             <length>0.5</length>
-            <radius>0.1</radius>
+            <radius>0.13</radius>
           </cylinder>
         </geometry>
       </collision>
@@ -824,7 +824,7 @@
         <geometry>
           <cylinder>
             <length>0.5</length>
-            <radius>0.1</radius>
+            <radius>0.13</radius>
           </cylinder>
         </geometry>
       </collision>
@@ -891,7 +891,7 @@
         <geometry>
           <cylinder>
             <length>0.5</length>
-            <radius>0.1</radius>
+            <radius>0.13</radius>
           </cylinder>
         </geometry>
         <surface>
@@ -999,7 +999,7 @@
         <geometry>
           <cylinder>
             <length>0.5</length>
-            <radius>0.1</radius>
+            <radius>0.13</radius>
           </cylinder>
         </geometry>
         <surface>

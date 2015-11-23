@@ -1,4 +1,4 @@
-<!-- -*- mode: XML -*- -->
+<?xml version="1.0"?>
 <robot
   name="Tracks">
   <link
@@ -48,10 +48,19 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
+
+<!--
       <geometry>
         <mesh
           filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
       </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
+      </geometry>
+
+
+
     </collision>
   </link>
   <link
@@ -141,9 +150,14 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
+<!--
       <geometry>
         <mesh
           filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
       </geometry>
     </collision>
   </link>
@@ -194,9 +208,14 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
+<!--
       <geometry>
         <mesh
           filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
       </geometry>
     </collision>
   </link>
@@ -300,9 +319,14 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
+<!--
       <geometry>
         <mesh
           filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
       </geometry>
     </collision>
   </link>
@@ -315,7 +339,15 @@
     <parent
       link="l5" />
     <child
-      link="l6" />
+      link="l6" /><!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
+      </geometry>
     <axis
       xyz="0 1 0" />
   </joint>
@@ -353,9 +385,14 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
+<!--
       <geometry>
         <mesh
           filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
       </geometry>
     </collision>
   </link>
@@ -406,9 +443,14 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
+<!--
       <geometry>
         <mesh
           filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
       </geometry>
     </collision>
   </link>
@@ -617,9 +659,14 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
+<!--
       <geometry>
         <mesh
           filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
       </geometry>
     </collision>
   </link>
@@ -1094,9 +1141,14 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
+<!--
       <geometry>
         <mesh
           filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
       </geometry>
     </collision>
   </link>
@@ -1200,9 +1252,14 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
+<!--
       <geometry>
         <mesh
           filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
       </geometry>
     </collision>
   </link>
@@ -1359,9 +1416,14 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
+<!--
       <geometry>
         <mesh
           filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+-->
+    <geometry>
+        <box size="0.3 0.6 0.1"/>
       </geometry>
     </collision>
   </link>
