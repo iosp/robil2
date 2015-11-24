@@ -3,6 +3,7 @@ Possibly auto-generated from ROS message def files, refereneced from
 the PLP document.
 """
 
+
 class PlpAchieveResultFailureScenario(object):
     """
     A failure scenario, complete with its probability, estimated time to fail, and name.
@@ -39,6 +40,7 @@ class PlpAchieveResult(object):
     def __repr__(self):
         return "PlpAchieveResult( success:%s success_time:%s confidence:%s side_effects:%s failure:%s )" % \
                     (self.success, self.success_time, self.confidence, repr(self.side_effects), repr(self.failure))
+
 
 class PlpMonitorMessage(object):
     """A message used for monitoring"""

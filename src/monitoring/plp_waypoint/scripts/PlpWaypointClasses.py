@@ -3,6 +3,7 @@ Classes in this module should be generated automatically from the plp.xml,
 once we get to it.
 """
 
+
 class PlpWaypointParameters(object):
     """ Stores the parameterd for the waypoint PLP."""
 
