@@ -26,13 +26,13 @@ int main(int argc, char **argv)
 		ros::Subscriber wpd_sub = n.subscribe("/WPD/Speed", 100,wpd_callback);
 	        ros::Publisher  status_pub = n.advertise<std_msgs::Float64>("/llc_status", 100);
 		std_msgs::Float64 status;
-		ros::Duration pause(0.01);
+		ros::Duration pause(0.001);
 		ROS_INFO("LLC_checkup init");
 while(ros::ok()) {
 pause.sleep();
 timer++;
 status.data=fine;
-if(timer>300) status.data=0;
+if(timer>1000) status.data=0;
 status_pub.publish(status);
 ros::spinOnce();
 
