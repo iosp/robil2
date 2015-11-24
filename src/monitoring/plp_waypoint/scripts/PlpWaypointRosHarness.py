@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+import sys
 from robil_msgs.msg import Map, Path, AssignNavTask, AssignMission
 # from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseWithCovarianceStamped
@@ -38,6 +39,27 @@ class PlpWaypointRosHarness(object):
         self.plp = None
         self.plp_params = PlpWaypointParameters()
 
+        # Parse arguments. decide on trigger mode: Capture, Run PLP, or both.
+        self.capture = False
+        self.monitor = False
+        self.capture_filename = ""
+        start_args = rospy.myargv(argv=sys.argv)
+        for arg in start_args[1:]:
+            print(arg)
+            if arg == "-capture":
+                self.capture = True
+            elif arg == "-monitor":
+                self.monitor = True
+            elif self.capture:
+                self.capture_filename = arg
+
+        # default: just use the PLP.
+        if not (self.capture or self.monitor):
+            self.monitor = True
+
+        if self.capture and self.capture_filename == "":
+            self.capture_filename = "capture-file"
+
         # Init the ROS stuff
         rospy.init_node("plp_waypoint", anonymous=False)
         self.publisher = rospy.Publisher(PLP_TOPIC, PlpMessage, queue_size=5)
@@ -52,6 +74,11 @@ class PlpWaypointRosHarness(object):
                          AssignMission, self.mission_assigned)
         rospy.Subscriber("/decision_making/events",
                          String, self.state_machine_change)
+
+        if self.monitor:
+            rospy.loginfo("Trigger action: Monitoring")
+        if self.capture:
+            rospy.loginfo("Trigger action: Capturing (filename: %s)" % self.capture_filename)
 
         rospy.loginfo("Waypoint PLP Harness - Started")
 
@@ -78,9 +105,9 @@ class PlpWaypointRosHarness(object):
         comps = event_string.data.split("/")
         # Test for the triggering of a task.
         if (len(comps) == 8 and
-                    comps[1] == "mission" and
-                    comps[3] == "TaskActive" and
-                    comps[5] == "TaskSpooling"):
+                comps[1] == "mission" and
+                comps[3] == "TaskActive" and
+                comps[5] == "TaskSpooling"):
             mission_id = comps[2]
 
             if self.mission_state.has_key(mission_id):
@@ -90,7 +117,7 @@ class PlpWaypointRosHarness(object):
 
             task_index = self.mission_state[mission_id]
 
-            # test if the task is a navigtion task
+            # test if the task is a navigation task
             rospy.loginfo(
                 "Task #{0} of mission {1} spooling".format(task_index, mission_id))
             if self.missions.has_key(mission_id):
@@ -102,7 +129,7 @@ class PlpWaypointRosHarness(object):
                     self.trigger_nav_task_active = True
 
         elif (len(comps) == 4 and
-                      comps[1] == "mission"):
+                comps[1] == "mission"):
             mission_id = comps[2]
             event = comps[3]
             if event in {"AbortMission", "CompleteMission", "ClearMission"}:
@@ -116,7 +143,10 @@ class PlpWaypointRosHarness(object):
         if self.trigger_nav_task_active and self.trigger_local_path_published:
             self.trigger_local_path_published = False
             self.trigger_nav_task_active = False
-            self.trigger_plp_task()
+            if self.monitor:
+                self.trigger_plp_task()
+            if self.capture:
+                self.capture_params()
 
     def trigger_plp_task(self):
         """Creates a PLP and starts the monitoring, if there's no PLP yet."""
@@ -133,7 +163,9 @@ class PlpWaypointRosHarness(object):
 
     # PLP Callback methods #####################################
     def plp_estimation(self, plp_achieve_result):
-        """ The PLP is active, and gives an estimation. """
+        """ The PLP is active, and gives an estimation.
+        :param  plp_achieve_result: the result estimation from the PLP.
+        """
         self.publisher.publish(
             PlpMessage(None, "Waypoint", "estimation",
                        repr(plp_achieve_result)))
@@ -162,6 +194,28 @@ class PlpWaypointRosHarness(object):
             PlpMessage(None, "Waypoint", "monitor",
                        repr(message)))
 
+    #
+    # Capture parameters at trigger ############################
+    def capture_params(self):
+        capture_file = open(self.capture_filename, "w")
+        capture_file.write("= map =\n")
+        capture_file.write(repr(self.plp_params.map))
+        capture_file.write("\n")
+        capture_file.write("= map_error =\n")
+        capture_file.write(repr(self.plp_params.map_error))
+        capture_file.write("\n")
+        capture_file.write("= position =\n")
+        capture_file.write(repr(self.plp_params.position))
+        capture_file.write("\n")
+        capture_file.write("= position_error =\n")
+        capture_file.write(repr(self.plp_params.position_error))
+        capture_file.write("\n")
+        capture_file.write("= path =\n")
+        capture_file.write(repr(self.plp_params.path))
+        capture_file.write("\n")
+
+        capture_file.close()
+        rospy.loginfo("Captured parameters at trigger time to file '%s'" % self.capture_filename)
 
 if __name__ == '__main__':
     try:
