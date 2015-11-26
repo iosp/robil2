@@ -14,7 +14,6 @@ v_global=msg.twist.linear.x;
 omega_global=msg.twist.angular.z;
 fine=1;
 timer=0;
-ROS_INFO("i heard from wpd!!");
 }
 
 int main(int argc, char **argv)
