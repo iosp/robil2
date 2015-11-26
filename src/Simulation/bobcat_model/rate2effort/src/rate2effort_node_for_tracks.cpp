@@ -87,8 +87,8 @@ effort_pub.publish(effort);
 /////
 */
 
-right.data=(lin.data+ang.data)*1000;
-left.data=(lin.data-ang.data)*1000;
+right.data=(lin.data+ang.data)*2000;
+left.data=(lin.data-ang.data)*2000;
 effort_right.publish(right);
 effort_left.publish(left);
 }
