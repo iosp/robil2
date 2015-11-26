@@ -46,49 +46,9 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 	if(msg->angular.x < -1)
 		ang.data = -1 ;
 
-/*
-if(!movie){
-    	pub.data = (0.5*lin.data + 0.3*ang.data)*30*emergancy;
-    	front_left_pub_.publish(pub);
-    	back_left_pub_.publish(pub);
 
-    	pub.data = (0.5*lin.data - 0.3*ang.data)*30*emergancy;
-    	front_right_pub_.publish(pub);
-    	back_right_pub_.publish(pub);
-}
-else{
-	pub.data = (0.5*lin.data + 0.5*ang.data)*50*emergancy;
-    	front_left_pub_.publish(pub);
-    	back_left_pub_.publish(pub);
-
-    	pub.data = (0.5*lin.data - 0.5*ang.data)*50*emergancy;
-    	front_right_pub_.publish(pub);
-    	back_right_pub_.publish(pub);
-}
-*/
-
-
-////
-/*
-effort.linear.x=(1.4341/10000)*(lin.data*lin.data)+(3.5161/100000)*lin.data*ang.data+(3.4545/10000)*lin.data+(2.1479/10000)*ang.data*ang.data-0.0123*ang.data+0.0199;
-effort.angular.z=(-2.94631/10000)*(lin.data*lin.data)+(0.0064)*lin.data*ang.data+(0.0168)*ang.data*ang.data-0.9576*ang.data+1.7818;
-effort_pub.publish(effort);
-
-
-	pub.data = (0.5*lin.data + 0.5*ang.data)*emergancy;
-    	//front_left_pub_.publish(pub);
-	//pub.data = (0.5*lin.data + 0.5*ang.data)*emergancy;
-    	back_left_pub_.publish(pub);
-
-    	pub.data = (0.5*lin.data - 0.5*ang.data)*emergancy;
-    	//front_right_pub_.publish(pub);
-	//pub.data = (0.5*lin.data - 0.5*ang.data)*emergancy;
-    	back_right_pub_.publish(pub);
-/////
-*/
-
-right.data=(lin.data+ang.data)*2000;
-left.data=(lin.data-ang.data)*2000;
+right.data=(lin.data+ang.data)*100;
+left.data=(lin.data-ang.data)*100;
 effort_right.publish(right);
 effort_left.publish(left);
 }
@@ -148,9 +108,7 @@ int main(int argc, char **argv)
   
   ros::init(argc, argv, "rate2effort_for_tracks");
 
- //geometry_msgs::Twist::Ptr wheels2(new geometry_msgs::Twist());
- // wheels = wheels2 ;
-
+ 
   ros::NodeHandle n;
 
   effort_right = n.advertise<std_msgs::Float64>("/Sahar/right_wheel_velocity_controller/command", 100);
@@ -173,12 +131,7 @@ int main(int argc, char **argv)
 
    while (ros::ok())
      {
-   /* implementing E-stop, if LLC-node is offline, or doesn't publish any new messages for 1 second */
-/*	  t_out = (ros::Time::now().operator -(e_stop));
-	   	 if((t_out.sec)>=1)
-	   		emergancy = 0 ;
-	   	 else
-	   		 emergancy = 1 ;*/
+
 	   connection.data = true;
 	   platform_hb_pub_.publish(connection);
        ros::spinOnce();

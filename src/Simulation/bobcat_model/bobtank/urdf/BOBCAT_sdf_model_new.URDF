@@ -41,220 +41,7 @@
       </geometry>
     </collision>
   </link>
-<!--
-  <link
-    name="front_left_wheel">
-    <inertial>
-      <origin
-        xyz="2.0502E-07 0.19645 -3.6566E-09"
-        rpy="0 0 0" />
-      <mass
-        value="333.358058377662" />
-      <inertia
-        ixx="17.076451771348393"
-        ixy="-0.0000402018623479272"
-        ixz="0.0000757982020811204"
-        iyy="29.61581234283818"
-        iyz="-0.66419529835185E-05"
-        izz="17.076451812789907" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/front_left_wheel.stl" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0.2 0"
-        rpy="1.5708 0 0" />
-      <geometry>
-        <cylinder length="0.4" radius="0.4" 
-          />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="front_left_wheel_joint"
-    type="continuous">
-    <origin
-      xyz="-0.22722 0.47558 0.125"
-      rpy="0 2.1164E-16 0" />
-    <parent
-      link="body" />
-    <child
-      link="front_left_wheel" />
-    <axis
-      xyz="0 1 0" />
-  </joint>
-  <link
-    name="front_right_wheel">
-    <inertial>
-      <origin
-        xyz="-2.0519E-07 -0.19645 -4.3198E-09"
-        rpy="0 0 0" />
-      <mass
-        value="333.358057183995" />
-      <inertia
-        ixx="17.076452573211751"
-        ixy="-0.0000366953981898767"
-        ixz="-0.0000754939559210241"
-        iyy="29.61581234970523"
-        iyz="1.220983077663846E-05"
-        izz="17.076451008669259" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/front_right_wheel.stl" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0.2 0"
-        rpy="1.5708 0 0" />
-      <geometry>
-        <cylinder length="0.4" radius="0.4" 
-          />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="front_right_wheel_joint"
-    type="continuous">
-    <origin
-      xyz="-0.22722 -0.47558 0.125"
-      rpy="0 2.1164E-16 0" />
-    <parent
-      link="body" />
-    <child
-      link="front_right_wheel" />
-    <axis
-      xyz="0 1 0" />
-  </joint>
-  <link
-    name="back_left_wheel">
-    <inertial>
-      <origin
-        xyz="7.7344E-08 0.19645 1.8868E-07"
-        rpy="0 0 0" />
-      <mass
-        value="333.35805719188" />
-      <inertia
-        ixx="17.076452970123344"
-        ixy="-2.7936718473607865E-06"
-        ixz="-0.0000668628917564486"
-        iyy="29.61581228201546"
-        iyz="-0.0000133650614295266"
-        izz="17.076450606340583" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/back_left_wheel.stl" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 -0.2 0"
-        rpy="1.5708 0 0" />
-      <geometry>
-        <cylinder length="0.4" radius="0.4" 
-          />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="back_left_wheel_joint"
-    type="continuous">
-    <origin
-      xyz="-1.227 0.47558 0.14772"
-      rpy="0 2.1164E-16 0" />
-    <parent
-      link="body" />
-    <child
-      link="back_left_wheel" />
-    <axis
-      xyz="0 1 0" />
-  </joint>
-  <link
-    name="back_right_wheel">
-    <inertial>
-      <origin
-        xyz="-1.4894E-07 -0.19645 1.3751E-07"
-        rpy="0 0 0" />
-      <mass
-        value="333.36" />
-      <inertia
-        ixx="17.07645"
-        ixy="-1.87699E-05"
-        ixz="1.23277E-05"
-        iyy="29.6158"
-        iyz="0.000031578"
-        izz="17.07645" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/back_right_wheel.stl" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 -0.2 0"
-        rpy="1.5708 0 0" />
-      <geometry>
-        <cylinder length="0.4" radius="0.4" 
-          />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="back_right_wheel_joint"
-    type="continuous">
-    <origin
-      xyz="-1.227 -0.47558 0.14772"
-      rpy="0 2.1164E-16 0" />
-    <parent
-      link="body" />
-    <child
-      link="back_right_wheel" />
-    <axis
-      xyz="0 1 0" />
-  </joint>
--->
+
   <link
     name="base_arm">
     <inertial>
@@ -429,123 +216,7 @@
       effort="1000000"
       velocity="100" />
   </joint>
-<!--  <link
-    name="front_cylinder">
-    <inertial>
-      <origin
-        xyz="0.16022 1.6587E-08 -0.17142"
-        rpy="0 0 0" />
-      <mass
-        value="24.149" />
-      <inertia
-        ixx="4.0554"
-        ixy="-4.9938E-08"
-        ixz="-0.46391"
-        iyy="0.95412"
-        iyz="6.094E-08"
-        izz="3.9926" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/front_cylinder.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/front_cylinder.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="front_cylinder_joint"
-    type="revolute">
-    <origin
-      xyz="1.741 0 -0.80293"
-      rpy="0 8.0491E-16 0" />
-    <parent
-      link="main_arm" />
-    <child
-      link="front_cylinder" />
-    <axis
-      xyz="0 1 0" />
-    <limit
-      lower="-1.57"
-      upper="1.57"
-      effort="1000000"
-      velocity="100" />
-  </joint>
-  <link
-    name="front_shaft">
-    <inertial>
-      <origin
-        xyz="9.4954E-07 8.3283E-07 -0.19417"
-        rpy="0 0 0" />
-      <mass
-        value="13.711" />
-      <inertia
-        ixx="2.4234"
-        ixy="-2.5882E-07"
-        ixz="1.3728E-06"
-        iyy="0.41181"
-        iyz="1.3005E-06"
-        izz="2.0158" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/front_shaft.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/front_shaft.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="front_shaft_joint"
-    type="prismatic">
-    <origin
-      xyz="0.50479 0 -0.54009"
-      rpy="-3.1416 0.75163 -3.1416" />
-    <parent
-      link="front_cylinder" />
-    <child
-      link="front_shaft" />
-    <axis
-      xyz="0 0 1" />
-    <limit
-      lower="-0.1"
-      upper="0.6"
-      effort="1000000"
-      velocity="100" />
-  </joint>
--->
+
   <link
     name="loader">
     <inertial>
@@ -662,124 +333,7 @@
       effort="1000000"
       velocity="1000000" />
   </joint>
-<!--
-  <link
-    name="back_cylinder">
-    <inertial>
-      <origin
-        xyz="0.14567 5.3127E-08 0.43479"
-        rpy="0 0 0" />
-      <mass
-        value="30.817" />
-      <inertia
-        ixx="10.053"
-        ixy="-2.1135E-07"
-        ixz="0.70965"
-        iyy="2.3798"
-        iyz="-5.4817E-07"
-        izz="8.1729" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/back_cylinder.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/back_cylinder.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="back_cylinder_joint"
-    type="revolute">
-    <origin
-      xyz="-1.8135 0 0.2184"
-      rpy="0 8.0491E-16 0" />
-    <parent
-      link="body" />
-    <child
-      link="back_cylinder" />
-    <axis
-      xyz="0 1 0" />
-    <limit
-      lower="-1.57"
-      upper="1.57"
-      effort="1000000"
-      velocity="100" />
-  </joint>
-  <link
-    name="back_shaft">
-    <inertial>
-      <origin
-        xyz="-1.2324E-08 -4.788E-09 -0.41004"
-        rpy="0 0 0" />
-      <mass
-        value="20.367" />
-      <inertia
-        ixx="6.9354"
-        ixy="-8.5203E-07"
-        ixz="7.9714E-09"
-        iyy="1.7047"
-        iyz="-3.6983E-09"
-        izz="5.2356" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/back_shaft.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat/meshes/back_shaft.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint
-    name="back_shaft_joint"
-    type="prismatic">
-    <origin
-      xyz="0.33441 0 0.99813"
-      rpy="-5.7722E-16 0.32328 -4.9954E-16" />
-    <parent
-      link="back_cylinder" />
-    <child
-      link="back_shaft" />
-    <axis
-      xyz="0 0 1" />
-    <limit
-      lower="-0.2"
-      upper="1"
-      effort="1000000"
-      velocity="100" />
-  </joint>
--->
+
 <link
     name="cabin">
     <inertial>
@@ -1134,31 +688,6 @@
           rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
-<!--
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat_gazebo/meshes_bobcat_with_boggies/right_wheel.STL" />
-      </geometry>
-
-    </collision>
-
-
-    <collision>
-      <origin
-        xyz="-0.1 0 0"
-        rpy="0 1.5708 0" />
-      <geometry>
-        <cylinder length="0.5" radius="0.12" 
-          />
-
-	
-         </geometry>
-    </collision>
--->
 
 
     <collision>
@@ -1173,7 +702,7 @@
   <collision>
       <origin
         xyz="-0.15 0 0"
-        rpy="0.789 1.5708  0" />
+        rpy="0 0.8 1.5708" />
       <geometry>
         <box size="0.15 0.3 0.15"/> 
          </geometry>
@@ -1252,24 +781,14 @@
           rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
-<!--
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat_gazebo/meshes_bobcat_with_boggies/front_right_boggie.STL" />
-      </geometry>
-    </collision>
--->
+
 
     <collision>
       <origin
         xyz="-0.1 0 0"
         rpy="0 1.5708 0" />
       <geometry>
-        <cylinder length="0.5" radius="0.12" 
+        <cylinder length="0.5" radius="0.14" 
           />
       </geometry>
     </collision>
@@ -1340,24 +859,14 @@
           rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
-<!--
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat_gazebo/meshes_bobcat_with_boggies/back_right_boggie.STL" />
-      </geometry>
-    </collision>
--->
+
 
     <collision>
       <origin
         xyz="-0.1 0 0"
         rpy="0 1.5708 0" />
       <geometry>
-        <cylinder length="0.5" radius="0.12" 
+        <cylinder length="0.5" radius="0.14" 
           />
       </geometry>
     </collision>
@@ -1433,26 +942,24 @@
       </material>
     </visual>
 
-<!--
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat_gazebo/meshes_bobcat_with_boggies/left_wheel.STL" />
-      </geometry>
-    </collision>
--->
-    <collision>
-      <origin
-        xyz="0.1 0 0"
-        rpy="0 1.5708 0" />
-      <geometry>
-        <cylinder length="0.5" radius="0.12" 
 
-          />
-      </geometry>
+
+   <collision>
+      <origin
+        xyz="0.15 0 0"
+        rpy="1.5708 1.5708 0" />
+      <geometry>
+        <box size="0.15 0.3 0.15"/> 
+         </geometry>
+    </collision>
+
+  <collision>
+      <origin
+        xyz="0.15 0 0"
+        rpy="0 0.8 1.5708" />
+      <geometry>
+        <box size="0.15 0.3 0.15"/> 
+         </geometry>
     </collision>
 
     <collision>
@@ -1525,23 +1032,13 @@
           rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
-<!--
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat_gazebo/meshes_bobcat_with_boggies/front_left_boggie.STL" />
-      </geometry>
-    </collision>
--->
+
     <collision>
       <origin
         xyz="0.1 0 0"
         rpy="0 1.5708 0" />
       <geometry>
-        <cylinder length="0.5" radius="0.12" 
+        <cylinder length="0.5" radius="0.14" 
           />
       </geometry>
     </collision>
@@ -1614,24 +1111,14 @@
           rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
-<!--
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobcat_gazebo/meshes_bobcat_with_boggies/back_left_boggie.STL" />
-      </geometry>
-    </collision>
--->
+
 
     <collision>
       <origin
         xyz="0.1 0 0"
         rpy="0 1.5708 0" />
       <geometry>
-        <cylinder length="0.5" radius="0.12" 
+        <cylinder length="0.5" radius="0.14" 
           />
       </geometry>
     </collision>
@@ -1717,16 +1204,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-<!--
-  <transmission name="tran7">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="back_shaft_joint"/>
-    <actuator name="motor7">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
--->
+
   <transmission name="tran8">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="supporter_joint">
@@ -1736,16 +1214,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-<!--
-  <transmission name="tran9">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="front_cylinder_joint"/>
-    <actuator name="motor9">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
--->
+
   <transmission name="tran10">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="loader_joint">
@@ -1755,16 +1224,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-<!--
-  <transmission name="tran11">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="front_shaft_joint"/>
-    <actuator name="motor11">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
--->
+
   <transmission name="tran12">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="brackets_joint">
@@ -1774,16 +1234,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-<!--
-  <transmission name="tran12">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="back_cylinder_joint"/>
-    <actuator name="motor12">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
--->
+
   <!-- ros_control plugin -->
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
@@ -1818,11 +1269,7 @@
   <gazebo reference="main_arm">
     <material>Gazebo/PaintedWall</material>
   </gazebo>
-<!--
-  <gazebo reference="back_shaft">
-    <material>Gazebo/Black</material>
-  </gazebo>
--->
+
   <gazebo reference="supporter">
     <mu1>1</mu1>
     <mu2>1</mu2>
@@ -1841,11 +1288,7 @@
   <gazebo reference="front_shaft">
     <material>Gazebo/Black</material>
   </gazebo>
-<!--
-  <gazebo reference="back_cylinder">
-    <material>Gazebo/BlueTransparent</material>
-  </gazebo>
--->
+
   <gazebo reference="brackets">
     <mu1>1</mu1>
     <mu2>1</mu2>
