@@ -1,12 +1,14 @@
 # PLP
 
-[v] Implement code for the wp-plp.
-[v] Online and offline versions
 [ ] Allow exposure of the probabilities calculations on the PLP class api.
 [ ]
 
 # Python
 
 # General Notes
-* Running gazebo headless allows OK simulation of system
 
+# Questions
+* What's the semantics of the path published at /PP/Path? it does not change during the task execution.
+  - Specifically, how can we know how much path remains (that's needed for monitoring.)
+  - See files `Path case study.xxx`
+* How can we detect that a task has finished (e.g. arrived at the point?)

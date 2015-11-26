@@ -1,130 +1,203 @@
 <html>
-	<head>
-		<title>Waypoint PLP - v3</title>
-		<meta charset="utf-8">
-		<style>
-			body {
-				font-size: 12pt;
-			}
-			code {
-				font-family: Monaco, "Courier New", Consolas, monospace;
-				background-color: #EEE;
-				border: 1px solid #BBB;
-				border-radius: 3px;
-				font-size: 10pt;
-			}
-		</style>
-	</head>
-	<body>
-		<h1 id="wp-navigation-plp">WP Navigation PLP</h1>
-		<ul>
-		<li>v1 2015-01-12</li>
-		<li>v2 2015-01-28</li>
-		<li>v3 2015-05-18 Updated to reflect the python code and the recent presentations.</li>
-		</ul>
-		<h2 id="about">About</h2>
-		<p>This PLP calculates the success probability of navigating to the end of a local path.</p>
-		<h2 id="values">Values</h2>
-		<h3 id="parameters">Parameters</h3>
-		<ul>
-		<li><code>map</code> &larr; <code>/PER/MiniMap</code> occupancy grid of the area. Message is <code>Map.msg</code>.</li>
-		<li><code>path</code> &larr; <code>/PP/Path</code> planned path. Message type is <code>robil_msgs/Path</code></li>
-		<li><code>position</code> &larr; <code>/Loc/Pose</code> global position. Message type is <code>PoseWithCovarianceStamped</code>.</li>
-		<li><code>positionError</code> &larr; <code>/Loc/Pose</code> (obtained from the covariance component of <code>position</code>)</li>
-		<li><code>mapError</code> &larr; <code>TBD</code> Current assume map error=0. Error will become interesting when we use visual data.</li>
-		</ul>
-		<h3 id="variables">Variables</h3>
-		<ul>
-		<li><code>distanceToWaypoint</code> local path length to WP</li>
-		<li><code>mapOccupancy</code> percentage of occupied cells in MiniMap</li>
-		<li><code>heightVariablity</code> height variability in <code>map</code></li>
-		</ul>
-		<h3 id="constants">Constants</h3>
-		<ul>
-		<li><code>MIN_LOC_ERROR</code> Minimal error under which it is unsafe to drive</li>
-		<li><code>BOBCAT_SIZE</code> Size of the bobcat</li>
-		<li><code>MIN_BLADE_CLEARANCE</code> Minimal blade clearance for driving</li>
-		<li><code>FUEL_CONSUMPTION_RATE</code></li>
-		<li><code>BOBCAT_AVERAGE_SPEED</code></li>
-		</ul>
-		<h2 id="natural-preconditions">Natural Preconditions</h2>
-		<ul>
-		<li><code>bladeDof[0] in ([x,y]...) and bladeDof[1] in ([x,y]....) and bladeDof[2] in ([x,y]...)</code><ul>
-		<li>Ensuring that the IBEO can see the road</li>
-		</ul>
-		</li>
-		</ul>
-		<h2 id="application-context">Application Context</h2>
-		<h3 id="resources">Resources</h3>
-		<ul>
-		<li>Rover (exclusive)</li>
-		</ul>
-		<h3 id="preconditions">Preconditions</h3>
-		<ul>
-		<li><code>distanceToWaypoint &gt; 1m</code></li>
-		<li><code>positionError &lt; MIN_LOC_ERROR</code></li>
-		</ul>
-		<h3 id="concurrency-conditions">Concurrency Conditions</h3>
-		<p><em>Later, we will replace this with &quot;natural&quot; PLP for the entire system. That PLP will maintain an &quot;everything is OK&quot; statement</em></p>
-		<ul>
-		<li><code>Bobcat_OK</code></li>
-		<li><code>IBEO_OK</code></li>
-		<li><code>INS_OK</code></li>
-		<li><code>positionError &lt; MIN_LOC_ERROR</code></li>
-		<li><code>Map_OK</code></li>
-		<li><code>bladeClearance &gt; MIN_BLADE_CLEARANCE</code></li>
-		</ul>
-		<h3 id="concurrent-modules">Concurrent Modules</h3>
-		<ul>
-		<li>blade minimum height preserver</li>
-		</ul>
-		<h2 id="side-effects">Side Effects</h2>
-		<ul>
-		<li>Fuel: <code>FUEL_CONSUMPTION_RATE * distanceToWaypoint * (heightVariablity * hvFactor)</code></li>
-		</ul>
-		<h2 id="goal">Goal</h2>
-		<ul>
-		<li><code>distanceToWaypoint &lt; 1m</code></li>
-		</ul>
-		<h2 id="result">Result</h2>
-		<p><em>The calculation result describes the probabilities and time for each known outcome: success, and various types of failures.</em></p>
-		<ul>
-		<li>success<ul>
-		<li>probability: <code>(explicit subset of the PLP parameters)</code></li>
-		<li>time</li>
-		</ul>
-		</li>
-		<li>failures<ul>
-		<li><code>Bobcat_stuck</code>:<ul>
-		<li>probability: <code>(explicit subset of the PLP parameters)</code></li>
-		<li>time: <code>(explicit subset of the PLP parameters)</code></li>
-		</ul>
-		</li>
-		<li><code>Bobcat_turned_over</code>:<ul>
-		<li>probability: <code>(explicit subset of the PLP parameters)</code></li>
-		<li>time: <code>(explicit subset of the PLP parameters)</code></li>
-		</ul>
-		</li>
-		</ul>
-		</li>
-		<li>confidence <code>A number in the range of 0..1</code></li>
-		</ul>
-		<h2 id="robil-integration">Robil Integration</h2>
-		<h3 id="trigger">Trigger</h3>
-		<ul>
-		<li>Nav task active</li>
-		<li>Received local path</li>
-		<li>Enough data already gathered (minimap, position, etc.)</li>
-		</ul>
-		<h3 id="abort">Abort</h3>
-		<ul>
-		<li>Getting a new local path</li>
-		</ul>
-		<h3 id="pause-resume">Pause/Resume</h3>
-		<ul>
-		<li>Pausing and resuming tasks according to the task manager.</li>
-		</ul>
-		<h3 id="output">Output</h3>
-		<p>Send a message describing a result to a ROS topic. Exact details TBD.</p>
-	</body>
+  <title>PLP Waypoint</title>
+  <style media="screen">
+    h1 {
+      color: green;
+      border-bottom: 2px solid green;
+    }
+    h2 {
+      border-top: 3px solid black;
+      border-bottom: 1px solid black;
+    }
+    em {
+      color: #060;
+    }
+    body > ol:first-of-type {
+      font-family: Monaco, Courier, monospace;
+      background-color: #EEE;
+      position: relative;
+      padding-top: 2em;
+    }
+    body > ol:first-of-type::before {
+      content:"Change Table";
+      font-weight: bold;
+      display: block;
+      border-bottom: 1px dotted black;
+      padding: 0.3em;
+      position: absolute;
+      top: 0;
+      left:0;
+      right:0;
+      height: 1em;
+    }
+  </style>
+  <body>
+<h1>WP Navigation PLP</h1>
+
+<ol>
+<li>2015-01-12</li>
+<li>2015-01-28</li>
+<li>2015-05-18 Updated to reflect the python code and the recent presentations.</li>
+<li>2015-09-21 Added monitoring, and rearranged "trigger", "monitoring" and "goal" to be under "Lifecycle"</li>
+<li>2015-10-07 Restructured, "lifecycle" removed.</li>
+<li>2015-11-22 Added new advancement measurement</li>
+<li>2015-11-22 Monitoring constants implicitly defines history frame count.</li>
+</ol>
+
+<h2>About</h2>
+
+<p>This PLP calculates the success probability of navigating to the end of a local path.</p>
+
+<h2>Values</h2>
+
+<h3>Parameters</h3>
+
+<ul>
+<li><code>map</code> &larr; <code>/PER/MiniMap</code> occupancy grid of the area. Message is <code>Map.msg</code>.</li>
+<li><code>path</code> &larr; <code>/PP/Path</code> planned path. Message type is <code>robil_msgs/Path</code></li>
+<li><code>position</code> &larr; <code>/Loc/Pose</code> global position. Message type is <code>PoseWithCovarianceStamped</code>.</li>
+<li><code>positionError</code> &larr; <code>/Loc/Pose</code> (obtained from the covariance component of <code>position</code>)</li>
+<li><code>mapError</code> &larr; <code>TBD</code> Current assume map error=0. Error will become interesting when we use visual data.</li>
+</ul>
+
+<h3>Constants</h3>
+
+<ul>
+<li><code>MIN_LOC_ERROR</code> Minimal error under which it is unsafe to drive</li>
+<li><code>BOBCAT_SIZE</code> Size of the bobcat</li>
+<li><code>MIN_BLADE_CLEARANCE</code> Minimal blade clearance for driving</li>
+<li><code>FUEL_CONSUMPTION_RATE</code></li>
+<li><code>BOBCAT_AVERAGE_SPEED</code></li>
+<li><code>RATE_PATH_LENGTH</code> Rate of expected decrease in the path length, during advancement measurement.</li>
+<li><code>RATE_AERIAL_DISTANCE</code> Rate of expected decrease in the aerial distance to the waypoint, during advancement measurement.</li>
+</ul>
+
+<h3>Variables</h3>
+
+<p><em>Calculated based on parameters and constants.</em></p>
+
+<ul>
+<li><code>distanceToWaypoint</code> local path length to WP</li>
+<li><code>mapOccupancy</code> percentage of occupied cells in MiniMap</li>
+<li><code>heightVariablity</code> height variability in <code>map</code></li>
+<li><code>aerialDistanceToWaypoint</code> distance from bobcat to waypoint</li>
+</ul>
+
+<h2>Natural Preconditions</h2>
+
+<ul>
+<li>Ensuring that the IBEO can see the road
+<ul>
+<li><code>bladeDof[0] in ([x,y]...) and bladeDof[1] in ([x,y]....) and bladeDof[2] in ([x,y]...)</code></li>
+</ul></li>
+</ul>
+
+<h2>Goal</h2>
+
+<ul>
+<li><code>distanceToWaypoint &lt; 1m</code></li>
+</ul>
+
+<h2>Application Context</h2>
+
+<h3>Resources</h3>
+
+<ul>
+<li>Rover (exclusive)</li>
+</ul>
+
+<h3>Preconditions</h3>
+
+<ul>
+<li><code>distanceToWaypoint &gt; 1m</code></li>
+<li><code>positionError &lt; MIN_LOC_ERROR</code></li>
+</ul>
+
+<h3>Concurrency Conditions</h3>
+
+<p><em>Later, we will replace this with "health" PLP for the entire system</em></p>
+
+<ul>
+<li><code>Bobcat_OK</code></li>
+<li><code>IBEO_OK</code></li>
+<li><code>INS_OK</code></li>
+<li><code>positionError &lt; MIN_LOC_ERROR</code></li>
+<li><code>Map_OK</code></li>
+<li><code>bladeClearance &gt; MIN_BLADE_CLEARANCE</code></li>
+</ul>
+
+<h3>Concurrent Modules</h3>
+
+<ul>
+<li>blade minimum height preserver</li>
+</ul>
+
+<h3>Advancement measures</h3>
+
+<p><em>Defined measurements require 2 frames of variables. This is caputred in the <code>PLP_WAYPOINT_HISTORY_LENGTH</code> constant.</em></p>
+
+<ul>
+<li>Remaining path length <em>(English: Sample <code>distanceToWaypoint</code> every time the path is published. Expect a decrease.)</em>
+<ul>
+<li>Every: <code>path</code> publication</li>
+<li>Expect: <code>decrease( distanceToWaypoint, RATE_PATH_LENGTH )</code></li>
+</ul></li>
+<li>Distance to Target <em>(English: Sample <code>aerialDistanceToWaypoint</code> every time the path is published. Expect a decrease.)</em>
+<ul>
+<li>Every: <code>path</code> publication</li>
+<li>Expect: <code>decrease( aerialDistanceToWaypoint, RATE_AERIAL_DISTANCE )</code></li>
+</ul></li>
+</ul>
+
+<h2>Side Effects</h2>
+
+<ul>
+<li>Fuel: <code>FUEL_CONSUMPTION_RATE * distanceToWaypoint * (heightVariablity * hvFactor)</code></li>
+</ul>
+
+<h2>Result</h2>
+
+<p><em>The calculation result describes the probabilities and time for each known outcome: success, and various types of failures.</em></p>
+
+<ul>
+<li>success
+<ul>
+<li>probability: <code>(explicit subset of the PLP parameters)</code></li>
+<li>time</li>
+</ul></li>
+<li>failures
+<ul>
+<li><code>Bobcat_stuck</code>:</li>
+<li>probability: <code>(explicit subset of the PLP parameters)</code></li>
+<li>time: <code>(explicit subset of the PLP parameters)</code></li>
+<li><code>Bobcat_turned_over</code>:</li>
+<li>probability: <code>(explicit subset of the PLP parameters)</code></li>
+<li>time: <code>(explicit subset of the PLP parameters)</code></li>
+</ul></li>
+<li>confidence <code>A number in the range of 0..1</code></li>
+</ul>
+
+<h2>Robil Integration</h2>
+
+<h3>Trigger</h3>
+
+<ul>
+<li>Nav task active</li>
+<li>Received local path</li>
+<li>Enough data already gathered (minimap, position, etc.)</li>
+</ul>
+
+<h3>Abort</h3>
+
+<ul>
+<li>Getting a new local path</li>
+<li>Task being paused/aborted</li>
+</ul>
+
+<h3>Output</h3>
+
+<ul>
+<li>Predictions and advance measure warnings sent to the <code>plp/messages</code> ROS topic.</li>
+</ul>
+</body>
 </html>
