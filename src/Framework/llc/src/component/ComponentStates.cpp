@@ -14,7 +14,7 @@
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
-
+double k_emrg=1;
 double hb_time = 0 ;
 const double t_out = 20.0 ;
 static double Kp = 1.3 , Kd = 0.0 , Ki = 0.0   ; 				/* PID constants of linear x */
@@ -121,6 +121,11 @@ void hb_callback (const std_msgs::Bool &msg)
 		hb_time = t_out + 1.0;
 }
 
+void llc_status_callback (const std_msgs::Float64 &msg)
+{
+	k_emrg=msg.data;
+}
+
 
 geometry_msgs::Twist Translate(geometry_msgs::PoseWithCovarianceStamped model_state , geometry_msgs::Twist model_speed){
 
@@ -208,12 +213,16 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	geometry_msgs::TwistStamped old_error ; 			/* stores the last error signal */
 	geometry_msgs::Twist t ;							/* used for co-ordinates transform */
 	ros::Subscriber link_to_platform ;
+	ros::Subscriber link_to_comm_check;
 	ros::Publisher linear_error_publisher;
 	ros::Publisher angular_error_publisher;
+	ros::Publisher debug_publisher;
 	ros::NodeHandle n;
-	link_to_platform = n.subscribe("/Sahar/link_with_platform" , 1000, hb_callback);
+	link_to_platform = n.subscribe("/Sahar/link_with_platform" , 100, hb_callback);
+	link_to_comm_check = n.subscribe("/llc_status" , 100, llc_status_callback);
 	linear_error_publisher = n.advertise<std_msgs::Float64>("/linear_error", 100);
         angular_error_publisher = n.advertise<std_msgs::Float64>("/angular_error", 100);
+	debug_publisher = n.advertise<std_msgs::Float64>("/or_debug", 100);
 	COMPONENT->WPD_desired_speed.twist.linear.x = 0;
 	COMPONENT->WPD_desired_speed.twist.angular.z = 0;
 	COMPONENT->WSM_desired_speed.twist.linear.x = 0;
@@ -268,10 +277,14 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 			}
 	std_msgs::Float64 angular_error;
 	std_msgs::Float64 linear_error;
+	std_msgs::Float64 debug_f;
 	angular_error.data=cur_error.twist.angular.z;
 	linear_error.data=cur_error.twist.linear.x;
+
+	debug_f.data=COMPONENT->WPD_desired_speed.twist.linear.x;
 	linear_error_publisher.publish(linear_error);
 	angular_error_publisher.publish(angular_error);
+	debug_publisher.publish(debug_f);
 
 			Push_elm(angular_filter,1024,cur_error.twist.angular.z);
 			//cur_error.twist.angular.z = _medianfilter(angular_filter,201);
@@ -302,8 +315,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 		//Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;  
 	
 	 
-	Throttle_rate.data =COMPONENT->WPD_desired_speed.twist.linear.x+ Kp*cur_error.twist.linear.x + Ki*integral[0] + Kd*der[0] ;
-	Steering_rate.data =COMPONENT->WSM_desired_speed.twist.angular.z+ Kpz*cur_error.twist.angular.z+Kdz*der[1]+Kiz*integral[1] ; 
+	Throttle_rate.data =(COMPONENT->WPD_desired_speed.twist.linear.x+ Kp*cur_error.twist.linear.x + Ki*integral[0] + Kd*der[0] )*k_emrg;
+	Steering_rate.data =(COMPONENT->WSM_desired_speed.twist.angular.z+ Kpz*cur_error.twist.angular.z+Kdz*der[1]+Kiz*integral[1] )*k_emrg; 
 	
 
 
