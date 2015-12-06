@@ -14,7 +14,7 @@ run with:
 load missions using assigned buttons, the program works with yaml files,
 examples of valid yaml are in the scripts directory under Framework/ocu/scripts/
 
-debuging the ocu ac by done by subscribing to the folowing topics
+debuging the ocu can be done by subscribing to the folowing topics
 
 	rostopic echo /decision_making/events
 	rostopic echo /OCU/SMME/MissionPlan
