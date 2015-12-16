@@ -1,0 +1,48 @@
+<launch>
+
+  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+<arg name="sw" default="4"/>  <!-- srvss world-->
+
+  <arg name="paused" default="true"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+
+  <!-- We resume the logic in empty_world.launch -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    
+  </include>
+
+ <param name="robot_description" command="cat $(find bobtank)/urdf/BOBCAT_sdf_model.URDF" />
+ <param name="robot_description_sdf" command="cat $(find bobtank)/urdf/bobcat_with_tracks.sdf" />
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	args="-urdf -model Sahar -param robot_description -z 0.2 "/>
+
+
+
+
+  <param name="tracks_description" command="cat $(find bobtank)/urdf/trucks.sdf" />
+
+  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="left_tracks_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	args="-sdf -model left_trucks -param tracks_description -x -1.25 -y 0.84 -z 0.8 -P 3.95 -Y 3.141592654"/>
+
+  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="right_tracks_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	args="-sdf -model right_trucks -param tracks_description -x -1.25 -y -0.84 -z 0.8 -P 3.95 -Y 3.141592654"/>
+
+
+
+
+  <!-- ros_control clam launch file  --> 
+  <include file="$(find bobtank)/launch/bobcat_gazebo_control_sdf_model _with_tracks.launch" />
+  
+  <node name="rate2effort_for_tracks" pkg="rate2effort" type="rate2effort_for_tracks" cwd="node" output="screen" />
+
+</launch>

@@ -20,6 +20,7 @@ sudo chmod 777 $setup_file
 #locate bobcat package
 bobcat_dir=$(rospack find bobcat)
 bobcat_gz=$(rospack find bobcat_gazebo)
+bobtank_dir=$(rospack find bobtank)
 #locate live_bobcat package
 live_bobcat_dir=$(rospack find live_bobcat)
 
@@ -81,9 +82,12 @@ fi
 if [ ! -d $HOME/.gazebo/models/tracks ]; then
 	$(mkdir -p $HOME/.gazebo/models/tracks)
 fi
+
+
 #copy meshes
-$(cp -u -r $bobcat_gz/meshes_trucks $HOME/.gazebo/models/tracks)
-$(cp -u -r $bobcat_gz/meshes_bobcat_with_boggies $HOME/.gazebo/models/bobcat_gazebo)
+$(cp -u -r $bobtank_dir/meshes_trucks $HOME/.gazebo/models/tracks)
+$(cp -u -r $bobtank_dir/meshes_trucks_colission $HOME/.gazebo/models/tracks)
+$(cp -u -r $bobtank_dir/meshes_bobcat_with_boggies $HOME/.gazebo/models/bobcat_gazebo)
 
 echo '<?xml version="1.0"?>' >> $HOME/.gazebo/models/bobcat/model.config
 echo '<model>' >> $HOME/.gazebo/models/bobcat/model.config

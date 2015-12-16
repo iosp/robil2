@@ -1,0 +1,2177 @@
+<!-- -*- mode: XML -*- -->
+<robot
+  name="Tracks">
+  <link
+    name="world">    
+  </link>
+
+  <joint
+    name="world_joint"
+    type="fixed">
+    <parent
+      link="world" />
+    <child
+      link="base_link" />
+  </joint> 
+
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.064905 -1.9608E-06 -0.00051348"
+        rpy="0 0 0" />
+      <mass
+        value="1.5879" />
+      <inertia	
+        ixx="0.015448"
+        ixy="1.7422E-07"
+        ixz="-3.9882E-06"
+        iyy="0.0022386"
+        iyz="1.7148E-08"
+        izz="0.017129" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+<!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+
+    </collision>
+  </link>
+  <link
+    name="l2">
+    <inertial>
+      <origin
+        xyz="-0.064905 -1.9609E-06 -0.00051348"
+        rpy="0 0 0" />
+      <mass
+        value="1.5879" />
+      <inertia
+        ixx="0.015448"
+        ixy="1.7425E-07"
+        ixz="-3.9884E-06"
+        iyy="0.0022386"
+        iyz="1.7631E-08"
+        izz="0.017129" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+      <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j2"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="0 1.1102E-16 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="l2" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l3">
+    <inertial>
+      <origin
+        xyz="-0.0649045540737604 -1.96086499215653E-06 -0.000513480335988581"
+        rpy="0 0 0" />
+      <mass
+        value="1.58786055817234" />
+      <inertia
+        ixx="0.0154477960449093"
+        ixy="1.74251516216545E-07"
+        ixz="-3.98842173501574E-06"
+        iyy="0.00223863829842788"
+        iyz="1.76305116153623E-08"
+        izz="0.0171292968033609" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+     <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+   
+    </collision>
+  </link>
+  <joint
+    name="j3"
+    type="continuous">
+    <origin
+      xyz="-0.120000000000002 0 0"
+      rpy="0 1.11022302462516E-16 0" />
+    <parent
+      link="l2" />
+    <child
+      link="l3" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l4">
+    <inertial>
+      <origin
+        xyz="-0.0649045540737605 -1.96086499237857E-06 -0.000513480335988664"
+        rpy="0 0 0" />
+      <mass
+        value="1.58786055817233" />
+      <inertia
+        ixx="0.0154477960449092"
+        ixy="1.74251516224774E-07"
+        ixz="-3.98842173501487E-06"
+        iyy="0.00223863829842788"
+        iyz="1.76305116144769E-08"
+        izz="0.0171292968033608" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+   
+    </collision>
+  </link>
+  <joint
+    name="j4"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="0 1.11022302462516E-16 0" />
+    <parent
+      link="l3" />
+    <child
+      link="l4" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l5">
+    <inertial>
+      <origin
+        xyz="-0.0649045491186825 -1.97013145131208E-06 -0.000513472285088107"
+        rpy="0 0 0" />
+      <mass
+        value="1.58786070674437" />
+      <inertia
+        ixx="0.015447799133237"
+        ixy="1.73413114257815E-07"
+        ixz="-3.98887376858127E-06"
+        iyy="0.00223863739421525"
+        iyz="1.65109556597046E-08"
+        izz="0.0171292991744271" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+ <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="J5"
+    type="continuous">
+    <origin
+      xyz="-0.120000000000001 0 0"
+      rpy="-9.53542600506339E-17 0.155063637291948 -4.70830581843297E-17" />
+    <parent
+      link="l4" />
+    <child
+      link="l5" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l6">
+    <inertial>
+      <origin
+        xyz="-0.0649043219115023 -1.54745826330682E-06 -0.000513439598892163"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785519813155" />
+      <inertia
+        ixx="0.0154477062810895"
+        ixy="1.21496960387582E-07"
+        ixz="-3.98993849323753E-06"
+        iyy="0.0022386142520212"
+        iyz="1.12343362763023E-08"
+        izz="0.0171291844619288" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+   
+    </collision>
+  </link>
+  <joint
+    name="j6"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-5.25048332014721E-16 0.659280149843934 -3.54353919896638E-16" />
+    <parent
+      link="l5" />
+    <child
+      link="l6" />  
+ 
+   
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l7">
+    <inertial>
+      <origin
+        xyz="-0.064904553703283 -1.96084835935029E-06 -0.000513482581570246"
+        rpy="0 0 0" />
+      <mass
+        value="1.5878605444334" />
+      <inertia
+        ixx="0.015447796272322"
+        ixy="1.74217479842783E-07"
+        ixz="-3.98819209556939E-06"
+        iyy="0.0022386382648122"
+        iyz="1.71480169622314E-08"
+        izz="0.017129297011656" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l7.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+<!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+   
+    </collision>
+  </link>
+  <joint
+    name="j7"
+    type="continuous">
+    <origin
+      xyz="-0.119999999999999 0 0"
+      rpy="-5.7548511056358E-16 0.69991342248612 -3.96436125339291E-16" />
+    <parent
+      link="l6" />
+    <child
+      link="l7" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l8">
+    <inertial>
+      <origin
+        xyz="-0.0649043061828463 -1.54952400277519E-06 -0.000513440249262587"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785540181483" />
+      <inertia
+        ixx="0.0154477090007734"
+        ixy="1.18985238820517E-07"
+        ixz="-3.98982478031938E-06"
+        iyy="0.00223861277316823"
+        iyz="1.18123851366214E-08"
+        izz="0.0171291855138076" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l8.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+   <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+   
+    </collision>
+  </link>
+  <joint
+    name="j8"
+    type="continuous">
+    <origin
+      xyz="-0.120000000000002 0 0"
+      rpy="-5.2568479685548E-16 0.659812527533418 -3.54879862385613E-16" />
+    <parent
+      link="l7" />
+    <child
+      link="l8" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l9">
+    <inertial>
+      <origin
+        xyz="-0.0649043183753149 -1.54828614662428E-06 -0.000513439358691525"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785522871582" />
+      <inertia
+        ixx="0.0154477070433322"
+        ixy="1.20850307577053E-07"
+        ixz="-3.98994725562242E-06"
+        iyy="0.00223861383145966"
+        iyz="1.12803125107115E-08"
+        izz="0.0171291847738958" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l9.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+    <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j9"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-9.60275689090586E-17 0.156107164239869 -4.74538590066104E-17" />
+    <parent
+      link="l8" />
+    <child
+      link="l9" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l10">
+    <inertial>
+      <origin
+        xyz="-0.0649043183753149 -1.54828614695735E-06 -0.000513439358691192"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785522871582" />
+      <inertia
+        ixx="0.0154477070433322"
+        ixy="1.20850307583001E-07"
+        ixz="-3.98994725561936E-06"
+        iyy="0.00223861383145966"
+        iyz="1.12803125155618E-08"
+        izz="0.0171291847738958" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l10.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+   <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j10"
+    type="continuous">
+    <origin
+      xyz="-0.120000000000002 0 0"
+      rpy="-1.0018910702893E-30 1.72084568816899E-15 -3.94430452610506E-31" />
+    <parent
+      link="l9" />
+    <child
+      link="l10" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l11">
+    <inertial>
+      <origin
+        xyz="-0.0649043178837063 -1.54940970287232E-06 -0.000513439209022359"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785521587913" />
+      <inertia
+        ixx="0.0154477067863806"
+        ixy="1.20966887961255E-07"
+        ixz="-3.98996417361247E-06"
+        iyy="0.00223861378712261"
+        iyz="1.13125207250878E-08"
+        izz="0.0171291844639171" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l11.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+   <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j11"
+    type="continuous">
+    <origin
+      xyz="-0.119999999999998 0 0"
+      rpy="1.49280106014461E-30 -2.66453525910038E-15 5.91645678915759E-31" />
+    <parent
+      link="l10" />
+    <child
+      link="l11" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l12">
+    <inertial>
+      <origin
+        xyz="-0.0649043178837063 -1.5494097027613E-06 -0.000513439209022137"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785521587913" />
+      <inertia
+        ixx="0.0154477067863806"
+        ixy="1.20966887958982E-07"
+        ixz="-3.98996417361275E-06"
+        iyy="0.00223861378712262"
+        iyz="1.13125207257687E-08"
+        izz="0.0171291844639171" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l12.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+    <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+   
+    </collision>
+  </link>
+  <joint
+    name="j12"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="1.89009058476724E-32 0 0" />
+    <parent
+      link="l11" />
+    <child
+      link="l12" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l13">
+    <inertial>
+      <origin
+        xyz="-0.0649043183753148 -1.54828614684632E-06 -0.000513439358691525"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785522871582" />
+      <inertia
+        ixx="0.0154477070433322"
+        ixy="1.2085030758431E-07"
+        ixz="-3.9899472556217E-06"
+        iyy="0.00223861383145967"
+        iyz="1.128031251393E-08"
+        izz="0.0171291847738958" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l13.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+ <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j13"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-4.74137159915461E-31 9.43689570931383E-16 -1.97215226305253E-31" />
+    <parent
+      link="l12" />
+    <child
+      link="l13" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l14">
+    <inertial>
+      <origin
+        xyz="-0.0649043183753149 -1.54828614684632E-06 -0.000513439358691414"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785522871582" />
+      <inertia
+        ixx="0.0154477070433322"
+        ixy="1.20850307592814E-07"
+        ixz="-3.9899472556217E-06"
+        iyy="0.00223861383145968"
+        iyz="1.12803125116684E-08"
+        izz="0.0171291847738958" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l14.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+   <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j14"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-5.0885300452617E-31 8.32667268468867E-16 -2.95822839457879E-31" />
+    <parent
+      link="l13" />
+    <child
+      link="l14" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l15">
+    <inertial>
+      <origin
+        xyz="-0.0649043183753147 -1.54828614662428E-06 -0.000513439358691525"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785522871582" />
+      <inertia
+        ixx="0.0154477070433322"
+        ixy="1.20850307570142E-07"
+        ixz="-3.98994725562231E-06"
+        iyy="0.00223861383145968"
+        iyz="1.12803125136703E-08"
+        izz="0.0171291847738958" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l15.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j15"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="1.51097367666754E-30 -2.66453525910038E-15 6.90253292068385E-31" />
+    <parent
+      link="l14" />
+    <child
+      link="l15" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l16">
+    <inertial>
+      <origin
+        xyz="-0.0649043178837063 -1.54940970253925E-06 -0.000513439209022248"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785521587913" />
+      <inertia
+        ixx="0.0154477067863806"
+        ixy="1.20966887954812E-07"
+        ixz="-3.98996417361399E-06"
+        iyy="0.00223861378712263"
+        iyz="1.13125207253107E-08"
+        izz="0.0171291844639172" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l16.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j16"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-5.54572156545161E-31 8.88178419700125E-16 -1.97215226305253E-31" />
+    <parent
+      link="l15" />
+    <child
+      link="l16" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l17">
+    <inertial>
+      <origin
+        xyz="-0.0649043178837063 -1.54940970309436E-06 -0.000513439209022248"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785521587913" />
+      <inertia
+        ixx="0.0154477067863806"
+        ixy="1.20966887962572E-07"
+        ixz="-3.98996417361402E-06"
+        iyy="0.00223861378712262"
+        iyz="1.13125207221435E-08"
+        izz="0.0171291844639171" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l17.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j17"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="1.89009058476724E-32 0 0" />
+    <parent
+      link="l16" />
+    <child
+      link="l17" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l18">
+    <inertial>
+      <origin
+        xyz="-0.0649043183753149 -1.54828614651326E-06 -0.000513439358691525"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785522871582" />
+      <inertia
+        ixx="0.0154477070433323"
+        ixy="1.20850307575116E-07"
+        ixz="-3.98994725562347E-06"
+        iyy="0.00223861383145968"
+        iyz="1.12803125139417E-08"
+        izz="0.0171291847738958" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l18.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+ <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j18"
+    type="continuous">
+    <origin
+      xyz="-0.120000000000003 0 0"
+      rpy="-9.67175225678597E-31 1.77635683940025E-15 -4.93038065763132E-31" />
+    <parent
+      link="l17" />
+    <child
+      link="l18" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l19">
+    <inertial>
+      <origin
+        xyz="-0.0649045695936386 -1.94983371026858E-06 -0.000513426760785141"
+        rpy="0 0 0" />
+      <mass
+        value="1.58786026891965" />
+      <inertia
+        ixx="0.0154477910698705"
+        ixy="1.76082076816951E-07"
+        ixz="-3.99121784001736E-06"
+        iyy="0.00223863966344527"
+        iyz="8.83610906224999E-09"
+        izz="0.017129294215395" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l19.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+    <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j19"
+    type="continuous">
+    <origin
+      xyz="-0.119999999999997 0 0"
+      rpy="-1.29460263863276E-16 0.206927315902007 -6.64709296484658E-17" />
+    <parent
+      link="l18" />
+    <child
+      link="l19" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l20">
+    <inertial>
+      <origin
+        xyz="-0.0649045536910773 -1.9617865242294E-06 -0.000513480130252653"
+        rpy="0 0 0" />
+      <mass
+        value="1.58786054800419" />
+      <inertia
+        ixx="0.0154477958261261"
+        ixy="1.74345297609672E-07"
+        ixz="-3.98844274374826E-06"
+        iyy="0.00223863826312438"
+        iyz="1.76742103811687E-08"
+        izz="0.0171292965457206" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l20.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+   <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j20"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-5.50636935829789E-16 0.680283059511084 -3.75603895410525E-16" />
+    <parent
+      link="l19" />
+    <child
+      link="l20" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l21">
+    <inertial>
+      <origin
+        xyz="-0.064904319380874 -1.54792206041865E-06 -0.000513439399543181"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785521808004" />
+      <inertia
+        ixx="0.0154477067955913"
+        ixy="1.21032111104686E-07"
+        ixz="-3.98994631984354E-06"
+        iyy="0.00223861395257186"
+        iyz="1.12607746252382E-08"
+        izz="0.0171291846564862" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l21.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+    <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+   
+    </collision>
+  </link>
+  <joint
+    name="j21"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-5.75485110563569E-16 0.699913422486112 -3.96436125339281E-16" />
+    <parent
+      link="l20" />
+    <child
+      link="l21" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l22">
+    <inertial>
+      <origin
+        xyz="-0.0649045540737605 -1.96086499237857E-06 -0.000513480335988414"
+        rpy="0 0 0" />
+      <mass
+        value="1.58786055817233" />
+      <inertia
+        ixx="0.0154477960449092"
+        ixy="1.74251516222951E-07"
+        ixz="-3.98842173501097E-06"
+        iyy="0.00223863829842788"
+        iyz="1.76305116130511E-08"
+        izz="0.0171292968033608" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l22.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+   <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j22"
+    type="continuous">
+    <origin
+      xyz="-0.120000000000003 0 0"
+      rpy="-5.75485110563596E-16 0.699913422486133 -3.96436125339304E-16" />
+    <parent
+      link="l21" />
+    <child
+      link="l22" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l23">
+    <inertial>
+      <origin
+        xyz="-0.0649045413189115 -1.9839585801984E-06 -0.000513448826398588"
+        rpy="0 0 0" />
+      <mass
+        value="1.58786082927417" />
+      <inertia
+        ixx="0.0154478045332475"
+        ixy="1.71994210426445E-07"
+        ixz="-3.98996016714526E-06"
+        iyy="0.00223863600374905"
+        iyz="1.19919853878102E-08"
+        izz="0.0171293037384968" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l23.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+   <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+   
+    </collision>
+  </link>
+  <joint
+    name="j23"
+    type="continuous">
+    <origin
+      xyz="-0.119999999999999 0 0"
+      rpy="-3.32384231770498E-16 0.471739583288733 -2.02630442752417E-16" />
+    <parent
+      link="l22" />
+    <child
+      link="l23" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l24">
+    <inertial>
+      <origin
+        xyz="-0.0649042989039943 -1.54869258550683E-06 -0.000513455466646384"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785540814072" />
+      <inertia
+        ixx="0.0154477098670925"
+        ixy="1.1776675967269E-07"
+        ixz="-3.98929383775212E-06"
+        iyy="0.00223861205725058"
+        iyz="1.42720598612153E-08"
+        izz="0.017129185427328" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l24.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j24"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-7.86153294932491E-18 0.0132820229885719 -3.44383998207309E-18" />
+    <parent
+      link="l23" />
+    <child
+      link="l24" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l25">
+    <inertial>
+      <origin
+        xyz="-0.0649042989039943 -1.54869258528478E-06 -0.000513455466646329"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785540814072" />
+      <inertia
+        ixx="0.0154477098670925"
+        ixy="1.17766759671484E-07"
+        ixz="-3.98929383774995E-06"
+        iyy="0.00223861205725057"
+        iyz="1.42720598603535E-08"
+        izz="0.017129185427328" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l25.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j25"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="1.72563323017096E-31 -4.9960036108132E-16 9.86076131526265E-32" />
+    <parent
+      link="l24" />
+    <child
+      link="l25" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l26">
+    <inertial>
+      <origin
+        xyz="-0.0649042989039942 -1.54869258550683E-06 -0.000513455466646329"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785540814072" />
+      <inertia
+        ixx="0.0154477098670925"
+        ixy="1.17766759683543E-07"
+        ixz="-3.98929383774779E-06"
+        iyy="0.00223861205725056"
+        iyz="1.42720598632332E-08"
+        izz="0.0171291854273279" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l26.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+   <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+   
+    </collision>
+  </link>
+  <joint
+    name="j26"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-2.46519032881566E-32 0 -4.93038065763132E-32" />
+    <parent
+      link="l25" />
+    <child
+      link="l26" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l27">
+    <inertial>
+      <origin
+        xyz="-0.0649042992684045 -1.54717603162435E-06 -0.000513457810416118"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785541238182" />
+      <inertia
+        ixx="0.0154477104047241"
+        ixy="1.17568766627824E-07"
+        ixz="-3.98905735996078E-06"
+        iyy="0.00223861207886945"
+        iyz="1.37757804961855E-08"
+        izz="0.0171291860469139" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l27.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j27"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="2.46519032881566E-32 -1.66533453693773E-16 0" />
+    <parent
+      link="l26" />
+    <child
+      link="l27" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l28">
+    <inertial>
+      <origin
+        xyz="-0.0649042989039942 -1.54869258561785E-06 -0.000513455466646287"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785540814072" />
+      <inertia
+        ixx="0.0154477098670925"
+        ixy="1.17766759682698E-07"
+        ixz="-3.98929383774865E-06"
+        iyy="0.00223861205725056"
+        iyz="1.42720598607141E-08"
+        izz="0.0171291854273279" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l28.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+ <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j28"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-7.39557098644699E-32 1.66533453693773E-16 0" />
+    <parent
+      link="l27" />
+    <child
+      link="l28" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l29">
+    <inertial>
+      <origin
+        xyz="-0.0649042989039942 -1.54869258528478E-06 -0.000513455466646315"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785540814072" />
+      <inertia
+        ixx="0.0154477098670925"
+        ixy="1.17766759680982E-07"
+        ixz="-3.98929383774779E-06"
+        iyy="0.00223861205725057"
+        iyz="1.42720598599079E-08"
+        izz="0.017129185427328" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l29.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+   <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j29"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-2.46519032881566E-32 0 -4.93038065763132E-32" />
+    <parent
+      link="l28" />
+    <child
+      link="l29" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l30">
+    <inertial>
+      <origin
+        xyz="-0.0649042989039942 -1.54869258539581E-06 -0.000513455466646294"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785540814072" />
+      <inertia
+        ixx="0.0154477098670925"
+        ixy="1.1776675967883E-07"
+        ixz="-3.98929383774692E-06"
+        iyy="0.00223861205725057"
+        iyz="1.42720598598158E-08"
+        izz="0.017129185427328" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l30.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j30"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-4.93038065763132E-32 2.22044604925031E-16 -9.86076131526265E-32" />
+    <parent
+      link="l29" />
+    <child
+      link="l30" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l31">
+    <inertial>
+      <origin
+        xyz="-0.064904299628619 -1.54750267600257E-06 -0.000513453628115487"
+        rpy="0 0 0" />
+      <mass
+        value="1.58785542407498" />
+      <inertia
+        ixx="0.0154477105505596"
+        ixy="1.17557326949562E-07"
+        ixz="-3.98920813713581E-06"
+        iyy="0.00223861207047913"
+        iyz="1.31343553070095E-08"
+        izz="0.0171291862658457" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l31.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j31"
+    type="continuous">
+    <origin
+      xyz="-0.120000000000001 0 0"
+      rpy="-2.5348029583325E-17 0.0425336147817072 -1.14018012220373E-17" />
+    <parent
+      link="l30" />
+    <child
+      link="l31" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="l32">
+    <inertial>
+      <origin
+        xyz="-0.064904571502534 -1.94383094553885E-06 -0.000513442389435147"
+        rpy="0 0 0" />
+      <mass
+        value="1.58786016459688" />
+      <inertia
+        ixx="0.0154477891132677"
+        ixy="1.76477986095571E-07"
+        ixz="-3.99039103323893E-06"
+        iyy="0.00223864004885033"
+        iyz="1.11819888472108E-08"
+        izz="0.0171292926483163" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks/l32.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="-0.07 0 0"
+        rpy="0 0 0" />
+  <!--
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_trucks_colission/track_collision.STL" />
+      </geometry>
+   -->
+
+<!-- new collision -->
+      <geometry>
+        <box size="0.1 0.36 0.04"/>
+      </geometry>
+<!--               -->
+    </collision>
+  </link>
+  <joint
+    name="j32"
+    type="continuous">
+    <origin
+      xyz="-0.12 0 0"
+      rpy="-5.53146360334539E-16 0.682299231870989 -3.77699204929424E-16" />
+    <parent
+      link="l31" />
+    <child
+      link="l32" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+
+
+
+
+
+ <gazebo>
+    <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
+      <robotNamespace>/Sahar</robotNamespace>
+      <link1>base_link</link1>
+      <link2>l32</link2>
+      <joint>j33</joint>
+    </plugin>
+  </gazebo>
+
+
+ <gazebo reference="base_link">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l2">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l3">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l4">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l5">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l6">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l7">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l8">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l9">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l10">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l11">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l12">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l13">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l14">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l15">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l16">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l17">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l18">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l19">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l20">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l21">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l22">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l23">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l24">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l25">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l26">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l27">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l28">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l29">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l30">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l31">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+ <gazebo reference="l32">
+    <mu1>1</mu1>
+    <mu2>1</mu2>
+    <selfCollide>true</selfCollide>
+    <material>Gazebo/Gold</material>
+  </gazebo>
+
+
+</robot>
