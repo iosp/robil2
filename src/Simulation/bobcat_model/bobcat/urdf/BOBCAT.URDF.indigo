@@ -1095,6 +1095,7 @@
   </joint>
 
  <!-- Transmissions for ROS Control -->
+<!--
   <transmission name="tran1">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="front_right_wheel_joint">
@@ -1134,7 +1135,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-
+-->
   <transmission name="tran5">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="base_arm_joint">
@@ -1154,7 +1155,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-
+<!--
   <transmission name="tran7">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="back_shaft_joint">
@@ -1164,7 +1165,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-
+-->
   <transmission name="tran8">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="supporter_joint">
@@ -1174,7 +1175,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-
+<!--
   <transmission name="tran9">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="front_cylinder_joint">
@@ -1184,7 +1185,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-
+-->
   <transmission name="tran10">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="loader_joint">
@@ -1194,7 +1195,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-
+<!--
   <transmission name="tran11">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="front_shaft_joint">
@@ -1224,7 +1225,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-
+-->
   <!-- ros_control plugin -->
  <gazebo>
     <plugin name="gazebo_chain_plugin" filename="libchain_pagebo_plugin.so">
