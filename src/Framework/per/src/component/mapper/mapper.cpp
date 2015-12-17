@@ -22,6 +22,11 @@ RosComm* Mapper::roscomm;
 
 /// walrus declares:
 Mat _lanes;
+#define IBEO_PITCH 0.210
+#define IBEO_X -0.375
+#define IBEO_Y 0.055
+#define IBEO_Z 1.89
+#define GPS_Z 0.5
 /// Until here
 
 void Mapper::MainLoop()
@@ -40,7 +45,7 @@ void Mapper::MainLoop()
     //printf("MAPPER\n");
     lock.lock();
      
-    height_map->calculateTypes();
+    height_map->calculateTypes(position, myRot.pitch);
     
     if(camL && camR) 
     {
@@ -91,7 +96,7 @@ void Mapper::VisualizeLoop()
 	  imshow("stereo", stereo);
       }
       lock.unlock();
-      waitKey(100);
+      waitKey(20);
     }
   }
 }
@@ -134,15 +139,15 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
   Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
   Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
   
-  Vec3D pos = position.add(front.multiply(-0.375)).add(right.multiply(0.055)).add(up.multiply(1.4));
+  Vec3D pos = position.add(front.multiply(IBEO_X)).add(right.multiply(IBEO_Y)).add(up.multiply(IBEO_Z-GPS_Z));
   
   
   double incrtop = msg.angle_increment;
   double incrbottom = msg.angle_increment;
-  
+
     for(int i = 0; i < msg.ranges_t2.size(); i++) 
     {
-      if(msg.ranges_t2[i] < 0.5*msg.range_max)
+      //if(msg.ranges_t2[i] < 0.3*msg.range_max)
       ProjectLaserRange(
 			height_map, 
 			t2right, 
@@ -154,7 +159,7 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
     
     for(int i = 0; i < msg.ranges_t1.size(); i++) 
     {
-      if(msg.ranges_t1[i] < 0.5*msg.range_max)
+      //if(msg.ranges_t1[i] < 0.3*msg.range_max)
       ProjectLaserRange(
 			height_map, 
 			t1right, 
@@ -165,7 +170,7 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
     }
     for(int i = 0; i < msg.ranges_b1.size(); i++) 
     {
-      if(msg.ranges_b1[i] < 0.5*msg.range_max)
+      //if(msg.ranges_b1[i] < 0.3*msg.range_max)
       ProjectLaserRange(
 		      height_map, 
 		      b1right, 
@@ -176,7 +181,7 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
     }
     for(int i = 0; i < msg.ranges_b2.size(); i++) 
     {
-      if(msg.ranges_b2[i] < 0.5*msg.range_max)
+      //if(msg.ranges_b2[i] < 0.3*msg.range_max)
       ProjectLaserRange(
 		      height_map, 
 		      b2right, 
@@ -246,7 +251,7 @@ void Mapper::handleLocation(const config::PER::sub::Location& msg)
   myRot = GetRotation(myQuat);
   //if (myRot.yaw < 0)
   //  myRot.yaw += 3.14159;
-  ibeoRot = myRot.add(Rotation(0, 0.284, -0));
+  ibeoRot = myRot.add(Rotation(0, IBEO_PITCH, -0));
   leftSickRot = Rotation(myRot.pitch, myRot.roll, myRot.yaw+1.57);
   rightSickRot = Rotation(-myRot.pitch, -myRot.roll, myRot.yaw-1.57);
   loc_received = true;

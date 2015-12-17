@@ -12,7 +12,7 @@
   int movie = 1 ;
   int emergancy = 1 ;
   ros::Publisher effort_pub;
-
+ 
   
   ros::Publisher platform_hb_pub_;
 

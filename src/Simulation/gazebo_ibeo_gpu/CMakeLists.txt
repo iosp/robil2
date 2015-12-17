@@ -45,7 +45,7 @@ include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE
 
 add_library(ibeo_gpu SHARED src/ibeo.cpp)
 target_link_libraries(ibeo_gpu ${GAZEBO_libraries} ${catkin_LIBRARIES} )
-add_dependencies(ibeo_gpu ${catkin_EXPORTED_TARGETS})
+add_dependencies(ibeo_gpu ibeo_rviz_plugin ${catkin_EXPORTED_TARGETS})
 
 
 install(

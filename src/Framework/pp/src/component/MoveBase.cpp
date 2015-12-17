@@ -18,11 +18,15 @@
 
 #include <move_base/VersionService.h>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #define CREATE_MAP_FOR_NAV 0
 #define CREATE_POINTCLOUD2_FOR_NAV 0
 #define CREATE_POINTCLOUD_FOR_NAV 1
 
 #define TH_NEARBY 1.5 //m
+//define duration of "finished" message for path, in order to consider it as truly finished.
+#define SECONDS_FOR_FINISHING_AFTER_PATH_FINISHED 60
 
 #include <opencv2/opencv.hpp>
 
@@ -833,7 +837,8 @@ void MoveBase::calculate_goal(){
 	//DBG_INFO_ONCE("Navigation: calculate next waypoint");
 	goal = search_next_waypoint(gotten_global_path, get_unvisited_index(path_id), gotten_location, is_path_finished, goal_index);
 
-	if(is_path_finished){
+	if (is_path_finished)
+	{
 		DBG_INFO("Navigation: path is finished. send event and clear current path.");
 		stop_navigation(true);
 		return;
@@ -880,11 +885,32 @@ void MoveBase::calculate_goal(){
 		DBG_WARN("Navigation: Global occupancy cost map is not defined");
 	}
 
+
 	if(is_path_finished){
-		DBG_INFO("Navigation: path is finished (after tries to make it reachable). send event and clear current path.");
-		stop_navigation(true);
-		return;
+			DBG_INFO("Navigation: path is finished (after tries to make it reachable). send event and clear current path.");
+			stop_navigation(true);
+			return;
 	}
+
+	/*static boost::posix_time::ptime time_since_path_not_finished_last_time; //hold timestamp for last path that was not finished
+
+	if (is_path_finished)
+	{
+		goal = gotten_global_path.poses.back();
+		//consider duration of "finished" message for path, in order to consider it as truly finished.
+		//if not enough time has passed since considering this path as finished, do nothing.
+		if (boost::get_system_time() - time_since_path_not_finished_last_time >= boost::posix_time::seconds(SECONDS_FOR_FINISHING_AFTER_PATH_FINISHED))
+		{
+			DBG_INFO("Navigation: path is finished (after tries to make it reachable). send event and clear current path.");
+			stop_navigation(true);
+			return;
+		}
+	}
+	else
+	{
+		time_since_path_not_finished_last_time = boost::get_system_time();
+	}*/
+
 
 	diagnostic_publish_new_goal(path_id, goal, goal_index, gotten_location);
 	update_unvisited_index(path_id, goal_index);

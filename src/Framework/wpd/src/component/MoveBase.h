@@ -24,6 +24,15 @@
 
 class ComponentMain;
 class MoveBase {
+private:
+	geometry_msgs::Twist last_move_base_vel;
+	geometry_msgs::Twist min_real_vel;
+	geometry_msgs::Twist last_real_vel;
+	double pub_frequancy; // Hz
+	bool last_move_base_vel_ok;
+	bool last_real_vel_ok;
+
+
 public:
 	MoveBase(ComponentMain* comp);
 	virtual ~MoveBase();
@@ -41,6 +50,24 @@ public:
 	config::PP::sub::Location last_location;
 	void resend();
 	boost::thread* resend_thread;
+
+
+	void set_last_move_base_vel (const geometry_msgs::Twist & new_last_vel);
+	void set_last_real_vel (const geometry_msgs::TwistStamped & new_real_vel);
+	geometry_msgs::Twist get_last_move_base_vel ();
+	geometry_msgs::Twist get_last_real_vel ();
+	void set_min_real_vel (const geometry_msgs::Twist & new_min_real_vel);
+	geometry_msgs::Twist get_min_real_vel ();
+	void set_pub_frequancy (const double new_pub_frequancy);
+	double get_pub_frequancy ();
+	void running ();
+	void load_param ();
+
 };
+
+
+
+
+
 
 #endif /* MOVEBASE_H_ */
