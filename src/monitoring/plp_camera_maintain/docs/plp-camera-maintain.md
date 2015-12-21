@@ -1,9 +1,9 @@
-# Camera Detect PLP
+# Camera Maintain PLP
 
 1. 2015-12-21 Initial version
 
 ## About
-Detects when the camera input is not useful for navigation. Implemented using histogram analysis on the camera's video signal.
+Maintains a video feed that's useful for navigation. Implemented using histogram analysis on the camera's video signal.
 
 ## Values
 ### Parameters
@@ -21,12 +21,30 @@ _Calculated based on parameters and constants._
 ## Natural Preconditions
 - Camera on
 
-## Detection Goal
-* `abs( process(currentHistorgram) - process(IDEAL_DISTRIBUTION) ) > DEVIATION_THRESHOLD`
+## Maintained Condition
+* `abs( process(currentHistorgram) - process(IDEAL_DISTRIBUTION) ) =< DEVIATION_THRESHOLD`
 
-## Probability of Successful Detection Given Condition
-* `TBD`
-  * The goal to be detected is over digital signal, so we can claim 100%. But what is the probability, given that the camera input is not useful, that the video signal still has an OK distribution?
+## Successful Termination Condition
+* (none) _module does not termiante_
+
+## Failure Termination Condition
+* No video feed.
+
+## Success Probability
+* ???
+  * _Not sure what to put here... do we have any fixing actions? How can the module affect this?_
+
+## Failure Probability
+* ???
+  * _see above_
+
+## Running Time Distribution
+
+_This module runs while the system is up_
+
+* Given Success `TBD?`
+* Given Failure
+  * For each failure mode `TBD?`
 
 
 ## Application Context
