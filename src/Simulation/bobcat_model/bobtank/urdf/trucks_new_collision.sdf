@@ -1,0 +1,2251 @@
+<sdf version='1.4'>
+  <model name='Tracks'>
+    <link name='base_link'>
+      <pose>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0.064905 -1.9608e-06 -0.00051348 0 -0 0</pose>
+        <mass>1.5879</mass>
+        <inertia>
+          <ixx>0.015448</ixx>
+          <ixy>1.7422e-07</ixy>
+          <ixz>-3.9882e-06</ixz>
+          <iyy>0.0022386</iyy>
+          <iyz>1.7148e-08</iyz>
+          <izz>0.017129</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/base_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+<!--
+    <joint name='world_joint' type='revolute'>
+      <child>base_link</child>
+      <parent>world</parent>
+      <axis>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+        </dynamics>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+-->
+<!--  Added by Nir -->
+    <joint name='j33' type='revolute'>
+      <child>base_link</child>
+      <parent>l32</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+<!-- End of Added by Nir -->
+    <link name='l2'>
+      <pose>-0.12 0 0 0 1.1102e-16 0</pose>
+      <inertial>
+        <pose>-0.064905 -1.9609e-06 -0.00051348 0 -0 0</pose>
+        <mass>1.5879</mass>
+        <inertia>
+          <ixx>0.015448</ixx>
+          <ixy>1.7425e-07</ixy>
+          <ixz>-3.9884e-06</ixz>
+          <iyy>0.0022386</iyy>
+          <iyz>1.7631e-08</iyz>
+          <izz>0.017129</izz>
+        </inertia>
+      </inertial>
+      <collision name='l2_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l2.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j2' type='revolute'>
+      <child>l2</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l3'>
+      <pose>-0.24 0 1.33224e-17 0 2.22042e-16 0</pose>
+      <inertial>
+        <pose>-0.0649046 -1.96086e-06 -0.00051348 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154478</ixx>
+          <ixy>1.74252e-07</ixy>
+          <ixz>-3.98842e-06</ixz>
+          <iyy>0.00223864</iyy>
+          <iyz>1.76305e-08</iyz>
+          <izz>0.0171293</izz>
+        </inertia>
+      </inertial>
+      <collision name='l3_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l3_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l3.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j3' type='revolute'>
+      <child>l3</child>
+      <parent>l2</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l4'>
+      <pose>-0.36 0 3.99675e-17 0 3.33065e-16 0</pose>
+      <inertial>
+        <pose>-0.0649046 -1.96086e-06 -0.00051348 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154478</ixx>
+          <ixy>1.74252e-07</ixy>
+          <ixz>-3.98842e-06</ixz>
+          <iyy>0.00223864</iyy>
+          <iyz>1.76305e-08</iyz>
+          <izz>0.0171293</izz>
+        </inertia>
+      </inertial>
+      <collision name='l4_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l4_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l4.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j4' type='revolute'>
+      <child>l4</child>
+      <parent>l3</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l5'>
+      <pose>-0.48 0 7.99352e-17 -9.53543e-17 0.155064 -4.70831e-17</pose>
+      <inertial>
+        <pose>-0.0649045 -1.97013e-06 -0.000513472 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154478</ixx>
+          <ixy>1.73413e-07</ixy>
+          <ixz>-3.98887e-06</ixz>
+          <iyy>0.00223864</iyy>
+          <iyz>1.6511e-08</iyz>
+          <izz>0.0171293</izz>
+        </inertia>
+      </inertial>
+      <collision name='l5_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l5_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l5.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='J5' type='revolute'>
+      <child>l5</child>
+      <parent>l4</parent>
+      <axis>
+        <xyz>3.23563e-17 1 -9.42102e-17</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l6'>
+      <pose>-0.59856 5.58218e-18 0.0185332 -7.42049e-16 0.814344 -5.40278e-16</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54746e-06 -0.00051344 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.21497e-07</ixy>
+          <ixz>-3.98994e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.12343e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l6_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l6_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l6.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j6' type='revolute'>
+      <child>l6</child>
+      <parent>l5</parent>
+      <axis>
+        <xyz>6.03822e-19 1 -5.09302e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l7'>
+      <pose>-0.680922 5.00803e-17 0.105806 -1.46904e-14 1.51426 -1.43651e-14</pose>
+      <inertial>
+        <pose>-0.0649046 -1.96085e-06 -0.000513483 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154478</ixx>
+          <ixy>1.74217e-07</ixy>
+          <ixz>-3.98819e-06</ixz>
+          <iyy>0.00223864</iyy>
+          <iyz>1.7148e-08</iyz>
+          <izz>0.0171293</izz>
+        </inertia>
+      </inertial>
+      <collision name='l7_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l7_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l7.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j7' type='revolute'>
+      <child>l7</child>
+      <parent>l6</parent>
+      <axis>
+        <xyz>-3.01869e-16 1 -8.30141e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l8'>
+      <pose>-0.687703 1.47491e-16 0.225614 -3.14159 0.967523 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54952e-06 -0.00051344 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.18985e-07</ixy>
+          <ixz>-3.98982e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.18124e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l8_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l8_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l8.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j8' type='revolute'>
+      <child>l8</child>
+      <parent>l7</parent>
+      <axis>
+        <xyz>-7.14708e-16 1 -8.86211e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l9'>
+      <pose>-0.619622 2.83723e-16 0.324432 -3.14159 0.811416 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54829e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.2085e-07</ixy>
+          <ixz>-3.98995e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.12803e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l9_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l9_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l9.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j9' type='revolute'>
+      <child>l9</child>
+      <parent>l8</parent>
+      <axis>
+        <xyz>-8.11276e-16 1 -8.59176e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l10'>
+      <pose>-0.537005 4.25523e-16 0.411464 -3.14159 0.811416 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54829e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.2085e-07</ixy>
+          <ixz>-3.98995e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.12803e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l10_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l10_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l10.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j10' type='revolute'>
+      <child>l10</child>
+      <parent>l9</parent>
+      <axis>
+        <xyz>-8.11276e-16 1 -8.59176e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l11'>
+      <pose>-0.454388 5.67323e-16 0.498495 -3.14159 0.811416 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54941e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.20967e-07</ixy>
+          <ixz>-3.98996e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.13125e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l11_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l11_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l11.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j11' type='revolute'>
+      <child>l11</child>
+      <parent>l10</parent>
+      <axis>
+        <xyz>-8.11276e-16 1 -8.59176e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l12'>
+      <pose>-0.371772 7.09123e-16 0.585527 -3.14159 0.811416 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54941e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.20967e-07</ixy>
+          <ixz>-3.98996e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.13125e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l12_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l12_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l12.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j12' type='revolute'>
+      <child>l12</child>
+      <parent>l11</parent>
+      <axis>
+        <xyz>-8.11276e-16 1 -8.59176e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l13'>
+      <pose>-0.289155 8.50924e-16 0.672558 -3.14159 0.811416 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54829e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.2085e-07</ixy>
+          <ixz>-3.98995e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.12803e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l13_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l13_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l13.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j13' type='revolute'>
+      <child>l13</child>
+      <parent>l12</parent>
+      <axis>
+        <xyz>-8.11276e-16 1 -8.59176e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l14'>
+      <pose>-0.206538 9.92724e-16 0.75959 -3.14159 0.811416 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54829e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.2085e-07</ixy>
+          <ixz>-3.98995e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.12803e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l14_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l14_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l14.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j14' type='revolute'>
+      <child>l14</child>
+      <parent>l13</parent>
+      <axis>
+        <xyz>-8.11276e-16 1 -8.59176e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l15'>
+      <pose>-0.123922 1.13452e-15 0.846621 -3.14159 0.811416 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54829e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.2085e-07</ixy>
+          <ixz>-3.98995e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.12803e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l15_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l15_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l15.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j15' type='revolute'>
+      <child>l15</child>
+      <parent>l14</parent>
+      <axis>
+        <xyz>-8.11276e-16 1 -8.59176e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l16'>
+      <pose>-0.0413051 1.27632e-15 0.933653 -3.14159 0.811416 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54941e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.20967e-07</ixy>
+          <ixz>-3.98996e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.13125e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l16_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l16_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l16.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j16' type='revolute'>
+      <child>l16</child>
+      <parent>l15</parent>
+      <axis>
+        <xyz>-8.11276e-16 1 -8.59176e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l17'>
+      <pose>0.0413116 1.41812e-15 1.02068 -3.14159 0.811416 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54941e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.20967e-07</ixy>
+          <ixz>-3.98996e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.13125e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l17_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l17_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l17.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j17' type='revolute'>
+      <child>l17</child>
+      <parent>l16</parent>
+      <axis>
+        <xyz>-8.11276e-16 1 -8.59176e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l18'>
+      <pose>0.123928 1.55993e-15 1.10772 -3.14159 0.811416 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54829e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.2085e-07</ixy>
+          <ixz>-3.98995e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.12803e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l18_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l18_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l18.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j18' type='revolute'>
+      <child>l18</child>
+      <parent>l17</parent>
+      <axis>
+        <xyz>-8.11276e-16 1 -8.59176e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l19'>
+      <pose>0.206545 1.70173e-15 1.19475 -3.14159 0.604488 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649046 -1.94983e-06 -0.000513427 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154478</ixx>
+          <ixy>1.76082e-07</ixy>
+          <ixz>-3.99122e-06</ixz>
+          <iyy>0.00223864</iyy>
+          <iyz>8.83611e-09</iyz>
+          <izz>0.0171293</izz>
+        </inertia>
+      </inertial>
+      <collision name='l19_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l19_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l19.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j19' type='revolute'>
+      <child>l19</child>
+      <parent>l18</parent>
+      <axis>
+        <xyz>-9.30617e-16 1 -8.00866e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l20'>
+      <pose>0.30528 1.84823e-15 1.26295 -3.14159 -0.0757946 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649046 -1.96179e-06 -0.00051348 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154478</ixx>
+          <ixy>1.74345e-07</ixy>
+          <ixz>-3.98844e-06</ixz>
+          <iyy>0.00223864</iyy>
+          <iyz>1.76742e-08</iyz>
+          <izz>0.0171293</izz>
+        </inertia>
+      </inertial>
+      <collision name='l20_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l20_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l20.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j20' type='revolute'>
+      <child>l20</child>
+      <parent>l19</parent>
+      <axis>
+        <xyz>-1.19797e-15 1 -4.65281e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l21'>
+      <pose>0.424936 1.98735e-15 1.25386 -3.14159 -0.775708 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54792e-06 -0.000513439 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.21032e-07</ixy>
+          <ixz>-3.98995e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.12608e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l21_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l21_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l21.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j21' type='revolute'>
+      <child>l21</child>
+      <parent>l20</parent>
+      <axis>
+        <xyz>-1.1903e-15 1 -2.44086e-17</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l22'>
+      <pose>0.510607 2.08727e-15 1.16984 3.14159 -1.47562 -3.14159</pose>
+      <inertial>
+        <pose>-0.0649046 -1.96086e-06 -0.00051348 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154478</ixx>
+          <ixy>1.74252e-07</ixy>
+          <ixz>-3.98842e-06</ixz>
+          <iyy>0.00223864</iyy>
+          <iyz>1.76305e-08</iyz>
+          <izz>0.0171293</izz>
+        </inertia>
+      </inertial>
+      <collision name='l22_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l22_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l22.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j22' type='revolute'>
+      <child>l22</child>
+      <parent>l21</parent>
+      <axis>
+        <xyz>-9.00442e-16 1 3.07874e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l23'>
+      <pose>0.52201 2.13431e-15 1.05038 1.05339e-15 -1.19423 -3.68977e-16</pose>
+      <inertial>
+        <pose>-0.0649045 -1.98396e-06 -0.000513449 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154478</ixx>
+          <ixy>1.71994e-07</ixy>
+          <ixz>-3.98996e-06</ixz>
+          <iyy>0.00223864</iyy>
+          <iyz>1.1992e-08</iyz>
+          <izz>0.0171293</izz>
+        </inertia>
+      </inertial>
+      <collision name='l23_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l23_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l23.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j23' type='revolute'>
+      <child>l23</child>
+      <parent>l22</parent>
+      <axis>
+        <xyz>-6.10603e-16 1 3.8736e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l24'>
+      <pose>0.477883 2.1506e-15 0.938786 1.01981e-15 -1.18095 -3.41225e-16</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54869e-06 -0.000513455 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.17767e-07</ixy>
+          <ixz>-3.98929e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.42721e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l24_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l24_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l24.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j24' type='revolute'>
+      <child>l24</child>
+      <parent>l23</parent>
+      <axis>
+        <xyz>-6.02065e-16 1 3.87575e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l25'>
+      <pose>0.432277 2.16616e-15 0.82779 1.01981e-15 -1.18095 -3.41225e-16</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54869e-06 -0.000513455 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.17767e-07</ixy>
+          <ixz>-3.98929e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.42721e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l25_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l25_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l25.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j25' type='revolute'>
+      <child>l25</child>
+      <parent>l24</parent>
+      <axis>
+        <xyz>-6.02065e-16 1 3.87575e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l26'>
+      <pose>0.386672 2.18172e-15 0.716794 1.01981e-15 -1.18095 -3.41225e-16</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54869e-06 -0.000513455 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.17767e-07</ixy>
+          <ixz>-3.98929e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.42721e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l26_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l26_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l26.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j26' type='revolute'>
+      <child>l26</child>
+      <parent>l25</parent>
+      <axis>
+        <xyz>-6.02065e-16 1 3.87575e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l27'>
+      <pose>0.341066 2.19728e-15 0.605798 1.01981e-15 -1.18095 -3.41225e-16</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54718e-06 -0.000513458 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.17569e-07</ixy>
+          <ixz>-3.98906e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.37758e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l27_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l27_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l27.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j27' type='revolute'>
+      <child>l27</child>
+      <parent>l26</parent>
+      <axis>
+        <xyz>-6.02065e-16 1 3.87575e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l28'>
+      <pose>0.295461 2.21284e-15 0.494802 1.01981e-15 -1.18095 -3.41225e-16</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54869e-06 -0.000513455 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.17767e-07</ixy>
+          <ixz>-3.98929e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.42721e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l28_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l28_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l28.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j28' type='revolute'>
+      <child>l28</child>
+      <parent>l27</parent>
+      <axis>
+        <xyz>-6.02065e-16 1 3.87575e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l29'>
+      <pose>0.249855 2.2284e-15 0.383806 1.01981e-15 -1.18095 -3.41225e-16</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54869e-06 -0.000513455 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.17767e-07</ixy>
+          <ixz>-3.98929e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.42721e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l29_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l29_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l29.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j29' type='revolute'>
+      <child>l29</child>
+      <parent>l28</parent>
+      <axis>
+        <xyz>-6.02065e-16 1 3.87575e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l30'>
+      <pose>0.204249 2.24397e-15 0.27281 1.01981e-15 -1.18095 -3.41225e-16</pose>
+      <inertial>
+        <pose>-0.0649043 -1.54869e-06 -0.000513455 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.17767e-07</ixy>
+          <ixz>-3.98929e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.42721e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l30_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l30_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l30.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j30' type='revolute'>
+      <child>l30</child>
+      <parent>l29</parent>
+      <axis>
+        <xyz>-6.02065e-16 1 3.87575e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l31'>
+      <pose>0.158644 2.25953e-15 0.161814 9.24746e-16 -1.13842 -2.64927e-16</pose>
+      <inertial>
+        <pose>-0.0649043 -1.5475e-06 -0.000513454 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154477</ixx>
+          <ixy>1.17557e-07</ixy>
+          <ixz>-3.98921e-06</ixz>
+          <iyy>0.00223861</iyy>
+          <iyz>1.31344e-08</iyz>
+          <izz>0.0171292</izz>
+        </inertia>
+      </inertial>
+      <collision name='l31_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l31_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l31.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j31' type='revolute'>
+      <child>l31</child>
+      <parent>l30</parent>
+      <axis>
+        <xyz>-5.74716e-16 1 3.87499e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <link name='l32'>
+      <pose>0.10836 2.27285e-15 0.0528573 2.60469e-16 -0.456117 5.80782e-17</pose>
+      <inertial>
+        <pose>-0.0649046 -1.94383e-06 -0.000513442 0 -0 0</pose>
+        <mass>1.58786</mass>
+        <inertia>
+          <ixx>0.0154478</ixx>
+          <ixy>1.76478e-07</ixy>
+          <ixz>-3.99039e-06</ixz>
+          <iyy>0.00223864</iyy>
+          <iyz>1.1182e-08</iyz>
+          <izz>0.0171293</izz>
+        </inertia>
+      </inertial>
+      <collision name='l32_collision'>
+        <pose>-0.07 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.36 0.04</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='l32_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://tracks/meshes_trucks/l32.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+        <material>
+          <script>
+            <name>Gazebo/Gold</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name='j32' type='revolute'>
+      <child>l32</child>
+      <parent>l31</parent>
+      <axis>
+        <xyz>-1.72806e-16 1 2.33841e-16</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    <static>0</static>
+    <plugin name='gazebo_chain_plugin' filename='libchain_pagebo_plugin.so'>
+      <robotNamespace>/Sahar</robotNamespace>
+      <link1>base_link</link1>
+      <link2>l32</link2>
+      <joint>j33</joint>
+    </plugin>
+  </model>
+</sdf>
