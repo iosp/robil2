@@ -44,11 +44,11 @@ fi
 printf "setting the sahar model as an sdf model in the gazebo --- "
 #create the model dir if it doesn't exist
 if [ ! -d $HOME/.gazebo/models/bobtank ]; then
-	$(mkdir -p $HOME/.gazebo/models/bobtank/meshes)
+	$(mkdir -p $HOME/.gazebo/models/bobtank/meshes_bobcat_with_boggies)
 fi
 
 #copy meshes
-$(cp -u $bobcat_dir/meshes/* $HOME/.gazebo/models/bobtank/meshes_bobcat_with_boggies)
+$(cp -u $bobtank_dir/meshes_bobcat_with_boggies/* $HOME/.gazebo/models/bobtank/meshes_bobcat_with_boggies)
 
 #overite model.sdf
 if [ -a $HOME/.gazebo/models/bobtank/model.sdf ]; then
@@ -57,7 +57,7 @@ if [ -a $HOME/.gazebo/models/bobtank/model.sdf ]; then
 fi
 
 #generate basic sdf file
-$(cp -u $bobcat_dir/urdf/bobcatSDF.sdf $HOME/.gazebo/models/bobtank/modelTemp.sdf)
+$(cp -u $bobtank_dir/urdf/bobcat_with_tracks_new.sdf $HOME/.gazebo/models/bobtank/modelTemp.sdf)
 #$($gazebo_prefix/bin/gzsdf "print" $bobcat_dir/urdf/BOBCAT.URDF 1> $HOME/.gazebo/models/bobcat/modelTemp.sdf 2>/dev/null)
 
 
