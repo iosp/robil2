@@ -1128,6 +1128,7 @@
 <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
 <robotNamespace>/Sahar</robotNamespace>
 </plugin>
+<!--
 <include>
       <uri>model://sick</uri>
       <pose>-0.2187 0.85 0.631 0 0 1.57</pose>
@@ -1190,7 +1191,7 @@
       <name>blade_wire_sensor_mount</name>
     </include>
 
-
+-->
 
     <joint name='left_sick_joint' type='revolute'>
       <child>left_sick::link</child>
@@ -1319,7 +1320,7 @@
         <dynamics/>
       </axis>
     </joint>
-
+<!--
     <plugin name="arm_wire_sensor_plugin" filename="libwire_sensor.so">
     <sensor_name>Sahar::arm_wire_sensor::link</sensor_name>
     <mount_name>Sahar::arm_wire_sensor_mount::link</mount_name>
@@ -1355,5 +1356,9 @@
 
 <update_rate>20</update_rate>
 </plugin>
+
+
+-->
+
 </model>
 </sdf>
