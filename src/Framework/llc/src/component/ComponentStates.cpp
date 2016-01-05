@@ -315,8 +315,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 		//Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;  
 	
 	 
-	Throttle_rate.data =(COMPONENT->WPD_desired_speed.twist.linear.x+ Kp*cur_error.twist.linear.x + Ki*integral[0] + Kd*der[0] )*k_emrg;
-	Steering_rate.data =(COMPONENT->WSM_desired_speed.twist.angular.z+ Kpz*cur_error.twist.angular.z+Kdz*der[1]+Kiz*integral[1] )*k_emrg; 
+	Throttle_rate.data =( Kp*cur_error.twist.linear.x + Ki*integral[0] + Kd*der[0] )*k_emrg;
+	Steering_rate.data =( Kpz*cur_error.twist.angular.z+Kdz*der[1]+Kiz*integral[1] )*k_emrg; 
 	
 
 
