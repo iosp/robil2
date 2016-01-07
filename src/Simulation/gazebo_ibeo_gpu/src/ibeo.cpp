@@ -93,7 +93,19 @@ namespace gazebo
       _sensorB2->GetRanges(rangesB2);
       _sensorT1->GetRanges(rangesT1);
       _sensorT2->GetRanges(rangesT2);
-      
+      vector<double> data_times;
+       	//data_times.push_back(simTime.Double());
+       	data_times.push_back(_sensorB1->GetLastUpdateTime().Double());
+       	data_times.push_back(_sensorB2->GetLastUpdateTime().Double());
+       	data_times.push_back(_sensorT1->GetLastUpdateTime().Double());
+       	data_times.push_back(_sensorT2->GetLastUpdateTime().Double());
+
+        double time_diff = ( math::max<double>(data_times) - math::min<double>(data_times) );
+        double time_diff_limit = 0.2;
+        if (time_diff > time_diff_limit) {
+        	ROS_WARN("IBEO data generation time accede the aloud limit of %f sec, delta = %f" ,time_diff_limit ,time_diff);
+        	ROS_WARN("B1_time = %f : B2_time = %f  : T1_time = %f : T2_time = %f" ,data_times[0], data_times[1],data_times[2],data_times[3]);
+	}
       PublishMessage(rangesT1, rangesT2, rangesB1, rangesB2);
       
      _lastTime = simTime;

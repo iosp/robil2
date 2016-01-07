@@ -14,9 +14,15 @@ run with:
 load missions using assigned buttons, the program works with yaml files,
 examples of valid yaml are in the scripts directory under Framework/ocu/scripts/
 
-debuging the ocu ac by done by subscribing to the folowing topics
+debuging the ocu can be done by subscribing to the folowing topics
 
 	rostopic echo /decision_making/events
 	rostopic echo /OCU/SMME/MissionPlan
 	rostopic echo /OCU/SMME/ManipulationTask
 	rostopic echo /OCU/SMME/NavigationTask
+
+The OCU can be initialized with yaml files at the condition that the environment variable $ROBIL2 has been correctly defined.
+Then, the following values will be configured when initializing the dialog:
+/home/michele/robil2/src/Framework/ocu/scripts/Nav_11.yaml
+/home/michele/robil2/src/Framework/ocu/scripts/WSM_23.yaml
+/home/michele/robil2/src/Framework/ocu/scripts/Mission3.yaml

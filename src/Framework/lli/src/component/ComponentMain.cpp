@@ -15,7 +15,6 @@
 
 ComponentMain::ComponentMain(int argc,char** argv)
 {
-	//sleep (3);
 	_roscomm = new RosComm(this,argc, argv);
     _clli = (CLLI_Ctrl *) NULL;
     is_ready = false;
@@ -107,6 +106,7 @@ CS_STATE ComponentMain::GetComponentState()
 bool ComponentMain::IsCLLIStillInInit()
 {
 	bool retval = false;
+	if (_clli == (CLLI_Ctrl *)NULL) return true;
 	if (_clli->GetDriveCurrentState() == lli_State_Init) retval=true;
 	if (_clli->GetManipulatorCurrentState() == lli_State_Init) retval=true;
 
@@ -226,25 +226,14 @@ void ComponentMain::lliCtrlLoop()
 	   }
 
 	   //QinitiQ has been properly initialized.
+	ros::Rate r(100);
 
-	for(;;)
+	while (ros::ok())
 		{
-
-		    sleep(0.01);
-
+		    r.sleep();
 			if (!_clli->PeriodicActivity())
 							break;
 
-			/***
-			if ((is_ready == false) && (_state == State_Ready)){
-				if (_clli->GetDriveCurrentState() != lli_State_Ready)
-										_clli->DriveControlRequest();
-				if (_clli->GetManipulatorCurrentState() != lli_State_Ready)
-										_clli->ManipulatorControlRequest();
-			}
-			****/
-			//if (_clli->GetDriveCurrentState() == lli_State_Init) SetState(State_Wait_Response);
-			//if (_clli->GetManipulatorCurrentState() == lli_State_Init) SetState(State_Init);
-    	}
+	   	}
 
 }

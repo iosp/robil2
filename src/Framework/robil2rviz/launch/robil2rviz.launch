@@ -1,0 +1,4 @@
+<launch>
+	<node name="robil2rviz" type="robil2rviz" pkg="robil2rviz" output="screen"/>
+	<node name="rviz" type="rviz" pkg="rviz" output="screen"/>
+</launch>

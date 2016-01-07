@@ -1,0 +1,9 @@
+
+~ publishing markers of the global way points to RViZ ~
+
+1. catkin make the package
+2. replace the rviz defulat configuration with the defualt.rviz file in rviz_config folder
+3. run roslaunch robil2rviz robil2rviz.launch
+4. run scenario
+
+**Note : Make sure fixed frame in RViZ is set to "world"

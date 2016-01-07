@@ -117,15 +117,15 @@ class GuiHandler(object):
     def __init__(self):
         
         self.TaskPublishers = dict()
-        self.TaskPublishers[AssignNavTask]=rospy.Publisher('/OCU/SMME/NavigationTask', AssignNavTask)
-        self.TaskPublishers[AssignMission]=rospy.Publisher('/OCU/SMME/MissionPlan', AssignMission)
-        self.TaskPublishers[AssignManipulatorTask]=rospy.Publisher('/OCU/SMME/ManipulationTask', AssignManipulatorTask)
-        self.decision_making_publisher=rospy.Publisher('/decision_making/events',std_msgs.msg.String)
+        self.TaskPublishers[AssignNavTask]=rospy.Publisher('/OCU/SMME/NavigationTask', AssignNavTask,queue_size=1)
+        self.TaskPublishers[AssignMission]=rospy.Publisher('/OCU/SMME/MissionPlan', AssignMission,queue_size=1)
+        self.TaskPublishers[AssignManipulatorTask]=rospy.Publisher('/OCU/SMME/ManipulationTask', AssignManipulatorTask,queue_size=1)
+        self.decision_making_publisher=rospy.Publisher('/decision_making/events',std_msgs.msg.String,queue_size=1)
         self.lists=dict()
         self.mapImage=0
         
         self.mainWindow = Tk()
-        Label(self.mainWindow,text="OCU test",font=("Helvetica",20)).pack(side=TOP)
+        Label(self.mainWindow,text="OCU console",font=("Helvetica",20)).pack(side=TOP)
 
         leftWrapper=Label(self.mainWindow)
         rightWrapper=Label(self.mainWindow)
@@ -168,11 +168,43 @@ class GuiHandler(object):
         
         
         #task label
+        robil2=os.environ.get('ROBIL2')
+        print robil2
+        if robil2 == None:
+            init_dialog=False
+        else:
+            init_dialog=True
+            fullpath=robil2+"/src/Framework/ocu/scripts/"
+        
         TaskListLabel = LabelFrame(rightWrapper, text="Tasks")
         TaskListLabel.pack(side=BOTTOM)
         self.setMessageList(TaskListLabel,"NavTasks",1,1,AssignNavTask)
+        
+        if init_dialog :
+            init_filename=fullpath+"Nav_11.yaml"
+        #init_filename="/home/michele/robil2/src/Framework/ocu/scripts/Nav_11.yaml"
+            yamlfile=parseYAML(init_filename)
+            if not yamlfile: return
+            if messageFromYAML(AssignNavTask,yamlfile):
+                self.lists["NavTasks"].insert(END,init_filename)
+                
         self.setMessageList(TaskListLabel,"ManipulatorTasks",1,0,AssignManipulatorTask)
+        #init_filename="/home/michele/robil2/src/Framework/ocu/scripts/WSM_23.yaml"
+        if init_dialog:
+            init_filename=fullpath+"WSM_23.yaml"
+            yamlfile=parseYAML(init_filename)
+            if not yamlfile: return
+            if messageFromYAML(AssignManipulatorTask,yamlfile):
+                self.lists["ManipulatorTasks"].insert(END,init_filename)
+                
         self.setMessageList(TaskListLabel,"Missions",0,0,AssignMission)
+        #init_filename="/home/michele/robil2/src/Framework/ocu/scripts/Mission3.yaml"
+        if init_dialog:
+            init_filename=fullpath+"Mission3.yaml"
+            yamlfile=parseYAML(init_filename)
+            if not yamlfile: return
+            if messageFromYAML(AssignMission,yamlfile):
+                self.lists["Missions"].insert(END,init_filename)
         
         #control label
         controlLabel = LabelFrame(TaskListLabel, text="Mission_Control")

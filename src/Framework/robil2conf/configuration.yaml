@@ -117,7 +117,7 @@ LOC_pub_PerVelocity: '/LOC/Velocity'
 
 #SENSORS
 
-SENSORS_pub_SensorINS: '/SENSORS/IMU'
+SENSORS_pub_SensorINS: '/SENSORS/INS'
 SENSORS_pub_SensorGPS: '/SENSORS/GPS'
 SENSORS_pub_SensorCamL: '/SENSORS/CAM/L'
 SENSORS_pub_SensorCamR: '/SENSORS/CAM/R'

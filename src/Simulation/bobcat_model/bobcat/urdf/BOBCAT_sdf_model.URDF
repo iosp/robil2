@@ -1,6 +1,20 @@
 <?xml version="1.0"?>
 <robot
   name="Sahar">
+<!--
+  <link
+    name="world">    
+  </link>
+
+  <joint
+    name="world_joint"
+    type="fixed">
+    <parent
+      link="world" />
+    <child
+      link="body" />
+  </joint>
+-->
   <link
     name="body">
     <inertial>
@@ -126,7 +140,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0.2 0"
+        xyz="0 -0.2 0"
         rpy="1.5708 0 0" />
       <geometry>
         <cylinder length="0.4" radius="0.4" 
@@ -179,7 +193,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 -0.2 0"
+        xyz="0 0.2 0"
         rpy="1.5708 0 0" />
       <geometry>
         <cylinder length="0.4" radius="0.4" 
@@ -1271,8 +1285,8 @@
     <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="back_left_wheel">
-    <mu1>0.5</mu1>
-    <mu2>0.5</mu2>
+    <mu1>0.8</mu1>
+    <mu2>0.8</mu2>
     <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="base_arm">
@@ -1327,5 +1341,23 @@
   <gazebo reference="front_sick">
     <material>Gazebo/Grey</material>
   </gazebo>
+
+<gazebo>
+  <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+    <updateRate>100.0</updateRate>
+    <robotNamespace>/</robotNamespace>
+    <leftFrontJoint>front_left_wheel_joint</leftFrontJoint>
+    <rightFrontJoint>front_right_wheel_joint</rightFrontJoint>
+    <leftRearJoint>back_left_wheel_joint</leftRearJoint>
+    <rightRearJoint>back_right_wheel_joint</rightRearJoint>
+    <wheelSeparation>1.7</wheelSeparation>
+    <wheelDiameter>0.8</wheelDiameter>
+    <robotBaseFrame>body</robotBaseFrame>
+    <torque>10gzsd	000</torque>
+    <topicName>cmd_vel</topicName>
+    <broadcastTF>false</broadcastTF>
+  </plugin>
+</gazebo>
+
 </robot>
 

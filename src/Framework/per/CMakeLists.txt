@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
     gazebo_ros
     decision_making decision_making_parser
 message_generation
+image_transport
 )
 find_package(OpenCV 2)
 find_package(Boost REQUIRED COMPONENTS system)
@@ -63,14 +64,14 @@ target_link_libraries(per_node per_compMain per_rosComm ${catkin_LIBRARIES} ${Bo
 )
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
-add_library(dispImage
-  src/road_detection/displayImage/DisplayImage.cpp
-) 
+# add_library(dispImage
+#   src/road_detection/displayImage/DisplayImage.cpp
+# )
 include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(road_detection src/road_detection/road_detection.cpp)
-target_link_libraries(road_detection ${catkin_LIBRARIES})
-target_link_libraries(dispImage ${catkin_LIBRARIES})
-target_link_libraries(road_detection dispImage ${catkin_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(road_detection ${catkin_LIBRARIES} ${OpenCV_LIBS})
+# target_link_libraries(dispImage ${catkin_LIBRARIES})
+# target_link_libraries(road_detection dispImage ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 
 install(

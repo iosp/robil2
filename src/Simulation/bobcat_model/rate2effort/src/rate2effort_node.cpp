@@ -11,10 +11,9 @@
 
   int movie = 1 ;
   int emergancy = 1 ;
-  ros::Publisher front_left_pub_;
-  ros::Publisher front_right_pub_;
-  ros::Publisher back_left_pub_;
-  ros::Publisher back_right_pub_;
+  ros::Publisher effort_pub;
+ 
+  
   ros::Publisher platform_hb_pub_;
 
   ros::Publisher supporter_pub_;
@@ -33,6 +32,10 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 	lin.data = msg->linear.x ;
 	ang.data = msg->angular.x ;
 
+
+	geometry_msgs::Twist effort;
+
+
 	if(msg->linear.x > 1)
 		lin.data = 1 ;
 	if(msg->angular.x > 1)
@@ -41,6 +44,8 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 		lin.data = -1 ;
 	if(msg->angular.x < -1)
 		ang.data = -1 ;
+
+/*
 if(!movie){
     	pub.data = (0.5*lin.data + 0.3*ang.data)*30*emergancy;
     	front_left_pub_.publish(pub);
@@ -51,14 +56,38 @@ if(!movie){
     	back_right_pub_.publish(pub);
 }
 else{
-	pub.data = (0.5*lin.data + 0.3*ang.data)*50*emergancy;
+	pub.data = (0.5*lin.data + 0.5*ang.data)*50*emergancy;
     	front_left_pub_.publish(pub);
     	back_left_pub_.publish(pub);
 
-    	pub.data = (0.5*lin.data - 0.3*ang.data)*50*emergancy;
+    	pub.data = (0.5*lin.data - 0.5*ang.data)*50*emergancy;
     	front_right_pub_.publish(pub);
     	back_right_pub_.publish(pub);
 }
+*/
+
+
+////
+/*
+effort.linear.x=(1.4341/10000)*(lin.data*lin.data)+(3.5161/100000)*lin.data*ang.data+(3.4545/10000)*lin.data+(2.1479/10000)*ang.data*ang.data-0.0123*ang.data+0.0199;
+effort.angular.z=(-2.94631/10000)*(lin.data*lin.data)+(0.0064)*lin.data*ang.data+(0.0168)*ang.data*ang.data-0.9576*ang.data+1.7818;
+effort_pub.publish(effort);
+
+
+	pub.data = (0.5*lin.data + 0.5*ang.data)*emergancy;
+    	//front_left_pub_.publish(pub);
+	//pub.data = (0.5*lin.data + 0.5*ang.data)*emergancy;
+    	back_left_pub_.publish(pub);
+
+    	pub.data = (0.5*lin.data - 0.5*ang.data)*emergancy;
+    	//front_right_pub_.publish(pub);
+	//pub.data = (0.5*lin.data - 0.5*ang.data)*emergancy;
+    	back_right_pub_.publish(pub);
+/////
+*/
+effort.linear.x=3*lin.data;
+effort.angular.z=1*ang.data;
+effort_pub.publish(effort);
 }
 
 void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
@@ -121,10 +150,9 @@ int main(int argc, char **argv)
 
   ros::NodeHandle n;
 
-  front_left_pub_ = n.advertise<std_msgs::Float64>("/Sahar/front_left_wheel_velocity_controller/command", 100);
-  front_right_pub_ = n.advertise<std_msgs::Float64>("/Sahar/front_right_wheel_velocity_controller/command", 100);
-  back_left_pub_ = n.advertise<std_msgs::Float64>("/Sahar/back_left_wheel_velocity_controller/command", 100);
-  back_right_pub_ = n.advertise<std_msgs::Float64>("/Sahar/back_right_wheel_velocity_controller/command", 100);
+  effort_pub = n.advertise<geometry_msgs::Twist>("/Sahar/cmd_vel", 101);
+  
+
 
   supporter_pub_ = n.advertise<std_msgs::Float64>("/Sahar/supporter_position_controller/command", 100);
   loader_pub_ = n.advertise<std_msgs::Float64>("/Sahar/loader_position_controller/command", 100);

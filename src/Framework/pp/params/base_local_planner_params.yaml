@@ -1,10 +1,10 @@
 recovery_behavior_enabled: false
-controller_frequency: 10.0
+controller_frequency: 5.0
 clearing_rotation_allowed: false
 
 TrajectoryPlannerROS:
   max_vel_x: 0.8
-  min_vel_x: 0.2
+  min_vel_x: 0.1
 
   max_vel_theta: 0.1
   min_vel_theta: -0.1
@@ -17,7 +17,7 @@ TrajectoryPlannerROS:
   acc_lim_x: 0.3
 
   yaw_goal_tolerance: 3.12
-  xy_goal_tolerance: 1.5
+  xy_goal_tolerance: 0.2
   dwa: false
 
   # pdist_scale: 1.0
@@ -28,7 +28,7 @@ TrajectoryPlannerROS:
   # vtheta_samples: 40
   # vx_samples: 6
 
-  holonomic_robot: true
+  holonomic_robot: false
 
 
 # TrajectoryPlannerROS:
