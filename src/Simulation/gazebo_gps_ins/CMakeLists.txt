@@ -38,7 +38,3 @@ catkin_package(
 
 add_dependencies(gps_ins robil2conf)
 
-install(
-  DIRECTORY models/
-  DESTINATION $ENV{HOME}/.gazebo/models/GPS_INS
-)

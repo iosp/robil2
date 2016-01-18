@@ -32,12 +32,3 @@ catkin_package(
     CATKIN_DEPENDS message_runtime
 )
 
-
-install(
-  DIRECTORY models/wire_sensor_mount/
-  DESTINATION $ENV{HOME}/.gazebo/models/wire_sensor_mount
-)
-install(
-  DIRECTORY models/wire_sensor/
-  DESTINATION $ENV{HOME}/.gazebo/models/wire_sensor
-)

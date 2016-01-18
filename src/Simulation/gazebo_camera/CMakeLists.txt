@@ -43,8 +43,3 @@ catkin_package(
     CATKIN_DEPENDS message_runtime
 )
 
-install(
-  DIRECTORY models/
-  DESTINATION $ENV{HOME}/.gazebo/models
-)
-
