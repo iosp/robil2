@@ -1,0 +1,42 @@
+<?xml version="1.0"?> 
+<sdf version="1.4">
+  <model name="SICK">
+    <pose>0 0 3 0 0 0 </pose>
+    <link name="link">
+      <gravity>0</gravity>
+      <visual name='visual'>
+	<pose>0 0 0 1.57 0 -1.57 </pose>
+	<geometry>
+	  <mesh>
+	    <uri>model://SICK/meshes/LMS.STL </uri>
+	  </mesh>
+	</geometry>
+      </visual>
+      <sensor name='laser' type='gpu_ray'>
+	<pose>0.01 0.04 0.0051 0 0 0</pose>
+	<ray>
+	  <scan>
+	    <horizontal>
+	      <samples>760</samples>
+	      <resolution>1</resolution>
+	      <min_angle>-1.658</min_angle>
+	      <max_angle>1.658</max_angle>
+	    </horizontal>
+	  </scan>
+	  <range>
+	    <min>0.1</min>
+	    <max>65</max>
+	    <resolution>1</resolution>
+	  </range>
+	  
+	</ray>
+	  <plugin name='laser' filename='libsick_gpu.so'/>
+	<always_on>1</always_on>
+	<update_rate>30</update_rate>
+	<visualize>0</visualize>
+      </sensor>
+    </link>
+ 
+  </model>        
+</sdf>
+
