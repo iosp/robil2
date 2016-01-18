@@ -19,7 +19,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/body.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/body.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -39,7 +39,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/Ibeo_lite.stl</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/Ibeo_lite.stl</uri>
           </mesh>
         </geometry>
         <surface>
@@ -59,7 +59,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/cabin.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/cabin.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -79,7 +79,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/front_sick_lite.stl</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/front_sick_lite.stl</uri>
           </mesh>
         </geometry>
         <surface>
@@ -99,7 +99,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/left_sick_lite.stl</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/left_sick_lite.stl</uri>
           </mesh>
         </geometry>
         <surface>
@@ -119,7 +119,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/right_sick_lite.stl</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/right_sick_lite.stl</uri>
           </mesh>
         </geometry>
         <surface>
@@ -139,7 +139,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/supporter_hinge.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -159,7 +159,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/body.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/body.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -174,7 +174,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/Ibeo.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/Ibeo.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -189,7 +189,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/cabin.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/cabin.STL</uri>
           </mesh>
         </geometry>
       </visual>
@@ -198,7 +198,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/front_sick.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/front_sick.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -213,7 +213,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/left_sick.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/left_sick.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -228,7 +228,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/right_sick.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/right_sick.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -243,7 +243,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/supporter_hinge.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -261,7 +261,7 @@
       <self_collide>1</self_collide>
     </link>
     <link name='back_left_boggie'>
-      <pose>-1.47 0.92 0.093 -0.022723 1.73472e-18 1.5708</pose>
+      <pose>-1.47 0.77 0.093 -0.022723 -1.73472e-18 -1.5708</pose>
       <inertial>
         <pose>-0.0729895 0 0 0 -0 0</pose>
         <mass>3.90657</mass>
@@ -279,7 +279,7 @@
         <geometry>
           <cylinder>
             <length>0.5</length>
-            <radius>0.14</radius>
+            <radius>0.135</radius>
           </cylinder>
         </geometry>
       </collision>
@@ -306,7 +306,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_gazebo/meshes_bobcat_with_boggies/back_left_boggie.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/back_left_boggie.STL</uri>
           </mesh>
         </geometry>
       </visual>
@@ -319,7 +319,7 @@
       <child>back_left_boggie</child>
       <parent>body</parent>
       <axis>
-        <xyz>3.67321e-06 -1 1.73472e-18</xyz>
+        <xyz>3.67321e-06 1 -1.73472e-18</xyz>
         <limit>
           <lower>-1e+16</lower>
           <upper>1e+16</upper>
@@ -346,7 +346,7 @@
         <geometry>
           <cylinder>
             <length>0.5</length>
-            <radius>0.14</radius>
+            <radius>0.135</radius>
           </cylinder>
         </geometry>
       </collision>
@@ -373,7 +373,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_gazebo/meshes_bobcat_with_boggies/back_right_boggie.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/back_right_boggie.STL</uri>
           </mesh>
         </geometry>
       </visual>
@@ -413,7 +413,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/base_arm.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/base_arm.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -430,7 +430,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/base_arm.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/base_arm.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -480,7 +480,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/main_arm.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/main_arm.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -497,7 +497,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/main_arm.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/main_arm.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -547,7 +547,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/loader.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/loader.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -567,7 +567,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/loader.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/loader.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -617,7 +617,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/brackets.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/brackets.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -637,7 +637,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/brackets.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/brackets.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -687,7 +687,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/supporter.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/supporter.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -707,7 +707,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobtank/meshes/supporter.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/supporter.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -757,7 +757,7 @@
         <geometry>
           <cylinder>
             <length>0.5</length>
-            <radius>0.14</radius>
+            <radius>0.135</radius>
           </cylinder>
         </geometry>
       </collision>
@@ -784,7 +784,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_gazebo/meshes_bobcat_with_boggies/front_left_boggie.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/front_left_boggie.STL</uri>
           </mesh>
         </geometry>
       </visual>
@@ -824,7 +824,7 @@
         <geometry>
           <cylinder>
             <length>0.5</length>
-            <radius>0.14</radius>
+            <radius>0.135</radius>
           </cylinder>
         </geometry>
       </collision>
@@ -851,7 +851,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_gazebo/meshes_bobcat_with_boggies/front_right_boggie.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/front_right_boggie.STL</uri>
           </mesh>
         </geometry>
       </visual>
@@ -899,8 +899,8 @@
           </contact>
           <friction>
             <ode>
-              <mu>1e+06</mu>
-              <mu2>1e+06</mu2>
+              <mu>1e+07</mu>
+              <mu2>1e+07</mu2>
             </ode>
           </friction>
         </surface>
@@ -918,8 +918,8 @@
           </contact>
           <friction>
             <ode>
-              <mu>1e+06</mu>
-              <mu2>1e+06</mu2>
+              <mu>1e+07</mu>
+              <mu2>1e+07</mu2>
             </ode>
           </friction>
         </surface>
@@ -938,8 +938,8 @@
           </contact>
           <friction>
             <ode>
-              <mu>1e+06</mu>
-              <mu2>1e+06</mu2>
+              <mu>1e+07</mu>
+              <mu2>1e+07</mu2>
             </ode>
           </friction>
         </surface>
@@ -958,8 +958,8 @@
           </contact>
           <friction>
             <ode>
-              <mu>1e+06</mu>
-              <mu2>1e+06</mu2>
+              <mu>1e+07</mu>
+              <mu2>1e+07</mu2>
             </ode>
           </friction>
         </surface>
@@ -969,7 +969,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_gazebo/meshes_bobcat_with_boggies/left_wheel.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/left_wheel.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -1025,8 +1025,8 @@
           </contact>
           <friction>
             <ode>
-              <mu>1e+06</mu>
-              <mu2>1e+06</mu2>
+              <mu>1e+07</mu>
+              <mu2>1e+07</mu2>
             </ode>
           </friction>
         </surface>
@@ -1044,8 +1044,8 @@
           </contact>
           <friction>
             <ode>
-              <mu>1e+06</mu>
-              <mu2>1e+06</mu2>
+              <mu>1e+07</mu>
+              <mu2>1e+07</mu2>
             </ode>
           </friction>
         </surface>
@@ -1064,8 +1064,8 @@
           </contact>
           <friction>
             <ode>
-              <mu>1e+06</mu>
-              <mu2>1e+06</mu2>
+              <mu>1e+07</mu>
+              <mu2>1e+07</mu2>
             </ode>
           </friction>
         </surface>
@@ -1084,8 +1084,8 @@
           </contact>
           <friction>
             <ode>
-              <mu>1e+06</mu>
-              <mu2>1e+06</mu2>
+              <mu>1e+07</mu>
+              <mu2>1e+07</mu2>
             </ode>
           </friction>
         </surface>
@@ -1095,7 +1095,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_gazebo/meshes_bobcat_with_boggies/right_wheel.STL</uri>
+            <uri>model://bobtank/meshes_bobcat_with_boggies/right_wheel.STL</uri>
           </mesh>
         </geometry>
         <material>

@@ -1,3 +1,4 @@
+<!-- -*- mode: XML -*- -->
 <launch>
 
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
@@ -6,6 +7,10 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
+  <arg name="robot_models" default="$(find live_bobcat)/sdf_models"/>
+
+<!-- setting gazebo path for platform and sensors models -->
+  <env name="GAZEBO_MODEL_PATH" value="$(arg robot_models)" />
 
   <!-- We resume the logic in empty_world.launch -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">

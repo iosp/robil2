@@ -788,7 +788,7 @@
         xyz="-0.1 0 0"
         rpy="0 1.5708 0" />
       <geometry>
-        <cylinder length="0.5" radius="0.14" 
+        <cylinder length="0.5" radius="0.135" 
           />
       </geometry>
     </collision>
@@ -866,7 +866,7 @@
         xyz="-0.1 0 0"
         rpy="0 1.5708 0" />
       <geometry>
-        <cylinder length="0.5" radius="0.14" 
+        <cylinder length="0.5" radius="0.135" 
           />
       </geometry>
     </collision>
@@ -899,6 +899,7 @@
     <origin
       xyz="-1.47 -0.92 0.093"
       rpy="1.5708 0 -1.5708" />
+
     <parent
       link="body" />
     <child
@@ -1038,7 +1039,7 @@
         xyz="0.1 0 0"
         rpy="0 1.5708 0" />
       <geometry>
-        <cylinder length="0.5" radius="0.14" 
+        <cylinder length="0.5" radius="0.135" 
           />
       </geometry>
     </collision>
@@ -1073,6 +1074,9 @@
     <origin
      xyz="-0.183 0.92 0.069"
       rpy="-0.022723 -2.5348E-29 1.5708" />
+
+
+
     <parent
       link="body" />
     <child
@@ -1118,7 +1122,7 @@
         xyz="0.1 0 0"
         rpy="0 1.5708 0" />
       <geometry>
-        <cylinder length="0.5" radius="0.14" 
+        <cylinder length="0.5" radius="0.135" 
           />
       </geometry>
     </collision>
@@ -1149,8 +1153,9 @@
     name="back_left_boggie_joint"
     type="continuous">
     <origin
-      xyz="-1.47 0.92 0.093"
-      rpy="-0.022723 -2.5348E-29 1.5708" />
+      xyz="-1.47 0.77 0.093"
+      rpy="-0.022723 -2.5348E-29 -1.5708" />
+
     <parent
       link="body" />
     <child
@@ -1235,6 +1240,46 @@
     </actuator>
   </transmission>
 
+  <transmission name="tran13">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="back_left_boggie_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor13">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+<transmission name="tran14">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="back_right_boggie_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor14">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran15">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="front_left_boggie_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor15">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+<transmission name="tran16">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="front_right_boggie_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor16">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
   <!-- ros_control plugin -->
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
@@ -1249,15 +1294,15 @@
   </gazebo>
 
   <gazebo reference="right_wheel">
-    <mu1>1000000</mu1>
-    <mu2>1000000</mu2>
+    <mu1>10000000</mu1>
+    <mu2>10000000</mu2>
     <selfCollide>true</selfCollide>
     <material>Gazebo/Grey</material>
   </gazebo>
 
   <gazebo reference="left_wheel">
-    <mu1>1000000</mu1>
-    <mu2>1000000</mu2>
+    <mu1>10000000</mu1>
+    <mu2>10000000</mu2>
     <selfCollide>true</selfCollide>
     <material>Gazebo/Grey</material>
   </gazebo>

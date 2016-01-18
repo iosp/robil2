@@ -1,0 +1,24 @@
+<?xml version="1.0"?> 
+<sdf version="1.4">
+	<model name="wire_sensor">
+	<pose>0 0 0.5 0 0 0</pose>
+	<link name="link">
+	<gravity>0</gravity> 
+		<visual name="visual">
+			<pose>0 0 0 1.57 0 1.57 </pose>
+			<geometry>
+				<mesh>
+					<uri>model://wire_sensor/meshes/wire_sensor.STL </uri>
+				</mesh>
+			</geometry>
+		</visual>
+	</link>
+	<!--plugin name="WIRE_SENSOR" filename="libwire_sensor.so">
+		<mount_name>wire_sensor_mount</mount_name> 
+		<noise>0.1</noise>	
+	</plugin-->
+	</model>       
+</sdf>
+
+
+

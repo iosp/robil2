@@ -20,9 +20,10 @@
   </include>
 
  <param name="robot_description" command="cat $(find bobtank)/urdf/BOBCAT_sdf_model_new.URDF" />
- <param name="robot_description_sdf" command="cat $(find bobtank)/urdf/bobcat_with_tracks_new.sdf" />
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-	args="-urdf -model Sahar -param robot_description -z 0.2 "/>
+ <param name="robot_descriptionSDF" command="cat $(find bobtank)/urdf/BOBCAT_sdf_model_new30.sdf" />
+
+  <node name="sdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	args="-sdf -model Sahar -param robot_descriptionSDF -z 0.2 "/>
 
 
 
