@@ -1,16 +1,22 @@
 #!/usr/bin/env python
+# always
 import rospy
 import sys
+
+# From Glue
 from robil_msgs.msg import Map, Path, AssignNavTask, AssignMission
-# from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseWithCovarianceStamped
-from plp_waypoint.msg import PlpMessage
+
+# Because PLP messages
 from std_msgs.msg import String, Header  # TODO replace with the plp message
+from plp_waypoint.msg import PlpMessage
+
+# Imported generated classes
 from PlpWaypoint import *
 from PlpWaypointClasses import *
 
+# glue (output topic)
 PLP_TOPIC = "/plp/messages"
-
 
 class PlpWaypointRosHarness(object):
     """ A harness for a PlpWaypoint in a ROS/RobIL system. Listens to the
@@ -30,12 +36,9 @@ class PlpWaypointRosHarness(object):
             "RATE_AERIAL_DISTANCE": 0.95  # 0..1
         }
 
-        self.nav_tasks = {}  # id -> nav_task
-        self.missions = {}  # id -> mission
-        self.mission_state = {}  # mission_id -> current task index.
+        self.node_setup()
 
-        self.trigger_nav_task_active = False
-        self.trigger_local_path_published = False
+        # Setup internal PLP objects.
         self.plp = None
         self.plp_params = PlpWaypointParameters()
 
@@ -64,16 +67,11 @@ class PlpWaypointRosHarness(object):
         rospy.init_node("plp_waypoint", anonymous=False)
         self.publisher = rospy.Publisher(PLP_TOPIC, PlpMessage, queue_size=5)
         rospy.Subscriber("/PER/MiniMap", Map, self.map_updated)
-        rospy.Subscriber("/PP/Path",
-                         Path, self.path_updated)
-        rospy.Subscriber("/LOC/Pose",
-                         PoseWithCovarianceStamped, self.position_updated)
-        rospy.Subscriber("/OCU/SMME/NavigationTask",
-                         AssignNavTask, self.nav_task_assigned)
-        rospy.Subscriber("/OCU/SMME/MissionPlan",
-                         AssignMission, self.mission_assigned)
-        rospy.Subscriber("/decision_making/events",
-                         String, self.state_machine_change)
+        rospy.Subscriber("/PP/Path", Path, self.path_updated)
+        rospy.Subscriber("/LOC/Pose", PoseWithCovarianceStamped, self.position_updated)
+        rospy.Subscriber("/OCU/SMME/NavigationTask", AssignNavTask, self.nav_task_assigned)
+        rospy.Subscriber("/OCU/SMME/MissionPlan", AssignMission, self.mission_assigned)
+        rospy.Subscriber("/decision_making/events", String, self.state_machine_change)
 
         if self.monitor:
             rospy.loginfo("Trigger action: Monitoring")
@@ -81,6 +79,15 @@ class PlpWaypointRosHarness(object):
             rospy.loginfo("Trigger action: Capturing (filename: %s)" % self.capture_filename)
 
         rospy.loginfo("Waypoint PLP Harness - Started")
+
+    def node_setup(self):
+        """ Put your custom node initialization code here
+        """
+        self.nav_tasks = {}  # id -> nav_task
+        self.missions = {}  # id -> mission
+        self.mission_state = {}  # mission_id -> current task index.
+        self.trigger_nav_task_active = False
+        self.trigger_local_path_published = False
 
     def path_updated(self, msg):
         self.plp_params.set_path(msg)
@@ -102,6 +109,10 @@ class PlpWaypointRosHarness(object):
         self.missions[mission.mission_id] = mission
 
     def state_machine_change(self, event_string):
+        """ This method has to do with trigger detection. We wait for the
+            mission to be "spooling" - ROBIL-speak for "active", really -
+            and then we can have a "go" on the trigger w.r.t. a nav task being active.
+        """
         comps = event_string.data.split("/")
         # Test for the triggering of a task.
         if (len(comps) == 8 and
@@ -152,6 +163,7 @@ class PlpWaypointRosHarness(object):
         """Creates a PLP and starts the monitoring, if there's no PLP yet."""
         rospy.loginfo("Activating PLP")
         self.plp = PlpWaypoint(self.plp_constants, self.plp_params, self)
+        self.plp_params.callback=self.plp
         self.plp.request_estimation()
 
     def reset_harness_data(self):

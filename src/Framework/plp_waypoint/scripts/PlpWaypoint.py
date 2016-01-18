@@ -6,7 +6,6 @@ from PlpWaypointClasses import *
 # Number of frames of variable history needed for monitoring.
 PLP_WAYPOINT_HISTORY_LENGTH = 2
 
-
 class PlpWaypoint(object):
     """
     Off-line calculation of the success probability of
@@ -18,28 +17,24 @@ class PlpWaypoint(object):
         """
         :param constant_map: constants used in the calculation.
             See docs (in the docs folder).
-        :param parameters: parameters object for this PLP.
+        :param parameters: parameters object for this PLP. Not copied! used by reference.
         :param callback: progress monitoring callbacks are send here
         :return: a new PlpWaypoint object
         """
         # constants and fields
         self.constants = constant_map
         self.callback = callback
+        self.parameters = parameters
+        self.variables_history = list()
         # We should sent estimation only once per request.
         self.estimation_sent = False
-
-        # Input parameters
-        self.parameters = parameters
-        parameters.callback = self
-
-        # variables
-        self.variables_history = list()
 
     def request_estimation(self):
         """
         Manually trigger estimation attempt.
         Typical client code use is from the harness,
         immediately after instantiating the PLP object.
+        Another use case is when estimating a plan, offline.
         """
         self.estimation_sent = False
         if self.can_estimate():
@@ -73,28 +68,42 @@ class PlpWaypoint(object):
         :return: An estimation of the success and side effects of
                  getting to the next point.
         """
-        # TODO: This is a dummy implementation
         result = PlpAchieveResult()
-        current_vars = self.variables()
-        result.success = (1 - current_vars.map_occupancy) \
-                         * pow(3, -0.01 * current_vars.local_path_distance)
-        result.success_time = (1 + current_vars.map_occupancy) \
-                              * current_vars.local_path_distance \
-                              * self.constants["BOBCAT_AVERAGE_SPEED"]
-        result.side_effects["fuel"] = current_vars.local_path_distance \
-                                      * self.constants["FUEL_CONSUMPTION_RATE"] \
-                                      * current_vars.height_variability * 1.7
-        result.add_failure(PlpAchieveResultFailureScenario("bobcat_stuck",
-                                                           sqrt(current_vars.map_occupancy),
-                                                           current_vars.map_occupancy * current_vars.local_path_distance
-                                                           * self.constants["BOBCAT_AVERAGE_SPEED"]))
-        result.add_failure(PlpAchieveResultFailureScenario("bobcat_turned_over",
-                                                           0.005 * sqrt(current_vars.map_occupancy),
-                                                           0.5 * current_vars.map_occupancy *
-                                                           current_vars.local_path_distance *
-                                                           pow(self.constants["BOBCAT_AVERAGE_SPEED"], 2)))
-        result.confidence = 0.7
+        result.success = self.estimate_success()
+        result.success_time = self.estimate_success_time()
+        result.side_effects["fuel"] = self.estimate_fuel_side_effect()
+        result.add_failure( self.estimate_bobcat_stuck_failure() )
+        result.add_failure( self.estimate_bobcat_turned_over_failure() )
+        result.confidence = self.get_estimation_confidence()
         return result
+
+    def estimate_success(self):
+        return (1 - self.variables().map_occupancy) \
+                         * pow(3, -0.01 * self.variables().local_path_distance)
+
+    def estimate_success_time(self):
+        return (1 + self.variables().map_occupancy) \
+                              * self.variables().local_path_distance \
+                              * self.constants["BOBCAT_AVERAGE_SPEED"]
+
+    def estimate_fuel_side_effect(self):
+        return self.variables().local_path_distance \
+                                      * self.constants["FUEL_CONSUMPTION_RATE"] \
+                                      * self.variables().height_variability * 1.7
+
+    def estimate_bobcat_stuck_failure(self) :
+        current_vars = self.variables()
+        probability = sqrt(current_vars.map_occupancy)
+        time = current_vars.map_occupancy * current_vars.local_path_distance * self.constants["BOBCAT_AVERAGE_SPEED"]
+        return PlpAchieveResultFailureScenario("bobcat_stuck", probability, time)
+
+    def estimate_bobcat_turned_over_failure(self) :
+        current_vars = self.variables()
+        probability = 0.005 * sqrt(current_vars.map_occupancy)
+        time = 0.5 * current_vars.map_occupancy * \
+                current_vars.local_path_distance * \
+                pow(self.constants["BOBCAT_AVERAGE_SPEED"], 2)
+        return PlpAchieveResultFailureScenario("bobcat_turned_over", probability, time)
 
     def can_estimate(self):
         """
@@ -110,9 +119,12 @@ class PlpWaypoint(object):
         return self.variables().local_path_distance > 1 \
                and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
 
+    def get_estimation_confidence(self):
+        return 0.7
     #
-    # Monitoring ###################################################
+    # Advancement measurements ###################################################
 
+    # Hard coded
     def monitor_progress(self):
         self.calculate_variables()
         self.monitor_remaining_path_length()
@@ -223,7 +235,6 @@ class PlpWaypoint(object):
            Can trigger monitoring and/or estimation"""
         if not self.estimation_sent:
             self.request_estimation()
-
         self.monitor_progress()
 
     #
