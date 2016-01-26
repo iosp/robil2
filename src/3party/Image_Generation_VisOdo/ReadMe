@@ -1,0 +1,17 @@
+~ Commands to Activate ~
+
+
+1. choose object you want to film ,  according to robil2_sources.xml
+2. change the robil2.SFDP file to upload your object outside of navigation path , according to robil2_sources.xml
+3. update the directory for the output images in Image_Generation_VisOdo/scripts/make_db.sh file
+4. roslaunch SRVSS genScenario_robil2.launch
+5. roslaunch SRVSS runScenario_robil2.launch
+6. rosrun Image_Generation_VisOdo make_db
+
+
+
+````````````````````````````````````````
+
+
+
+

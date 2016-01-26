@@ -1,0 +1,5 @@
+<!-- -*- mode: XML -*- -->
+
+<launch>
+	<node name="cam_rnd_pos" type="cam_rnd_pos" pkg="cam_rnd_pos" output="screen"/>
+</launch>

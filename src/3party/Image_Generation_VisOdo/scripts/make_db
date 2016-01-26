@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+
+
+import subprocess
+
+path=subprocess.check_output(["rospack","find","Image_Generation_VisOdo"])
+path= path[:-1]+"/scripts/make_db.sh"
+print path
+subprocess.call(["bash",path])
