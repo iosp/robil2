@@ -63,7 +63,7 @@ void markersTimerCallBack (const ros::TimerEvent&)
 	    marker.color.b = 0.0f;
 	    marker.color.a = 1.0;
 
-	    marker.lifetime = ros::Duration(5.0);
+	    marker.lifetime = ros::Duration(100);
 		
 	    // Publish the marker
 	    while (marker_pub.getNumSubscribers() < 1)
@@ -74,9 +74,11 @@ void markersTimerCallBack (const ros::TimerEvent&)
 	      sleep(1);
 	      }
 	    }
+   ROS_DEBUG("id = %d" , marker.id  );
    ROS_DEBUG("Marker's X =  %f , Marker's Y =  %f",marker.pose.position.x,marker.pose.position.y);
     marker_pub.publish(marker);
-	}
+	//sleep(0.01);
+     }
 
 }
 
@@ -91,10 +93,10 @@ int main( int argc, char** argv )
   ros::NodeHandle n;
 
 
-  ros::Subscriber sub = n.subscribe("/OCU/SMME/NavigationTask", 1000, pathCallBack);
-  marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+  ros::Subscriber sub = n.subscribe("/OCU/SMME/NavigationTask", 10, pathCallBack);
+  marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
   
-  ros::Timer markers_timer = n.createTimer(ros::Duration(1.0), markersTimerCallBack);
+  ros::Timer markers_timer = n.createTimer(ros::Duration(4.0), markersTimerCallBack);
   
   ros::spin();
 }
