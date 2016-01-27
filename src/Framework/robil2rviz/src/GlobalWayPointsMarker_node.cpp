@@ -1,3 +1,4 @@
+// ** Written By : Sagi Vald **
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include "robil_msgs/AssignNavTask.h"
@@ -14,10 +15,6 @@ void pathCallBack(const robil_msgs::AssignNavTask& path)
 {
   ROS_DEBUG(" Recieved Global Path ");
 	 wayps = path;
- // x = wayps.waypoints[0].pose.pose.position.x;
- // y = wayps.waypoints[0].pose.pose.position.y;
- 
-	
 }
 
 
@@ -77,7 +74,6 @@ void markersTimerCallBack (const ros::TimerEvent&)
    ROS_DEBUG("id = %d" , marker.id  );
    ROS_DEBUG("Marker's X =  %f , Marker's Y =  %f",marker.pose.position.x,marker.pose.position.y);
     marker_pub.publish(marker);
-	//sleep(0.01);
      }
 
 }
@@ -88,7 +84,6 @@ void markersTimerCallBack (const ros::TimerEvent&)
 int main( int argc, char** argv )
 {
 
-  //ROS_INFO(" I AM basic_shapes ");
   ros::init(argc, argv, "basic_shapes");
   ros::NodeHandle n;
 
