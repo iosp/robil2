@@ -45,7 +45,7 @@ void Mapper::MainLoop()
     //printf("MAPPER\n");
     lock.lock();
      
-    height_map->calculateTypes(position, myRot.pitch);
+    height_map->calculateTypes(position, myRot);
     
     if(camL && camR) 
     {
