@@ -12,7 +12,7 @@
 
 const double PI = 3.14159;
 const double MILS_2_DEG = 0.056250000; // (360/6400)
-const double MILS_2_RAD = PI/6400;
+const double MILS_2_RAD = 2*PI/6400;
 const double PI_2_DEG = 180; //
 
 
