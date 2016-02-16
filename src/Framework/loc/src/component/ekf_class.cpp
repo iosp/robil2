@@ -3,10 +3,12 @@
 #include "boost/assign.hpp"
 #include "gps_calculator.h"
 #include "GPS2file.h"
+#include <math.h>
 ekf::ekf() : _Egps(100),_Eimu(100)
 {
 	//ros::param::set("/LOC/Ready",0); 
 	_ready = 0;
+	_gps_height = true;
 	_while_standing = false;
 	std::cout << "setting properties" << std::endl;
 	__init__props(0);
@@ -36,20 +38,31 @@ ekf::~ekf()
 	ros::param::set("/LOC/Ready",0);
 }
 
+void ekf::calibrate(int numOfMeasurements)
+{
+    ROS_INFO("LOC: Performing calibration with %d measurements.\n Try not to move vehicle!", numOfMeasurements);
+    _Egps = Egps(numOfMeasurements);
+}
+
 void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 {
 	if (_init_latitude != -1 && _init_longitude != -1 && first_GPS_flag)
 	{
 		std::cout << "Using Initial coordinates as specified in the userHeader.h file." << std::endl;
 		_Egps.on = false;
+        _Egps.set = false;
+        this->initialGPS.latitude = _init_latitude;
+        this->initialGPS.longitude = _init_longitude;
+        first_GPS_flag = 0;
 	}
 	if (first_GPS_flag)
 	{
 	    //z.at<double>(2,0) = measurement.altitude;
 		std::cout << "setting first GPS location as (0,0)" << std::endl;
-		setInitGPS(measurement);
+        setInitGPS(measurement);
 		first_GPS_flag = 0;
 	}
+
 	if (_Egps.on)
 		_Egps.updateEgps(measurement);
 	else if (_Egps.set)
@@ -60,6 +73,8 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 		std::cout << "------------------------------------" << std::endl;
 		printf("lat: %.8f\n",initialGPS.latitude);
 		printf("long: %.8f\n",initialGPS.longitude);
+        this->xk.at<double>(0,0) = 0;
+        this->xk.at<double>(1,0) = 0;
 	}
 	this->GPSmeasurement = measurement;
 
@@ -67,10 +82,11 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 	double d = calcDistance(GPSmeasurement,initialGPS);
 	double theta = calcBearing(initialGPS,GPSmeasurement);
 	double x = d * cos(theta);
-	double y = d * sin(theta);
+    double y = d * sin(theta);
 	z.at<double>(0,0) = x;
-	z.at<double>(1,0) = y;
-	z.at<double>(2,0) = measurement.altitude;//z.at<double>(2,0);
+    z.at<double>(1,0) = -y;
+    if (_gps_height) z.at<double>(2,0) = measurement.altitude;
+    else z.at<double>(2,0) = 0;//measurement.altitude;//z.at<double>(2,0);
 	_received_gps = true;
 }
 
@@ -117,7 +133,19 @@ void ekf::estimator()
 	/*
 	 * Kalman filter
 	 * -------------
-	 */
+     */
+
+    Quaternion qut2(this->IMUmeasurement.orientation);
+    Rotation rot2 = GetRotation(qut2);
+    double x = z.at<double>(0,0);
+    double y = z.at<double>(1,0);
+    double x2 = xk.at<double>(0,0);
+    double y2 = xk.at<double>(1,0);
+    double yaw = atan2(y - y2, x - x2);
+//    FILE *f; f = fopen("test_gps_imu.txt", "a");
+//    fprintf(f,"%f,%f,%f\n", x2, y2, rot2.yaw);
+//    fclose(f);
+//    std::cout << z.at<double>(0) << ", " << z.at<double>(1) << ", " << rot2.yaw * 180 / 3.14159 <<", " << yaw * 180 / 3.14159 << std::endl;
 	ros::Time time = ros::Time::now();
 	setdt(time.toSec());
 	time_propagation();
@@ -202,13 +230,7 @@ void ekf::changeInitCoor(sensor_msgs::NavSatFix coor)
 }
 void ekf::setInitGPS(sensor_msgs::NavSatFix initGPS)
 {
-	if (_init_latitude == -1 || _init_longitude == -1)
-		this->initialGPS = initGPS;
-	else
-	{
-		this->initialGPS.latitude = _init_latitude;
-		this->initialGPS.longitude = _init_longitude;
-	}
+    this->initialGPS = initGPS;
 	gps2file(this->initialGPS.altitude,this->initialGPS.latitude,this->initialGPS.longitude);
 }
 void ekf::setSteeringInput(double msg){

@@ -86,6 +86,11 @@ public:
 	 * This function repairs the measurement vector z incase a gps measurement was not _received_gps
 	 */
 	void repairMeasurement();
+    /*
+     * Perform callibration
+     */
+    void calibrate(int numOfMeasurements);
+    bool _gps_height;
 private:
 	Egps _Egps;
 	Eimu _Eimu;

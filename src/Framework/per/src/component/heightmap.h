@@ -72,7 +72,7 @@ class HeightMap
 	 * This function attempts to (for now) classify each map cell as
 	 * passable, obstacle or unknown. Expected to work at lightning speed.
 	 */
-        void 	calculateTypes(Vec3D position, double pitch);
+        void 	calculateTypes(Vec3D position, Rotation myRot);
 	
 	/**
 	 * These functions receive the bobcat x and y coordinates (as real world coordinates)
@@ -90,7 +90,10 @@ class HeightMap
         void displayGUI(int, int, int, int enlarger=3);
         void displayTypesGUI(Mat lanes, int enlarger=3);
         void display3D();
-	
+    /*
+     * This function generates from the Heightmap object a Mat image
+     */
+    Mat generateMat(int enlarger);
 	/**
 	 * These are getters for the internal data structures of the map. 
 	 */

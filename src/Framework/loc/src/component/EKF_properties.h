@@ -64,7 +64,7 @@ public:
 		modify_F();
 		////0     Throttle input
 		////1     Steering input
-		Q = Mat::eye(s, s, CV_64F)*0.002;
+        Q = Mat::eye(s, s, CV_64F)*0.095;
 
 		H = Mat::eye(s, s, CV_64F);
 		Mat arr = (Mat_<double>(1,m) <<  Vgps,Vgps,Vz,Vvel,Vvel,Vacc,Vacc,Vori,Vori,Vori,Vgyro,Vgyro,Vgyro);
@@ -97,8 +97,8 @@ public:
 	   */
 	  
 	  Rotation rot22 = GetRotation(Quaternion(z.at<double>(7,0),z.at<double>(8,0),z.at<double>(9,0),z.at<double>(10,0)));
-	  z.at<double>(3,0) *= cos(rot22.yaw);
-	  z.at<double>(4,0) *= sin(rot22.yaw);
+      z.at<double>(3,0) *= 0;//cos(rot22.yaw);
+      z.at<double>(4,0) *= 0;//sin(rot22.yaw);
 	  F.at<double>(3,3) = 0;
 	  F.at<double>(4,4) = 0;
 	  F.at<double>(13,13) = 0;
@@ -112,7 +112,7 @@ public:
 	}
 public:
 	static const double Vacc = 0.0465329;
-	static const double Vgps = 30.25;
+    static const double Vgps = 5.25;
 	static const double Vz = 0.001;
 	static const double Vvel = 0.05;
 	static const double Vgyro = 0.000252982;
