@@ -90,6 +90,7 @@ public:
      * Perform callibration
      */
     void calibrate(int numOfMeasurements);
+    bool _gps_height;
 private:
 	Egps _Egps;
 	Eimu _Eimu;

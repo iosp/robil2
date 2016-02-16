@@ -8,6 +8,7 @@ ekf::ekf() : _Egps(100),_Eimu(100)
 {
 	//ros::param::set("/LOC/Ready",0); 
 	_ready = 0;
+	_gps_height = true;
 	_while_standing = false;
 	std::cout << "setting properties" << std::endl;
 	__init__props(0);
@@ -84,7 +85,8 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
     double y = d * sin(theta);
 	z.at<double>(0,0) = x;
     z.at<double>(1,0) = -y;
-    z.at<double>(2,0) = 0;//measurement.altitude;//z.at<double>(2,0);
+    if (_gps_height) z.at<double>(2,0) = measurement.altitude;
+    else z.at<double>(2,0) = 0;//measurement.altitude;//z.at<double>(2,0);
 	_received_gps = true;
 }
 

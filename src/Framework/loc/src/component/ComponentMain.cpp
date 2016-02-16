@@ -140,4 +140,5 @@ void ComponentMain::configCallback(loc::configConfig &config, uint32_t level)
 {
   // Set class variables to new values. They should match what is input at the dynamic reconfigure GUI.
     dyn_conf = config;
+    _estimator._gps_height = config.height;
 }
