@@ -6,6 +6,7 @@ from PlpWaypointClasses import *
 # Number of frames of variable history needed for monitoring.
 PLP_WAYPOINT_HISTORY_LENGTH = 2
 
+
 class PlpWaypoint(object):
     """
     Off-line calculation of the success probability of
@@ -26,8 +27,6 @@ class PlpWaypoint(object):
         self.callback = callback
         self.parameters = parameters
         self.variables_history = list()
-        # We should sent estimation only once per request.
-        self.estimation_sent = False
 
     def request_estimation(self):
         """
@@ -36,11 +35,9 @@ class PlpWaypoint(object):
         immediately after instantiating the PLP object.
         Another use case is when estimating a plan, offline.
         """
-        self.estimation_sent = False
         if self.can_estimate():
             res = self.get_estimation()
             if res is not None:
-                self.estimation_sent = True
                 self.callback.plp_estimation(res)
             else:
                 self.callback.plp_no_preconditions()
@@ -119,7 +116,8 @@ class PlpWaypoint(object):
         return self.variables().local_path_distance > 1 \
                and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
 
-    def get_estimation_confidence(self):
+    @staticmethod
+    def get_estimation_confidence():
         return 0.7
     #
     # Advancement measurements ###################################################
@@ -231,10 +229,11 @@ class PlpWaypoint(object):
     # Updaters ##############################
 
     def parameters_updated(self):
-        """Called when parameters are updated.
-           Can trigger monitoring and/or estimation"""
-        if not self.estimation_sent:
-            self.request_estimation()
+        """
+        Called when parameters are updated.
+        Can trigger monitoring and/or estimation
+        """
+        self.request_estimation()
         self.monitor_progress()
 
     #

@@ -13,17 +13,18 @@ class PlpWaypointParameters(object):
         self.path = None
         self.position = None
         self.position_error = None
-        self.map_error = 0 # Currently there's no error.
-                          # When visual location will be added, there will be.
+        self.map_error = 0  # Currently there's no error. When visual location will be added, there will be.
 
     def set_map(self, a_map):
         self.map = a_map
-        if self.callback: self.callback.parameters_updated()
+        if self.callback:
+            self.callback.parameters_updated()
 
     def set_position(self, a_position):
         self.position = a_position.pose.pose
         self.position_error = a_position.pose.covariance
-        if self.callback: self.callback.parameters_updated()
+        if self.callback:
+            self.callback.parameters_updated()
 
     def set_path(self, a_path):
         self.path = a_path

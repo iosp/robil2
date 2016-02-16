@@ -18,6 +18,7 @@ from PlpWaypointClasses import *
 # glue (output topic)
 PLP_TOPIC = "/plp/messages"
 
+
 class PlpWaypointRosHarness(object):
     """ A harness for a PlpWaypoint in a ROS/RobIL system. Listens to the
         right topics, feeds the data to the PLP objects, and emits predictions
@@ -26,6 +27,7 @@ class PlpWaypointRosHarness(object):
     def __init__(self):
         # The constants table is defined in the PLP document
         # under "Values/Constants"
+
         self.plp_constants = {
             "MIN_LOC_ERROR": 5,  # meters
             "BOBCAT_SIZE": (3.5, 2, 1.7),  # LxHxW, meters
@@ -149,8 +151,10 @@ class PlpWaypointRosHarness(object):
                     self.reset_harness_data()
 
     def consider_trigger(self):
-        """Test the status of the fields. If all preconditions are met,
-            trigger the plp."""
+        """
+        Test the status of the fields. If all preconditions are met,
+        trigger the plp.
+        """
         if self.trigger_nav_task_active and self.trigger_local_path_published:
             self.trigger_local_path_published = False
             self.trigger_nav_task_active = False
@@ -160,7 +164,9 @@ class PlpWaypointRosHarness(object):
                 self.capture_params()
 
     def trigger_plp_task(self):
-        """Creates a PLP and starts the monitoring, if there's no PLP yet."""
+        """
+        Creates a PLP and starts the monitoring, if there's no PLP yet.
+        """
         rospy.loginfo("Activating PLP")
         self.plp = PlpWaypoint(self.plp_constants, self.plp_params, self)
         self.plp_params.callback=self.plp
