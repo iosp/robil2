@@ -19,7 +19,7 @@ class PlpWaypoint(object):
         :param constant_map: constants used in the calculation.
             See docs (in the docs folder).
         :param parameters: parameters object for this PLP. Not copied! used by reference.
-        :param callback: progress monitoring callbacks are send here
+        :param callback: progress monitoring and PLP status calls are sent to this object.
         :return: a new PlpWaypoint object
         """
         # constants and fields
@@ -54,6 +54,35 @@ class PlpWaypoint(object):
             return self.estimate()
         else:
             return None
+
+    def detect_termination(self):
+        """
+        See if any of the termination conditions applies.
+        :return: A PLPTermination object, or None.
+        """
+        res = self.detect_success()
+        if not ( res is None ):
+            return res
+
+        res = self.detect_failures()
+        if not ( res is None ):
+            return res
+
+        return None
+
+     def can_estimate(self):
+        """
+        Checks to see if this object has enough data calculate the estimation
+        :return: True iff there is enough data; False otherwise.
+        """
+        return not ((self.parameters.map is None)
+                    or (self.parameters.path is None)
+                    or (self.parameters.position is None)
+                    or (self.parameters.position_error is None))
+
+    def validate_preconditions(self):
+        return self.variables().local_path_distance > 1 \
+               and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
 
     def estimate(self):
         """
@@ -102,23 +131,21 @@ class PlpWaypoint(object):
                 pow(self.constants["BOBCAT_AVERAGE_SPEED"], 2)
         return PlpAchieveResultFailureScenario("bobcat_turned_over", probability, time)
 
-    def can_estimate(self):
-        """
-        Checks to see if this object has enough data calculate the estimation
-        :return: True iff there is enough data; False otherwise.
-        """
-        return not ((self.parameters.map is None)
-                    or (self.parameters.path is None)
-                    or (self.parameters.position is None)
-                    or (self.parameters.position_error is None))
-
-    def validate_preconditions(self):
-        return self.variables().local_path_distance > 1 \
-               and self.constants["MIN_LOC_ERROR"] > self.location_error_in_meters()
-
-    @staticmethod
     def get_estimation_confidence():
-        return 0.7
+        return 0.7 + self.constants["BOBCAT_AVERAGE_SPEED"]/10000
+
+    #
+    # Methods for detecting termination conditions ###############################
+
+    def detect_success(self):
+        if self.variables().aerial_distance < self.constants["GOAL_DISTANCE"]:
+            return PlpTermination(True, "Arrived at goal")
+        else
+            return None
+
+    def detect_failures(self):
+        return None  # Currently, not supported
+
     #
     # Advancement measurements ###################################################
 
@@ -233,8 +260,12 @@ class PlpWaypoint(object):
         Called when parameters are updated.
         Can trigger monitoring and/or estimation
         """
-        self.request_estimation()
-        self.monitor_progress()
+        termination = self.detect_termination()
+        if termination is None:
+            self.request_estimation()
+            self.monitor_progress()
+        else:
+            self.callback.plp_terminated(termination)
 
     #
     # Utility methods ##############################

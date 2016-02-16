@@ -36,6 +36,7 @@ class PlpWaypointRosHarness(object):
             "BOBCAT_AVERAGE_SPEED": 20000,  # m/hour
             "RATE_PATH_LENGTH": 0.85,  # 0..1
             "RATE_AERIAL_DISTANCE": 0.95  # 0..1
+            "GOAL_DISTANCE": 5  # Meters from target to be considered a success.
         }
 
         self.node_setup()
@@ -188,12 +189,21 @@ class PlpWaypointRosHarness(object):
             PlpMessage(None, "Waypoint", "estimation",
                        repr(plp_achieve_result)))
 
-    def plp_goal_achieved(self):
-        """ The goal for the PLP has been achieved.
-            Deletes the current PLP, resets the harness. """
-        rospy.loginfo("PLP goal achieved")
+    def plp_terminated(self, plp_termination):
+        """
+        The PLP detected that one of its termination conditions have occurred.
+        Deletes the current PLP, resets the harness.
+        :param plp_termination: The termination message sent from the PLP.
+        """
+        rospy.loginfo("PLP terminated")
+
+        if plp_termination.is_success():
+            msg = "PLP goal achieved"
+        else:
+            msg = "PLP goal achievement failed: " + plp_termination.get_message()
+
         self.publisher.publish(
-            PlpMessage(None, "Waypoint", "achieve", "PLP goal achieved"))
+            PlpMessage(None, "Waypoint", "achieve", msg))
         self.reset_harness_data()
 
     def plp_no_preconditions(self):

@@ -7,6 +7,7 @@
 1. 2015-10-07 Restructured, "lifecycle" removed.
 1. 2015-11-22 Added new advancement measurement
 1. 2015-11-22 Monitoring constants implicitly defines history frame count.
+1. 2016-02-16 Parametrized the distance from the goal.
 
 ## About
 This PLP calculates the success probability of navigating to the end of a local path.
@@ -27,6 +28,7 @@ This PLP calculates the success probability of navigating to the end of a local 
 * `BOBCAT_AVERAGE_SPEED`
 * `RATE_PATH_LENGTH` Rate of expected decrease in the path length, during advancement measurement.
 * `RATE_AERIAL_DISTANCE` Rate of expected decrease in the aerial distance to the waypoint, during advancement measurement.
+* `GOAL_DISTANCE` Distance from the goal that is considered as arriving at it (meters).
 
 ### Variables
 _Calculated based on parameters and constants._
@@ -41,14 +43,14 @@ _Calculated based on parameters and constants._
   * `bladeDof[0] in ([x,y]...) and bladeDof[1] in ([x,y]....) and bladeDof[2] in ([x,y]...)`
 
 ## Goal
-* `distanceToWaypoint < 1m`
+* `distanceToWaypoint < GOAL_DISTANCE`
 
 ## Application Context
 ### Resources
 * Rover (exclusive)
 
 ### Preconditions
-* `distanceToWaypoint > 1m`
+* `distanceToWaypoint > GOAL_DISTANCE`
 * `positionError < MIN_LOC_ERROR`
 
 ### Concurrency Conditions
