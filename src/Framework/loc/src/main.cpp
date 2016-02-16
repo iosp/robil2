@@ -1,4 +1,3 @@
-
 #include <ros/ros.h>
 #include "component/ComponentMain.h"
 #include <ros/spinner.h>
@@ -22,7 +21,10 @@ int main(int argc,char** argv)
   
   ros::Subscriber vis = n.subscribe("/LLC/EFFORTS/Throttle", 5, throttle_callback);
   ros::Subscriber wlrs = n.subscribe("/LLC/EFFORTS/Steering", 10, steering_callback);
-  
+  dynamic_reconfigure::Server<loc::configConfig> server;
+  dynamic_reconfigure::Server<loc::configConfig>::CallbackType cb;
+  cb = boost::bind(&ComponentMain::configCallback, &comp,  _1, _2);
+  server.setCallback(cb);
   ros::AsyncSpinner spinner(4); // Use 4 threads
   spinner.start();
   ros::waitForShutdown();

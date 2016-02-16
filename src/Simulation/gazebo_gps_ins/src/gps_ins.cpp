@@ -179,7 +179,9 @@ namespace gazebo
 		gazebo::math::Vector3 pos = pose.pos;
 		
 		pos.x += noise*add_gps_noise();
+		pos.y *= -1;
 		pos.y += noise*add_gps_noise();
+		
 		double other_dist = (pos - _init_pos).GetLength();
 		double dist = sqrt((pos.x-_init_pos.x)*(pos.x-_init_pos.x)+(pos.y-_init_pos.y)*(pos.y-_init_pos.y));
 		//std::cout << "x= " << pos.x << "  y= " << pos.y <<"   init.x= "<<_init_pos.x<<"   init.y= "<<_init_pos.y<<"   dist= "<<dist <<"   my_dist= " << my_dist<<std::endl;

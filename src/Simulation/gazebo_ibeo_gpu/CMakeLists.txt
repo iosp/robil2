@@ -41,9 +41,8 @@ catkin_package(
 
 
 link_directories(${GAZEBO_LIBRARY_DIRS})
-include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} )
 
 add_library(ibeo_gpu SHARED src/ibeo.cpp)
-target_link_libraries(ibeo_gpu ${GAZEBO_libraries} ${catkin_LIBRARIES} )
+target_link_libraries(ibeo_gpu ${GAZEBO_libraries} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(ibeo_gpu ibeo_rviz_plugin ${catkin_EXPORTED_TARGETS})
-

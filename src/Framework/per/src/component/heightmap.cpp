@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <ros/ros.h>
 
+
 using namespace cv;
 #define OBSTACLE_THRESH 0.4
 #define HEIGHT_UNKNOWN -100.0
@@ -213,13 +214,11 @@ void HeightMap::displayConsole()
         printf("\n");
     }
 }
-
-void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
+Mat HeightMap::generateMat(int enlarger)
 {
-    // rdbg("gui enter");
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
     cvtColor(image, image, CV_BGR2HSV);
-    
+
     for(int y = 0; y < _height*enlarger; y++)
         for(int x = 0; x < _width*enlarger; x++)
         {
@@ -233,6 +232,13 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
             image.at<Vec3b>(x,y) = Vec3b(120*(1-c),240, 240);
         }
     cvtColor(image, image, CV_HSV2BGR);
+    return image;
+}
+
+void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
+{
+    // rdbg("gui enter");
+    Mat image = this->generateMat(enlarger);
     //put the tempory arrow representing my position and rotation on the map
     Mat arrow;
     cv::Point2f pt(_arrow.rows/2, _arrow.cols/2);
@@ -254,7 +260,8 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
     py = _height/2 - py;
     for(int i = 0; i < _arrow.rows; i++)
         for(int j = 0; j < _arrow.cols; j++)
-            if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0)) image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
+            if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0))
+                image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
     
 
     char name[30];
@@ -324,10 +331,98 @@ void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
     
     cv::waitKey(200);
 }
+int lowThreshold = 24;
+int morph_elem = 0;
+int morph_size = 10;
+int morph_operator = 0;
+int const max_operator = 4;
+int const max_elem = 2;
+int const max_kernel_size = 21;
+int erode_size = 2;
 
-void HeightMap::calculateTypes(Vec3D position, double pitch)
+void Morphology_Operations( int, void* )
 {
-    //cout << position.z << ", " << pitch << endl;
+}
+void HeightMap::calculateTypes(Vec3D position, Rotation myRot)
+{
+    double pitch = myRot.pitch;
+    HeightMap m = this->deriveMap(position.x, position.y, myRot);
+    Mat image = m.generateMat(3);
+    if (image.empty())
+        return;
+
+//    Mat detected_edges, src_gray;
+
+//    /* Apply Canny edge detector */
+//    int ratio = 3;
+//    int kernel_size = 3;
+//    cvtColor( image, src_gray, CV_BGR2GRAY );
+//    blur( src_gray, detected_edges, Size(3,3) );
+//    Canny( detected_edges, detected_edges,
+//           lowThreshold, lowThreshold*ratio, kernel_size );
+//    /* Remove from DST the uncharted areas */
+//    for (int i = 0; i < src_gray.rows; i++ )
+//        for (int j = 0; j < src_gray.cols; j++)
+//            if (src_gray.at<uchar>(i,j) == 100)
+//            {
+//                if  (i-1 >= 0) detected_edges.at<uchar>(i-1,j) = 0;
+//                if  (i+1 < src_gray.rows) detected_edges.at<uchar>(i+1,j) = 0;
+//                if (j-1 >= 0) detected_edges.at<uchar>(i,j-1) = 0;
+//                if ( j+1 < src_gray.cols) detected_edges.at<uchar>(i,j+1) = 0;
+//                detected_edges.at<uchar>(i,j) = 0;
+//            }
+
+//    /* Apply Morphological closing operation */
+//    Mat dst;
+//    Mat element = getStructuringElement( morph_elem, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
+//    if (morph_size)
+//        morphologyEx( detected_edges, dst, MORPH_CLOSE, element );
+//    else
+//        dst = detected_edges;
+//    char window_name[20] = "test";
+
+//    /// Create Trackbar to select kernel type
+//    createTrackbar( "Element:\n 0: Rect - 1: Cross - 2: Ellipse", window_name,
+//                    &morph_elem, max_elem,
+//                    Morphology_Operations );
+
+//    /// Create Trackbar to choose kernel size
+//    createTrackbar( "Kernel size:\n 2n +1", window_name,
+//                    &morph_size, max_kernel_size,
+//                    Morphology_Operations );
+//    createTrackbar("Edges threshold", window_name,
+//                   &lowThreshold, 100,
+//                   Morphology_Operations);
+//    createTrackbar("Erode size", window_name,
+//                   &erode_size, max_kernel_size,
+//                   Morphology_Operations);
+//    //imshow(window_name, dst);
+//    /* Remove from DST the uncharted areas */
+//    for (int i = 0; i < src_gray.rows; i++ )
+//        for (int j = 0; j < src_gray.cols; j++)
+//            if (src_gray.at<uchar>(i,j) == 100)
+//            {
+//                if  (i-1 >= 0) dst.at<uchar>(i-1,j) = 0;
+//                if  (i+1 < src_gray.rows) dst.at<uchar>(i+1,j) = 0;
+//                if (j-1 >= 0) dst.at<uchar>(i,j-1) = 0;
+//                if ( j+1 < src_gray.cols) dst.at<uchar>(i,j+1) = 0;
+//                dst.at<uchar>(i,j) = 0;
+//            }
+//    /* Apply erode to remove edges */
+
+//    Mat element2 = getStructuringElement( morph_elem, Size( 2*erode_size + 1, 2*erode_size+1 ), Point( erode_size, erode_size ) );
+//    if (erode_size)
+//        erode(dst, dst, element2);
+//    Mat color_map = image;
+//    cvtColor(color_map, color_map, CV_RGB2HSV);
+//    for (int i = 0; i < dst.rows; i++)
+//        for (int j = 0; j < dst.cols; j++)
+//            if (dst.at<uchar>(i,j) == 0)
+//                color_map.at<Vec3b>(i,j) = Vec3b(0,0,100);
+//    imshow(window_name, color_map);
+
+
+
     double obs_diff, obs_thresh, mul = 1;
     ros::param::param("/PER/Obstacle/Diff",obs_diff,OBSTACLE_THRESH);
     ros::param::param("/PER/Obstacle/Thresh",obs_thresh,OBSTACLE_THRESH);

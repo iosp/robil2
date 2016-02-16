@@ -13,6 +13,9 @@
 #include "ekf_class.h"
 #include "noiseless_estimator.h"
 #include <boost/thread.hpp>
+#include <dynamic_reconfigure/server.h>
+#include <loc/configConfig.h>
+
 class RosComm;
 //class ComponentMain;
 class ComponentMain {
@@ -20,7 +23,7 @@ class ComponentMain {
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	static void performEstimation();
+    static void performEstimation();
 	void handlePositionUpdate(const config::LOC::sub::PositionUpdate& msg);
 	void setSteeringInput(double msg);
 	void setThrottleInput(double msg);
@@ -34,10 +37,12 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+    void configCallback(loc::configConfig &config, uint32_t level);
 private:
   ekf _estimator;
   Observer _observer;
   boost::thread* _estimation_thread;
   static ComponentMain *_this;
+  loc::configConfig dyn_conf;
 };
 #endif /* COMPONENTMAIN_H_ */
