@@ -1082,6 +1082,8 @@ SYNCH
 		}
 	}
 
+	if (map.points.size() == 0) return;
+
 	map.header.frame_id = "/base_link";
 	map.header.stamp = ros::Time::now();//robil_map.header.stamp;//
 

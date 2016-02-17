@@ -1,14 +1,9 @@
 obstacle_range: 50.0
 raytrace_range: 30.0
-#footprint: [[3.1, 1.6], [-1.1, 1.6], [-1.1, -1.6], [3.1, -1.6]]
-#footprint: [[3.1, 1.6], [-1.6, 1.6], [-1.6, -1.6], [3.1, -1.6]]
-#footprint: [[2.1, 1.6], [-2.6, 1.6], [-2.6, -1.6], [2.1, -1.6]]
-#robot_radius: 30.0
+inflation_radius: 5.0
+#cost_scaling_factor: 1.0
+footprint: [[2.75, 1.6], [-1.75, 1.6], [-1.75, -1.6], [2.75, -1.6]]
 max_obstacle_height: 30
-
 observation_sources: cloud_scan_sensor laser_scan_sensor 
-
 laser_scan_sensor: { sensor_frame: base_link, data_type: LaserScan, topic: costmap_clear_fake_scan, marking: false, clearing: true, min_obstacle_height: -30, max_obstacle_height: 30 }
-
-
 cloud_scan_sensor: { sensor_frame: base_link, data_type: PointCloud, topic: map_cloud, marking: true, clearing: false, min_obstacle_height: -30, max_obstacle_height: 30 }
