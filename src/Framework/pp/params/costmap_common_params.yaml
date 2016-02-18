@@ -1,7 +1,7 @@
 obstacle_range: 50.0
 raytrace_range: 30.0
-inflation_radius: 5.0
-#cost_scaling_factor: 1.0
+inflation_radius: 8.0
+cost_scaling_factor: 0.2
 footprint: [[2.75, 1.6], [-1.75, 1.6], [-1.75, -1.6], [2.75, -1.6]]
 max_obstacle_height: 30
 observation_sources: cloud_scan_sensor laser_scan_sensor 
