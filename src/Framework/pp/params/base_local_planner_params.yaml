@@ -6,18 +6,18 @@ TrajectoryPlannerROS:
   max_vel_x: 0.8
   min_vel_x: 0.1
 
-  max_vel_theta: 0.1
-  min_vel_theta: -0.1
+  max_vel_theta: 1
+  min_vel_theta: -1
 
-  max_rotational_vel: 0.1
+  max_rotational_vel: 1
   min_in_place_vel_theta: 0.1
   escape_vel: -0.4
 
-  acc_lim_th: 0.02
-  acc_lim_x: 0.3
+  acc_lim_th: 2.5
+  acc_lim_x: 2.5
 
   yaw_goal_tolerance: 3.12
-  xy_goal_tolerance: 0.2
+  xy_goal_tolerance: 1.0
   dwa: false
 
   # pdist_scale: 1.0

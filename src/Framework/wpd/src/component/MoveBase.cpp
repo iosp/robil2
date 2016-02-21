@@ -149,7 +149,7 @@ void send_static_ziro_tf_links(ComponentMain* comp){
 }
 void send_static_base_center_offset(ComponentMain* comp){
 	tf::Quaternion q(0,0,0,1);
-	tf::Vector3 l(-1,0,0);
+	tf::Vector3 l(0.75,0,0);
 	tf::Transform tf(q,l);
 	comp->publishTransform(tf,"base_link", "base_link_center");
 }

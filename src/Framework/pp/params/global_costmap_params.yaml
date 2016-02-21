@@ -12,7 +12,4 @@ global_costmap:
   origin_x: -150
   origin_y: -150
   resolution: 0.60
-  inflation_radius: 5.0
-  cost_scaling_factor: 1.0
-  #footprint: [[3.1, 2.8], [-3.6, 2.8], [-3.6, -2.8], [3.1, -2.8]]
-  footprint: [[2.1, 1.8], [-2.6, 1.8], [-2.6, -1.8], [2.1, -1.8]]
+  

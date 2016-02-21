@@ -7,6 +7,7 @@ project(robil2rviz)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   visualization_msgs
+  robil_msgs
 )
 
 ## System dependencies are found with CMake's conventions
