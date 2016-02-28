@@ -9,7 +9,7 @@
 #include "../heightmap.h"
 #include "../heightmap_projection.h"
 #include "../../roscomm/RosComm.h"
-
+#include "per/configConfig.h"
 #define VISUALIZE_NONE		0
 #define VISUALIZE_MAP		1
 #define VISUALIZE_MINIMAP 	2
@@ -30,7 +30,7 @@ using namespace cv;
 class Mapper
 {
   public:
-    static void MainLoop();
+    static void MainLoop(per::configConfig *p);
     
     /// walrus function:
     static void StereoThread();
@@ -73,6 +73,7 @@ class Mapper
      * Walrus Changes:
      */
     static void setLanes(Mat lanes);
+
 };
 
 

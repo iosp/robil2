@@ -15,6 +15,8 @@
 // #include <per/roadLanes.h>
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include <dynamic_reconfigure/server.h>
+#include <per/configConfig.h>
 using namespace std;
 // using namespace per;
 using namespace cv;
@@ -53,7 +55,7 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
-	
+    void configCallback(per::configConfig &config, uint32_t level);
 	
 	void setVisualize(char);
 	
@@ -61,10 +63,12 @@ public:
 	 * Walrus Changes:
 	 */
 	void setLanes(Mat m);
+    per::configConfig _dyn_conf;
 private:
       sensor_msgs::Imu _imuData;
       sensor_msgs::NavSatFix _gpsData;
       HeightMap* height_map;
+
       
       
   

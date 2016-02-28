@@ -24,62 +24,27 @@ void PrintError( Error error )
 {
     error.PrintErrorTrace();
 }
-
-
-void printTriggerModeInfo(TriggerModeInfo info)
+void publishImage (Image *rawImage,int seq, int id)
 {
-  printf("present %d\n",info.present);
-  printf("read Out Supported: %d\n",info.readOutSupported);
-  printf("OnOffSupported: %d\n",info.onOffSupported);
-  printf("value readable: %d\n",info.valueReadable);
-  printf("mode Mask: %d\n",info.modeMask);
-  
-}
-void printTriggerMode(TriggerMode info)
-{
-  printf("on off: %d\n", info.onOff);
-  printf("polarity: %d\n", info.polarity);
-  printf("source: %d\n", info.source);
-  printf("mode: %d\n", info.mode);
-  printf("parameter: %d\n", info.parameter);
-
+  cv::Mat bayer8BitMat(rawImage->GetRows(), rawImage->GetCols(), CV_8UC1, rawImage->GetData());
+  cv::Mat rgb8BitMat(rawImage->GetRows(), rawImage->GetCols(), CV_8UC3);
+  cv::cvtColor(bayer8BitMat, rgb8BitMat, CV_BayerGR2RGB);
+  // 	cv::imshow("im",rgb8BitMat);
+  // 	cv::waitKey(1);
+  sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", rgb8BitMat).toImageMsg();
+  msg->header.seq = seq;
+  msg->header.frame_id = "1";
+  msg->header.stamp = ros::Time::now();
+  msg->encoding = sensor_msgs::image_encodings::RGB8;
+  msg->is_bigendian = 0;
+  publishers[id].publish(msg);//CompressMsg(msg));
 }
 
-void setCamMaster(GigECamera *cam)
-{
-  StrobeControl s;
-  s.source = 2;
-  s.onOff = true;
-  s.polarity = 0;
-  s.delay = 0;
-  s.duration = 10;
-  Error error = cam->SetStrobe(&s);
-  //std::cout << error << std::end;
-
-}
-void setCamSlave(GigECamera *cam)
-{
-  TriggerMode t;
-  Error error = cam->GetTriggerMode(&t);
-  printTriggerMode(t);
-  t.source = 2;
-  t.onOff = true;
-  t.polarity = 0;
-  t.mode = 1;
-  t.parameter = 0;
-  error = cam->SetTriggerMode(&t);
-  error = cam->GetTriggerMode(&t);
-  printTriggerMode(t);
-}
 int RunSingleCamera(PGRGuid guid, int id)
 {
     Error error;
     GigECamera cam;
-    //GigECamera cam;
-    
-    
-
-    printf( "Connecting to camera...\n" );
+    printf( "Connecting to camera .\n");
     
     // Connect to a camera
     error = cam.Connect(&guid);
@@ -119,16 +84,6 @@ int RunSingleCamera(PGRGuid guid, int id)
         printf( "\nPrinting stream channel information for channel %u:\n", i );
         //PrintStreamChannelInfo( &streamChannel );
     }    
-
-
-    
-    // set strobe for id==1
-//     if(id == 0)
-//     {
-//       setCamMaster(&cam);
-//     }
-//     else
-//       setCamSlave(&cam);
     printf( "Querying GigE image setting information...\n" );
 
     GigEImageSettingsInfo imageSettingsInfo;
@@ -154,10 +109,6 @@ int RunSingleCamera(PGRGuid guid, int id)
         PrintError( error );
         return -1;
     }
-//     if (cameraMasterSlave[0] == guid)
-//       setCamMaster(&cam);
-//     else if (cameraMasterSlave[1] == guid)
-//       setCamSlave(&cam);
     printf( "Starting image capture...\n" );
 
     // Start capturing images
@@ -176,29 +127,10 @@ int RunSingleCamera(PGRGuid guid, int id)
         error = cam.RetrieveBuffer( &rawImage );
         if (error != PGRERROR_OK)
         {
-            PrintError( error );
+	    printf("error retrieving image in camera %u \n",camInfo.serialNumber);//PrintError( error );
             continue;
         }
-	
-	// Copy the data into an OpenCV Mat structure
-	cv::Mat bayer8BitMat(rawImage.GetRows(), rawImage.GetCols(), CV_8UC1, rawImage.GetData());
-	cv::Mat rgb8BitMat(rawImage.GetRows(), rawImage.GetCols(), CV_8UC3);
-	cv::cvtColor(bayer8BitMat, rgb8BitMat, CV_BayerGR2RGB);
-// 	cv::imshow("im",rgb8BitMat);
-// 	cv::waitKey(1);
-	sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", rgb8BitMat).toImageMsg();
-	msg->header.seq = seq;
-	msg->header.frame_id = "1";
-	msg->header.stamp = ros::Time::now();
-        //msg->height = rgb8BitMat.cols;
-	//msg->width = rgb8BitMat.rows;
-	//std::cout << rgb8BitMat.cols << rgb8BitMat.rows << std::endl;
-	msg->encoding = sensor_msgs::image_encodings::RGB8;
-	msg->is_bigendian = 0;
-	//msg->step = rawImage.GetStride();
-
-	publishers[id].publish(msg);//CompressMsg(msg));
-        seq++;
+	publishImage (&rawImage,seq++,id);
     }         
 
     printf( "Stopping capture...\n" );
@@ -249,8 +181,12 @@ int main(int argc, char** argv)
     for (unsigned int i=0; i < numCameras; i++)
     {
 	char topicName[90];
-	
-	sprintf(topicName, "SENSORS/FLEA3/%d", i);
+	if (i == 0)
+	  sprintf(topicName, "SENSORS/CAM/L");
+	else if (i == 1)
+	  sprintf(topicName, "SENSORS/CAM/R");
+	else
+	  sprintf(topicName, "SENSORS/CAM/%d", i);
 // 	publishers[i] = n.advertise<sensor_msgs::Image>(topicName, 10);
 	publishers[i] = it.advertise(topicName, 10);
         
@@ -269,8 +205,6 @@ int main(int argc, char** argv)
             PrintError( error );
             return -1;
         }
-//         if (i < 2)
-// 	  cameraMasterSlave[i] = guid;
         if ( interfaceType == INTERFACE_GIGE)
 	    boost::thread t(RunSingleCamera, guid, i);
 	

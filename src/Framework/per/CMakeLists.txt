@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
     decision_making decision_making_parser
 message_generation
 image_transport
+dynamic_reconfigure
 )
 find_package(OpenCV 2)
 find_package(Boost REQUIRED COMPONENTS system)
@@ -20,7 +21,9 @@ add_message_files(
   lane.msg
   roadLanes.msg
 )
-
+generate_dynamic_reconfigure_options(
+  cfg/config.cfg
+)
 generate_messages(
     DEPENDENCIES
     std_msgs
@@ -42,6 +45,7 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${GAZEBO_INCLUDE_DIRS}
+${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake
 )
 ## Declare a cpp library
 add_library(per_rosComm
@@ -58,6 +62,7 @@ add_library(per_compMain
 )
 link_directories(${GAZEBO_LIBRARY_DIRS})
 add_executable(per_node src/main.cpp)
+add_dependencies(per_node ${PROJECT_NAME}_gencfg)
 target_link_libraries(per_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(per_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(per_node per_compMain per_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS} ${GAZEBO_libraries} 

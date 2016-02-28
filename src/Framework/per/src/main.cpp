@@ -48,7 +48,10 @@ int main(int argc,char** argv)
   
   ros::Subscriber vis = n.subscribe("/PER/VISUAL", 5, setVisual);
   ros::Subscriber wlrs = n.subscribe("/RoadLanes", 10, handleWalrusData);
-    
+  dynamic_reconfigure::Server<per::configConfig> server;
+  dynamic_reconfigure::Server<per::configConfig>::CallbackType cb;
+  cb = boost::bind(&ComponentMain::configCallback, &comp,  _1, _2);
+  server.setCallback(cb);
   ros::AsyncSpinner spinner(4); // Use 4 threads
   spinner.start();
   runComponent(argc,argv, comp);

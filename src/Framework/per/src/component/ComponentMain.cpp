@@ -15,11 +15,10 @@
 #include "helpermath.h"
 #include "mapper/mapper.h"
 #include "rdbg.h"
-
+#include "per/configConfig.h"
 using namespace std; 
 typedef string String;
 typedef bool boolean;
-
 
 
 
@@ -27,7 +26,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 {
 	 _roscomm = new RosComm(this,argc, argv);
 	 Mapper::roscomm = _roscomm;
-	 boost::thread mapper(Mapper::MainLoop);
+     boost::thread mapper(Mapper::MainLoop, &this->_dyn_conf);
 	 boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 	 boost::thread mapper2(Mapper::VisualizeLoop);
 	 /// walrus func:
@@ -199,4 +198,16 @@ void ComponentMain::publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg)
 void ComponentMain::setLanes(Mat m)
 {
   Mapper::setLanes(m);
+}
+
+void ComponentMain::configCallback(per::configConfig &config, uint32_t level)
+{
+  // Set class variables to new values. They should match what is input at the dynamic reconfigure GUI.
+    _dyn_conf = config;
+    char flags = 0;
+    if (config.heightMap)
+        flags += 1;
+    if (config.typeMap)
+        flags += 8;
+    Mapper::setVisualize((unsigned char)flags);
 }
