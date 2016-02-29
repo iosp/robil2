@@ -1,0 +1,35 @@
+@startuml
+participant ROS
+participant PlpWaypointHarness as harness
+
+ROS->harness: start
+create PlpParameters
+harness->PlpParameters: <<create>>
+...
+ROS->harness: //data from a topic//
+activate harness
+harness->PlpParameters: update
+harness->harness: trigger?
+alt trigger met
+
+alt record mode
+  harness->harness: record data to file
+else monitor mode
+  create PlpWaypoint
+  harness->PlpWaypoint: <<create>>
+  harness->PlpWaypoint: setParams(PlpParameters)
+  harness->PlpParameters: setCallback(PlpWaypoint)
+  deactivate harness
+  ...
+  ROS->harness: //data from a topic//
+  harness->PlpParameters: update
+  PlpParameters->PlpWaypoint: update
+  activate PlpWaypoint
+  PlpWaypoint->PlpWaypoint: predict
+  PlpWaypoint->harness: prediction
+  harness->ROS: prediction
+  deactivate PlpWaypoint
+end
+
+end
+@enduml
