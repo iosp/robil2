@@ -1,0 +1,13 @@
+<package>
+  <description brief="plp_ibeo">
+     plp_ibeo: A plp for monitoring the IBEO unit.
+
+  </description>
+  <author>Michael Bar-Sinai</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/plp_ibeo</url>
+  <depend package="std_msgs"/>
+  <depend package="rospy"/>
+
+</package>
