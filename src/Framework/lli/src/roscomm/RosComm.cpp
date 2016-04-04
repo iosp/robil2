@@ -23,6 +23,7 @@ RosComm::RosComm(ComponentMain* comp,int argc,char** argv)
 	_sub_EffortsJn=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLI","EffortsJn","sub"), 10, &RosComm::EffortsJnCallback,this));
 
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
+	_pub_connected_to_platform=ros::Publisher(_nh.advertise<std_msgs::Bool>(fetchParam(&_nh,"LLI","ConnectedToPlatform","pub"),100));
 	_maintains.add_thread(new boost::thread(boost::bind(&RosComm::heartbeat,this)));
 }
 RosComm::~RosComm()
@@ -89,4 +90,10 @@ void RosComm::heartbeat(){
 		_pub.publish(msg);
 	    boost::this_thread::sleep(stop_time);
 	}
+}
+
+void RosComm::publishConnectedToPlatform(const std_msgs::Bool& msg){
+	//std_msgs::Bool msg2;
+	//msg2.status.push_back(msg);
+	_pub_connected_to_platform.publish(msg);
 }

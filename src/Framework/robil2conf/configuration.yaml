@@ -10,6 +10,7 @@ LLC_sub_WSMVelocity: 'WSM'
 LLC_sub_BladePositionCommand: 'WSM'
 LLC_sub_Location: 'LOC'
 LLC_sub_PerVelocity: 'LOC'
+LLC_sub_ConnectedToPlatform: 'LLI'
 
 LLC_pub_EffortsTh: '/LLC/EFFORTS/Throttle'
 LLC_pub_EffortsSt: '/LLC/EFFORTS/Steering'
@@ -20,6 +21,7 @@ LLI_sub_EffortsTh: 'LLC'
 LLI_sub_EffortsSt: 'LLC'
 LLI_sub_EffortsJn: 'LLC'
 
+LLI_pub_ConnectedToPlatform: '/Sahar/link_with_platform'
 
 #OCU
 OCU_sub_IEDLocation: 'IEDSIM'

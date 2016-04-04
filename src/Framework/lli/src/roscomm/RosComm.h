@@ -21,6 +21,7 @@ class RosComm {
   ComponentMain   * _comp;
   ros::NodeHandle _nh;
   ros::Publisher _pub_diagnostic;
+  ros::Publisher _pub_connected_to_platform;
   boost::thread_group _maintains;
 	ros::Subscriber _sub_EffortsTh;
 	ros::Subscriber _sub_EffortsSt;
@@ -40,6 +41,7 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishConnectedToPlatform(const std_msgs::Bool& msg);
 	void heartbeat();
 };
 #endif /* ROSCOMM_H_ */

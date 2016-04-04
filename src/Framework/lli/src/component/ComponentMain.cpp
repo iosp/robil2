@@ -191,6 +191,9 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 	_roscomm->publishDiagnostic(header, _report);
 }
 
+void ComponentMain::publishConnectedToPlatform(std_msgs::Bool& msg){
+    _roscomm->publishConnectedToPlatform(msg);
+}
 void * ComponentMain::callPThread(void * pParam)
 {
 	ComponentMain *myHandle = (ComponentMain *) (pParam);
@@ -227,12 +230,21 @@ void ComponentMain::lliCtrlLoop()
 
 	   //QinitiQ has been properly initialized.
 	ros::Rate r(100);
-
+    std_msgs::Bool msg;
+    //int count=0;
 	while (ros::ok())
 		{
 		    r.sleep();
+		    if (StateNotReady()){
+		    				msg.data=false;
+		    			}
+		    else msg.data=true;
+		    //if (count > 1000) msg.data=true;
+		    //count++;
+   			publishConnectedToPlatform(msg);
 			if (!_clli->PeriodicActivity())
 							break;
+
 
 	   	}
 
