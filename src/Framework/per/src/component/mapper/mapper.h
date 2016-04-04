@@ -10,6 +10,7 @@
 #include "../heightmap_projection.h"
 #include "../../roscomm/RosComm.h"
 #include "per/configConfig.h"
+#include <tf/transform_listener.h>
 #define VISUALIZE_NONE		0
 #define VISUALIZE_MAP		1
 #define VISUALIZE_MINIMAP 	2
@@ -68,7 +69,7 @@ class Mapper
     static HeightMap* height_map;
     static RosComm* roscomm;
     static unsigned char flags;
-    
+    //static tf::TransformListener *listener;
     /**
      * Walrus Changes:
      */

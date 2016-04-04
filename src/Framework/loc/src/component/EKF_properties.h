@@ -97,11 +97,11 @@ public:
 	   */
 	  
 	  Rotation rot22 = GetRotation(Quaternion(z.at<double>(7,0),z.at<double>(8,0),z.at<double>(9,0),z.at<double>(10,0)));
-      z.at<double>(3,0) *= 0;//cos(rot22.yaw);
-      z.at<double>(4,0) *= 0;//sin(rot22.yaw);
-	  F.at<double>(3,3) = 0;
-	  F.at<double>(4,4) = 0;
-	  F.at<double>(13,13) = 0;
+      z.at<double>(3,0) *= cos(rot22.yaw);
+      z.at<double>(4,0) *= sin(rot22.yaw);
+      F.at<double>(3,3) = 1;
+      F.at<double>(4,4) = 1;
+      F.at<double>(13,13) = 1;
 	}
 	void modify_B(double yaw,double pitch)
 	{

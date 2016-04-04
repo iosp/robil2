@@ -10,6 +10,8 @@
 #include "../roscomm/RosComm.h"
 #include "userHeader.h"
 
+
+
 ComponentMain *ComponentMain::_this;
 
 ComponentMain::ComponentMain(int argc,char** argv)
@@ -29,7 +31,7 @@ void ComponentMain::performEstimation()
   
 	config::LOC::pub::Location msg1;
 	config::LOC::pub::PerVelocity msg2;
-	for(;;)
+    while (ros::ok())
 	{
 		try
         {
@@ -53,7 +55,7 @@ void ComponentMain::performEstimation()
 			}
 			_this->publishLocation(msg1);
 			_this->publishPerVelocity(msg2);
-
+            _this->_estimator.broadcastTF();
 			boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 		}
 		catch(boost::thread_interrupted&)
