@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
     cognitao_io
     cognitao
     events_bus
+    cognitao_event_bus_converter
     geometry_msgs nav_msgs tf
     tf_geometry
     plpcpp
@@ -18,6 +19,7 @@ catkin_package(
 	CATKIN_DEPENDS
 	    robil2conf
 	    decision_making decision_making_parser
+	    cognitao_event_bus_converter
 )
 ###########
 ## Build ##
