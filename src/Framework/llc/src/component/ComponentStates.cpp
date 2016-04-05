@@ -19,8 +19,8 @@ double hb_time = 0 ;
 const double t_out = 20.0 ;
 static double Kp = 1.3 , Kd = 0.0 , Ki = 0.0   ; 				/* PID constants of linear x */
 static double Kpz = -1.8 , Kdz = 0.01 , Kiz = -0.1   ;		/* PID constants of angular z */
- 
-
+bool debug_flag=false;
+ros::Time com_check_time;
 class Params: public CallContextParameters{
 public:
 	ComponentMain* comp;
@@ -100,8 +100,7 @@ FSM(llc)
 
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 	ROS_INFO("LLC OFF");
-	//diagnostic_msgs::DiagnosticStatus status;
-	//COMPONENT->publishDiagnostic(status);
+
 	return TaskResult::SUCCESS();
 }
 
@@ -181,9 +180,14 @@ void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t
 	Kdz=config.angularVelocity_D;
 }
 
+void comm_check_callback(const geometry_msgs::TwistStamped &msg)
+{
+com_check_time=ros::Time::now();
+}
+
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
 
-//	#define LLC_USE_LOCALIZATION
+
 
 	ROS_INFO("LLC Ready");
 
@@ -195,15 +199,12 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	int E_stop = 1;
 	COMPONENT->t_flag = 0 ;
 
-#ifdef LLC_USE_LOCALIZATION
 
-	Kp = 0.12 ; Kd = 0.0 ; Ki = 0.1 ;
-	Kpz = -1.32 ; Kdz = 0.0 ; Kiz = -0.3 ;
 
 	geometry_msgs::Twist per_speed ;
 	geometry_msgs::PoseWithCovarianceStamped per_location ;
 
-#endif
+
 
 	config::LLC::pub::EffortsSt Steering_rate ; 		/* steering rate  +- 1 */
 	config::LLC::pub::EffortsTh Throttle_rate ;			/* Throttle rate  +- 1 */
@@ -213,16 +214,21 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	geometry_msgs::TwistStamped old_error ; 			/* stores the last error signal */
 	geometry_msgs::Twist t ;							/* used for co-ordinates transform */
 	ros::Subscriber link_to_platform ;
-	ros::Subscriber link_to_comm_check;
+	ros::Subscriber comm_check_sub;
 	ros::Publisher linear_error_publisher;
 	ros::Publisher angular_error_publisher;
 	ros::Publisher debug_publisher;
 	ros::NodeHandle n;
 	link_to_platform = n.subscribe("/Sahar/link_with_platform" , 100, hb_callback);
-	link_to_comm_check = n.subscribe("/llc_status" , 100, llc_status_callback);
-	linear_error_publisher = n.advertise<std_msgs::Float64>("/linear_error", 100);
-        angular_error_publisher = n.advertise<std_msgs::Float64>("/angular_error", 100);
-	debug_publisher = n.advertise<std_msgs::Float64>("/or_debug", 100);
+	comm_check_sub = n.subscribe("/WPD/Speed", 100,comm_check_callback);
+	
+	
+	if(debug_flag==true)
+		{
+		linear_error_publisher = n.advertise<std_msgs::Float64>("/LLC/DEBUG/linear_error", 100);
+		angular_error_publisher = n.advertise<std_msgs::Float64>("/LLC/DEBUG/angular_error", 100);
+		debug_publisher = n.advertise<std_msgs::Float64>("/LLC/DEBUG/or_debug", 100);
+		}
 	COMPONENT->WPD_desired_speed.twist.linear.x = 0;
 	COMPONENT->WPD_desired_speed.twist.angular.z = 0;
 	COMPONENT->WSM_desired_speed.twist.linear.x = 0;
@@ -232,7 +238,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	while (!hb_time);
 
-		ROS_INFO("Connected with platform");
+		ROS_INFO("LLC Connected with platform");
 		/*
 		 * TODO: Diagnostics about connection
 		 */
@@ -249,47 +255,43 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	/* get measurements and calculate error signal */
 
-#ifndef LLC_USE_LOCALIZATION
+		
 
-	    ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
-	    gazebo_msgs::GetModelState getmodelstate;
-	    getmodelstate.request.model_name ="Sahar";
-	    gmscl.call(getmodelstate);
-	    geometry_msgs::PoseWithCovarianceStamped gigi;
-	    gigi.pose.pose = getmodelstate.response.pose;
-	    t = Translate(gigi, getmodelstate.response.twist);
 
-#else
 
 	    per_location = COMPONENT->Per_pose ;
 	    per_speed = COMPONENT->Per_measured_speed;
 	    t = Translate(per_location, per_speed);
-#endif
+	
+		double current_time_double =ros::Time::now().toSec();
+		double com_check_time_double =com_check_time.toSec();
+		if(current_time_double > com_check_time_double +0.05) k_emrg=0;
+		else k_emrg=1;
 
-
-			if(COMPONENT->WPD_desired_speed.twist.linear.x ||COMPONENT->WPD_desired_speed.twist.angular.z ){
+		if(COMPONENT->WPD_desired_speed.twist.linear.x ||COMPONENT->WPD_desired_speed.twist.angular.z ){
 				cur_error.twist.linear.x = (COMPONENT->WPD_desired_speed.twist.linear.x) - t.linear.x;
 				cur_error.twist.angular.z = ((COMPONENT->WPD_desired_speed.twist.angular.z) - t.angular.z);
-			}
-			else{
+		}
+		else{
 				cur_error.twist.linear.x = (COMPONENT->WSM_desired_speed.twist.linear.x) - t.linear.x;
 				cur_error.twist.angular.z = ((COMPONENT->WSM_desired_speed.twist.angular.z) - t.angular.z);
-			}
+		}
 	std_msgs::Float64 angular_error;
 	std_msgs::Float64 linear_error;
 	std_msgs::Float64 debug_f;
 	angular_error.data=cur_error.twist.angular.z;
 	linear_error.data=cur_error.twist.linear.x;
-
 	debug_f.data=COMPONENT->WPD_desired_speed.twist.linear.x;
-	linear_error_publisher.publish(linear_error);
-	angular_error_publisher.publish(angular_error);
-	debug_publisher.publish(debug_f);
+	if(debug_flag==true)
+		{
+		linear_error_publisher.publish(linear_error);
+		angular_error_publisher.publish(angular_error);
+		debug_publisher.publish(debug_f);
+		}
+
 
 			Push_elm(angular_filter,1024,cur_error.twist.angular.z);
-			//cur_error.twist.angular.z = _medianfilter(angular_filter,201);
 			cur_error.twist.angular.z = avg_filter(angular_filter , 1024.0);
-
 			cur_error.twist.linear.x = (1-0.125)*old_err + cur_error.twist.linear.x*(0.125);
 			old_err = cur_error.twist.linear.x ;
 
@@ -307,39 +309,13 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 				integral[k] = -integral_limit[k] ;
 	}
 
-
-
-		//Kpz=Kpz*(1+abs(t.linear.x));
-//ROS_INFO("%f",Throttle_rate.data);
-	  	
-		//Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;  
 	
 	 
 	Throttle_rate.data =( Kp*cur_error.twist.linear.x + Ki*integral[0] + Kd*der[0] )*k_emrg;
-	Steering_rate.data =( Kpz*cur_error.twist.angular.z+Kdz*der[1]+Kiz*integral[1] )*k_emrg; 
+	Steering_rate.data =-( Kpz*cur_error.twist.angular.z+Kdz*der[1]+Kiz*integral[1] )*k_emrg; 
 	
 
 
-/*/or controlers test
-if(COMPONENT->WPD_desired_speed.twist.angular.z>0){
-Steering_rate.data = E_stop*(Kpz*(cur_error.twist.angular.z+0.2) + Kiz*integral[1] - Kdz*der[1]) ;
-}
-if(COMPONENT->WPD_desired_speed.twist.angular.z<0){
-Steering_rate.data = E_stop*(Kpz*(cur_error.twist.angular.z-0.2) + Kiz*integral[1] - Kdz*der[1]) ;
-}
-if(COMPONENT->WPD_desired_speed.twist.angular.z==0){
-
-}
-*/
-
-
-	/*
-// stops (or's test)
-	if((COMPONENT->WPD_desired_speed.twist.linear.x==0 && COMPONENT->WPD_desired_speed.twist.angular.z==0)|| !(COMPONENT->WPD_desired_speed.twist.linear.x ||COMPONENT->WPD_desired_speed.twist.angular.z )){
-	Throttle_rate.data = 0; 
-	Steering_rate.data = 0;
-	}
-*/
 	/* publish */
 		COMPONENT->publishEffortsTh(Throttle_rate);
 		COMPONENT->publishEffortsSt(Steering_rate);
@@ -365,8 +341,6 @@ if(COMPONENT->WPD_desired_speed.twist.angular.z==0){
 		if(!E_stop)
 			break ;
 		PAUSE(10);		/* wait dt time to recalculate error */
-
-		//usleep(100000);
 	}
 	ROS_INFO("cannot connect with platform");
 	/*
@@ -377,9 +351,7 @@ if(COMPONENT->WPD_desired_speed.twist.angular.z==0){
 }
 
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
-	//PAUSE(10000);
-	//Event e("Activation");
-	//events.raiseEvent(e);
+
 	ROS_INFO("LLC Standby");
 
 	return TaskResult::SUCCESS();
@@ -390,10 +362,16 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros::init(argc, argv, "llc");
 	ros_decision_making_init(argc, argv);
+	if (argc > 1)
+    {
+		if(strcmp(argv[1],"DEBUG")==0){
+			debug_flag=true;
+			ROS_INFO("DEBUG mode is ON");
+		}
+    }
 	RosEventQueue events;
 	CallContext context;
 	context.createParameters(new Params(&component));
-	//events.async_spin();
 	LocalTasks::registration("OFF",state_OFF);
 	LocalTasks::registration("INIT",state_INIT);
 	LocalTasks::registration("READY",state_READY);
