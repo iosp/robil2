@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tao>
+     <machines>
+         <machine id="FttSingleState" type="ftt">
+             <tasks>
+                 <task id="A">
+                     <reaction 
+						on_event="?e1"
+						send="!e2"
+						target="registertoserver" />
+                 </task>
+                <task id="registertoserver">
+                     <reaction 
+                        on_event="?server_registration_finished"
+                        send="!e4"
+                        target="A" />
+                 </task>
+             </tasks>
+             <ftt>
+                 <start>A</start>
+                 <success></success>
+                 <fail></fail>
+             </ftt>
+         </machine>
+         <root>FttSingleState</root>
+     </machines>
+</tao>

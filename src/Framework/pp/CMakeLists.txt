@@ -5,7 +5,9 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp rospy
     robil2conf
     decision_making decision_making_parser
-
+    cognitao_io
+    cognitao
+    events_bus
     geometry_msgs nav_msgs tf
     tf_geometry
     plpcpp
@@ -24,6 +26,9 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+  ${cognitao_io_INCLUDE_DIRS}
+  ${cognitao_INCLUDE_DIRS}
+  ${events_bus_INCLUDE_DIRS}
 )
 ## Declare a cpp library
 add_library(pp_rosComm

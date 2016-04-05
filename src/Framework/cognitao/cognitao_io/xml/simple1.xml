@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+    <path>
+        <folder>${rospack:my_package}/machines</folder>
+        <folder>/machines1</folder>
+        <folder>machines2</folder>
+    </path>
+    <subs>
+        <sub id="sub_machines">
+        <args>
+        	<arg M="M" />
+            <arg A="A" />
+            <arg B="B" />
+            <arg C="C" />
+            <arg START="A" />
+            <arg id="SUCC"> <state>C</state> </arg>
+            <arg id="FAIL"> <state>B</state> </arg>
+            <arg Ea="a" Eq="q" Ew="w" Eb="b" Ec="c" />
+        </args>
+        <block>
+            <machine id="${arg:M}" type="fsm">
+                <states>
+                    <state id="${A}">
+                        <transit 
+							on_event="?${Ea}"
+							send="!${Eq}"
+							target="${B}" />
+                        <transit 
+							on_event="?${Eb}"
+							send="!${Eq}"
+							target="${C}" />
+                    </state>
+                    <state id="${B}">
+                        <transit 
+							on_event="?${Eb}"
+							send="!${Ew}"
+							target="${B}" />
+                        <transit 
+							on_event="?${Ec}"
+							send="!${Ew}"
+							target="${B}" />
+                        <transit 
+							on_event="?${Ea}"
+							send="!${Eq}"
+							target="${C}" />
+                    </state>
+                    <state id="${C}">
+                        <transit 
+							on_event="?${Eb}"
+							send="!${Ew}"
+							target="${A}" />
+                    </state>
+                </states>
+                <fsm>
+                    <start>${arg:START}</start>
+                    <success>${SUCC}</success>
+                    <fail>${FAIL}</fail>
+                </fsm>
+            </machine>
+        </block>
+    </sub>
+    </subs>
+    <machines>
+	    <machine id="fsm1" type="fsm">
+	        <states>
+	            <state id="M1">
+	                <transit 
+						on_event="machine?success_M1" 
+						target="M2" />
+					<sub id="sub_machines" M="M1" />
+					<machine id="mmm" file="/home/dan/workspace/cognitao/src/cognitao/cognitao_xml/xml/s1.xml">
+						<arg id="S">MEDVED</arg>
+					</machine>
+	            </state>
+	            <state id="M2">
+	                <transit 
+						on_event="machine?success_M2" 
+						target="M1" />
+						<sub id="sub_machines" M="M2">
+						    <arg A="X" />
+						    <arg B="Y" />
+						    <arg C="Z" />
+						    <arg START="Y" />
+						    <arg id="SUCC">
+						        <state>Z</state>
+						    </arg>
+						    <arg id="FAIL">
+						        <state>X</state>
+						    </arg>
+							<arg Eq="r" Eq="o" Ew="p" />
+						</sub>
+	            </state>
+	        </states>
+	        <fsm>
+	            <start>M1</start>
+	            <success></success>
+	            <fail></fail>
+	        </fsm>
+	    </machine>
+	    <root>fsm1</root>
+    </machines>
+</tao>

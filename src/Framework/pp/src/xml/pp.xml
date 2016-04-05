@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="pp" type="ftt">
+			<tasks>
+
+				<task id="OFF">
+					<reaction on_event="/Activation" target="ON" />
+					<reaction on_event="/pp/Activation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="pp_ON" type="ftt">
+						<tasks>
+
+							<task id="INIT">
+								<reaction on_event="INIT/EndOfInit" target="WORK" />
+							</task>           
+							
+							<task id="WORK">
+								<machine id="pp_WORK" type="ftt">
+									<tasks>
+
+										<task id="STANDBY">
+											<reaction on_event="/pp/Resume" target="READY" />
+										</task>
+
+										<task id="READY">
+											<reaction on_event="/pp/Standby" target="STANDBY" />
+										</task>            
+										
+									</tasks>
+									<ftt>
+										<start>READY</start>
+									</ftt>
+								</machine>
+							</task>         
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="/Shutdown" target="OFF" />
+					<reaction on_event="/pp/Shutdown" target="OFF" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>ON</start>
+			</ftt>
+		</machine>
+		<root>pp</root>
+	</machines>
+</tao>
