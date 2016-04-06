@@ -306,15 +306,27 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 
 
 	std::stringstream mission_description_stream;
-//	mission_description_stream << "<?xml version=\"1.0\" encoding=\"utf-8\"?> <tao>	<machines> <machine include = \"${rospack:pp}/src/xml/pp.xml\">	</machines>	</tao>";
+	mission_description_stream	<< "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << endl
+								<< "<tao>" << endl
+								<< "	<machines>" << endl
+								<< "		<machine file=\"${rospack:pp}/src/xml/pp.xml\"/>" << endl
+								<< "		<root>pp</root>" << endl
+								<< "	</machines>" << endl
+								<< "</tao>" << endl;
 
-	if (not load_from_file("/home/misha/workspaces/robil_workspace/robil2/src/Framework/pp/src/xml/pp.xml", mission_description_stream)){
-		return;
-	} // TODO change to normal loading of xml file
+//	if (not load_from_file("/home/misha/workspaces/robil_workspace/robil2/src/Framework/pp/src/xml/pp.xml", mission_description_stream)){
+//		return;
+//	} // TODO change to normal loading of xml file
 
 	cognitao::machine::Context context; // TODO do  need some context?
 	cognitao::io::parser::xml::XMLParser parser;
-	cognitao::io::parser::MachinesCollection machines = parser.parse(mission_description_stream, context.str());
+	cognitao::io::parser::MachinesCollection machines;
+	try{
+		machines = parser.parse(mission_description_stream, context.str());
+	} catch(const cognitao::io::parser::ParsingError& error){
+		std::cerr <<"ParsingError:"<<endl<< error.message <<endl;
+		return;
+	}
 
 	cognitao::io::compiler::Compiler compiler;
 	Processor processor( events );
@@ -322,10 +334,15 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	compiler.add_builder( cognitao::io::compiler::MachineBuilder::Ptr( new cognitao::io::compiler::ftt::FttBuilder(processor) ) );
 
 	cognitao::io::compiler::CompilationObjectsCollector collector;
-	cognitao::io::compiler::CompiledMachine ready_machine = compiler.compile( machines, collector );
+	cognitao::io::compiler::CompiledMachine ready_machine;
+	try {
+		ready_machine = compiler.compile( machines, collector );
+	} catch(const cognitao::io::compiler::CompilerError& error){
+		std::cerr <<"CompilerError:"<<endl<< error.message <<endl;
+		return;
+	}
 
 	cout << endl << endl;
-
 	cognitao::machine::Events p_events;
 	cognitao::machine::Machine current_machine = ready_machine->machine->start_instance(context, p_events);
 	processor.insert(p_events);
