@@ -149,11 +149,11 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 		machine = machine->process(e, p_events);
 		processor.insert( p_events );
 
-		static const cognitao::machine::Event event_about_entry_to_state( "state_report?enter" );
+		static const cognitao::machine::Event event_about_entry_to_state( "task_report?enter" );
 		if( event_about_entry_to_state.matches(e) )
 		{
 			std::string current_state = e.context().tail();
-			ROS_WARN_STREAM (" Current state" << current_state);
+			ROS_WARN_STREAM (" Current state: " << current_state);
 		}
 	}
 }
