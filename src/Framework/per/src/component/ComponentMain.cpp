@@ -26,6 +26,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 {
 	 _roscomm = new RosComm(this,argc, argv);
 	 Mapper::roscomm = _roscomm;
+     //Mapper::listener = new(tf::TransformListener);
      boost::thread mapper(Mapper::MainLoop, &this->_dyn_conf);
 	 boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 	 boost::thread mapper2(Mapper::VisualizeLoop);
@@ -36,6 +37,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
+    //delete Mapper::listener;
 }
 
 void ComponentMain::handleLocation(const config::PER::sub::Location& msg)

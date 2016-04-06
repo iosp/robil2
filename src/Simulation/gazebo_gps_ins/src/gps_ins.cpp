@@ -18,6 +18,7 @@
 #include <ctime>
 #include <sstream>
 #include <string>
+#include <tf/tf.h>
 
 #define CENTER_X_NS		31.2622		// GPS coordinates
 #define CENTER_Y_EW		34.803611	// of lab 320
@@ -179,13 +180,16 @@ namespace gazebo
 		gazebo::math::Vector3 pos = pose.pos;
 		
 		pos.x += noise*add_gps_noise();
+		pos.y *= -1;
 		pos.y += noise*add_gps_noise();
+		
 		double other_dist = (pos - _init_pos).GetLength();
 		double dist = sqrt((pos.x-_init_pos.x)*(pos.x-_init_pos.x)+(pos.y-_init_pos.y)*(pos.y-_init_pos.y));
 		//std::cout << "x= " << pos.x << "  y= " << pos.y <<"   init.x= "<<_init_pos.x<<"   init.y= "<<_init_pos.y<<"   dist= "<<dist <<"   my_dist= " << my_dist<<std::endl;
 		double brng;
 		if(!(pos.GetLength()*_init_pos.GetLength())) brng = atan2(pos.y,pos.x);
 		else brng = atan2(pos.y-_init_pos.y,pos.x-_init_pos.x);//acos(pos.Dot(_init_pos)/(pos.GetLength()*_init_pos.GetLength()));
+        brng *= 1;
 		//std::cout << "bearing: " << brng << std::endl;
 		//lat2 = asin(sin(lat1)*cos(d/R) + cos(lat1)*sin(d/R)*cos(θ))
 		//lon2 = lon1 + atan2(sin(θ)*sin(d/R)*cos(lat1), cos(d/R)−sin(lat1)*sin(lat2))
@@ -205,11 +209,15 @@ namespace gazebo
 		msg_imu.header.seq = _seq;
 		msg_imu.header.frame_id = "gps_ins";
 		msg_imu.header.stamp = ros::Time::now();
-		
-		msg_imu.orientation.x = pose.rot.x;
-		msg_imu.orientation.y = pose.rot.y;
-		msg_imu.orientation.z = pose.rot.z;
-		msg_imu.orientation.w = pose.rot.w;
+        tf::Quaternion q(pose.rot.x, pose.rot.y, pose.rot.z, pose.rot.w);
+        tf::Matrix3x3 m(q);
+        double roll, pitch, yaw;
+        m.getRPY(roll, pitch, yaw);
+        q.setRPY(roll, pitch, -yaw);
+        msg_imu.orientation.x = q.x();
+        msg_imu.orientation.y = q.y();
+        msg_imu.orientation.z = q.z();
+        msg_imu.orientation.w = q.w();
 		
 		msg_imu.angular_velocity.x = _imu->GetAngularVelocity().x+(_gy_bias+_gy_noise*sampleNormal())*noise;
 		msg_imu.angular_velocity.y = _imu->GetAngularVelocity().y+(_gy_bias+_gy_noise*sampleNormal())*noise;

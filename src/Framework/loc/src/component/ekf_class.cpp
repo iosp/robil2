@@ -4,6 +4,10 @@
 #include "gps_calculator.h"
 #include "GPS2file.h"
 #include <math.h>
+#include <tf/tf.h>
+
+const char frame_name[10] = "base_link";
+
 ekf::ekf() : _Egps(100),_Eimu(100)
 {
 	//ros::param::set("/LOC/Ready",0); 
@@ -59,7 +63,7 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 	{
 	    //z.at<double>(2,0) = measurement.altitude;
 		std::cout << "setting first GPS location as (0,0)" << std::endl;
-        setInitGPS(measurement);
+		setInitGPS(measurement);
 		first_GPS_flag = 0;
 	}
 
@@ -80,10 +84,10 @@ void ekf::setGPSMeasurement(sensor_msgs::NavSatFix measurement)
 
 	//transform GPS measurement to x-y measurement
 	double d = calcDistance(GPSmeasurement,initialGPS);
-	double theta = calcBearing(initialGPS,GPSmeasurement);
-	double x = d * cos(theta);
+    double theta = -calcBearing(initialGPS,GPSmeasurement);
+    double x = d * cos(theta);
     double y = d * sin(theta);
-	z.at<double>(0,0) = x;
+    z.at<double>(0,0) = x;
     if (_dyn.right_hand_axes)
         z.at<double>(1,0) = -y;
     else
@@ -106,14 +110,21 @@ void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
 		std::cout << "Eacc: " << _Eimu.getEIMU().linear_acceleration.x << std::endl;
 	}
 	this->IMUmeasurement = measurement;
+    tf::Quaternion qut(measurement.orientation.x, measurement.orientation.y, measurement.orientation.z, measurement.orientation.w);
+    //qut.setRotation(tf::Vector3(1,0,0),3.14159);
+    tf::Matrix3x3 m(qut);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+    qut.setRPY(-roll, pitch, -yaw);
+    yaw *= -1;
 	Quaternion qut2(measurement.orientation);
 	Rotation rot2 = GetRotation(qut2);
-	z.at<double>(5,0) = (measurement.linear_acceleration.x - Eacc) * cos(rot2.yaw);
-	z.at<double>(6,0) = (measurement.linear_acceleration.x - Eacc) * sin(rot2.yaw);
-	z.at<double>(7,0) = qut2.x;
-	z.at<double>(8,0) = qut2.y;
-	z.at<double>(9,0) = qut2.z;
-	z.at<double>(10,0) = qut2.w;
+    z.at<double>(5,0) = (measurement.linear_acceleration.x - Eacc) * cos(yaw);
+    z.at<double>(6,0) = (measurement.linear_acceleration.x - Eacc) * sin(yaw);
+    z.at<double>(7,0) = qut.x();
+    z.at<double>(8,0) = qut.y();
+    z.at<double>(9,0) = qut.z();
+    z.at<double>(10,0) = qut.w();
 	z.at<double>(11,0) = measurement.angular_velocity.x;
 	z.at<double>(12,0) = measurement.angular_velocity.y;
 	z.at<double>(13,0) = measurement.angular_velocity.z;
@@ -162,7 +173,7 @@ void ekf::estimator()
 	this->velocity.twist.angular.y = xk.at<double>(12,0);
 	this->velocity.twist.angular.z = xk.at<double>(13,0);
 	this->velocity.header.stamp = time;
-
+    this->velocity.header.frame_id = frame_name;
 	this->estimatedPose.pose.pose.position.x = xk.at<double>(0,0);
 	this->estimatedPose.pose.pose.position.y = xk.at<double>(1,0);
 	this->estimatedPose.pose.pose.position.z = xk.at<double>(2,0);
@@ -173,13 +184,30 @@ void ekf::estimator()
 	this->estimatedPose.pose.pose.orientation.z = xk.at<double>(9,0);
 	this->estimatedPose.pose.pose.orientation.w = xk.at<double>(10,0);
 	this->estimatedPose.header.stamp = time;
-
+    this->estimatedPose.header.frame_id = frame_name;
 	this->estimatedPose.pose.covariance = boost::assign::list_of (P.at<double>(0,0)) (P.at<double>(1,0)) (P.at<double>(2,0)) (P.at<double>(5,0)) (P.at<double>(6,0)) (P.at<double>(7,0))
 								    (P.at<double>(0,1)) (P.at<double>(1,1)) (P.at<double>(2,1)) (P.at<double>(5,1)) (P.at<double>(6,1)) (P.at<double>(7,1))
 								    (P.at<double>(0,2)) (P.at<double>(1,2)) (P.at<double>(2,2)) (P.at<double>(5,2)) (P.at<double>(6,2)) (P.at<double>(7,2))
 								    (P.at<double>(0,5)) (P.at<double>(1,5)) (P.at<double>(2,5)) (P.at<double>(5,5)) (P.at<double>(6,5)) (P.at<double>(7,5))
 								    (P.at<double>(0,6)) (P.at<double>(1,6)) (P.at<double>(2,6)) (P.at<double>(5,6)) (P.at<double>(6,6)) (P.at<double>(7,6))
 								    (P.at<double>(0,7)) (P.at<double>(1,7)) (P.at<double>(2,7)) (P.at<double>(5,7)) (P.at<double>(6,7)) (P.at<double>(7,7));
+}
+
+void ekf::broadcastTF()
+{
+    static tf::TransformBroadcaster broadcaster;
+    tf::Transform transform;
+    transform.setOrigin(tf::Vector3(this->estimatedPose.pose.pose.position.x,
+                                    this->estimatedPose.pose.pose.position.y,
+                                    this->estimatedPose.pose.pose.position.z));
+    transform.setRotation(tf::Quaternion(this->estimatedPose.pose.pose.orientation.x,
+                                         this->estimatedPose.pose.pose.orientation.y,
+                                         this->estimatedPose.pose.pose.orientation.z,
+                                         this->estimatedPose.pose.pose.orientation.w));
+
+    broadcaster.sendTransform(tf::StampedTransform(transform, ros::Time::now(),
+                                                   "odom", frame_name));
+
 }
 
 void ekf::measurement_update()

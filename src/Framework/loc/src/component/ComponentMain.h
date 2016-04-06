@@ -16,6 +16,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <loc/configConfig.h>
 
+
 class RosComm;
 //class ComponentMain;
 class ComponentMain {

@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <boost/thread.hpp>
 #include "../stereo.h"
+#include <geometry_msgs/PointStamped.h>
+#include <sensor_msgs/PointCloud.h>
+
 
 #include <sensor_msgs/image_encodings.h>
 bool Mapper::camL;
@@ -19,6 +22,7 @@ Mat Mapper::camLImg, Mapper::camRImg;
 Mat stereo;
 HeightMap* Mapper::height_map;
 RosComm* Mapper::roscomm;
+//tf::TransformListener* Mapper::listener = NULL;
 
 /// walrus declares:
 Mat _lanes;
@@ -119,8 +123,74 @@ void Mapper::setLanes(Mat lanes)
 }
 
 /** Until Here**/
+//void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
+//{
+//    if(!loc_received) return;
+//    //return;
+//    static tf::TransformListener listener;
+//    lock.lock();
+//    ros::Time now = ros::Time::now();
 
+//    double incrtop = msg.angle_increment;
+//    int counter = 0;
+//    for (int ray = 0;ray < 4; ray++)
+//    {
+//        vector<float> array;
+//        double phi;
+//        if (ray == 0)
+//        {
+//            array = msg.ranges_t1;
+//            phi = msg.angle_t1;
+//        }
+//        else if (ray == 1)
+//        {
+//            array = msg.ranges_t2;
+//            phi = msg.angle_t2;
+//        }
+//        else if (ray == 2)
+//        {
+//            array = msg.ranges_b1;
+//            phi = msg.angle_b1;
+//        }
+//        else if (ray == 3)
+//        {
+//            array = msg.ranges_b2;
+//            phi = msg.angle_b2;
+//        }
+////        cout << "ray: " << ray << "   " << array.size() << " =?= " << (msg.angle_max_t - msg.angle_min_t) / msg.angle_increment << endl;
+//        sensor_msgs::PointCloud ibeo_points, base_point;
+//        ibeo_points.channels.resize(1);
+//        ibeo_points.channels[0].values.resize(array.size());
+//        ibeo_points.channels[0].name = "intensities";
+//        ibeo_points.points.resize(array.size());
+//        for(int i = 0; i < array.size(); i++)
+//        {
+//            if (array[i] == 0.0)
+//                continue;
 
+//            ibeo_points.header.frame_id = "ibeo";
+//            ibeo_points.header.stamp = ros::Time::now();
+
+//            ibeo_points.points[i].x = array[i] * sin(msg.angle_min_t + i * incrtop) * sin(phi);
+//            ibeo_points.points[i].y = array[i] * cos(msg.angle_min_t + i * incrtop) * sin(phi);
+//            ibeo_points.points[i].z = array[i] * cos(phi);
+//            ibeo_points.channels[0].values[i] = 100;
+//        }
+//        try{
+//            listener.waitForTransform("base_link", "ibeo", now, ros::Duration(15));
+//            listener.transformPointCloud("base_link", ibeo_points, base_point);
+//            counter++;
+
+//        }
+//        catch(tf::TransformException& ex){
+//            ROS_ERROR("PER: %s", ex.what());
+//        }
+//            //cout << array[i] << "," << msg.angle_min_t + i*incrtop << endl;
+
+//    }
+//    //cout << counter << endl;
+//    lock.unlock();
+//}
 
 void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
 {
