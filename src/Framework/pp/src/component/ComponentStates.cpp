@@ -140,15 +140,6 @@ public:
 };
 
 
-//void on_new_event (const cognitao::bus::Event & event, Processor & processor){
-//	cout << "on_new_event is called with " << event << endl;
-//	std::vector<cognitao::machine::Event> internal_events_array = events_bus_to_internal (event);
-//	BOOST_FOREACH ( const cognitao::machine::Event& e, internal_events_array )
-//	{
-//		processor.send_no_pub(e);
-//	}
-//}
-
 void process_machine(cognitao::machine::Machine & machine, Processor & processor){
 	while(processor.empty() == false){
 		cognitao::machine::Event e = processor.pop();
@@ -164,8 +155,6 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 			std::string current_state = e.context().tail();
 			ROS_WARN_STREAM (" Current state" << current_state);
 		}
-
-
 	}
 }
 
@@ -342,14 +331,22 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	processor.insert(p_events);
 	process_machine (current_machine, processor);
 
-
+	time_duration max_wait_duration (0, 0, 5, 0);
+	bool is_timeout = false;
 	cognitao::bus::Event event;
-	while( events.wait_and_pop(event) and ros::ok())
+	while(events.wait_and_pop_timed(event, max_wait_duration, is_timeout) or ros::ok())
 	{
+		if (is_timeout){
+			cout << "event bus timeout" << endl;
+			continue;
+		}
 		cout << "GET: " << event << endl;
 		processor.send_no_pub (event);
 		process_machine (current_machine, processor);
 	}
+
+
+
 
 
 
