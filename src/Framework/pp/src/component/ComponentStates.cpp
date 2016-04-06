@@ -31,7 +31,7 @@
 
 using namespace std;
 // OLD B
-//			using namespace decision_making;
+//using namespace decision_making;
 
 //class Params: public CallContextParameters{
 //public:
@@ -44,6 +44,7 @@ using namespace std;
 
 std::vector<cognitao::machine::Event> events_bus_to_internal (const cognitao::bus::Event& original){
 	std::vector<cognitao::machine::Event> mresult;
+	mresult.clear();
 	cognitao::events_adapter::FsmEventsAdapter fsm_adapter;
     cognitao::events_adapter::FttEventsAdapter ftt_adapter;
 	cognitao::events_adapter::EventsAdapter general_adapter;
@@ -66,6 +67,7 @@ std::vector<cognitao::bus::Event> internal_event_to_bus(const cognitao::machine:
 };
 
 typedef list<cognitao::machine::Event> LocalEventsQueue;
+
 class Processor:public cognitao::machine::EventProcessor {
 public:
 	LocalEventsQueue queue;
@@ -86,11 +88,16 @@ public:
 	}
 
 	void insert( cognitao::machine::Events& events ){
-		cout << "insert called with " << events.events().size() << endl;
 		BOOST_FOREACH(const cognitao::machine::Event& e, events.events())
 		{
 			send(e);
-			send_bus_event(e);
+		}
+	}
+
+	void insert_no_pub( cognitao::machine::Events& events ){
+		BOOST_FOREACH(const cognitao::machine::Event& e, events.events())
+		{
+			send_no_pub(e);
 		}
 	}
 
@@ -99,18 +106,30 @@ public:
 
 	virtual
 	void send(const cognitao::machine::Event& original){
-		cout << "send called with " << original.str() << endl;
-		queue.push_back(original); // add events throw RosEventQueue
-//		send_bus_event(original);
+		send_no_pub (original);
+		send_bus_event(original);
 	}
 
+	void send_no_pub(const cognitao::machine::Event& original){
+		queue.push_back(original); // add events throw RosEventQueue
+		cout << "   ADD: " << original << endl;
+	}
+
+	void send_no_pub(const cognitao::bus::Event & event){
+		std::vector<cognitao::machine::Event> internal_events_array = events_bus_to_internal (event);
+		BOOST_FOREACH ( const cognitao::machine::Event& e, internal_events_array )
+		{
+			send_no_pub(e);
+		}
+	}
+
+
 	void send_bus_event( const cognitao::machine::Event& e ){
-		cout << "send_bus_event called with " << e.str() << endl;
 		std::vector<cognitao::bus::Event> bus_events_array = internal_event_to_bus(e);
 		BOOST_FOREACH( const cognitao::bus::Event& bus_e, bus_events_array )
 		{
-			cout << "		PUB: " << bus_e << endl;
 			bus_events << bus_e;
+			cout << "      PUB: " << bus_e << endl;
 		}
 	}
 
@@ -119,21 +138,20 @@ public:
 };
 
 
-void on_new_event (const cognitao::bus::Event & event, Processor & processor){
-	cout << "on_new_event is called with " << event << endl;
-	std::vector<cognitao::machine::Event> internal_events_array = events_bus_to_internal (event);
-	BOOST_FOREACH ( const cognitao::machine::Event& e, internal_events_array )
-	{
-		processor.send(e);
-	}
-}
+//void on_new_event (const cognitao::bus::Event & event, Processor & processor){
+//	cout << "on_new_event is called with " << event << endl;
+//	std::vector<cognitao::machine::Event> internal_events_array = events_bus_to_internal (event);
+//	BOOST_FOREACH ( const cognitao::machine::Event& e, internal_events_array )
+//	{
+//		processor.send_no_pub(e);
+//	}
+//}
 
 void process_machine(cognitao::machine::Machine & machine, Processor & processor){
-	cout << "process_machine is called with " << endl;
 	while(processor.empty() == false){
 		cognitao::machine::Event e = processor.pop();
 		std::string current_event = e.str();
-		ROS_INFO_STREAM ("PROCESS EVENT: " << current_event);
+		ROS_INFO_STREAM ("PROCESS: " << current_event);
 		cognitao::machine::Events p_events;
 		machine = machine->process(e, p_events);
 		processor.insert( p_events );
@@ -303,7 +321,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 		return;
 	} // TODO change to normal loading of xml file
 
-	cognitao::machine::Context context;
+	cognitao::machine::Context context; // TODO do  need some context?
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines = parser.parse(mission_description_stream, context.str());
 
@@ -315,16 +333,19 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	cognitao::io::compiler::CompilationObjectsCollector collector;
 	cognitao::io::compiler::CompiledMachine ready_machine = compiler.compile( machines, collector );
 
+	cout << endl << endl;
+
 	cognitao::machine::Events p_events;
 	cognitao::machine::Machine current_machine = ready_machine->machine->start_instance(context, p_events);
 	processor.insert(p_events);
 	process_machine (current_machine, processor);
 
+
 	cognitao::bus::Event event;
 	while( events.wait_and_pop(event) and ros::ok())
 	{
-		cout << "EVENT_BUS GET: " << event << endl;
-		on_new_event(event, processor);
+		cout << "GET: " << event << endl;
+		processor.send_no_pub (event);
 		process_machine (current_machine, processor);
 	}
 
@@ -347,7 +368,6 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 //	Fsmpp(&context, &events);
 //	component.set_events(NULL);
 // OLD E
-	cout << "Exit from runComponent" << endl;
 	return;
 }
 
