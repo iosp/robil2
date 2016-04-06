@@ -140,7 +140,7 @@ public:
 };
 
 
-void process_machine(cognitao::machine::Machine & machine, Processor & processor){
+void process_machine(cognitao::machine::Machine & machine, Processor & processor, ComponentMain& component){
 	while(processor.empty() == false){
 		cognitao::machine::Event e = processor.pop();
 		std::string current_event = e.str();
@@ -156,6 +156,17 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 			if (context_size > 1){
 				std::string current_task = e.context()[context_size-2];
 				ROS_WARN_STREAM (" Current task: " << current_task);
+				if (current_task == "init") {
+					processor.bus_events << cognitao::bus::Event ("INIT/EndOfInit");
+				}
+				if (current_task == "ready") {
+					component.resume_navigation();
+					ROS_WARN_STREAM ("Navigation is resumed");
+				}
+				if (current_task == "standby") {
+					component.cancel_navigation();
+					ROS_WARN_STREAM ("Navigation is canceled");
+				}
 			}
 		}
 	}
@@ -349,7 +360,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	cognitao::machine::Events p_events;
 	cognitao::machine::Machine current_machine = ready_machine->machine->start_instance(context, p_events);
 	processor.insert(p_events);
-	process_machine (current_machine, processor);
+	process_machine (current_machine, processor, component);
 
 	time_duration max_wait_duration (0, 0, 5, 0);
 	bool is_timeout = false;
@@ -357,12 +368,12 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	while(events.wait_and_pop_timed(event, max_wait_duration, is_timeout) or ros::ok())
 	{
 		if (is_timeout){
-			cout << "event bus timeout" << endl;
+//			cout << "event bus timeout" << endl;
 			continue;
 		}
 		cout << "GET: " << event << endl;
 		processor.send_no_pub (event);
-		process_machine (current_machine, processor);
+		process_machine (current_machine, processor, component);
 	}
 
 
