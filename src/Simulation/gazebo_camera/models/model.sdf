@@ -60,8 +60,10 @@
         <gravity>0</gravity>
       </link>
       <static>1</static>
-      <plugin name="CameraTF" filename="libcameraTF.so">
+     
+      <!-- <plugin name="CameraTF" filename="libcameraTF.so">
       </plugin>
+      -->
     </model>
   
   

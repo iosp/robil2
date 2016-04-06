@@ -128,7 +128,7 @@ public:
         PublishMessage(_rangesT1, _rangesT2, _rangesB1, _rangesB2);
 
         _lastTime = simTime;
-        BroadcastTF();
+       // BroadcastTF();
 //         cout << (clock() - now_clock) / (float)CLOCKS_PER_SEC << endl;
     }
     

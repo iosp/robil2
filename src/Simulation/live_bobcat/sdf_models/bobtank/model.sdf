@@ -1347,6 +1347,8 @@
     <noise>0.1</noise>
     </plugin>
 
+    
+    <!--
 <plugin name='TFpublish' filename='libTFpublisher.so'>
 
 <tf1frame>gps_ins</tf1frame>
@@ -1370,9 +1372,7 @@
 
 <update_rate>20</update_rate>
 </plugin>
-
-
-
+-->
 
 </model>
 </sdf>

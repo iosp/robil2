@@ -1,7 +1,7 @@
 global_costmap:
   publish_voxel_map: false
-  global_frame: /map
-  robot_base_frame: /base_link
+  global_frame: /world
+  robot_base_frame: /odom
   update_frequency: 1.0
   publish_frequency: 1.0
   transform_tolerance: 10
