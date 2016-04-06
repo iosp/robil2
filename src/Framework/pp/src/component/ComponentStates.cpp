@@ -152,8 +152,11 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 		static const cognitao::machine::Event event_about_entry_to_state( "task_report?enter" );
 		if( event_about_entry_to_state.matches(e) )
 		{
-			std::string current_state = e.context().tail();
-			ROS_WARN_STREAM (" Current state: " << current_state);
+			size_t context_size = e.context().size();
+			if (context_size > 1){
+				std::string current_task = e.context()[context_size-2];
+				ROS_WARN_STREAM (" Current task: " << current_task);
+			}
 		}
 	}
 }
@@ -318,7 +321,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 //		return;
 //	} // TODO change to normal loading of xml file
 
-	cognitao::machine::Context context; // TODO do  need some context?
+	cognitao::machine::Context context ("path_planer"); // TODO do  need some context?
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines;
 	try{
