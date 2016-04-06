@@ -106,16 +106,17 @@ public:
 
 	virtual
 	void send(const cognitao::machine::Event& original){
-		send_no_pub (original);
+//		send_no_pub (original);
 		send_bus_event(original);
 	}
 
 	void send_no_pub(const cognitao::machine::Event& original){
 		queue.push_back(original); // add events throw RosEventQueue
-		cout << "   ADD: " << original << endl;
+		cout << "       ADD: " << original << endl;
 	}
 
 	void send_no_pub(const cognitao::bus::Event & event){
+		cout << "   CONVERT: " << event << endl;
 		std::vector<cognitao::machine::Event> internal_events_array = events_bus_to_internal (event);
 		BOOST_FOREACH ( const cognitao::machine::Event& e, internal_events_array )
 		{
@@ -125,11 +126,12 @@ public:
 
 
 	void send_bus_event( const cognitao::machine::Event& e ){
+		cout << "       CONVERT: " << e << endl;
 		std::vector<cognitao::bus::Event> bus_events_array = internal_event_to_bus(e);
 		BOOST_FOREACH( const cognitao::bus::Event& bus_e, bus_events_array )
 		{
 			bus_events << bus_e;
-			cout << "      PUB: " << bus_e << endl;
+			cout << "           PUB: " << bus_e << endl;
 		}
 	}
 
@@ -151,7 +153,7 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 	while(processor.empty() == false){
 		cognitao::machine::Event e = processor.pop();
 		std::string current_event = e.str();
-		ROS_INFO_STREAM ("PROCESS: " << current_event);
+		cout << "   PROCESS: " << current_event << endl;;
 		cognitao::machine::Events p_events;
 		machine = machine->process(e, p_events);
 		processor.insert( p_events );
