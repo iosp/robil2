@@ -6,7 +6,7 @@
 #include <math.h>
 #include <tf/tf.h>
 
-const char frame_name[10] = "odom";
+const char frame_name[10] = "ODOM";
 
 ekf::ekf() : _Egps(100),_Eimu(100)
 {
@@ -206,7 +206,7 @@ void ekf::broadcastTF()
                                          this->estimatedPose.pose.pose.orientation.w));
 
     broadcaster.sendTransform(tf::StampedTransform(transform, ros::Time::now(),
-                                                   "world", frame_name));
+                                                   "WORLD", frame_name));
 
 }
 
@@ -264,12 +264,19 @@ void ekf::setInitGPS(sensor_msgs::NavSatFix initGPS)
     this->initialGPS = initGPS;
 	gps2file(this->initialGPS.altitude,this->initialGPS.latitude,this->initialGPS.longitude);
 }
+
+
+
 void ekf::setSteeringInput(double msg){
   this->u.at<double>(0,1) = msg * 12 / 0.6 / 0.95;
 }
+
 void ekf::setThrottleInput(double msg){
   this->u.at<double>(0,0) = msg * 12;
 }
+
+
+
 void ekf::positionUpdate(geometry_msgs::PoseStamped msg)
 {
   xk.at<double>(0,0) = msg.pose.position.x;
@@ -281,6 +288,8 @@ void ekf::positionUpdate(geometry_msgs::PoseStamped msg)
   xk.at<double>(8,0) = rot2.pitch;
   xk.at<double>(9,0) = rot2.yaw;
 }
+
+
 void ekf::repairMeasurement()
 {
     z.at<double>(0,0) = xk1.at<double>(0,0);

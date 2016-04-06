@@ -14,7 +14,6 @@
 
 std::vector<tf::StampedTransform*> * ST_vec;
 
-
 tf::Transform transformBuilder(float x,float y,float z,float Roll,float Pitch,float Yaw)
 {
 	 tf::Transform transform;
@@ -34,6 +33,7 @@ void TF_Broadcast_callback(const ros::TimerEvent&)
 	 std::vector<tf::StampedTransform*>::iterator ST_it ;
 	 for (ST_it =  ST_vec->begin() ; ST_it != ST_vec->end()  ;  ST_it++ )
 	 {
+		 (**ST_it).stamp_ = ros::Time::now();
 		 br.sendTransform(**ST_it);
 	 }
 }
@@ -68,7 +68,6 @@ int main(int argc, char **argv)
     	  float Roll = strtof(argv[i*8+6], &pEnd);
     	  float Pitch = strtof(argv[i*8+7], &pEnd);
     	  float Yaw = strtof(argv[i*8+8], &pEnd);
-
 
     	  tf::StampedTransform *temp = new tf::StampedTransform(transformBuilder(x,y,z,Roll,Pitch,Yaw), ros::Time::now(), frame_id, child_frame_id);
     	  ST_vec->push_back(temp);

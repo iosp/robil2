@@ -41,7 +41,7 @@ void on_laser_reg_callback(const sensor_msgs::LaserScan::ConstPtr& m){
 void on_pose_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& m){
 	geometry_msgs::PoseStamped o;
 	o.pose = m->pose.pose;
-	o.header.frame_id="/odom";
+	o.header.frame_id="/ODOM";
 	pose_2_pub.publish(o);
 }
 void init_speed_patch(ros::NodeHandle& node){
@@ -86,14 +86,14 @@ MoveBase::~MoveBase() {
 
 void MoveBase::on_sub_loc(const geometry_msgs::PoseStamped::ConstPtr& msg){
 	geometry_msgs::PoseWithCovarianceStamped p;
-	p.header.frame_id = "/world";
+	p.header.frame_id = "/WORLD";
 	p.header.stamp = ros::Time::now();
 	p.pose.pose = msg->pose;
 	on_position_update(p);
 }
 void MoveBase::on_sub_loc_cov(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
 	geometry_msgs::PoseWithCovarianceStamped p = *msg;
-	p.header.frame_id = "/world";
+	p.header.frame_id = "/WORLD";
 	on_position_update(p);
 }
 void MoveBase::on_sub_speed(const geometry_msgs::Twist::ConstPtr& msg){
@@ -101,7 +101,7 @@ void MoveBase::on_sub_speed(const geometry_msgs::Twist::ConstPtr& msg){
 }
 void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 	geometry_msgs::TwistStamped tw;
-	tw.header.frame_id="/world";
+	tw.header.frame_id="/WORLD";
 	tw.header.stamp = ros::Time::now();
 	tw.twist = msg;
 
@@ -172,7 +172,7 @@ void MoveBase::on_position_update(const config::PP::sub::Location& msg){
 
 #include <boost/thread.hpp>
 void MoveBase::resend(){
-	ROS_INFO("Start TF structure sender(20Hz): world->map(->odom->base_link->base_link_center|->laser)");
+	//ROS_INFO("Start TF structure sender(20Hz): world->map(->odom->base_link->base_link_center|->laser)");
 	while(ros::ok and not boost::this_thread::interruption_requested()){
 		//ROS_INFO("send tf");
 		on_position_update(last_location);
@@ -276,7 +276,7 @@ void MoveBase::running (){
 			if (last_move_base_vel_ok and last_real_vel_ok){
 				// pubslish stop velocity and stop republishing
 				geometry_msgs::TwistStamped stop_vel;
-				stop_vel.header.frame_id="/world";
+				stop_vel.header.frame_id="/WORLD";
 				stop_vel.header.stamp = ros::Time::now();
 				stop_vel.twist.linear.x = 0;
 				stop_vel.twist.linear.y = 0;

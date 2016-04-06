@@ -1,6 +1,6 @@
 local_costmap:
-  global_frame: /world
-  robot_base_frame: /odom
+  global_frame: /WORLD
+  robot_base_frame: /ROBOT_CENTER
   update_frequency: 5.0
   publish_frequency: 5.0
   transform_tolerance: 10
