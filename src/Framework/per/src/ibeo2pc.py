@@ -29,7 +29,7 @@ def cb(msg=MultiLaserScan()):
             p.z = arr[i] * sin(phi)
             pc.points.append(p)
     pc.header.stamp = rospy.Time.now()
-    pc.header.frame_id = 'ibeo'
+    pc.header.frame_id = 'IBEO'
     pcpub.publish(pc)
 
 

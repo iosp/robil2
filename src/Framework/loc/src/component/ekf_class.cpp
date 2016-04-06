@@ -6,7 +6,7 @@
 #include <math.h>
 #include <tf/tf.h>
 
-const char frame_name[10] = "base_link";
+const char frame_name[10] = "odom";
 
 ekf::ekf() : _Egps(100),_Eimu(100)
 {
@@ -206,7 +206,7 @@ void ekf::broadcastTF()
                                          this->estimatedPose.pose.pose.orientation.w));
 
     broadcaster.sendTransform(tf::StampedTransform(transform, ros::Time::now(),
-                                                   "odom", frame_name));
+                                                   "world", frame_name));
 
 }
 
