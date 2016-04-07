@@ -142,22 +142,26 @@ public:
 
 void process_machine(cognitao::machine::Machine & machine, Processor & processor, ComponentMain& component){
 	while(processor.empty() == false){
-		cognitao::machine::Event e = processor.pop();
-		std::string current_event = e.str();
-		cout << "   PROCESS: " << current_event << endl;;
+		cognitao::machine::Event e_poped = processor.pop();
+		cout << "   PROCESS: " << e_poped.str() << endl;;
 		cognitao::machine::Events p_events;
-		machine = machine->process(e, p_events);
+		machine = machine->process(e_poped, p_events);
 		processor.insert( p_events );
 
 		static const cognitao::machine::Event event_about_entry_to_state( "task_report?enter" );
-		if( event_about_entry_to_state.matches(e) )
+		if( event_about_entry_to_state.matches(e_poped) )
 		{
-			size_t context_size = e.context().size();
+			size_t context_size = e_poped.context().size();
+			string current_event_context = e_poped.context().str();
 			if (context_size > 1){
-				std::string current_task = e.context()[context_size-2];
+				std::string current_task = e_poped.context()[context_size-2];
 				ROS_WARN_STREAM (" Current task: " << current_task);
+				ROS_WARN_STREAM (" Current event context: " << current_event_context);
 				if (current_task == "init") {
-					processor.bus_events << cognitao::bus::Event ("INIT/EndOfInit");
+					cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("EndOfInit"),
+													   cognitao::bus::Event::channel_t(""),
+													   cognitao::bus::Event::context_t(current_event_context));
+					processor.bus_events << ev_bus_event;
 				}
 				if (current_task == "ready") {
 					component.resume_navigation();
