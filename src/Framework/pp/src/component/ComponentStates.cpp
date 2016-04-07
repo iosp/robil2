@@ -14,17 +14,6 @@
 //			#include <decision_making/DebugModeTracker.hpp>
 // OLD E
 
-#pragma push_macro("cout")
-#undef cout
-#include <cognitao/io/compiler/Compiler.h>
-#include <cognitao/io/parser/xml/XMLParser.h>
-#include <cognitao/io/compiler/fsm/FsmBuilder.h>
-#include <cognitao/io/compiler/ftt/FttBuilder.h>
-#include <cognitao/bus/ros_events_bus.h>
-#include <cognitao/events_adapter/FsmEventsAdapter.h>
-#include <cognitao/events_adapter/FttEventsAdapter.h>
-#pragma pop_macro("cout")
-
 
 
 
@@ -322,6 +311,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	ros::NodeHandle node;
 	cognitao::bus::RosEventQueue events(node, NULL, 1000, "/pp/event_bus/events");
 
+	component.set_events(&events);
 
 	std::stringstream mission_description_stream;
 	mission_description_stream	<< "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << endl

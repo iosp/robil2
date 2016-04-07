@@ -65,31 +65,35 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 }
 
 #include <decision_making/ROSTask.h>
-void ComponentMain::set_events(decision_making::EventQueue* events){
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
 	boost::mutex::scoped_lock l(_mt);
 	_events = events;
 }
 void ComponentMain::rise_taskFinished(){
 	boost::mutex::scoped_lock l(_mt);
 	if(not _events) return;
-	_events->raiseEvent("/CompleteTask");
+	_events->operator <<(cognitao::bus::Event ("/CompleteTask"));
+//	_events->raiseEvent("/CompleteTask");
 	//_events->raiseEvent("/pp/Standby");
 }
 void ComponentMain::rise_taskAborted(){
 	boost::mutex::scoped_lock l(_mt);
 	if(not _events) return;
-	_events->raiseEvent("/AbortTask");
+	_events->operator <<(cognitao::bus::Event ("/AbortTask"));
+//	_events->raiseEvent("/AbortTask");
 	//_events->raiseEvent("/pp/Standby");
 }
 void ComponentMain::rise_taskStarted(){
 	boost::mutex::scoped_lock l(_mt);
 	if(not _events) return;
-	_events->raiseEvent("/TaskIsStarted");
+	_events->operator <<(cognitao::bus::Event ("/TaskIsStarted"));
+//	_events->raiseEvent("/TaskIsStarted");
 }
 void ComponentMain::rise_taskPaused(){
 	boost::mutex::scoped_lock l(_mt);
 	if(not _events) return;
-	_events->raiseEvent("/TaskIsPaused");
+	_events->operator <<(cognitao::bus::Event ("/TaskIsPaused"));
+//	_events->raiseEvent("/TaskIsPaused");
 }
 
 void ComponentMain::cancel_navigation(){

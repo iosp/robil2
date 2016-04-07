@@ -10,13 +10,28 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+
+#pragma push_macro("cout")
+#undef cout
+#include <cognitao/io/compiler/Compiler.h>
+#include <cognitao/io/parser/xml/XMLParser.h>
+#include <cognitao/io/compiler/fsm/FsmBuilder.h>
+#include <cognitao/io/compiler/ftt/FttBuilder.h>
+#include <cognitao/bus/ros_events_bus.h>
+#include <cognitao/events_adapter/FsmEventsAdapter.h>
+#include <cognitao/events_adapter/FttEventsAdapter.h>
+#pragma pop_macro("cout")
+
+
+
 class RosComm;
 class MoveBase;
-namespace decision_making{ class EventQueue; }
+//namespace decision_making{ class EventQueue; }
 class ComponentMain {
 	RosComm* _roscomm;
 	MoveBase* _move_base;
-	decision_making::EventQueue* _events;
+	cognitao::bus::RosEventQueue* _events;
+//	decision_making::EventQueue* _events;
 	boost::mutex _mt;
 public:
 	ComponentMain(int argc,char** argv);
@@ -31,7 +46,7 @@ public:
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 
-	void set_events(decision_making::EventQueue* events);
+	void set_events(cognitao::bus::RosEventQueue* events);
 	void rise_taskFinished();
 	void rise_taskAborted();
 	void rise_taskStarted();
