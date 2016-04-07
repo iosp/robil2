@@ -5,8 +5,8 @@
 			<tasks>
 
 				<task id="OFF">
-					<reaction on_event="/Activation" target="ON" />
-					<reaction on_event="/pp/Activation" target="ON" />
+					<reaction on_event="?/Activation" target="ON" />
+					<reaction on_event="?/pp/Activation" target="ON" />
 				</task>    
        
 				<task id="ON">
@@ -14,7 +14,7 @@
 						<tasks>
 
 							<task id="INIT">
-								<reaction on_event="?EndOfInit" target="WORK" />
+								<reaction on_event="?INIT/EndOfInit" target="WORK" />
 							</task>           
 							
 							<task id="WORK">
@@ -22,11 +22,11 @@
 									<tasks>
 
 										<task id="STANDBY">
-											<reaction on_event="/pp/Resume" target="READY" />
+											<reaction on_event="?/pp/Resume" target="READY" />
 										</task>
 
 										<task id="READY">
-											<reaction on_event="/pp/Standby" target="STANDBY" />
+											<reaction on_event="?/pp/Standby" target="STANDBY" />
 										</task>            
 										
 									</tasks>
@@ -40,8 +40,8 @@
 							<start>INIT</start>
 						</ftt>
 					</machine>
-					<reaction on_event="/Shutdown" target="OFF" />
-					<reaction on_event="/pp/Shutdown" target="OFF" />
+					<reaction on_event="?/Shutdown" target="OFF" />
+					<reaction on_event="?/pp/Shutdown" target="OFF" />
 				</task>
 				
 			</tasks>

@@ -112,11 +112,11 @@ public:
 
 	void send_no_pub(const cognitao::machine::Event& original){
 		queue.push_back(original); // add events throw RosEventQueue
-		cout << "       ADD: " << original << endl;
+		cout << "           ADD: " << original << endl;
 	}
 
 	void send_no_pub(const cognitao::bus::Event & event){
-		cout << "   CONVERT: " << event << endl;
+		cout << "       CONVERT: " << event << endl;
 		std::vector<cognitao::machine::Event> internal_events_array = events_bus_to_internal (event);
 		BOOST_FOREACH ( const cognitao::machine::Event& e, internal_events_array )
 		{
@@ -143,7 +143,7 @@ public:
 void process_machine(cognitao::machine::Machine & machine, Processor & processor, ComponentMain& component){
 	while(processor.empty() == false){
 		cognitao::machine::Event e_poped = processor.pop();
-		cout << "   PROCESS: " << e_poped.str() << endl;;
+		cout << "       PROCESS: " << e_poped.str() << endl;;
 		cognitao::machine::Events p_events;
 		machine = machine->process(e_poped, p_events);
 		processor.insert( p_events );
@@ -158,7 +158,7 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 				ROS_WARN_STREAM (" Current task: " << current_task);
 				ROS_WARN_STREAM (" Current event context: " << current_event_context);
 				if (current_task == "init") {
-					cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("EndOfInit"),
+					cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("INIT/EndOfInit"),
 													   cognitao::bus::Event::channel_t(""),
 													   cognitao::bus::Event::context_t(current_event_context));
 					processor.bus_events << ev_bus_event;
