@@ -10,6 +10,18 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+
+#pragma push_macro("cout")
+#undef cout
+#include <cognitao/io/compiler/Compiler.h>
+#include <cognitao/io/parser/xml/XMLParser.h>
+#include <cognitao/io/compiler/fsm/FsmBuilder.h>
+#include <cognitao/io/compiler/ftt/FttBuilder.h>
+#include <cognitao/bus/ros_events_bus.h>
+#include <cognitao/events_adapter/FsmEventsAdapter.h>
+#include <cognitao/events_adapter/FttEventsAdapter.h>
+#pragma pop_macro("cout")
+
 class RosComm;
 class MoveBase;
 class ComponentMain {
