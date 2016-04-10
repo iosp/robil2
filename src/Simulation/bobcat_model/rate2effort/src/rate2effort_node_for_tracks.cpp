@@ -78,7 +78,7 @@ void StCallback	(const std_msgs::Float64ConstPtr &msg)
 {
 	e_stop = ros::Time::now();
 	geometry_msgs::Twist::ConstPtr pub;
-	wheels->angular.x = msg->data ;
+	wheels->angular.x = -msg->data ;
 	pub = wheels;
 	wheelsCallback(pub);
 }
