@@ -145,19 +145,21 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 			if (context_size > 1){
 				std::string current_task = e_poped.context()[context_size-2];
 				ROS_WARN_STREAM (" Current task: " << current_task);
-				ROS_WARN_STREAM (" Current event context: " << current_event_context);
+				ROS_INFO_STREAM (" Current event context: " << current_event_context);
 				if (current_task == "init") {
-					cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("INIT/EndOfInit"),
+					cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("EndOfInit"),
 													   cognitao::bus::Event::channel_t(""),
 													   cognitao::bus::Event::context_t(current_event_context));
 					processor.bus_events << ev_bus_event;
 				}
 				if (current_task == "ready") {
 					component.resume_navigation();
+					component.rise_taskStarted();
 					ROS_WARN_STREAM ("Navigation is resumed");
 				}
 				if (current_task == "standby") {
 					component.cancel_navigation();
+					component.rise_taskPaused();
 					ROS_WARN_STREAM ("Navigation is canceled");
 				}
 			}

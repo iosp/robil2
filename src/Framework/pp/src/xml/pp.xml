@@ -14,7 +14,7 @@
 						<tasks>
 
 							<task id="INIT">
-								<reaction on_event="?INIT/EndOfInit" target="WORK" />
+								<reaction on_event="?/EndOfInit" target="WORK" />
 							</task>           
 							
 							<task id="WORK">
