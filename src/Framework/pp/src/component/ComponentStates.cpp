@@ -52,7 +52,7 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 				ROS_WARN_STREAM (" Current task: " << current_task);
 				ROS_INFO_STREAM (" Current event context: " << current_event_context);
 				if (current_task == "init") {
-					cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("EndOfInit"),
+					cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("pp/EndOfInit"),
 													   cognitao::bus::Event::channel_t(""),
 													   cognitao::bus::Event::context_t(current_event_context));
 					processor.bus_events << ev_bus_event;
@@ -199,7 +199,7 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros::NodeHandle node;
-	cognitao::bus::RosEventQueue events(node, NULL, 1000, "/pp/event_bus/events");
+	cognitao::bus::RosEventQueue events(node, NULL, 1000, "/robil/event_bus/events");
 
 	component.set_events(&events);
 
@@ -253,6 +253,10 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 			continue;
 		}
 		cout << "GET: " << event << endl;
+		if (event.context().str().find(context.str()) != 0) {
+			cout << "\033[1;31m SKIP event from other node \033[0m\n";
+			continue;
+		}
 		processor.send_no_pub (event);
 		process_machine (current_machine, processor, component);
 	}

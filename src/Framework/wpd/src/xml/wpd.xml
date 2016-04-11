@@ -5,7 +5,6 @@
 			<tasks>
 
 				<task id="OFF">
-					<reaction on_event="?/Activation" target="ON" />
 					<reaction on_event="?/wpd/Activation" target="ON" />
 				</task>    
        
@@ -14,7 +13,7 @@
 						<tasks>
 
 							<task id="INIT">
-								<reaction on_event="?/EndOfInit" target="WORK" />
+								<reaction on_event="?/wpd/EndOfInit" target="WORK" />
 							</task>           
 							
 							<task id="WORK">
@@ -40,7 +39,6 @@
 							<start>INIT</start>
 						</ftt>
 					</machine>
-					<reaction on_event="?/Shutdown" target="OFF" />
 					<reaction on_event="?/wpd/Shutdown" target="OFF" />
 				</task>
 				
