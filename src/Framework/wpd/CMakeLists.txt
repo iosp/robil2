@@ -34,6 +34,7 @@ add_library(wpd_rosComm
 )
 add_library(wpd_compMain
   src/component/ComponentMain.cpp
+  src/cognitao_v2/cognitao_v2.cpp
   src/component/ComponentStates.cpp
   src/component/TwistRetranslator.cpp
   src/component/MoveBase.cpp

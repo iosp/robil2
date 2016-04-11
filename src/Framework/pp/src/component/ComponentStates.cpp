@@ -31,102 +31,7 @@ using namespace std;
 // OLD E
 
 
-std::vector<cognitao::machine::Event> events_bus_to_internal (const cognitao::bus::Event& original){
-	std::vector<cognitao::machine::Event> mresult;
-	mresult.clear();
-	cognitao::events_adapter::FsmEventsAdapter fsm_adapter;
-    cognitao::events_adapter::FttEventsAdapter ftt_adapter;
-	cognitao::events_adapter::EventsAdapter general_adapter;
-	general_adapter.on_bus_event( original, mresult );
-	fsm_adapter.on_bus_event( original, mresult );
-    ftt_adapter.on_bus_event( original, mresult );
-    return mresult;
-}
 
-std::vector<cognitao::bus::Event> internal_event_to_bus(const cognitao::machine::Event& original){
-	std::vector<cognitao::bus::Event> bresult;
-	bresult.clear();
-	cognitao::events_adapter::FsmEventsAdapter fsm_adapter;
-	cognitao::events_adapter::FttEventsAdapter ftt_adapter;
-	cognitao::events_adapter::EventsAdapter general_adapter;
-	general_adapter.on_machine_event( original, bresult );
-	fsm_adapter.on_machine_event( original, bresult );
-	ftt_adapter.on_machine_event( original, bresult );
-	return bresult;
-};
-
-typedef list<cognitao::machine::Event> LocalEventsQueue;
-
-class Processor:public cognitao::machine::EventProcessor {
-public:
-	LocalEventsQueue queue;
-	cognitao::bus::EventRiser& bus_events;
-
-	Processor (cognitao::bus::EventRiser& events):bus_events(events){}
-
-	virtual ~Processor(){};
-
-	bool empty()const{
-		return queue.empty();
-	}
-
-	cognitao::machine::Event pop(){
-		cognitao::machine::Event e = queue.front();
-		queue.pop_front();
-		return e;
-	}
-
-	void insert( cognitao::machine::Events& events ){
-		BOOST_FOREACH(const cognitao::machine::Event& e, events.events())
-		{
-			send(e);
-		}
-	}
-
-	void insert_no_pub( cognitao::machine::Events& events ){
-		BOOST_FOREACH(const cognitao::machine::Event& e, events.events())
-		{
-			send_no_pub(e);
-		}
-	}
-
-	virtual
-	void on_match(const cognitao::machine::Event& original, const cognitao::machine::Event& stranger){};
-
-	virtual
-	void send(const cognitao::machine::Event& original){
-//		send_no_pub (original);
-		send_bus_event(original);
-	}
-
-	void send_no_pub(const cognitao::machine::Event& original){
-		queue.push_back(original); // add events throw RosEventQueue
-		cout << "           ADD: " << original << endl;
-	}
-
-	void send_no_pub(const cognitao::bus::Event & event){
-		cout << "       CONVERT: " << event << endl;
-		std::vector<cognitao::machine::Event> internal_events_array = events_bus_to_internal (event);
-		BOOST_FOREACH ( const cognitao::machine::Event& e, internal_events_array )
-		{
-			send_no_pub(e);
-		}
-	}
-
-
-	void send_bus_event( const cognitao::machine::Event& e ){
-		cout << "       CONVERT: " << e << endl;
-		std::vector<cognitao::bus::Event> bus_events_array = internal_event_to_bus(e);
-		BOOST_FOREACH( const cognitao::bus::Event& bus_e, bus_events_array )
-		{
-			bus_events << bus_e;
-			cout << "           PUB: " << bus_e << endl;
-		}
-	}
-
-	virtual
-	void on_private(const cognitao::machine::Event& original){}
-};
 
 
 void process_machine(cognitao::machine::Machine & machine, Processor & processor, ComponentMain& component){
@@ -290,23 +195,6 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 //}
 // OLD E
 
-bool load_from_file (std::string full_filename, std::stringstream & xml_file){
-	string line;
-	ifstream myfile (full_filename.c_str());
-	if (myfile.is_open()){
-		while ( getline (myfile,line) ){
-			xml_file << line << '\n';
-		}
-		myfile.close();
-	} else {
-		ROS_ERROR_STREAM ("Error while openning the file " << myfile);
-		return false;
-	}
-	return true;
-}
-
-
-
 
 void runComponent(int argc, char** argv, ComponentMain& component){
 
@@ -324,9 +212,6 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 								<< "	</machines>" << endl
 								<< "</tao>" << endl;
 
-//	if (not load_from_file("/home/misha/workspaces/robil_workspace/robil2/src/Framework/pp/src/xml/pp.xml", mission_description_stream)){
-//		return;
-//	} // TODO change to normal loading of xml file
 
 	cognitao::machine::Context context ("path_planer"); // TODO do  need some context?
 	cognitao::io::parser::xml::XMLParser parser;
