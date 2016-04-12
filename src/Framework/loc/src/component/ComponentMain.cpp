@@ -7,23 +7,45 @@
  */
 #include "ComponentMain.h"
 #include "boost/bind.hpp"
-#include "../roscomm/RosComm.h"
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+#include "ParameterHandler.h"
+#include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
 #include "userHeader.h"
 
 
 
 ComponentMain *ComponentMain::_this;
 
-ComponentMain::ComponentMain(int argc,char** argv)
+ComponentMain::ComponentMain(int argc,char** argv)	: _inited(init(argc, argv))
 {
-	_roscomm = new RosComm(this,argc, argv);
+	_sub_PositionUpdate=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","PositionUpdate","sub"), 10, &ComponentMain::handlePositionUpdate,this));
+	_sub_GPS=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","GPS","sub"), 10, &ComponentMain::handleGPS,this));
+	_sub_INS=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","INS","sub"), 10, &ComponentMain::handleINS,this));
+	_sub_VOOdometry=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","VOOdometry","sub"), 10, &ComponentMain::handleVOOdometry,this));
+	_sub_GpsSpeed=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","PerGpsSpeed","sub"), 10, &ComponentMain::handleGpsSpeed,this));
+	_pub_Location=ros::Publisher(_nh.advertise<config::LOC::pub::Location>(fetchParam(&_nh,"LOC","Location","pub"),10));
+	_pub_PerVelocity=ros::Publisher(_nh.advertise<config::LOC::pub::PerVelocity>(fetchParam(&_nh,"LOC","PerVelocity","pub"),10));
+	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
+	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
+
 	ComponentMain::_this = this;
 	_estimation_thread = new boost::thread(&ComponentMain::performEstimation);
 }
 ComponentMain::~ComponentMain() {
-	if(_roscomm) delete _roscomm; _roscomm=0;
+
 	_estimation_thread->interrupt();
 	delete _estimation_thread;
+}
+
+bool ComponentMain::init(int argc,char** argv){
+	ros::init(argc,argv,"LOC_node");
+	return true;
 }
 
 void ComponentMain::performEstimation()
@@ -109,26 +131,52 @@ void ComponentMain::handleGpsSpeed(const config::LOC::sub::PerGpsSpeed& msg)
 
 void ComponentMain::publishLocation(config::LOC::pub::Location& msg)
 {
-	_roscomm->publishLocation(msg);
+	_pub_Location.publish(msg);
 }
 	
 
 void ComponentMain::publishPerVelocity(config::LOC::pub::PerVelocity& msg)
 {
-	_roscomm->publishPerVelocity(msg);
+	_pub_PerVelocity.publish(msg);
 }
 	
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
-	_roscomm->publishTransform(_tf, srcFrame, distFrame);
+	static tf::TransformBroadcaster br;
+	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));
 }
-tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::string distFrame){
-	return _roscomm->getLastTrasform(srcFrame, distFrame);
+tf::StampedTransform ComponentMain::getLastTransform(std::string srcFrame, std::string distFrame){
+	tf::StampedTransform _tf;
+	static tf::TransformListener listener;
+	try {
+	    listener.waitForTransform(distFrame, srcFrame, ros::Time(0), ros::Duration(10.0) );
+	    listener.lookupTransform(distFrame, srcFrame, ros::Time(0), _tf);
+	} catch (tf::TransformException& ex) {
+	    ROS_ERROR("%s",ex.what());
+	}
+	return _tf;
 }
 void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report){
-	_roscomm->publishDiagnostic(_report);
+	diagnostic_msgs::DiagnosticArray msg;
+	msg.status.push_back(_report);
+	_pub_diagnostic.publish(msg);
 }
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
-	_roscomm->publishDiagnostic(header, _report);
+	diagnostic_msgs::DiagnosticArray msg;
+	msg.header = header;
+	msg.status.push_back(_report);
+	_pub_diagnostic.publish(msg);
+}
+void ComponentMain::heartbeat(){
+	using namespace boost::posix_time;
+	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);
+	double hz = HEARTBEAT_FREQUANCY;
+	while(ros::ok()){
+		boost::system_time stop_time = boost::get_system_time() + milliseconds((1/hz)*1000);
+		std_msgs::String msg;
+		msg.data = "LOC";
+		_pub.publish(msg);
+	    boost::this_thread::sleep(stop_time);
+	}
 }
 void ComponentMain::setSteeringInput(double msg)
 {
