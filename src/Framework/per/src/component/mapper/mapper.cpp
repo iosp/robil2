@@ -21,7 +21,9 @@ Quaternion Mapper::myQuat;
 Mat Mapper::camLImg, Mapper::camRImg;
 Mat stereo;
 HeightMap* Mapper::height_map;
-RosComm* Mapper::roscomm;
+//RosComm* Mapper::roscomm;
+ComponentMain* Mapper::component;
+
 //tf::TransformListener* Mapper::listener = NULL;
 
 /// walrus declares:
@@ -414,7 +416,7 @@ void Mapper::publishMap()
             msg.data[j*150+i].type = types[j*150+i];
             msg.data[j*150+i].feature = features[j*150+i];
         }
-    roscomm->publishMap(msg);
+    component->publishMap(msg);
 
 }
 
@@ -454,7 +456,7 @@ void Mapper::publishMiniMap()
             msg.data[j*30+i].type = types[j*30+i];
             msg.data[j*30+i].feature = features[j*30+i];
         }
-    roscomm->publishMiniMap(msg);
+    component->publishMiniMap(msg);
 
 }
 
