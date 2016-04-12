@@ -24,7 +24,7 @@ void markersTimerCallBack (const ros::TimerEvent&)
     
     visualization_msgs::Marker marker;
     // Set the frame ID and timestamp.  See the TF tutorials for information on these.
-    marker.header.frame_id = "world";
+    marker.header.frame_id = "WORLD";
     marker.header.stamp = ros::Time::now();
     int i;
     // Set the namespace and id for this marker.  This serves to create a unique ID
