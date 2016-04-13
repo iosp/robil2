@@ -20,9 +20,9 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 ## Declare a cpp library
-add_library(smme_rosComm
-  src/roscomm/RosComm.cpp
-)
+#add_library(smme_rosComm
+#  src/roscomm/RosComm.cpp
+#)
 add_library(smme_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
@@ -34,9 +34,9 @@ add_library(smme_compMain
   src/component/PathRecorder.cpp
 )
 add_executable(smme_node src/main.cpp)
-target_link_libraries(smme_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+#target_link_libraries(smme_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(smme_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(smme_node smme_compMain smme_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(smme_node smme_compMain  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 add_executable(fsm_component_tester src/tester/FsmComponentTester.cpp)
 target_link_libraries(fsm_component_tester ${catkin_LIBRARIES} ${Boost_LIBRARIES})

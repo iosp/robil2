@@ -14,12 +14,31 @@
 #include <set>
 #include "LocationSet.h"
 
-class RosComm;
+#include <ros/ros.h>
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+
 class MissionManager;
 namespace decision_making{ class EventQueue; }
 
 class ComponentMain {
-	RosComm* _roscomm;
+	bool _inited;
+	  ComponentMain   * _comp;
+	  ros::NodeHandle _nh;
+	  ros::Publisher _pub_diagnostic;
+	  boost::thread_group _maintains;
+		ros::Subscriber _sub_AssignNavTask;
+		ros::Subscriber _sub_AssignManTask;
+		ros::Subscriber _sub_AssignMission;
+		ros::Subscriber _sub_BladePosition;
+		ros::Subscriber _sub_Location;
+		ros::Subscriber _sub_IEDLocation;
+		ros::Publisher  _pub_GlobalPath;
+		ros::Publisher  _pub_WorkSeqData;
+		ros::Publisher  _pub_MissionAcceptance;
+
+	  bool init(int argc,char** argv);
 	MissionManager* _mission_manager;
 	boost::thread_group threads;
 	decision_making::EventQueue* _events;
@@ -37,9 +56,10 @@ public:
 	void publishWorkSeqData(config::SMME::pub::WorkSeqData& msg);
 	void publishMissionAcceptance(config::SMME::pub::MissionAcceptance& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void heartbeat();
 
 	MissionManager * const mission_manager(){return _mission_manager;}
 
