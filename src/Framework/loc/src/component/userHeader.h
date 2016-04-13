@@ -25,8 +25,8 @@
  *
  */
 
-#define _init_latitude 31.2622 //_init_latitue - Recommended for debugging mode - end value of -1 to turn off
-#define _init_longitude 34.803611 //_init_longitude - Recommended for debugging mode - end value of -1 to turn off
+#define _init_latitude -1 //_init_latitue - Recommended for debugging mode - end value of -1 to turn off
+#define _init_longitude -1 //_init_longitude - Recommended for debugging mode - end value of -1 to turn off
 /* Initial position
  * In the case that noise is added, 100 reading of the GPS and IMU are taken to estimate the initial position of the vehicle for gazebo reference.
  * In any case the mean of the latitude and longitude received from the GPS will not be identical to the true location of the vehicle. This will lead to a constant bias error.

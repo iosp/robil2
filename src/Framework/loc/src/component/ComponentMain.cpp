@@ -37,7 +37,10 @@ void ComponentMain::performEstimation()
         {
             if (_this->dyn_conf.init)
             {
-                _this->_estimator.calibrate(_this->dyn_conf.calMeas);
+                if (_this->dyn_conf.calMeas > 100)
+                    _this->_estimator.calibrate(10);
+                else
+                    _this->_estimator.calibrate(_this->dyn_conf.calMeas);
                 _this->dyn_conf.init= false;
             }
 			/* Perform the estimatior process*/

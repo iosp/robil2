@@ -8,7 +8,7 @@
 
 const char frame_name[10] = "ODOM";
 
-ekf::ekf() : _Egps(100),_Eimu(100)
+ekf::ekf() : _Egps(20),_Eimu(20)
 {
 	//ros::param::set("/LOC/Ready",0); 
 	_ready = 0;
@@ -34,6 +34,7 @@ ekf::ekf() : _Egps(100),_Eimu(100)
 
 	this->gas_pedal_state = 0;
 	this->last_pose = this->estimatedPose;
+    this->calibrate(20);
 }
 
 ekf::~ekf()
