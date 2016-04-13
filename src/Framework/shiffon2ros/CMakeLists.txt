@@ -20,9 +20,9 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 ## Declare a cpp library
-add_library(shiffon2ros_rosComm
-  src/roscomm/RosComm.cpp
-)
+#add_library(shiffon2ros_rosComm
+#  src/roscomm/RosComm.cpp
+#)
 add_library(shiffon2ros_Ctrl
   src/Shiphon_IO/Shiphon_IO.cpp
   src/Shiphon_IO/ShareUtil.cpp
@@ -33,8 +33,8 @@ add_library(shiffon2ros_compMain
   src/component/ComponentStates.cpp
 )
 add_executable(shiffon2ros_node src/main.cpp)
-target_link_libraries(shiffon2ros_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+#target_link_libraries(shiffon2ros_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(shiffon2ros_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(shiffon2ros_node shiffon2ros_compMain shiffon2ros_rosComm shiffon2ros_Ctrl ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(shiffon2ros_node shiffon2ros_compMain shiffon2ros_Ctrl ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
 
