@@ -298,7 +298,7 @@ const int N = 1000 ;
 					Q3[0] = COMPONENT_LINK->jointStates->position[supporterStatesIndex] ;
 					loader[0] = COMPONENT_LINK->jointStates->position[loaderStatesIndex];
 					des_hight = value ;
-					body2loaderCurrent = COMPONENT_LINK->getLastTrasform("loader", "body");
+					body2loaderCurrent = COMPONENT_LINK->getLastTransform("loader", "body");
 					body2loaderCurrent.getBasis().getRPY(initialRPY[0],initialRPY[1],initialRPY[2],1);
 					H[0] = body2loaderCurrent.getOrigin().z();
 					des_pitch = initialRPY[1];
@@ -376,7 +376,7 @@ int WsmTask::handle_type_2()
 
 			/* David -  inv_kinematics */
 			double loader[N] ;
-			body2loaderInit = COMPONENT_LINK->getLastTrasform("loader" , "body");
+			body2loaderInit = COMPONENT_LINK->getLastTransform("loader" , "body");
 			body2loaderInit.getBasis().getRPY(type2rpy[0],type2rpy[1],type2rpy[2],1);
 			ROS_INFO("The Calculated pitch is: %f",type2rpy[1]);
 			double dpitch = (targetJointAngle - type2rpy[1])/N;
@@ -689,7 +689,7 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 
 	R_WB = InverseKinematics::getRotMatrix(COMPONENT_LINK->receivedLocation);
 
-	test = COMPONENT_LINK->getLastTrasform("loader","body");
+	test = COMPONENT_LINK->getLastTransform("loader","body");
 
 	geometry_msgs::PoseWithCovarianceStamped *q = new geometry_msgs::PoseWithCovarianceStamped ;
 
@@ -851,7 +851,7 @@ while(loop_on){
 	 double g_max = 0; double cur_h = 0 ; double set_point = 0; double delta = 0; double blade_height = 0;int supporterStatesIndex = 0, loaderStatesIndex = 0;
 
 		/* Calc error signal */
-		body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
+		body2loader = COMPONENT_LINK->getLastTransform("loader","body");
 		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
 		body2loader.getBasis().getRPY(RPY[0],RPY[1],RPY[2],1);
 		Map_pixel = deriveMapPixel(body2loader);
@@ -883,7 +883,7 @@ while(loop_on){
 while(loop_on){
 	try{
 		/* Calc error signal */
-		body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
+		body2loader = COMPONENT_LINK->getLastTransform("loader","body");
 		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
 
 		Map_pixel = deriveMapPixel(body2loader);
@@ -957,7 +957,7 @@ catch(boost::thread_interrupted const&)
 	 double g_max = 0; double cur_h = 0 ; double set_point = 0; double delta = 0; double blade_height = 0; int supporterStatesIndex = 0, loaderStatesIndex = 0;
 
 		/* Calc error signal */
-		body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
+		body2loader = COMPONENT_LINK->getLastTransform("loader","body");
 		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
 		body2loader.getBasis().getRPY(RPY[0],RPY[1],RPY[2],1);
 		Map_pixel = deriveMapPixel(body2loader);
@@ -991,7 +991,7 @@ catch(boost::thread_interrupted const&)
 while(loop_on){
 //	try{
 		/* Calc error signal */
-		body2loader = COMPONENT_LINK->getLastTrasform("loader","body");
+		body2loader = COMPONENT_LINK->getLastTransform("loader","body");
 		//ROS_INFO("Blade position is:[%g , %g , %g]", body2loader.getOrigin().x(),body2loader.getOrigin().y(), body2loader.getOrigin().z() + 0.28);
 
 		Map_pixel = deriveMapPixel(body2loader);
