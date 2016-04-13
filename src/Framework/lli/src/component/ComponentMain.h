@@ -18,7 +18,11 @@
 #include <boost/thread.hpp>
 #include <pthread.h>
 
-class RosComm;
+#include <ros/ros.h>
+
+#include <iostream>     // std::cout
+#include <sstream>
+
 typedef enum { State_Off = 0, State_Init, State_Standby, State_Wait_Response, State_Ready } CS_STATE;
 /***********************************
  * General Explanation
@@ -53,6 +57,7 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void heartbeat();
 
 
     void setReady();
@@ -66,7 +71,16 @@ public:
     void releaseDriverAndManipulator();
 
 private:
-	RosComm*    _roscomm;
+    bool _inited;
+      ros::NodeHandle _nh;
+      ros::Publisher _pub_diagnostic;
+      boost::thread_group _maintains;
+    	ros::Subscriber _sub_EffortsTh;
+    	ros::Subscriber _sub_EffortsSt;
+    	ros::Subscriber _sub_EffortsJn;
+
+
+      bool init(int argc,char** argv);
 	boost::thread* _driver_thread;
 	CLLI_Ctrl *_clli;
 	static ComponentMain *_this;
