@@ -7,6 +7,8 @@
 #include "ComponentStates.h"
 #include "TwistRetranslator.h"
 
+#define DELETE(X) if(X != NULL){delete X; X=NULL;}
+
 // don't need: too OLD
 //#include <decision_making/BT.h>
 //#include <decision_making/FSM.h>
@@ -27,6 +29,21 @@ using namespace std;
 
 
 
+class TaskReady {
+private:
+	TwistRetranslator* translator_ptr;
+public:
+	TaskReady (ComponentMain* comp)
+	: translator_ptr (new TwistRetranslator (comp))
+	{
+	}
+	~TaskReady (){
+		delete translator_ptr;
+		translator_ptr = NULL;
+	}
+};
+TaskReady * task_ready_ptr;
+
 void process_machine(cognitao::machine::Machine & machine, Processor & processor, ComponentMain& component){
 	while(processor.empty() == false){
 		cognitao::machine::Event e_poped = processor.pop();
@@ -44,17 +61,22 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 				std::string current_task = e_poped.context()[context_size-2];
 				ROS_WARN_STREAM (" Current task: " << current_task);
 				ROS_INFO_STREAM (" Current event context: " << current_event_context);
+
+				if (current_task == "ready") {
+					if (task_ready_ptr == NULL) task_ready_ptr = new TaskReady (&component);
+				}
+
 				if (current_task == "init") {
+					DELETE(task_ready_ptr)
 					cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("wpd/EndOfInit"),
 													   cognitao::bus::Event::channel_t(""),
 													   cognitao::bus::Event::context_t(current_event_context));
 					processor.bus_events << ev_bus_event;
 				}
-				if (current_task == "ready") {
-					TwistRetranslator translator(&component);
-				}
+
+
 				if (current_task == "standby") {
-					// do smth
+					DELETE(task_ready_ptr)
 				}
 			}
 		}
@@ -181,6 +203,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros::NodeHandle node;
 	cognitao::bus::RosEventQueue events(node, NULL, 1000, "/robil/event_bus/events");
+	task_ready_ptr = NULL;
 
 	std::stringstream mission_description_stream;
 	mission_description_stream	<< "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << endl
