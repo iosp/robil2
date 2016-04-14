@@ -9,6 +9,14 @@
 #include "ros/time.h"
 #include "tf/LinearMath/Matrix3x3.h"
 
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+#include "ParameterHandler.h"
+#include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
 
 const double PI = 3.14159;
 const double MILS_2_DEG = 0.056250000; // (360/6400)
@@ -18,8 +26,15 @@ const double PI_2_DEG = 180; //
 
 
 ComponentMain::ComponentMain(int argc,char** argv)
+: _inited(init(argc, argv))
 {
-	_roscomm = new RosComm(this,argc, argv);
+	_pub_GPS=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GPS>(fetchParam(&_nh,"SHIFFON2ROS","GPS","pub"),10));
+	_pub_INS=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::INS>(fetchParam(&_nh,"SHIFFON2ROS","INS","pub"),10));
+	_pub_INS2=ros::Publisher(_nh.advertise<std_msgs::Float64>("SENSORS/INSSPEED",10));
+	_pub_GpsSpeed=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GpsSpeed>(fetchParam(&_nh,"SHIFFON2ROS","GpsSpeed","pub"),10));
+	_pub_GpsSpeed2=ros::Publisher(_nh.advertise<std_msgs::Float64>("SENSORS/GPSSPEED2",10));
+	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
+	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 }
 
 
@@ -44,6 +59,11 @@ ComponentMain::~ComponentMain() {
 	//if(_roscomm) delete _roscomm; _roscomm=0;
 }
 
+bool ComponentMain::init(int argc,char** argv){
+	ros::init(argc,argv,"SHIFFON2ROS_node");
+	return true;
+}
+
 void ComponentMain::ReadAndPub_ShiphonGPS(){
 	config::SHIFFON2ROS::pub::GPS GPS_msg;
 
@@ -57,7 +77,7 @@ void ComponentMain::ReadAndPub_ShiphonGPS(){
 }
 
 void ComponentMain::publishGPS(config::SHIFFON2ROS::pub::GPS& msg) {
-	_roscomm->publishGPS(msg);
+	_pub_GPS.publish(msg);
 }
 
 
@@ -99,11 +119,11 @@ void ComponentMain::ReadAndPub_ShiphonINS(){
 }
 
 void ComponentMain::publishINS(config::SHIFFON2ROS::pub::INS& msg) {
-	_roscomm->publishINS(msg);
+	_pub_INS.publish(msg);
 }
 
 void ComponentMain::publishINS2(std_msgs::Float64& msg) {
-	_roscomm->publishINS2(msg);
+	_pub_INS2.publish(msg);
 }
 
 void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
@@ -126,29 +146,55 @@ void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 }
 void ComponentMain::publishGpsSpeed2(std_msgs::Float64& msg)
 {
-	_roscomm->publishGpsSpeed2(msg);
+	_pub_GpsSpeed2.publish(msg);
 }
 
 void ComponentMain::publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg)
 {
-	_roscomm->publishGpsSpeed(msg);
+	_pub_GpsSpeed.publish(msg);
 }
 	
 
 
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
-	//_roscomm->publishTransform(_tf, srcFrame, distFrame);
+	//static tf::TransformBroadcaster br;
+	//	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));
 }
-/*
-tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::string distFrame){
-	//return _roscomm->getLastTrasform(srcFrame, distFrame);
 
-}
+tf::StampedTransform ComponentMain::getLastTransform(std::string srcFrame, std::string distFrame){
+/*	tf::StampedTransform _tf;
+	static tf::TransformListener listener;
+	try {
+	    listener.waitForTransform(distFrame, srcFrame, ros::Time(0), ros::Duration(10.0) );
+	    listener.lookupTransform(distFrame, srcFrame, ros::Time(0), _tf);
+	} catch (tf::TransformException& ex) {
+	    ROS_ERROR("%s",ex.what());
+	}
+	return _tf;
 */
+}
+
 
 void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report){
-	//_roscomm->publishDiagnostic(_report);
+	diagnostic_msgs::DiagnosticArray msg;
+		msg.status.push_back(_report);
+		_pub_diagnostic.publish(msg);
 }
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
-	//_roscomm->publishDiagnostic(header, _report);
+	diagnostic_msgs::DiagnosticArray msg;
+		msg.header = header;
+		msg.status.push_back(_report);
+		_pub_diagnostic.publish(msg);
+}
+void ComponentMain::heartbeat(){
+	using namespace boost::posix_time;
+	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);
+	double hz = HEARTBEAT_FREQUANCY;
+	while(ros::ok()){
+		boost::system_time stop_time = boost::get_system_time() + milliseconds((1/hz)*1000);
+		std_msgs::String msg;
+		msg.data = "SHIFFON2ROS";
+		_pub.publish(msg);
+	    boost::this_thread::sleep(stop_time);
+	}
 }

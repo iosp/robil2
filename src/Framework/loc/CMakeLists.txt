@@ -23,9 +23,9 @@ include_directories(
 ${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake
 )
 ## Declare a cpp library
-add_library(loc_rosComm
-  src/roscomm/RosComm.cpp
-)
+#add_library(loc_rosComm
+#  src/roscomm/RosComm.cpp
+#)
 add_library(loc_compMain
   src/component/ComponentMain.cpp
   src/component/ekf_class.cpp
@@ -35,8 +35,10 @@ add_library(loc_compMain
 add_executable(loc_node src/main.cpp)
 add_executable(user_function_example src/userHelperFunction/example.cpp)
 add_dependencies(loc_node ${PROJECT_NAME}_gencfg)
-target_link_libraries(loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+#target_link_libraries(loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(loc_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(loc_node loc_compMain loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
-target_link_libraries(user_function_example loc_compMain loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(loc_node loc_compMain  ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(user_function_example loc_compMain  ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+#target_link_libraries(loc_node loc_compMain loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+#target_link_libraries(user_function_example loc_compMain loc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
 

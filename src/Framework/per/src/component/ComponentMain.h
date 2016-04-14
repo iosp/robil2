@@ -17,6 +17,12 @@
 #include <vector>
 #include <dynamic_reconfigure/server.h>
 #include <per/configConfig.h>
+
+#include <ros/ros.h>
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+#include <boost/thread.hpp>
 using namespace std;
 // using namespace per;
 using namespace cv;
@@ -24,9 +30,34 @@ using namespace cv;
 
 class HeightMap;
 
-class RosComm;
 class ComponentMain {
-	RosComm* _roscomm;
+	bool _inited;
+	  ros::NodeHandle _nh;
+	  ros::Publisher _pub_diagnostic;
+	  boost::thread_group _maintains;
+		ros::Subscriber _sub_Location;
+		ros::Subscriber _sub_PerVelocity;
+		ros::Subscriber _sub_SensorINS;
+		ros::Subscriber _sub_SensorGPS;
+		ros::Subscriber _sub_SensorCamL;
+		ros::Subscriber _sub_SensorCamR;
+		ros::Subscriber _sub_SensorWire;
+		ros::Subscriber _sub_SensorSICK1;
+		ros::Subscriber _sub_SensorSICK2;
+		ros::Subscriber _sub_SensorIBEO;
+		ros::Subscriber _sub_EffortsTh;
+		ros::Subscriber _sub_EffortsSt;
+		ros::Subscriber _sub_EffortsJn;
+		ros::Subscriber _sub_GpsSpeed;
+		ros::Publisher  _pub_GPS;
+		ros::Publisher  _pub_INS;
+		ros::Publisher  _pub_BladePosition;
+		ros::Publisher  _pub_Map;
+		ros::Publisher  _pub_MiniMap;
+		ros::Publisher  _pub_VOOdometry;
+		ros::Publisher  _pub_GpsSpeed;
+
+	  bool init(int argc,char** argv);
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -52,13 +83,14 @@ public:
 	void publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg);
 	void handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
     void configCallback(per::configConfig &config, uint32_t level);
 	
 	void setVisualize(char);
-	
+	void heartbeat();
+
 	/**
 	 * Walrus Changes:
 	 */

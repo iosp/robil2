@@ -8,7 +8,7 @@
 #include "../helpermath.h"
 #include "../heightmap.h"
 #include "../heightmap_projection.h"
-#include "../../roscomm/RosComm.h"
+#include "../ComponentMain.h"
 #include "per/configConfig.h"
 #include <tf/transform_listener.h>
 #define VISUALIZE_NONE		0
@@ -67,7 +67,7 @@ class Mapper
     static unsigned char visualize;
     static boost::mutex lock;
     static HeightMap* height_map;
-    static RosComm* roscomm;
+    static ComponentMain* component;
     static unsigned char flags;
     //static tf::TransformListener *listener;
     /**

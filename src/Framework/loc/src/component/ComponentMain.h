@@ -7,6 +7,12 @@
  */
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
+#include <ros/ros.h>
+
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
@@ -16,11 +22,22 @@
 #include <dynamic_reconfigure/server.h>
 #include <loc/configConfig.h>
 
-
-class RosComm;
 //class ComponentMain;
 class ComponentMain {
-	RosComm* _roscomm;
+	bool _inited;
+
+	  ros::NodeHandle _nh;
+	  ros::Publisher _pub_diagnostic;
+	  boost::thread_group _maintains;
+		ros::Subscriber _sub_PositionUpdate;
+		ros::Subscriber _sub_GPS;
+		ros::Subscriber _sub_INS;
+		ros::Subscriber _sub_VOOdometry;
+		ros::Subscriber _sub_GpsSpeed;
+		ros::Publisher  _pub_Location;
+		ros::Publisher  _pub_PerVelocity;
+
+	  bool init(int argc,char** argv);
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -35,10 +52,11 @@ public:
 	void publishLocation(config::LOC::pub::Location& msg);
 	void publishPerVelocity(config::LOC::pub::PerVelocity& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
     void configCallback(loc::configConfig &config, uint32_t level);
+    void heartbeat();
 private:
   ekf _estimator;
   Observer _observer;

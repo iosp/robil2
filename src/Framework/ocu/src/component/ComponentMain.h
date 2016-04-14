@@ -10,9 +10,34 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
-class RosComm;
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+#include <boost/thread.hpp>
+
+
 class ComponentMain {
-	RosComm* _roscomm;
+	bool _inited;
+	  ComponentMain   * _comp;
+	  ros::NodeHandle _nh;
+	  ros::Publisher _pub_diagnostic;
+	  boost::thread_group _maintains;
+		ros::Subscriber _sub_IEDLocation;
+		ros::Subscriber _sub_MissionAcceptance;
+		ros::Subscriber _sub_LocalPath;
+		ros::Subscriber _sub_BladePosition;
+		ros::Subscriber _sub_Map;
+		ros::Subscriber _sub_Location;
+		ros::Subscriber _sub_PerVelocity;
+		ros::Publisher  _pub_CustomIED;
+		ros::Publisher  _pub_PositionUpdate;
+		ros::Publisher  _pub_AssignNavTask;
+		ros::Publisher  _pub_AssignManTask;
+		ros::Publisher  _pub_AssignMission;
+
+	  bool init(int argc,char** argv);
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -29,8 +54,9 @@ public:
 	void publishAssignManTask(config::OCU::pub::AssignManTask& msg);
 	void publishAssignMission(config::OCU::pub::AssignMission& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void heartbeat();
 };
 #endif /* COMPONENTMAIN_H_ */

@@ -48,9 +48,9 @@ include_directories(
 ${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake
 )
 ## Declare a cpp library
-add_library(per_rosComm
-  src/roscomm/RosComm.cpp
-)
+#add_library(per_rosComm
+#  src/roscomm/RosComm.cpp
+#)
 
 add_library(per_compMain
   src/component/ComponentMain.cpp
@@ -63,9 +63,9 @@ add_library(per_compMain
 link_directories(${GAZEBO_LIBRARY_DIRS})
 add_executable(per_node src/main.cpp)
 add_dependencies(per_node ${PROJECT_NAME}_gencfg)
-target_link_libraries(per_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+#target_link_libraries(per_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(per_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(per_node per_compMain per_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS} ${GAZEBO_libraries} 
+target_link_libraries(per_node per_compMain  ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS} ${GAZEBO_libraries} 
 )
 link_directories(${GAZEBO_LIBRARY_DIRS})
 

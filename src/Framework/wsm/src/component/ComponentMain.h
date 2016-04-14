@@ -10,13 +10,36 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+#include <ParameterTypes.h>
 
+#include <boost/thread.hpp>
 
 class WsmTask;
 class RosComm;
 
 class ComponentMain {
-	RosComm* _roscomm;
+	 bool _inited;
+
+	  ros::NodeHandle _nh;
+	  ros::Publisher _pub_diagnostic;
+	  boost::thread_group _maintains;
+		ros::Subscriber _sub_WorkSeqData;
+		ros::Subscriber _sub_BladePosition;
+		ros::Publisher  _pub_WSMVelocity;
+		ros::Publisher  _pub_BladePositionCommand;
+		ros::Subscriber _sub_Location;
+		ros::Subscriber _sub_PerVelocity;
+		ros::Subscriber _sub_MiniMapWSM;
+		ros::Publisher _plp_monitor;
+	//	ros::Publisher _blade_h;
+	//	ros::Publisher _Map_pub;
+
+	  bool init(int argc,char** argv);
 public:
 	WsmTask* cur_mission;
 	config::WSM::sub::WorkSeqData * receivedWorkSeqData;
@@ -41,9 +64,10 @@ public:
 //	void publish_h(const std_msgs::Float64 &msg);
 //	void publish_m(const std_msgs::Float64 &msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void heartbeat();
 };
 
 #endif /* COMPONENTMAIN_H_ */

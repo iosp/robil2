@@ -21,9 +21,9 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 ## Declare a cpp library
-add_library(wpd_rosComm
-  src/roscomm/RosComm.cpp
-)
+#add_library(wpd_rosComm
+#  src/roscomm/RosComm.cpp
+#)
 add_library(wpd_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
@@ -31,8 +31,8 @@ add_library(wpd_compMain
   src/component/MoveBase.cpp
 )
 add_executable(wpd_node src/main.cpp)
-target_link_libraries(wpd_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+#target_link_libraries(wpd_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(wpd_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(wpd_node wpd_compMain wpd_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(wpd_node wpd_compMain  ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 )
 
