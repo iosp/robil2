@@ -10,6 +10,7 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+#include "../cognitao_v2/cognitao_v2.h"
 
 
 class WsmTask;

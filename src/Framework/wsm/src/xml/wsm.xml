@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="wsm" type="ftt">
+			<tasks>
+
+				<task id="OFF">
+					<reaction on_event="?/Activation" target="ON" />
+					<reaction on_event="?/wsm/Activation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="wsm_ON" type="ftt">
+						<tasks>
+
+							<task id="INIT">
+								<reaction on_event="?/wsm/SensorConnected" target="WORK" />
+							</task>           
+							
+							<task id="WORK">
+								<machine id="wsm_WORK" type="ftt">
+									<tasks>
+
+										<task id="STANDBY">
+											<reaction on_event="?/wsm/Resume" target="READY" />
+										</task>
+
+										<task id="READY">
+											<reaction on_event="?/wsm/Standby" target="STANDBY" />
+										</task>            
+										
+									</tasks>
+									<ftt>
+										<start>STANDBY</start>
+									</ftt>
+								</machine>
+								<reaction on_event="?/wsm/SensorNotConnected" target="INIT" />
+							</task>         
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/Shutdown" target="OFF" />
+					<reaction on_event="?/wsm/Shutdown" target="OFF" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>ON</start>
+			</ftt>
+		</machine>
+		<root>wsm</root>
+	</machines>
+</tao>

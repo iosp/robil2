@@ -10,10 +10,19 @@
 	<build_depend>robil2conf</build_depend>
 	<build_depend>decision_making</build_depend>
 	<build_depend>decision_making_parser</build_depend>
+	<build_depend>cognitao_io</build_depend>
+	<build_depend>cognitao</build_depend>
+	<build_depend>events_bus</build_depend>
+	<build_depend>cognitao_event_bus_converter</build_depend>
+		
 	<run_depend>roscpp</run_depend>
 	<run_depend>robil2conf</run_depend>
 	<run_depend>decision_making</run_depend>
 	<run_depend>decision_making_parser</run_depend>
+	<run_depend>cognitao_io</run_depend>
+	<run_depend>cognitao</run_depend>
+	<run_depend>events_bus</run_depend>
+	<run_depend>cognitao_event_bus_converter</run_depend>
   <export>
   </export>
 </package>
