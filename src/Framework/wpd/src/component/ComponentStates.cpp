@@ -74,8 +74,11 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 					processor.bus_events << ev_bus_event;
 				}
 
-
 				if (current_task == "standby") {
+					DELETE(task_ready_ptr)
+				}
+
+				if (current_task == "off") {
 					DELETE(task_ready_ptr)
 				}
 			}
