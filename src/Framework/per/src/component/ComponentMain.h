@@ -17,6 +17,7 @@
 #include <vector>
 #include <dynamic_reconfigure/server.h>
 #include <per/configConfig.h>
+#include "../cognitao_v2/cognitao_v2.h"
 using namespace std;
 // using namespace per;
 using namespace cv;

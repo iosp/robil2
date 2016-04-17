@@ -7,9 +7,13 @@ find_package(catkin REQUIRED COMPONENTS
     robil2conf
     gazebo_ros
     decision_making decision_making_parser
-message_generation
-image_transport
-dynamic_reconfigure
+    cognitao_io
+    cognitao
+    events_bus
+    cognitao_event_bus_converter
+    message_generation
+    image_transport
+    dynamic_reconfigure
 )
 find_package(OpenCV 2)
 find_package(Boost REQUIRED COMPONENTS system)
@@ -35,6 +39,7 @@ catkin_package(
 	    gazebo_ros
 	    decision_making decision_making_parser
 	    message_runtime
+	    cognitao_event_bus_converter
 )
 ###########
 ## Build ##
@@ -45,6 +50,9 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${GAZEBO_INCLUDE_DIRS}
+  ${cognitao_io_INCLUDE_DIRS}
+  ${cognitao_INCLUDE_DIRS}
+  ${events_bus_INCLUDE_DIRS}
 ${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake
 )
 ## Declare a cpp library
@@ -55,6 +63,7 @@ add_library(per_rosComm
 add_library(per_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
+  src/cognitao_v2/cognitao_v2.cpp
   src/component/heightmap.cpp 
   src/component/heightmap_projection.cpp 
   src/component/mapper/mapper.cpp 
