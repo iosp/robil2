@@ -102,7 +102,7 @@ void pause_checker(cognitao::bus::Event msg, ComponentMain * comp_ptr)
 	if( (msg.name() == "ResumeTask") && (pause_time.get_pause()) ){
 		pause_time.set_pause(false);
 		if(comp_ptr->cur_mission == NULL){
-			ROS_ERROR("Not task to resume/pause");
+//			ROS_ERROR("Not task to resume/pause");
 			return;
 		}
 		if((comp_ptr->cur_mission->Get_status() == "paused")){
@@ -113,7 +113,7 @@ void pause_checker(cognitao::bus::Event msg, ComponentMain * comp_ptr)
 		return;
 	}
 	if(comp_ptr->cur_mission == NULL){
-		ROS_ERROR("Not task to resume/pause");
+//		ROS_ERROR("Not task to resume/pause");
 		return;
 	}
 	if((msg.name() == "PauseMission")&&(comp_ptr->cur_mission->Get_status()=="active")){
