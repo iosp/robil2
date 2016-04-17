@@ -5,7 +5,6 @@
 			<tasks>
 
 				<task id="OFF">
-					<reaction on_event="?/Activation" target="ON" />
 					<reaction on_event="?/wsm/Activation" target="ON" />
 				</task>    
        
@@ -41,7 +40,6 @@
 							<start>INIT</start>
 						</ftt>
 					</machine>
-					<reaction on_event="?/Shutdown" target="OFF" />
 					<reaction on_event="?/wsm/Shutdown" target="OFF" />
 				</task>
 				
