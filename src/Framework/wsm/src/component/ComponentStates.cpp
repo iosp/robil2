@@ -34,6 +34,9 @@ public:
 	void set_pause (bool new_pause){
 		boost::mutex::scoped_lock stdout_lock (io_mutex);
 		paused = new_pause;
+		if (paused) {
+			cout << "\033[1;31m PAUSED \033[0m\n";
+		} else cout << "\033[1;31m RESUMED \033[0m\n";
 	}
 	bool get_pause (){
 		boost::mutex::scoped_lock stdout_lock (io_mutex);
@@ -58,38 +61,66 @@ void JointStatesCallback(const sensor_msgs::JointStateConstPtr &msg)
 	Global_comp->jointStates = &jointStates;
 }
 
-void pauseCallback(const std_msgs::StringConstPtr &msg)
+
+//void pauseCallback(const std_msgs::StringConstPtr &msg)
+//{
+//		if((msg->data.find("ResumeTask",0) != -1)&&(pause_time)){
+//			pause_time = false ;
+//			if(Global_comp->cur_mission == NULL){
+//			//	ROS_ERROR("Not task to resume/pause");
+//				return;
+//			}
+//			if((Global_comp->cur_mission->Get_status() == "paused")){
+//				Global_comp->cur_mission->Set_task_status("active");
+//				return;
+//			}
+//			else{
+//				ROS_ERROR("No Task to resume, has Task %d at status %s",Global_comp->cur_mission->Get_Task_id(),Global_comp->cur_mission->Get_status().c_str());
+//				return;
+//			}
+//		}
+//		if(Global_comp->cur_mission == NULL){
+//					//ROS_ERROR("Not task to resume/pause");
+//					return;
+//				}
+//		if((msg->data.find("PauseMission",0) != -1)&&(Global_comp->cur_mission->Get_status()=="active")){
+//			pause_time = true ;
+//			Global_comp->cur_mission->Set_task_status("paused");
+//			return;
+//		}
+//		else{
+//			//ROS_ERROR("No Task to pause, has Task %d at status %s",Global_comp->cur_mission->Get_Task_id(),Global_comp->cur_mission->Get_status().c_str());
+//			return;
+//		}
+//		return;
+//}
+
+
+void pause_checker(cognitao::bus::Event msg, ComponentMain * comp_ptr)
 {
-		ROS_ERROR_STREAM ("Received msg from /decision_making/events: " << msg);
-		if((msg->data.find("ResumeTask",0) != -1)&&(pause_time.get_pause())){
-			pause_time.set_pause(false);
-			if(Global_comp->cur_mission == NULL){
-			//	ROS_ERROR("Not task to resume/pause");
-				return;
-			}
-			if((Global_comp->cur_mission->Get_status() == "paused")){
-				Global_comp->cur_mission->Set_task_status("active");
-				return;
-			}
-			else{
-				ROS_ERROR("No Task to resume, has Task %d at status %s",Global_comp->cur_mission->Get_Task_id(),Global_comp->cur_mission->Get_status().c_str());
-				return;
-			}
-		}
-		if(Global_comp->cur_mission == NULL){
-					//ROS_ERROR("Not task to resume/pause");
-					return;
-				}
-		if((msg->data.find("PauseMission",0) != -1)&&(Global_comp->cur_mission->Get_status()=="active")){
-			pause_time.set_pause(true);
-			Global_comp->cur_mission->Set_task_status("paused");
+	if (comp_ptr == NULL) return;
+	if( (msg.name() == "ResumeTask") && (pause_time.get_pause()) ){
+		pause_time.set_pause(false);
+		if(comp_ptr->cur_mission == NULL){
+			ROS_ERROR("Not task to resume/pause");
 			return;
 		}
-		else{
-			//ROS_ERROR("No Task to pause, has Task %d at status %s",Global_comp->cur_mission->Get_Task_id(),Global_comp->cur_mission->Get_status().c_str());
-			return;
+		if((comp_ptr->cur_mission->Get_status() == "paused")){
+			comp_ptr->cur_mission->Set_task_status("active");
+		} else {
+			ROS_ERROR("No Task to resume, has Task %d at status %s",comp_ptr->cur_mission->Get_Task_id(),comp_ptr->cur_mission->Get_status().c_str());
 		}
 		return;
+	}
+	if(comp_ptr->cur_mission == NULL){
+		ROS_ERROR("Not task to resume/pause");
+		return;
+	}
+	if((msg.name() == "PauseMission")&&(comp_ptr->cur_mission->Get_status()=="active")){
+		pause_time.set_pause(true);
+		comp_ptr->cur_mission->Set_task_status("paused");
+	}
+	return;
 }
 
 //FSM(wsm_WORK)
@@ -310,6 +341,7 @@ public:
 												   cognitao::bus::Event::context_t(context));
 				processor_ptr->bus_events << ev_bus_event;
 				ROS_INFO("Mission complete");
+				if (comp_ptr->cur_mission == NULL) return;
 				delete comp_ptr->cur_mission ;
 				comp_ptr->cur_mission = NULL;
 			}
@@ -410,13 +442,14 @@ void process_machine(cognitao::machine::Machine & machine, Processor & processor
 void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros::NodeHandle node;
-	ros::Subscriber jointstatesSub = node.subscribe<sensor_msgs::JointState>("/Sahar/joint_states", 100, &JointStatesCallback);
-	ros::Subscriber PauseMission = node.subscribe<std_msgs::String>("/decision_making/events" , 100 , &pauseCallback);
-
 	Global_comp = &component;
 	task_init_ptr = NULL;
 	task_standby_ptr = NULL;
 	task_ready_ptr = NULL;
+
+	ros::Subscriber jointstatesSub = node.subscribe<sensor_msgs::JointState>("/Sahar/joint_states", 100, &JointStatesCallback);
+//	ros::Subscriber PauseMission = node.subscribe<std_msgs::String>("/decision_making/events" , 100 , &pauseCallback);
+
 
 	cognitao::bus::RosEventQueue events(node, NULL, 1000, "/robil/event_bus/events");
 
@@ -473,6 +506,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 			cout << "\033[1;31m SKIP event from other node \033[0m\n";
 			continue;
 		}
+		pause_checker(event, Global_comp);
 		processor.send_no_pub (event);
 		process_machine (current_machine, processor, component);
 	}
