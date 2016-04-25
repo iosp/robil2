@@ -34,10 +34,12 @@
     }
   </style>
   <body>
+
 <h1>WP Navigation PLP</h1>
 
 <ol>
 <li>2015-03-01 Initial Version</li>
+<li>2015-04-25 Updated message type</li>
 </ol>
 
 <h2>About</h2>
@@ -63,7 +65,7 @@ c.       אחוז הנק' עם טווח גדול מ- 50מ' - לבדוק שהוא
 
 בוא נתחיל מזה, אחרי שנצליח נוסיף בהמשך עוד פרמטרים לבדיקה.
 
-את האחוזים בשלב זה קבעתי שרירותית, לכן כדי שילקחו מקובץ קונפיגורציה.
+את האחוזים בשלב זה קבעתי שרירותית, לכן כדאי שילקחו מקובץ קונפיגורציה.
 </div>
 
 <h2>Values</h2>
@@ -72,6 +74,7 @@ c.       אחוז הנק' עם טווח גדול מ- 50מ' - לבדוק שהוא
 
 <ul>
 <li><code>scan</code> &larr; <code>/SENSORS/IBEO/1</code> Scan data from the IBEO node.</li>
+<li>Message type: <code>robil_msgs/MultiLaserScan</code></li>
 </ul>
 
 <h3>Constants</h3>
@@ -111,7 +114,7 @@ c.       אחוז הנק' עם טווח גדול מ- 50מ' - לבדוק שהוא
 
 <h3>Concurrency Conditions</h3>
 
-<p><em>Later, we will replace this with "health" PLP for the entire system</em></p>
+<p><em>Later, we will replace this with &quot;health&quot; PLP for the entire system</em></p>
 
 <ul>
 <li><code>IBEO_OK</code></li>
@@ -132,14 +135,12 @@ c.       אחוז הנק' עם טווח גדול מ- 50מ' - לבדוק שהוא
 <h2>Detection Goals</h2>
 
 <ul>
-<li>For each i in [0..3]:
-<ul>
+<li>For each i in [0..3]:</li>
 <li><code>fail_or_cover_pcnt[i] &gt; FAIL_OR_COVER_THRESHOLD</code></li>
 <li><code>obstacle_pcnt[i] &gt; OBSTACLE_THRESHOLD</code></li>
 <li><code>sky_pcnt[i] &gt; SKY_THRESHOLD</code></li>
 <li><code>current_time in Range(last_scan_time+TIME_INCREMENT-TIME_INCREMENT_TOLERANCE,
-                  last_scan_time+TIME_INCREMENT+TIME_INCREMENT_TOLERANCE)</code></li>
-</ul></li>
+                      last_scan_time+TIME_INCREMENT+TIME_INCREMENT_TOLERANCE)</code></li>
 </ul>
 
 <h2>Detection Probability Given Condition</h2>

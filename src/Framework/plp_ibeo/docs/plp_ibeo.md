@@ -1,6 +1,7 @@
 # WP Navigation PLP
 
 1. 2015-03-01 Initial Version
+1. 2015-04-25 Updated message type
 
 ## About
 This PLP **detects** when an IBEO unit cannot provide useful sensing data.
@@ -30,6 +31,7 @@ c.       אחוז הנק' עם טווח גדול מ- 50מ' - לבדוק שהוא
 ## Values
 ### Parameters
 * `scan` &larr; `/SENSORS/IBEO/1` Scan data from the IBEO node.
+  * Message type: `robil_msgs/MultiLaserScan`
 
 ### Constants
 * `TIME_INCREMENT` Time interval between IBEO scans (0.08sec)
