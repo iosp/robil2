@@ -7,7 +7,7 @@ from PlpWaypointClasses import *
 PLP_WAYPOINT_HISTORY_LENGTH = 2
 
 # TODO: Make sure variables are calculated at most once per parameter update.
-# TODO: Also ensure var history does not upates once per variable calculation
+# TODO: Also ensure var history does not update once per variable calculation
 # TODO: Add progress measure timer to the PLP Harness.
 class PlpWaypoint(object):
     """
