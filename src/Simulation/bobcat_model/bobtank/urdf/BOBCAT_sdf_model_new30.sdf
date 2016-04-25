@@ -1125,9 +1125,16 @@
 </axis>
 </joint>
 <static>0</static>
+
+
 <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
 <robotNamespace>/Sahar</robotNamespace>
 </plugin>
+
+
+<plugin name="bobtank_drive_control" filename="libbobtank_drive_plugin.so"/> 
+
+
 
 <include>
       <uri>model://sick</uri>

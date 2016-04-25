@@ -1169,7 +1169,7 @@
 
 
 
- <!-- Transmissions for ROS Control -->
+ <!-- Transmissions for ROS Control 
   <transmission name="tran1">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="right_wheel_joint">
@@ -1190,55 +1190,9 @@
     </actuator>
   </transmission>
 
-  <transmission name="tran5">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="base_arm_joint">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="motor5">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
 
-  <transmission name="tran6">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="main_arm_joint">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="motor6">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
 
-  <transmission name="tran8">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="supporter_joint">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="motor8">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-
-  <transmission name="tran10">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="loader_joint">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="motor10">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-
-  <transmission name="tran12">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="brackets_joint">
-      <hardwareInterface>EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="motor12">
-      <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
+ 
 
   <transmission name="tran13">
     <type>transmission_interface/SimpleTransmission</type>
@@ -1280,12 +1234,70 @@
     </actuator>
   </transmission>
 
+
+-->
+
+<transmission name="tran12">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="brackets_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor12">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+  
+  <transmission name="tran5">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="base_arm_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor5">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran6">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="main_arm_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor6">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran8">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="supporter_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor8">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran10">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="loader_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor10">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+ 
+
   <!-- ros_control plugin -->
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
       <robotNamespace>/Sahar</robotNamespace>
     </plugin>
   </gazebo>
+  
+  
   <gazebo reference="body">
     <mu1>1</mu1>
     <mu2>1</mu2>
@@ -1352,6 +1364,8 @@
   <gazebo reference="front_sick">
     <material>Gazebo/Grey</material>
   </gazebo>
+
+
 
 </robot>
 
