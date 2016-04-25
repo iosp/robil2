@@ -6,7 +6,9 @@ from PlpWaypointClasses import *
 # Number of frames of variable history needed for monitoring.
 PLP_WAYPOINT_HISTORY_LENGTH = 2
 
-
+# TODO: Make sure variables are calculated at most once per parameter update.
+# TODO: Also ensure var history does not upates once per variable calculation
+# TODO: Add progress measure timer to the PLP Harness.
 class PlpWaypoint(object):
     """
     Off-line calculation of the success probability of
@@ -151,7 +153,6 @@ class PlpWaypoint(object):
 
     # Hard coded
     def monitor_progress(self):
-        self.calculate_variables()
         self.monitor_remaining_path_length()
         self.monitor_distance_to_target()
 
@@ -260,6 +261,7 @@ class PlpWaypoint(object):
         Called when parameters are updated.
         Can trigger monitoring and/or estimation
         """
+        self.calculate_variables()
         termination = self.detect_termination()
         if termination is None:
             self.request_estimation()
