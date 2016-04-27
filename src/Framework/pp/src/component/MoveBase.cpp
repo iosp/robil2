@@ -599,7 +599,7 @@ void MoveBase::on_sub_path(const nav_msgs::Path::ConstPtr& msg){
 }
 void MoveBase::on_sub_loc(const geometry_msgs::PoseStamped::ConstPtr& msg){
 	geometry_msgs::PoseWithCovarianceStamped p;
-	p.header.frame_id = "/map";//NOTE: check if frame_id not has to be from robil_map.header
+	p.header.frame_id = "/WORLD";//NOTE: check if frame_id not has to be from robil_map.header
 	p.header.stamp = ros::Time::now();
 	p.pose.pose = msg->pose;
 	this->on_position_update(p);
@@ -607,7 +607,7 @@ void MoveBase::on_sub_loc(const geometry_msgs::PoseStamped::ConstPtr& msg){
 void MoveBase::on_sub_loc_cov(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
 	//std::cout<<"path.poses.push_back(createPose("<< msg->pose.pose.position.x<<","<< msg->pose.pose.position.y<<"));"<<std::endl;
 	geometry_msgs::PoseWithCovarianceStamped p = *msg;
-	p.header.frame_id = "/map";//NOTE: check if frame_id not has to be from robil_map.header
+	p.header.frame_id = "/WORLD";//NOTE: check if frame_id not has to be from robil_map.header
 	this->on_position_update(p);
 }
 void MoveBase::on_sub_commands(const std_msgs::String::ConstPtr& msg){
@@ -828,7 +828,7 @@ void MoveBase::calculate_goal(){
 		gotten_global_path = gotten_nav_path;
 	}
 
-	gotten_global_path.header.frame_id = "/map";
+	gotten_global_path.header.frame_id = "/WORLD";
 	gotten_global_path.header.stamp = ros::Time(0) ;
 	globalPathPublisher.publish(gotten_global_path);
 	selectedPathPublisher.publish(gotten_global_path);
@@ -868,7 +868,7 @@ void MoveBase::calculate_goal(){
 			original_goal = goal;
 		}
 		if(send_original){
-			first_original_goal.header.frame_id = "/map";
+			first_original_goal.header.frame_id = "/WORLD";
 			first_original_goal.header.stamp = ros::Time::now();
 			originalGoalPublisher.publish(first_original_goal);
 			if(send_original!=prev_send_original){
@@ -1001,7 +1001,7 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 	ps_goal.pose.position.x = robil_goal_x;
 	ps_goal.pose.position.y = robil_goal_y;
 
-	goal.header.frame_id = "/map";
+	goal.header.frame_id = "/WORLD";
 	goal.header.stamp = ros::Time::now();
 	ps_goal.header = goal.header;
 
@@ -1082,7 +1082,9 @@ SYNCH
 		}
 	}
 
-	map.header.frame_id = "/base_link";
+	if (map.points.size() == 0) return;
+
+	map.header.frame_id = "/ODOM"; 
 	map.header.stamp = ros::Time::now();//robil_map.header.stamp;//
 
 

@@ -7,12 +7,35 @@
  */
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
+#include <ros/ros.h>
 #include <std_msgs/String.h>
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
-class RosComm;
+#include <boost/thread.hpp>
+
+
+
+
 class ComponentMain {
-	RosComm* _roscomm;
+	bool _inited;
+
+	  ros::NodeHandle _nh;
+	  ros::Publisher _pub_diagnostic;
+	  boost::thread_group _maintains;
+		ros::Subscriber _sub_WPDVelocity;
+		ros::Subscriber _sub_WSMVelocity;
+		ros::Subscriber _sub_BladePositionCommand;
+		ros::Subscriber _sub_Location;
+		ros::Subscriber _sub_PerVelocity;
+		ros::Publisher  _pub_EffortsTh;
+		ros::Publisher  _pub_EffortsSt;
+		ros::Publisher  _pub_EffortsJn;
+		ros::Publisher  _pub_Speed;
+
+	  bool init(int argc,char** argv);
 public:
 	//config::LLC::sub::PerVelocity Per_measured_speed ;	/* real measured speed */
 	geometry_msgs::Twist Per_measured_speed ;
@@ -33,9 +56,10 @@ public:
 	void publishEffortsSt(config::LLC::pub::EffortsSt& msg);
 	void publishEffortsJn(sensor_msgs::JointState& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void heartbeat();
 };
 #endif /* COMPONENTMAIN_H_ */
 

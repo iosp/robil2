@@ -1,3 +1,4 @@
+// ** Written By : Sagi Vald **
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include "robil_msgs/AssignNavTask.h"
@@ -14,10 +15,6 @@ void pathCallBack(const robil_msgs::AssignNavTask& path)
 {
   ROS_DEBUG(" Recieved Global Path ");
 	 wayps = path;
- // x = wayps.waypoints[0].pose.pose.position.x;
- // y = wayps.waypoints[0].pose.pose.position.y;
- 
-	
 }
 
 
@@ -27,7 +24,7 @@ void markersTimerCallBack (const ros::TimerEvent&)
     
     visualization_msgs::Marker marker;
     // Set the frame ID and timestamp.  See the TF tutorials for information on these.
-    marker.header.frame_id = "world";
+    marker.header.frame_id = "WORLD";
     marker.header.stamp = ros::Time::now();
     int i;
     // Set the namespace and id for this marker.  This serves to create a unique ID
@@ -63,7 +60,7 @@ void markersTimerCallBack (const ros::TimerEvent&)
 	    marker.color.b = 0.0f;
 	    marker.color.a = 1.0;
 
-	    marker.lifetime = ros::Duration(5.0);
+	    marker.lifetime = ros::Duration(100);
 		
 	    // Publish the marker
 	    while (marker_pub.getNumSubscribers() < 1)
@@ -74,9 +71,10 @@ void markersTimerCallBack (const ros::TimerEvent&)
 	      sleep(1);
 	      }
 	    }
+   ROS_DEBUG("id = %d" , marker.id  );
    ROS_DEBUG("Marker's X =  %f , Marker's Y =  %f",marker.pose.position.x,marker.pose.position.y);
     marker_pub.publish(marker);
-	}
+     }
 
 }
 
@@ -86,15 +84,14 @@ void markersTimerCallBack (const ros::TimerEvent&)
 int main( int argc, char** argv )
 {
 
-  //ROS_INFO(" I AM basic_shapes ");
   ros::init(argc, argv, "basic_shapes");
   ros::NodeHandle n;
 
 
-  ros::Subscriber sub = n.subscribe("/OCU/SMME/NavigationTask", 1000, pathCallBack);
-  marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+  ros::Subscriber sub = n.subscribe("/OCU/SMME/NavigationTask", 10, pathCallBack);
+  marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
   
-  ros::Timer markers_timer = n.createTimer(ros::Duration(1.0), markersTimerCallBack);
+  ros::Timer markers_timer = n.createTimer(ros::Duration(4.0), markersTimerCallBack);
   
   ros::spin();
 }

@@ -4,6 +4,8 @@
 #include <cv_bridge/cv_bridge.h>
 #include <string>
 #include <sensor_msgs/CompressedImage.h>
+#include <vector>
+
 bool cap[4] = {false,false,false,false};
 ros::NodeHandle *n;
 std::string name = "cam";
@@ -50,7 +52,10 @@ void compressedImageCallback(const sensor_msgs::CompressedImage& msg)
     
     //cv::imshow("view", cv_bridge::toCvShare(msg, "bgr8")->image);
     //cv::waitKey(30);
-    cv::imwrite(name+"0.jpeg",im);
+    std::vector<int> compression_params;
+    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    compression_params.push_back(1);
+    cv::imwrite(name+"0.jpeg",im,compression_params);
     cap[2] = true;
     if(cap[0] && cap[1]&& cap[2] && cap[3]) exit(0);
   }

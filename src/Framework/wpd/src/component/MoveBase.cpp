@@ -41,7 +41,7 @@ void on_laser_reg_callback(const sensor_msgs::LaserScan::ConstPtr& m){
 void on_pose_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& m){
 	geometry_msgs::PoseStamped o;
 	o.pose = m->pose.pose;
-	o.header.frame_id="/odom";
+	o.header.frame_id="/ODOM";
 	pose_2_pub.publish(o);
 }
 void init_speed_patch(ros::NodeHandle& node){
@@ -86,14 +86,14 @@ MoveBase::~MoveBase() {
 
 void MoveBase::on_sub_loc(const geometry_msgs::PoseStamped::ConstPtr& msg){
 	geometry_msgs::PoseWithCovarianceStamped p;
-	p.header.frame_id = "/map";
+	p.header.frame_id = "/WORLD";
 	p.header.stamp = ros::Time::now();
 	p.pose.pose = msg->pose;
 	on_position_update(p);
 }
 void MoveBase::on_sub_loc_cov(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
 	geometry_msgs::PoseWithCovarianceStamped p = *msg;
-	p.header.frame_id = "/map";
+	p.header.frame_id = "/WORLD";
 	on_position_update(p);
 }
 void MoveBase::on_sub_speed(const geometry_msgs::Twist::ConstPtr& msg){
@@ -101,7 +101,7 @@ void MoveBase::on_sub_speed(const geometry_msgs::Twist::ConstPtr& msg){
 }
 void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 	geometry_msgs::TwistStamped tw;
-	tw.header.frame_id="/map";
+	tw.header.frame_id="/WORLD";
 	tw.header.stamp = ros::Time::now();
 	tw.twist = msg;
 
@@ -140,38 +140,39 @@ void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 }
 
 void send_static_ziro_tf_links(ComponentMain* comp){
-	tf::Quaternion q(0,0,0,1);
-	tf::Vector3 l(0,0,0);
-	tf::Transform tf(q,l);
-	comp->publishTransform(tf,"world", "map");
-	comp->publishTransform(tf,"map", "odom");
-	comp->publishTransform(tf,"map", "laser");
+// 	tf::Quaternion q(0,0,0,1);
+// 	tf::Vector3 l(0,0,0);
+// 	tf::Transform tf(q,l);
+// 	comp->publishTransform(tf,"world", "map");
+// 	comp->publishTransform(tf,"map", "odom");
+// 	comp->publishTransform(tf,"map", "laser");
 }
 void send_static_base_center_offset(ComponentMain* comp){
-	tf::Quaternion q(0,0,0,1);
-	tf::Vector3 l(-1,0,0);
-	tf::Transform tf(q,l);
-	comp->publishTransform(tf,"base_link", "base_link_center");
+// 	tf::Quaternion q(0,0,0,1);
+// 	tf::Vector3 l(0.75,0,0);
+// 	tf::Transform tf(q,l);
+// 	comp->publishTransform(tf,"base_link", "base_link_center");
 }
 const double x_offset_for_bebug=0;
 const double y_offset_for_bebug=0;
 
 void MoveBase::on_position_update(const config::PP::sub::Location& msg){
-	tf::Quaternion q(msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w);
-	tf::Vector3 l(msg.pose.pose.position.x+x_offset_for_bebug,msg.pose.pose.position.y+y_offset_for_bebug,msg.pose.pose.position.z);
-	tf::Transform tf(q,l);
-	last_location = msg;
-	send_static_ziro_tf_links(comp);
-	comp->publishTransform(tf,"odom", "base_link");
-	send_static_base_center_offset(comp);
-	if(resend_thread==0){
-		resend_thread = new boost::thread(boost::bind(&MoveBase::resend,this));
-	}
+// 	tf::Quaternion q(msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w);
+// 	tf::Vector3 l(msg.pose.pose.position.x+x_offset_for_bebug,msg.pose.pose.position.y+y_offset_for_bebug,msg.pose.pose.position.z);
+// 	tf::Transform tf(q,l);
+// 	last_location = msg;
+// 	send_static_ziro_tf_links(comp);
+// 	//comp->publishTransform(tf,"odom", "base_link");
+// 	comp->publishTransform(tf,"world", "odom");
+// 	send_static_base_center_offset(comp);
+// 	if(resend_thread==0){
+// 		resend_thread = new boost::thread(boost::bind(&MoveBase::resend,this));
+// 	}
 }
 
 #include <boost/thread.hpp>
 void MoveBase::resend(){
-	ROS_INFO("Start TF structure sender(20Hz): world->map(->odom->base_link->base_link_center|->laser)");
+	//ROS_INFO("Start TF structure sender(20Hz): world->map(->odom->base_link->base_link_center|->laser)");
 	while(ros::ok and not boost::this_thread::interruption_requested()){
 		//ROS_INFO("send tf");
 		on_position_update(last_location);
@@ -275,7 +276,7 @@ void MoveBase::running (){
 			if (last_move_base_vel_ok and last_real_vel_ok){
 				// pubslish stop velocity and stop republishing
 				geometry_msgs::TwistStamped stop_vel;
-				stop_vel.header.frame_id="/map";
+				stop_vel.header.frame_id="/WORLD";
 				stop_vel.header.stamp = ros::Time::now();
 				stop_vel.twist.linear.x = 0;
 				stop_vel.twist.linear.y = 0;

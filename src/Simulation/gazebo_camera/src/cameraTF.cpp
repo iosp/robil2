@@ -78,7 +78,7 @@ namespace gazebo
     // Called by the world update start event
     void OnUpdate(const common::UpdateInfo & _info)
     {
-      BroadcastTF();
+     // BroadcastTF();
     }
     
     void BroadcastTF()

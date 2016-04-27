@@ -3,12 +3,16 @@
 #include <cstdio>
 #include <ros/ros.h>
 
+
 using namespace cv;
 #define OBSTACLE_THRESH 0.4
 #define HEIGHT_UNKNOWN -100.0
 
-HeightMap::HeightMap(int width, int height)
+
+
+HeightMap::HeightMap(int width, int height, per::configConfig *p=NULL)
 {
+    _dynamic = p;
     _heights.resize(width*height, HEIGHT_UNKNOWN);
     _types.resize(width*height, TYPE_UNSCANNED);
     _features.resize(width*height, FEATURE_UNKNOWN);
@@ -213,17 +217,21 @@ void HeightMap::displayConsole()
         printf("\n");
     }
 }
-
-void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
+int showX = -1, showY = -1;
+Mat HeightMap::generateMat(int enlarger)
 {
-    // rdbg("gui enter");
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
     cvtColor(image, image, CV_BGR2HSV);
-    
+
     for(int y = 0; y < _height*enlarger; y++)
         for(int x = 0; x < _width*enlarger; x++)
         {
             double h = this->_at(x/enlarger,y/enlarger);
+            if (showX == x && showY == y)
+            {
+                cout << "x: " << x << " y: " << y << "\t" << h << endl;
+                showX = showY = -1;
+            }
             if(h <= _min)
             {
                 image.at<Vec3b>(x,y) = Vec3b(0,0,100);
@@ -233,6 +241,24 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
             image.at<Vec3b>(x,y) = Vec3b(120*(1-c),240, 240);
         }
     cvtColor(image, image, CV_HSV2BGR);
+    return image;
+}
+void onMouseClick2(int event, int x, int y, int flags, void *param)
+{
+
+
+    if (event == CV_EVENT_LBUTTONDOWN)
+    {
+
+        showX = y;
+        showY = x;
+    }
+}
+
+void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
+{
+    // rdbg("gui enter");
+    Mat image = this->generateMat(enlarger);
     //put the tempory arrow representing my position and rotation on the map
     Mat arrow;
     cv::Point2f pt(_arrow.rows/2, _arrow.cols/2);
@@ -254,24 +280,30 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
     py = _height/2 - py;
     for(int i = 0; i < _arrow.rows; i++)
         for(int j = 0; j < _arrow.cols; j++)
-            if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0)) image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
+            if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0))
+                image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
     
 
     char name[30];
     sprintf(name, "GUI %d", _width);
+
     if (!image.empty())
+    {
+        setMouseCallback(name, onMouseClick2, &image);
         imshow(name, image);
+        waitKey(100);
+    }
 
 }
 void onMouseClick(int event, int x, int y, int flags, void *param)
 {
 
-      Mat *img = ((Mat *)param);
+    Mat *img = ((Mat *)param);
 
-      if (event == CV_EVENT_LBUTTONDOWN)
-      {
-	 cout << "x: " << x << " y: " << y << "\t" << img->size() <<endl;
-      }
+    if (event == CV_EVENT_LBUTTONDOWN)
+    {
+        cout << "x: " << x << " y: " << y << "\t" << img->size() <<endl;
+    }
 }
 
 void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
@@ -324,25 +356,110 @@ void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
     
     cv::waitKey(200);
 }
+int lowThreshold = 24;
+int morph_elem = 0;
+int morph_size = 10;
+int morph_operator = 0;
+int const max_operator = 4;
+int const max_elem = 2;
+int const max_kernel_size = 21;
+int erode_size = 2;
 
-void HeightMap::calculateTypes(Vec3D position, double pitch)
+void Morphology_Operations( int, void* )
 {
-    //cout << position.z << ", " << pitch << endl;
-    double obs_diff, obs_thresh, mul = 1;
-    ros::param::param("/PER/Obstacle/Diff",obs_diff,OBSTACLE_THRESH);
-    ros::param::param("/PER/Obstacle/Thresh",obs_thresh,OBSTACLE_THRESH);
+}
+void HeightMap::calculateTypes(Vec3D position, Rotation myRot)
+{
+    double pitch = myRot.pitch;
+    HeightMap m = this->deriveMap(position.x, position.y, myRot);
+    Mat image = m.generateMat(3);
+    if (image.empty())
+        return;
+
+    //    Mat detected_edges, src_gray;
+
+    //    /* Apply Canny edge detector */
+    //    int ratio = 3;
+    //    int kernel_size = 3;
+    //    cvtColor( image, src_gray, CV_BGR2GRAY );
+    //    blur( src_gray, detected_edges, Size(3,3) );
+    //    Canny( detected_edges, detected_edges,
+    //           lowThreshold, lowThreshold*ratio, kernel_size );
+    //    /* Remove from DST the uncharted areas */
+    //    for (int i = 0; i < src_gray.rows; i++ )
+    //        for (int j = 0; j < src_gray.cols; j++)
+    //            if (src_gray.at<uchar>(i,j) == 100)
+    //            {
+    //                if  (i-1 >= 0) detected_edges.at<uchar>(i-1,j) = 0;
+    //                if  (i+1 < src_gray.rows) detected_edges.at<uchar>(i+1,j) = 0;
+    //                if (j-1 >= 0) detected_edges.at<uchar>(i,j-1) = 0;
+    //                if ( j+1 < src_gray.cols) detected_edges.at<uchar>(i,j+1) = 0;
+    //                detected_edges.at<uchar>(i,j) = 0;
+    //            }
+
+    //    /* Apply Morphological closing operation */
+    //    Mat dst;
+    //    Mat element = getStructuringElement( morph_elem, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
+    //    if (morph_size)
+    //        morphologyEx( detected_edges, dst, MORPH_CLOSE, element );
+    //    else
+    //        dst = detected_edges;
+    //    char window_name[20] = "test";
+
+    //    /// Create Trackbar to select kernel type
+    //    createTrackbar( "Element:\n 0: Rect - 1: Cross - 2: Ellipse", window_name,
+    //                    &morph_elem, max_elem,
+    //                    Morphology_Operations );
+
+    //    /// Create Trackbar to choose kernel size
+    //    createTrackbar( "Kernel size:\n 2n +1", window_name,
+    //                    &morph_size, max_kernel_size,
+    //                    Morphology_Operations );
+    //    createTrackbar("Edges threshold", window_name,
+    //                   &lowThreshold, 100,
+    //                   Morphology_Operations);
+    //    createTrackbar("Erode size", window_name,
+    //                   &erode_size, max_kernel_size,
+    //                   Morphology_Operations);
+    //    //imshow(window_name, dst);
+    //    /* Remove from DST the uncharted areas */
+    //    for (int i = 0; i < src_gray.rows; i++ )
+    //        for (int j = 0; j < src_gray.cols; j++)
+    //            if (src_gray.at<uchar>(i,j) == 100)
+    //            {
+    //                if  (i-1 >= 0) dst.at<uchar>(i-1,j) = 0;
+    //                if  (i+1 < src_gray.rows) dst.at<uchar>(i+1,j) = 0;
+    //                if (j-1 >= 0) dst.at<uchar>(i,j-1) = 0;
+    //                if ( j+1 < src_gray.cols) dst.at<uchar>(i,j+1) = 0;
+    //                dst.at<uchar>(i,j) = 0;
+    //            }
+    //    /* Apply erode to remove edges */
+
+    //    Mat element2 = getStructuringElement( morph_elem, Size( 2*erode_size + 1, 2*erode_size+1 ), Point( erode_size, erode_size ) );
+    //    if (erode_size)
+    //        erode(dst, dst, element2);
+    //    Mat color_map = image;
+    //    cvtColor(color_map, color_map, CV_RGB2HSV);
+    //    for (int i = 0; i < dst.rows; i++)
+    //        for (int j = 0; j < dst.cols; j++)
+    //            if (dst.at<uchar>(i,j) == 0)
+    //                color_map.at<Vec3b>(i,j) = Vec3b(0,0,100);
+    //    imshow(window_name, color_map);
+
+
+    int mul;
     const int road_thresh = 5;
     for(int i = 1; i < _width-1; i++)
         for(int j = 1; j < _height-1; j++)
         {
             //if(_types[j*_width+i] != TYPE_UNSCANNED) continue;
-	    double x = (_width/2 - position.x * 5 + _refPoint.x);
-	    double y = (_height/2 - position.y * 5 + _refPoint.y);
-	    double dist = sqrt((x-i) * (x-i) + (y-j) * (y-j));
-	    if (dist < 30)
-	      mul = 1;
-	    else
-	      mul = 2;
+            double x = (_width/2 - position.x * 5 + _refPoint.x);
+            double y = (_height/2 - position.y * 5 + _refPoint.y);
+            double dist = sqrt((x-i) * (x-i) + (y-j) * (y-j));
+            if (dist < 30)
+                mul = 1;
+            else
+                mul = 2;
             double height = _at(i, j);
             double heightx1 = _at(i-1, j);
             double heightx2 = _at(i+1, j);
@@ -362,12 +479,12 @@ void HeightMap::calculateTypes(Vec3D position, double pitch)
             //if (abs(height - position.z) > 0.8) _types[j*_width+i] = TYPE_OBSTACLE;
             if(heighty2 != HEIGHT_UNKNOWN && heighty1 != HEIGHT_UNKNOWN && heightx2 != HEIGHT_UNKNOWN && heightx1 != HEIGHT_UNKNOWN)
             {
-                if (abs(heighty2-heighty1)/2 > obs_diff*mul || abs(heightx2-heightx1)/2 > obs_diff*mul) _types[j*_width+i] = TYPE_OBSTACLE;
-                else if ((height - position.z) > obs_thresh*mul && (height - position.z) < 1.1) 
+                if (abs(heighty2-heighty1)/2 > _dynamic->obstacle_threshold * mul || abs(heightx2-heightx1)/2 > _dynamic->slope_threshold * mul) _types[j*_width+i] = TYPE_OBSTACLE;
+                else if ((height - position.z) > _dynamic->obstacle_threshold * mul && (height - position.z) < 1.1)
                     _types[j*_width+i] = TYPE_OBSTACLE;
                 else _types[j*_width+i] = TYPE_CLEAR;
             }
-            else if ((height - position.z) > obs_thresh*mul && (height - position.z) < 1.1)
+            else if ((height - position.z) > _dynamic->obstacle_threshold * mul && (height - position.z) < 1.1)
                 _types[j*_width+i] = TYPE_OBSTACLE;
             else _types[j*_width+i] = TYPE_UNSCANNED;
             //_types[j*_width+i] = TYPE_CLEAR;

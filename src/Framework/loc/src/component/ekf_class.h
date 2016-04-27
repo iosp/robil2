@@ -6,10 +6,10 @@
 #include <opencv2/opencv.hpp>
 #include "Egps.h"
 #include "Eimu.h"
+#include "loc/configConfig.h"
+#include <tf/transform_broadcaster.h>
 
-
-
-class ekf:private ekf_props {
+class ekf:public ekf_props {
 	/*
 	 * This class performs an Extended Kalman Filter estimation for a noisey environment.
 	 * The function receives measurements from the GPS and the IMU and stores the data in Z.
@@ -54,6 +54,10 @@ public:
 	 * return the estimated speed
 	 */
 	geometry_msgs::TwistStamped getEstimatedSpeed();
+    /*
+     * Broadcast TF
+     */
+    void broadcastTF();
 	/*
 	 * Kalman measurement update stage.
 	 */
@@ -86,11 +90,22 @@ public:
 	 * This function repairs the measurement vector z incase a gps measurement was not _received_gps
 	 */
 	void repairMeasurement();
+    /*
+     * Perform callibration
+     */
+    void calibrate(int numOfMeasurements);
+    /*
+     * Update Q matrix
+     */
+
+    bool _gps_height, _rha;
+    loc::configConfig _dyn;
 private:
 	Egps _Egps;
 	Eimu _Eimu;
 	int _ready;
 	bool _received_gps;
+    //tf::TransformBroadcaster *_broadcaster;
 	geometry_msgs::PoseWithCovarianceStamped estimatedPose,last_pose;
 	geometry_msgs::TwistStamped velocity;
 	sensor_msgs::NavSatFix initialGPS, GPSmeasurement;

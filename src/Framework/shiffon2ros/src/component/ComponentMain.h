@@ -11,11 +11,27 @@
 #include <ParameterTypes.h>
 #include <tf/tf.h>
 #include "../Shiphon_IO/Shiphon_IO.h"
-#include "../roscomm/RosComm.h"
 
-class RosComm;
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+#include <boost/thread.hpp>
+
 class ComponentMain {
-	RosComm* 		_roscomm;
+	bool _inited;
+	  ros::NodeHandle _nh;
+	  ros::Publisher _pub_diagnostic;
+	  boost::thread_group _maintains;
+
+		ros::Publisher  _pub_GPS;
+		ros::Publisher  _pub_INS;
+		ros::Publisher  _pub_INS2;
+		ros::Publisher  _pub_GpsSpeed;
+		ros::Publisher  _pub_GpsSpeed2; //Temporary topic for displaying in RQT
+
+	  bool init(int argc,char** argv);
 	Shiphon_Ctrl * 	_shiphonCtrl;
 public:
 	ComponentMain(int argc,char** argv);
@@ -27,7 +43,7 @@ public:
 	void publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg);
 	void publishGpsSpeed2(std_msgs::Float64& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 
@@ -35,6 +51,7 @@ public:
 	void ReadAndPub_ShiphonGPS();
 	void ReadAndPub_ShiphonINS();
 	void ReadAndPub_ShiphonGpsSpeed();
+	void heartbeat();
 
 };
 #endif /* COMPONENTMAIN_H_ */

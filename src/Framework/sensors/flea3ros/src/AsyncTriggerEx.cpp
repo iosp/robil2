@@ -83,7 +83,6 @@ bool captureStopped=false;
 
 
 void PrintBuildInfo()
-
 {
 
 	FC2Version fc2Version;
@@ -116,10 +115,7 @@ void PrintBuildInfo()
 
 }
 
-
-
 void PrintCameraInfo( CameraInfo* pCamInfo )
-
 {
 
 	printf(
@@ -156,47 +152,30 @@ void PrintCameraInfo( CameraInfo* pCamInfo )
 
 }
 
-
-
 void PrintError( Error error )
-
 {
-
 	error.PrintErrorTrace();
-
 }
 
-
-
 bool CheckSoftwareTriggerPresence( GigECamera* pCam )
-
 {
-
 	const unsigned int k_triggerInq = 0x530;
-
-
-
 	Error error;
 
 	unsigned int regVal = 0;
 
-
-
 	error = pCam->ReadRegister( k_triggerInq, &regVal );
-
 
 
 	if (error != PGRERROR_OK)
 
 	{
 
-		PrintError( error );
-
+		//PrintError( error );
+		printf("error checking software trigger\n");
 		return false;
 
 	}
-
-
 
 	if( ( regVal & 0x10000 ) != 0x10000 )
 
@@ -205,55 +184,24 @@ bool CheckSoftwareTriggerPresence( GigECamera* pCam )
 		return false;
 
 	}
-
-
-
 	return true;
-
 }
 
-
-
 bool PollForTriggerReady( GigECamera* pCam )
-
 {
-
 	const unsigned int k_softwareTrigger = 0x62C;
-
 	Error error;
-
 	unsigned int regVal = 0;
-
-
-
-	do 
-
-	{
-
-
-
+	do{ 
 		error = pCam->ReadRegister( k_softwareTrigger, &regVal );
-
 		if (error != PGRERROR_OK)
-
 		{
-
-			PrintError( error );
-
+			  printf("error polling trigger\n");
+			//PrintError( error );
 			return false;
-
 		}
-
-
-
 	} while ( (regVal >> 31) != 0 );
-
-
-
-
-
 	return true;
-
 }
 
 
@@ -261,111 +209,55 @@ bool PollForTriggerReady( GigECamera* pCam )
 bool FireSoftwareTrigger( GigECamera*pCam )
 
 {
-
 	const unsigned int k_softwareTrigger = 0x62C;
-
 	const unsigned int k_fireVal = 0x80000000;
-
 	Error error;    
-
-
-
 	error = pCam->WriteRegister( k_softwareTrigger, k_fireVal );
-
 	if (error != PGRERROR_OK)
-
 	{
-
-		PrintError( error );
-
+		//PrintError( error );
+	  printf("error fireing software\n");
 		return false;
-
 	}
-
-
-
 	return true;
-
 }
-
-
-
 //Thread for triggering the camera
 
 void TriggeringThread(std::vector<GigECamera*>* pParams)
-
 {
-
 	std::vector<GigECamera*> *cameras;
-
 	int size = (pParams)->size();
-
 	cameras = pParams;
-
 	//cameras = &((std::vector<GigECamera*>*)pParams);
-
 	GigECamera *masterCamera = cameras->at(0);
-
 	GigECamera *slaveCamera = cameras->at(1);
-
-
-
 	Error error;		
-
-
-
-	
-
 	while(!endCode)
-
 	{
-
 		//Checking both camera for trigger ready state
-
-		
-
 		if(PollForTriggerReady(masterCamera) && PollForTriggerReady(slaveCamera))
-
 		{
-
 			//Software triggering the camera
-
-
-			printf("Firing\n");
+			//printf("Firing\n");
 			bool retVal = FireSoftwareTrigger( masterCamera );
 			bool retVal1 = FireSoftwareTrigger( slaveCamera );
 			if ( !retVal )
-
 			{
-
 				printf("\nError firing software trigger!\n");      
-
 			}
+			
 			if ( !retVal1 )
-
 			{
-
 				printf("\nError firing software trigger!\n");      
-
 			}
-
-
-
 		}
 		else
 		  printf("no poll from slave\n");
-
 	}
 	printf("exiting firing thread\n");
-
-
-
 }
-
-
-
+int flag[2] = {0};
 void RetrieveBufferThread(GigECamera* pParams,int id)
-
 {
 
 	GigECamera*cam= pParams;
@@ -387,9 +279,16 @@ void RetrieveBufferThread(GigECamera* pParams,int id)
 		{
 		  printf("error in cam %d\n",id);
 
-			PrintError( error );   
+			//PrintError( error );  
+			flag[id] = -1;
 			continue;
 
+		}
+		flag[id] = 1;
+		while(1)
+		{
+		  if (flag[abs(id-1)]  == 1) break;
+		  if (flag[abs(id-1)]  == -1) {flag[id] = 0;flag[abs(id-1)] = 0;continue;}
 		}
 		cv::Mat bayer8BitMat(rawImage.GetRows(), rawImage.GetCols(), CV_8UC1, rawImage.GetData());
 		cv::Mat rgb8BitMat(rawImage.GetRows(), rawImage.GetCols(), CV_8UC3);
@@ -408,8 +307,9 @@ void RetrieveBufferThread(GigECamera* pParams,int id)
 		//msg->step = rawImage.GetStride();
 
 		publishers[id].publish(msg);//CompressMsg(msg));
-		printf("publish cam %d\n",id);
+		//printf("publish cam %d\n",id);
 		seq++;
+		flag[id] = 0;
 
 	}
 
@@ -444,52 +344,25 @@ void RetrieveBufferThread(GigECamera* pParams,int id)
 int main(int argc, char** argv)
 
 { 
-
 	PrintBuildInfo();
 	ros::init(argc, argv, "flea3ros");
 	ros::NodeHandle n;
 	image_transport::ImageTransport it(n);
-
-
-
 	Error error;
-
-
-
 	BusManager busMgr;
-
 	unsigned int numCameras;
-
 	error = busMgr.GetNumOfCameras(&numCameras);
-
 	if (error != PGRERROR_OK)
-
 	{
-
 		PrintError( error );
-
 		return -1;
-
 	}
-
-
-
 	printf( "Number of cameras detected: %u\n", numCameras );
-
-
-
 	if ( numCameras < 1 )
-
 	{
-
 		printf( "Insufficient number of cameras... exiting\n" );
-
 		return -1;
-
 	}
-
-
-
 	std::vector<GigECamera*> cams;
 
 	GigECamera cam1;
@@ -500,17 +373,11 @@ int main(int argc, char** argv)
 
 	cams.push_back(&cam2);
 
-
-
 	TriggerMode triggerMode;
 
 	StrobeControl mStrobe;
 
-
-
 	PGRGuid guid;
-
-
 
 	for(unsigned int i=0; i<numCameras;i++)
 
@@ -527,49 +394,8 @@ int main(int argc, char** argv)
 			PrintError( error );
 
 			return -1;
-//=============================================================================
-
-// Copyright © 2008 Point Grey Research, Inc. All Rights Reserved.
-
-//
-
-// This software is the confidential and proprietary information of Point
-
-// Grey Research, Inc. ("Confidential Information").  You shall not
-
-// disclose such Confidential Information and shall use it only in
-
-// accordance with the terms of the license agreement you entered into
-
-// with PGR.
-
-//
-
-// PGR MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
-
-// SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-
-// IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-
-// PURPOSE, OR NON-INFRINGEMENT. PGR SHALL NOT BE LIABLE FOR ANY DAMAGES
-
-// SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
-
-// THIS SOFTWARE OR ITS DERIVATIVES.
-
-//=============================================================================
-
-//=============================================================================
-
-// $Id: AsyncTriggerEx.cpp,v 1.21 2010-07-22 22:51:51 soowei Exp $
-
-//=============================================================================
 
 		}
-
-
-
-
 
 		// Connect to a camera
 
@@ -621,15 +447,7 @@ int main(int argc, char** argv)
 
 		{
 
-#if defined(WIN32) || defined(WIN64)
-
-			Sleep(millisecondsToSleep);    
-
-#else
-
 			usleep(millisecondsToSleep * 1000);
-
-#endif
 
 			error = cams[i]->ReadRegister(k_cameraPower, &regVal);
 
@@ -696,7 +514,7 @@ int main(int argc, char** argv)
 
 
 		PrintCameraInfo(&camInfo);      
-
+		
 
 
 		GigEStreamChannel streamChannel;
@@ -712,9 +530,6 @@ int main(int argc, char** argv)
 		}
 
 		GigEImageSettings imageSettings;
-
-
-
 		imageSettings.height=imageSettingsInfo.maxHeight;;
 
 		imageSettings.width=imageSettingsInfo.maxWidth;
@@ -785,15 +600,10 @@ int main(int argc, char** argv)
 
 		triggerMode.parameter = 0;
 
-		
 
+		mStrobe.delay = 0;
 
-
-
-
-		/*mStrobe.delay = 0;
-
-		mStrobe.duration = 0;*/
+		mStrobe.duration = 0;
 
 		mStrobe.onOff = true;
 
@@ -850,12 +660,6 @@ int main(int argc, char** argv)
 			error=cams[i]->ReadRegister(k_strobeRegister,&k_regVal);
 
 			error  = cams[1]->WriteRegister( k_strobeRegister, k_regVal||0x80000000);
-
-
-
-
-
-			
 
 			//mStrobe.duration=20;
 
@@ -979,64 +783,15 @@ int main(int argc, char** argv)
 
 	boost::thread t1(RetrieveBufferThread,cams.at(0),0);
 
-	boost::thread t2(RetrieveBufferThread,cams.at(1),1);//=============================================================================
-
-// Copyright © 2008 Point Grey Research, Inc. All Rights Reserved.
-
-//
-
-// This software is the confidential and proprietary information of Point
-
-// Grey Research, Inc. ("Confidential Information").  You shall not
-
-// disclose such Confidential Information and shall use it only in
-
-// accordance with the terms of the license agreement you entered into
-
-// with PGR.
-
-//
-
-// PGR MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE
-
-// SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-
-// IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-
-// PURPOSE, OR NON-INFRINGEMENT. PGR SHALL NOT BE LIABLE FOR ANY DAMAGES
-
-// SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
-
-// THIS SOFTWARE OR ITS DERIVATIVES.
-
-//=============================================================================
-
-//=============================================================================
-
-// $Id: AsyncTriggerEx.cpp,v 1.21 2010-07-22 22:51:51 soowei Exp $
-
-//=============================================================================
+	boost::thread t2(RetrieveBufferThread,cams.at(1),1);
 
 ros::AsyncSpinner spinner(4); // Use 4 threads
     spinner.start();
     ros::waitForShutdown();
 
 
-// 	while(!_kbhit())
-// 
-// 	{
-// 
-// 		Sleep(1000);
-// 
-// 	}
-
-
-
 	endCode=true;
       printf("exiting\n");
-
-
-	getchar();
 
 
 
