@@ -8,12 +8,14 @@ class PlpIbeo(object):
         self.constants = constants
         self.vars = PlpIbeoVariables(constants["RAYS"])
         self.params = None
+        self.last_scan_time = None
         self.callback = callback
 
-    def parameters_updated(self, newScan):
+    def parameters_updated(self, newScan, current_float_seconds):
         """Listener method. Called by a harness, when the parameters are updated.
            Triggers a detection and a possible callback."""
         self.params = newScan
+        self.last_scan_time = current_float_seconds
         detections = self.detect()
         for d in detections:
             self.callback.condition_detected(d)
@@ -45,11 +47,25 @@ class PlpIbeo(object):
                                                     "IBEO ray %s Seems to be looking at the sky"%(ray)) )
         return detections
 
+    def test_scan_frequency(self, current_float_seconds):
+        """Test that the the scan is not late. Returns a detection message if so. Otherwise, returns None."""
+        if self.params is None:
+            return None
+
+        diff_from_last_scan = current_float_seconds - self.last_scan_time
+        if ( diff_from_last_scan>self.constants["TIME_INCREMENT"] ):
+            return DetectionMessage("timeout",
+                                    diff_from_last_scan,
+                                    self.constants["TIME_INCREMENT"],
+                                    "IBEO unit did not provide a scan for %s seconds" % (diff_from_last_scan))
+        else:
+            return None
+
     def calculate_variables(self):
         """Read the new params, update the variables"""
         vars = PlpIbeoVariables(self.constants["RAYS"])
         vars.scan_time_increment = self.params.time_increment
-        vars.last_scan_time = self.params.scan_time
+        vars.last_scan_time = self.last_scan_time
         for ray in self.constants["RAYS"]:
             vars.fail_or_cover_pcnt[ray] = self.calculate_fail_or_cover_pcnt( getattr(self.params, "ranges_" + ray) )
             vars.obstacle_pcnt[ray] = self.calculate_obstacle_pcnt( getattr(self.params, "ranges_" + ray) )

@@ -24,7 +24,8 @@ class PlpIbeoRosHarness(object):
             "FAIL_OR_COVER_DISTANCE": 1, # meter - distance under which we assume IBEO is blocked
             "OBSTACLE_DISTANCE": 3, # meter - distance under which we assume close obstacle exists
             "SKY_DISTANCE": 50, # meter - distance over which we assume IBEO is looking at the sky
-            "RAYS":["t1","t2","b1","b2"] # Names of the rays in the message.
+            "RAYS":["t1","t2","b1","b2"],  # Names of the rays in the message
+            "WATCHDOG_PERIOD": 0.5 # seconds
         }
         # Init the ROS stuff
         rospy.init_node("plp_ibeo", anonymous=False)
@@ -34,11 +35,18 @@ class PlpIbeoRosHarness(object):
     def trigger_detection_start(self):
         """ Creates the PLP object, which starts the detection process. """
         self.plp = PlpIbeo(self.plp_constants, self)
+        self.timer = rospy.Timer( rospy.Duration(self.plp_constants["WATCHDOG_PERIOD"]), self.scan_frequency_test, False)
 
     def ibeoScan(self, newMultiLaserScanData):
-        # TODO update the PLP object
         if ( not (self.plp is None) ):
-            self.plp.parameters_updated(newMultiLaserScanData)
+            self.plp.parameters_updated(newMultiLaserScanData, rospy.get_time())
+
+    def scan_frequency_test(self, timer_event):
+        """Test that the last scan is not late"""
+        detection = self.plp.test_scan_frequency( rospy.get_time() )
+        if not (detection is None):
+            self.condition_detected(detection)
+
 
     def condition_detected(self, detection_message):
         self.publisher.publish(

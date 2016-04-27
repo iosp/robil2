@@ -19,12 +19,12 @@ class PlpIbeoVariables(object):
 
 class DetectionMessage(object):
     """Message about a detected condition"""
-    def __init__(self, key, detected_percentage, threshold, message):
+    def __init__(self, key, detected, threshold, message):
         super(DetectionMessage, self).__init__()
         self.key = key
-        self.detected_percentage = detected_percentage
+        self.detected = detected
         self.threshold = threshold
         self.message = message
 
     def __repr__(self):
-        return "[DetectionMessage key:%s detected_percentage:%s threshold:%s message:%s]" % (self.key, self.detected_percentage, self.threshold, self.message)
+        return "[DetectionMessage key:%s detected:%s threshold:%s message:%s]" % (self.key, self.detected, self.threshold, self.message)
