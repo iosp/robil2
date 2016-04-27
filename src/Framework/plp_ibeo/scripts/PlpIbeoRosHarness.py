@@ -1,8 +1,11 @@
+#!/usr/bin/env python
 import rospy
 
 from std_msgs.msg import String, Header  # TODO replace with the plp message
 from PlpIbeoClasses import *
+from PlpIbeo import *
 from plp_waypoint.msg import PlpMessage
+from robil_msgs.msg import MultiLaserScan
 
 PLP_TOPIC = "/plp/messages"
 
@@ -26,7 +29,7 @@ class PlpIbeoRosHarness(object):
         # Init the ROS stuff
         rospy.init_node("plp_ibeo", anonymous=False)
         self.publisher = rospy.Publisher(PLP_TOPIC, PlpMessage, queue_size=5)
-        rospy.Subscriber("/SENSORS/IBEO/1", String, self.ibeoScan)
+        rospy.Subscriber("/SENSORS/IBEO/1", MultiLaserScan, self.ibeoScan)
 
     def trigger_detection_start(self):
         """ Creates the PLP object, which starts the detection process. """
@@ -34,7 +37,7 @@ class PlpIbeoRosHarness(object):
 
     def ibeoScan(self, newMultiLaserScanData):
         # TODO update the PLP object
-        if ( self.plp not None ):
+        if ( not (self.plp is None) ):
             self.plp.parameters_updated(newMultiLaserScanData)
 
     def condition_detected(self, detection_message):

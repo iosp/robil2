@@ -1,4 +1,5 @@
-from PlpIbeoClasses import PlpIbeoVariables
+from itertools import *
+from PlpIbeoClasses import *
 
 class PlpIbeo(object):
     """The PLP for an IBEO unit. """
@@ -7,6 +8,7 @@ class PlpIbeo(object):
         self.constants = constants
         self.vars = PlpIbeoVariables(constants["RAYS"])
         self.params = None
+        self.callback = callback
 
     def parameters_updated(self, newScan):
         """Listener method. Called by a harness, when the parameters are updated.
@@ -14,7 +16,7 @@ class PlpIbeo(object):
         self.params = newScan
         detections = self.detect()
         for d in detections:
-            callback.condition_detected(d)
+            self.callback.condition_detected(d)
 
     def detect(self):
         """Method where detection occures. Returns an array of warnings"""
@@ -30,17 +32,17 @@ class PlpIbeo(object):
                 detections.append( DetectionMessage("fail_or_cover@" + ray,
                                                     self.vars.fail_or_cover_pcnt[ray],
                                                     self.constants["FAIL_OR_COVER_THRESHOLD"],
-                                                    "IBEO ray %s Seems to be covered or failing"%(ray) )
+                                                    "IBEO ray %s Seems to be covered or failing"%(ray)) )
             if self.vars.obstacle_pcnt[ray]>self.constants["OBSTACLE_THRESHOLD"]:
                 detections.append( DetectionMessage("obstacle@" + ray,
                                                     self.vars.obstacle_pcnt[ray],
                                                     self.constants["OBSTACLE_THRESHOLD"],
-                                                    "IBEO ray %s Seems to be facing an obstacle"%(ray) )
+                                                    "IBEO ray %s Seems to be facing an obstacle"%(ray)) )
             if self.vars.sky_pcnt[ray]>self.constants["SKY_THRESHOLD"]:
                 detections.append( DetectionMessage("sky@" + ray,
                                                     self.vars.sky_pcnt[ray],
                                                     self.constants["SKY_THRESHOLD"],
-                                                    "IBEO ray %s Seems to be looking at the sky"%(ray) )
+                                                    "IBEO ray %s Seems to be looking at the sky"%(ray)) )
         return detections
 
     def calculate_variables(self):
@@ -57,21 +59,22 @@ class PlpIbeo(object):
 
     def calculate_sky_pcnt(self, ranges):
         count = len(ranges)
-        if count = 0:
+        if count == 0:
             return None
         sky_count =  sum(1 for _ in ifilter( lambda x: x>self.constants["SKY_DISTANCE"], ranges))
         return sky_count/count
 
     def calculate_obstacle_pcnt(self, ranges):
         count = len(ranges)
-        if count = 0:
+        if count == 0:
             return None
-        obstacle_count =  sum(1 for _ in ifilter( lambda x: x<self.constants["OBSTACLE_DISTANCE"], ranges))
+        obstacled_ranges = ifilter( lambda x: x<self.constants["OBSTACLE_DISTANCE"] and x>self.constants["FAIL_OR_COVER_DISTANCE"], ranges)
+        obstacle_count =  sum(1 for _ in obstacled_ranges)
         return obstacle_count/count
 
     def calculate_fail_or_cover_pcnt(self, ranges):
         count = len(ranges)
-        if count = 0:
+        if count == 0:
             return None
-        obstacle_count =  sum(1 for _ in ifilter( lambda x: x<self.constants["BFAIL_OR_COVER_DISTANCE"], ranges))
+        obstacle_count =  sum(1 for _ in ifilter( lambda x: x<self.constants["FAIL_OR_COVER_DISTANCE"], ranges))
         return obstacle_count/count

@@ -5,9 +5,9 @@ class PlpIbeoVariables(object):
         super(PlpIbeoVariables, self).__init__()
         self.last_scan_time = 0
         self.scan_time_increment = 0
-        self.fail_or_cover_pcnt = emptyRayDictionary(ray_names)
-        self.obstacle_pcnt = emptyRayDictionary(ray_names)
-        self.sky_pcnt = emptyRayDictionary(ray_names)
+        self.fail_or_cover_pcnt = self.emptyRayDictionary(ray_names)
+        self.obstacle_pcnt = self.emptyRayDictionary(ray_names)
+        self.sky_pcnt = self.emptyRayDictionary(ray_names)
 
     @staticmethod
     def emptyRayDictionary(ray_names):
@@ -19,12 +19,12 @@ class PlpIbeoVariables(object):
 
 class DetectionMessage(object):
     """Message about a detected condition"""
-    def __init__(self, key, actual_value, threshold, message):
+    def __init__(self, key, detected_percentage, threshold, message):
         super(DetectionMessage, self).__init__()
         self.key = key
-        self.actual_value = actual_value
+        self.detected_percentage = detected_percentage
         self.threshold = threshold
         self.message = message
 
     def __repr__(self):
-        return "[DetectionMessage key:%s actual_value:%s threshold:%s message:%s]" % (self.key, self.actual_value, self.threshold, self.message)
+        return "[DetectionMessage key:%s detected_percentage:%s threshold:%s message:%s]" % (self.key, self.detected_percentage, self.threshold, self.message)
