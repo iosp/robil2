@@ -17,3 +17,4 @@ src/CMakeLists.txt
 *.idea*
 /src/monitoring/plp_waypoint/nbproject/private/
 .metadata/*
+runsnake*/
