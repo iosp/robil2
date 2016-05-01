@@ -34,7 +34,7 @@
 #define steering_message_max_time_delay 0.03
 
 // PID - Gain Values
-#define Kp 2000
+#define Kp 1000
 #define Klin 1
 #define Kang 1
 #define wide 1.5
