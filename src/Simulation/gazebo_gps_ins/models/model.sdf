@@ -43,13 +43,13 @@
       <frequency>20</frequency>      
       <noise>
 	<gps>0.1</gps>        			<!-- Sigma[m]		-->        
-	<gps_speed>0.01</gps_speed>		<!-- Sigma[m/sec]	-->  
-	<rollpitch>0.001</rollpitch>              <!-- Sigma[Rad]		-->
-	<yaw>0.001</yaw>				<!-- Sigma[Rad]		-->
+	<gps_speed>0.001</gps_speed>		<!-- Sigma[m/sec]	-->  
+	<rollpitch>0.001</rollpitch>    	<!-- Sigma[Rad]		-->
+	<yaw>0.010</yaw>			<!-- Sigma[Rad]		-->
 	<acc_bias>0.0</acc_bias>		<!-- Sigma[m/sec^2]	-->
+	<acc_noise>0.15</acc_noise>		<!-- Sigma[m/sec^2]	-->
 	<gyro_bias>0.0015</gyro_bias>		<!-- Sigma[Rad/sec]	-->
-	<acc_noise>0.000465329</acc_noise>	<!-- Sigma[m/sec^2]	-->
-	<gyro_noise>0.000252982</gyro_noise>	<!-- Sigma[Rad/sec^2]	-->
+	<gyro_noise>0.25</gyro_noise>		<!-- Sigma[Rad/sec]	-->
       </noise>
       
     </plugin>
