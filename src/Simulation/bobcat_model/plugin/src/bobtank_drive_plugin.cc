@@ -215,7 +215,7 @@ namespace gazebo
 	  Angular_velocity_ref_mutex.lock();
 		  // Recieving referance steering angle
 		  
-		  Angular_velocity_ref=msg->data;
+		  Angular_velocity_ref=100*msg->data;
 		  if(msg->data>100) Angular_velocity_ref=100;
 		  if(msg->data<-100) Angular_velocity_ref=-100;
 		
@@ -229,7 +229,7 @@ namespace gazebo
 	{
 	  Linear_velocity_ref_mutex.lock();
 		  // Recieving referance hammer velocity
-		  Linear_velocity_ref=msg->data;
+		  Linear_velocity_ref=100*msg->data;
 		  if(msg->data>100) Linear_velocity_ref=100;
 		  if(msg->data<-100) Linear_velocity_ref=-100;
 		  		  
