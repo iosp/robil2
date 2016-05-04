@@ -34,7 +34,7 @@
 #define steering_message_max_time_delay 0.03
 
 // PID - Gain Values
-#define Kp 1000
+#define Kp 800
 #define Klin 1
 #define Kang 1
 #define wide 1.5
@@ -182,7 +182,7 @@ namespace gazebo
 		lin_v=this->body_link-> GetRelativeLinearVel(); // get velocity in gazebo frame
 	    ang_v=this->body_link-> GetRelativeAngularVel(); // get velocity in gazebo frame
 
-		ROS_INFO("body_link=%lf         body_ang=%lf",lin_v.x,ang_v.z);
+		//ROS_INFO("body_link=%lf         body_ang=%lf",lin_v.x,ang_v.z);
 		   
 		
 		left_rate_output=linear_rate_private-angular_rate_private*wide;
@@ -230,8 +230,8 @@ namespace gazebo
 	  Linear_velocity_ref_mutex.lock();
 		  // Recieving referance hammer velocity
 		  Linear_velocity_ref=100*msg->data;
-		  if(msg->data>100) Linear_velocity_ref=100;
-		  if(msg->data<-100) Linear_velocity_ref=-100;
+		  if(msg->data>1) Linear_velocity_ref=100;
+		  if(msg->data<-1) Linear_velocity_ref=-100;
 		  		  
 		  // Reseting timer every time LLC publishes message
 		  velocity_timer.Start();
