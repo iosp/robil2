@@ -1,0 +1,121 @@
+<?xml version="1.0"?> 
+<sdf version="1.4">
+  <model name="IBEO1">
+    <pose>0 0 2.5 0 0 0 </pose>
+    <link name="link">
+      <gravity>0</gravity>
+      <visual name='visual'>
+	<pose>0 0 0 1.57 0 1.57 </pose>
+	<geometry>
+	  <mesh>
+	    <uri>model://IBEO/meshes/IBEO.STL </uri>
+	  </mesh>
+	</geometry>
+      </visual>
+      
+      <sensor name='ibeo-t1' type='gpu_ray'>
+	<pose>0.01 0.04 0.005 0 -0.014 0</pose>
+	<ray>
+	  <scan>
+	    <horizontal>
+	      <samples>760</samples>
+	      <resolution>1</resolution>
+	      <min_angle>-1.04719</min_angle>
+	      <max_angle>0.69813</max_angle>
+	    </horizontal>
+	  </scan>
+	  <range>
+	    <min>0.3</min>
+	    <max>35</max>
+	    <resolution>1</resolution>
+	  </range>
+	  
+	</ray>
+	<always_on>1</always_on>
+	<update_rate>30</update_rate>
+	<visualize>1</visualize>
+      </sensor>
+      
+      <sensor name='ibeo-t2' type='gpu_ray'>
+	<pose>0.01 0.04 0.006 0 -0.028 0</pose>
+	<ray>
+	  <scan>
+	    <horizontal>
+	      <samples>760</samples>
+	      <resolution>1</resolution>
+	      <min_angle>-1.04719</min_angle>
+	      <max_angle>0.69813</max_angle>
+	    </horizontal>
+	  </scan>
+	  <range>
+	    <min>0.3</min>
+	    <max>35</max>
+	    <resolution>1</resolution>
+	  </range>
+	  
+	</ray>
+	<always_on>1</always_on>
+	<update_rate>30</update_rate>
+	<visualize>1</visualize>
+      </sensor>
+      
+      <sensor name='ibeo-b1' type='gpu_ray'>
+	<pose>0.01 0.04 0.007 0 0.014 0</pose>
+	<ray>
+	  <scan>
+	    <horizontal>
+	      <samples>760</samples>
+	      <resolution>1</resolution>
+	      <min_angle>-0.872661</min_angle>
+	      <max_angle>0.872661</max_angle>
+	    </horizontal>
+	  </scan>
+	  <range>
+	    <min>0.3</min>
+	    <max>35</max>
+	    <resolution>1</resolution>
+	  </range>
+	  <noise>
+	    <type>gaussian</type>
+	    <mean>0.0</mean>
+	    <stddev>0.007</stddev>
+	  </noise>
+	</ray>
+	<always_on>1</always_on>
+	<update_rate>30</update_rate>
+	<visualize>1</visualize>
+      </sensor>
+      
+      <sensor name='ibeo-b2' type='gpu_ray'>
+	<pose>0.01 0.04 0.008 0 0.028 0</pose>
+	<ray>
+	  <scan>
+	    <horizontal>
+	      <samples>760</samples>
+	      <resolution>1</resolution>
+	      <min_angle>-0.872661</min_angle>
+	      <max_angle>0.872661</max_angle>
+	    </horizontal>
+	  </scan>
+	  <range>
+	    <min>0.3</min>
+	    <max>35</max>
+	    <resolution>1</resolution>
+	  </range>
+	  <noise>
+	    <type>gaussian</type>
+	    <mean>0.0</mean>
+	    <stddev>0.007</stddev>
+	  </noise>
+	</ray>
+	<always_on>1</always_on>
+	<update_rate>30</update_rate>
+	<visualize>1</visualize>
+      </sensor>
+      
+      
+    </link>
+  <plugin name="IBEOPLUGIN" filename="libibeo_gpu.so"/>
+  </model>        
+</sdf>
+
