@@ -182,7 +182,7 @@ namespace gazebo
 		lin_v=this->body_link-> GetRelativeLinearVel(); // get velocity in gazebo frame
 	    ang_v=this->body_link-> GetRelativeAngularVel(); // get velocity in gazebo frame
 
-		ROS_INFO("body_link=%lf         body_ang=%lf",lin_v.x,ang_v.z);
+		//ROS_INFO("body_link=%lf         body_ang=%lf",lin_v.x,ang_v.z);
 		   
 		
 		left_rate_output=linear_rate_private-angular_rate_private*wide;
