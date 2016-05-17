@@ -34,7 +34,7 @@
 #define steering_message_max_time_delay 0.03
 
 // PID - Gain Values
-#define Kp 800
+#define Kp 1000
 #define Klin 1
 #define Kang 1
 #define wide 1.5
@@ -173,7 +173,7 @@ namespace gazebo
 		double y=linear_rate;
 
 		//TODO: map from the matlab function to left_rate_output
-		double vel= l0 + l1*x + l2*y + l3*pow(x,2) + l4*x*y + l5*pow(y,2) + l6*pow(x,2)*y + l7*x*pow(y,2) + l8*pow(y,3);
+		double vel= ( l0 + l1*x + l2*y + l3*pow(x,2) + l4*x*y + l5*pow(y,2) + l6*pow(x,2)*y + l7*x*pow(y,2) + l8*pow(y,3)+0.1 )*1.15;
 		double ang= a0 + a1*x + a2*y + a3*pow(x,2) + a4*x*y + a5*pow(y,2) + a6*pow(x,3) + a7*pow(x,2)*y + a8*x*pow(y,2);
 
 		linear_rate_private=vel;
@@ -182,7 +182,7 @@ namespace gazebo
 		lin_v=this->body_link-> GetRelativeLinearVel(); // get velocity in gazebo frame
 	    ang_v=this->body_link-> GetRelativeAngularVel(); // get velocity in gazebo frame
 
-		//ROS_INFO("body_link=%lf         body_ang=%lf",lin_v.x,ang_v.z);
+		ROS_INFO("body_link=%lf         body_ang=%lf",lin_v.x,ang_v.z);
 		   
 		
 		left_rate_output=linear_rate_private-angular_rate_private*wide;
@@ -197,9 +197,9 @@ namespace gazebo
 		double y=linear_rate;
 
 		//TODO: map from the matlab function to right_rate_output 
-		double vel= l0 + l1*x + l2*y + l3*pow(x,2) + l4*x*y + l5*pow(y,2) + l6*pow(x,2)*y + l7*x*pow(y,2) + l8*pow(y,3);
+		double vel= ( l0 + l1*x + l2*y + l3*pow(x,2) + l4*x*y + l5*pow(y,2) + l6*pow(x,2)*y + l7*x*pow(y,2) + l8*pow(y,3)+0.1 )*1.15;
 		double ang= a0 + a1*x + a2*y + a3*pow(x,2) + a4*x*y + a5*pow(y,2) + a6*pow(x,3) + a7*pow(x,2)*y + a8*x*pow(y,2);
-
+		
 		linear_rate_private=vel;
 		angular_rate_private=ang;
 		
@@ -216,8 +216,8 @@ namespace gazebo
 		  // Recieving referance steering angle
 		  
 		  Angular_velocity_ref=100*msg->data;
-		  if(msg->data>100) Angular_velocity_ref=100;
-		  if(msg->data<-100) Angular_velocity_ref=-100;
+		  if(msg->data>1) Angular_velocity_ref=100;
+		  if(msg->data<-1) Angular_velocity_ref=-100;
 		
 		  // Reseting timer every time LLC publishes message
 		  steering_timer.Start();
