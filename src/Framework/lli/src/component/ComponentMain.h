@@ -57,8 +57,8 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishConnectedToPlatform(std_msgs::Bool& msg);
 	void heartbeat();
-
 
     void setReady();
     void setNotReady();
@@ -78,6 +78,7 @@ private:
     	ros::Subscriber _sub_EffortsTh;
     	ros::Subscriber _sub_EffortsSt;
     	ros::Subscriber _sub_EffortsJn;
+    	ros::Publisher _pub_connected_to_platform;
 
 
       bool init(int argc,char** argv);

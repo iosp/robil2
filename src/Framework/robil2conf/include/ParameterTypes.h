@@ -9,6 +9,8 @@ DEF_PUB( LLC, EffortsTh, types::Effort )
 DEF_PUB( LLC, EffortsSt, types::Effort )
 DEF_PUB( LLC, EffortsJn, types::Joints )
 
+DEF_PUB( LLI, ConnectedToPlatform, std_msgs::Bool )
+
 DEF_PUB( OCU, CustomIED, types::IEDLocation )
 DEF_PUB( OCU, PositionUpdate, types::Pose )
 DEF_PUB( OCU, AssignNavTask, types::NavTask )

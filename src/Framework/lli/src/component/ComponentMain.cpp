@@ -28,6 +28,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	_sub_EffortsJn=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLI","EffortsJn","sub"), 10, &ComponentMain::handleEffortsSt,this));
 
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
+	_pub_connected_to_platform=ros::Publisher(_nh.advertise<std_msgs::Bool>(fetchParam(&_nh,"LLI","ConnectedToPlatform","pub"),100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
     _clli = (CLLI_Ctrl *) NULL;
     is_ready = false;
@@ -233,6 +234,9 @@ void ComponentMain::heartbeat(){
 	}
 }
 
+void ComponentMain::publishConnectedToPlatform(std_msgs::Bool& msg){
+	_pub_connected_to_platform.publish(msg);
+}
 void * ComponentMain::callPThread(void * pParam)
 {
 	ComponentMain *myHandle = (ComponentMain *) (pParam);
@@ -269,12 +273,21 @@ void ComponentMain::lliCtrlLoop()
 
 	   //QinitiQ has been properly initialized.
 	ros::Rate r(100);
-
+    std_msgs::Bool msg;
+    //int count=0;
 	while (ros::ok())
 		{
 		    r.sleep();
+		    if (StateNotReady()){
+		    				msg.data=false;
+		    			}
+		    else msg.data=true;
+		    //if (count > 1000) msg.data=true;
+		    //count++;
+   			publishConnectedToPlatform(msg);
 			if (!_clli->PeriodicActivity())
 							break;
+
 
 	   	}
 
