@@ -1,3 +1,5 @@
+<!-- -*- mode: XML -*- -->
+
 <sdf version='1.4'>
 <model name='Sahar'>
 <link name='body'>
@@ -1125,8 +1127,6 @@
 </axis>
 </joint>
 <static>0</static>
-
-
 <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
 <robotNamespace>/Sahar</robotNamespace>
 </plugin>
@@ -1135,7 +1135,7 @@
 <plugin name="bobtank_drive_control" filename="libbobtank_drive_plugin.so"/> 
 
 
-
+<!--
 <include>
       <uri>model://SICK</uri>
       <pose>-0.2187 0.85 0.631 0 0 1.57</pose>
@@ -1147,19 +1147,21 @@
       <pose>-0.2187 -0.85 0.631 0 0 -1.57</pose>
       <name>right_sick</name>
     </include>
+-->
 
     <include>
       <uri>model://GPS_INS</uri>
-      <pose>0 0 0.5 0 0 0</pose>
+      <pose>-0.616 -0.155 2.133 0 0 0</pose>
       <name>gps_ins</name>
     </include>
 
     <include>
       <uri>model://IBEO</uri>
-      <pose>-0.375 0.055 1.89 0 0.284 0</pose>
+      <pose>-0.360 0.014 1.902 0.005 0.201 0.107</pose>
       <name>ibeo</name>
     </include>
     
+
     <include>
       <uri>model://FLEA3_L</uri>
       <pose>-0.3 0.25 2.02 0 0 0</pose>
@@ -1170,8 +1172,6 @@
       <pose>-0.3 -0.25 2.02 0 0 0</pose>
       <name>right_flea3</name>
     </include>
-
-
 
 
     <include>
@@ -1197,9 +1197,23 @@
       <pose>0.59 0.3 0.52 0 -1 0</pose>
       <name>blade_wire_sensor_mount</name>
     </include>
+    
+    
+    <include>
+      <uri>model://tracks</uri>
+      <pose>-1.25 -0.84 0.6 0 3.95 3.14159</pose>
+      <name>tracks_right</name>
+    </include>
 
+    <include>
+      <uri>model://tracks</uri>
+      <pose>-1.25 0.84 0.6 0 3.95 3.14159</pose>
+      <name>tracks_left</name>
+    </include>  
 
-
+        
+    
+<!--
     <joint name='left_sick_joint' type='revolute'>
       <child>left_sick::link</child>
       <parent>body</parent>
@@ -1224,6 +1238,8 @@
         <dynamics/>
       </axis>
     </joint>
+-->
+
     <joint name='gps_ins_joint' type='revolute'>
       <child>gps_ins::link</child>
       <parent>body</parent>
@@ -1236,6 +1252,8 @@
         <dynamics/>
       </axis>
     </joint>
+
+
     <joint name='ibeo' type='revolute'>
       <child>ibeo::link</child>
       <parent>body</parent>
@@ -1327,7 +1345,7 @@
         <dynamics/>
       </axis>
     </joint>
-<!--
+<!-- -->
     <plugin name="arm_wire_sensor_plugin" filename="libwire_sensor.so">
     <sensor_name>Sahar::arm_wire_sensor::link</sensor_name>
     <mount_name>Sahar::arm_wire_sensor_mount::link</mount_name>
@@ -1340,6 +1358,8 @@
     <noise>0.1</noise>
     </plugin>
 
+    
+    <!--
 <plugin name='TFpublish' filename='libTFpublisher.so'>
 
 <tf1frame>gps_ins</tf1frame>
@@ -1363,8 +1383,6 @@
 
 <update_rate>20</update_rate>
 </plugin>
-
-
 -->
 
 </model>

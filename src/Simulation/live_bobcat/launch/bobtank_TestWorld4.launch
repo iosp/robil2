@@ -3,9 +3,8 @@
 
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
     
-  <arg name="sw" default="4"/>  <!-- srvss world-->
 
-  <arg name="paused" default="true"/>
+  <arg name="paused" default="false"/>
   <arg name="use_sim_time" default="true"/>
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
@@ -14,7 +13,7 @@
   
 <!-- setting gazebo path for platform and sensors models -->
   <env name="GAZEBO_MODEL_PATH" value="$(arg robot_models)" />
-  
+
   <!-- We resume the logic in empty_world.launch -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="debug" value="$(arg debug)" />
@@ -22,30 +21,12 @@
     <arg name="paused" value="$(arg paused)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
-    <arg name="world_name" value="$(find live_bobcat)/worlds/TestWorld4_bobtank.world"/>
+    <arg name="world_name" value="$(find live_bobcat)/worlds/bobtank_TestWorld4.world"/>
   </include>
 
- <param name="robot_description" command="cat $(find live_bobcat)/sdf_models/bobtank/model.URDF" />
- <param name="robot_descriptionSDF" command="cat $(find live_bobcat)/sdf_models/bobtank/model.sdf" />
-
-  <node name="sdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-	args="-sdf -model Sahar -param robot_descriptionSDF -z 2 -y 10 -x 10"/>
 
 
-
-
-  <param name="tracks_description" command="cat $(find live_bobcat)/sdf_models/tracks/model.sdf"/>
-
-  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
-  <node name="left_tracks_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-	args="-sdf -model left_trucks -param tracks_description -x 8.75 -y 10.84 -z 2.6 -P 3.95 -Y 3.141592654"/>
-
-  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
-  <node name="right_tracks_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-	args="-sdf -model right_trucks -param tracks_description -x 8.75 -y 9.16 -z 2.6 -P 3.95 -Y 3.141592654"/>
-
-
-
+  <param name="robot_description" command="cat $(find bobtank)/urdf/BOBCAT_sdf_model_new.URDF" />
 
   <!-- ros_control clam launch file  --> 
   <include file="$(find bobtank)/launch/bobcat_gazebo_control_sdf_model _with_tracks.launch" />
