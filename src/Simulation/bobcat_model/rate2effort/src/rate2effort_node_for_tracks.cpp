@@ -49,8 +49,8 @@ void wheelsCallback(const geometry_msgs::Twist::ConstPtr &msg)
 
 right.data=(lin.data+ang.data)*100;
 left.data=(lin.data-ang.data)*100;
-effort_right.publish(right);
-effort_left.publish(left);
+//effort_right.publish(right);
+//effort_left.publish(left);
 }
 
 void armCallback(const geometry_msgs::Vector3::ConstPtr& msg)
@@ -78,7 +78,7 @@ void StCallback	(const std_msgs::Float64ConstPtr &msg)
 {
 	e_stop = ros::Time::now();
 	geometry_msgs::Twist::ConstPtr pub;
-	wheels->angular.x = msg->data ;
+	wheels->angular.x = -msg->data ;
 	pub = wheels;
 	wheelsCallback(pub);
 }

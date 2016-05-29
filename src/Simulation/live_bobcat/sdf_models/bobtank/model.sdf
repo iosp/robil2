@@ -1131,8 +1131,12 @@
 <robotNamespace>/Sahar</robotNamespace>
 </plugin>
 
+
+<plugin name="bobtank_drive_control" filename="libbobtank_drive_plugin.so"/> 
+
+
 <!--
-    <include>
+<include>
       <uri>model://SICK</uri>
       <pose>-0.2187 0.85 0.631 0 0 1.57</pose>
       <name>left_sick</name>
