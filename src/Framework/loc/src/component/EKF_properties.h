@@ -112,9 +112,9 @@ public:
 	}
 public:
 	static const double Vacc = 0.0465329;
-    static const double Vgps = 5.25;
+    static const double Vgps = 0.1;
 	static const double Vz = 0.001;
-	static const double Vvel = 0.05;
+    static const double Vvel = 0.001;
 	static const double Vgyro = 0.000252982;
 	static const double Vori = 0.087266389;
 };

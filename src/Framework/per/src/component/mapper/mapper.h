@@ -39,7 +39,7 @@ class Mapper
     
     static void VisualizeLoop();
     
-    static void handleIBEO(const config::PER::sub::SensorIBEO& msg);
+    static void handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher pcpub);
      
     static void handleSickL(const config::PER::sub::SensorSICK1& msg);
     
