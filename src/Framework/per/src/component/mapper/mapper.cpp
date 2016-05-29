@@ -83,19 +83,20 @@ void Mapper::VisualizeLoop()
     {
         if(height_map != NULL)// && visualize > 0)
         {
+            lock.lock();
             bool debug;
             ros::param::param("/PER/DEBUG", debug, false);
             if (debug)
             {
                 HeightMap m = height_map->deriveMap(position.x, position.y, myRot);
-                Mat im = m.generateMat(0,-5,0,0);
+                Mat im = m.generateMat(0,-5,0,1);
                 sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", im).toImageMsg();
                 HeightMap m2 = height_map->deriveMap(position.x, position.y, myRot);
-                Mat im2 = m.generateMat(0);
+                Mat im2 = m.generateMat(1);
                 sensor_msgs::ImagePtr msg2 = cv_bridge::CvImage(std_msgs::Header(), "bgr8", im2).toImageMsg();
                 component->publishDebug(msg, msg2);
             }
-            lock.lock();
+
             if((visualize & VISUALIZE_MAP) != 0) //map needed
             {
                 HeightMap m = height_map->deriveMap(position.x, position.y, myRot);
@@ -193,10 +194,8 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher 
         world_height.pose.orientation.w = 1;
         listener.waitForTransform("WORLD", "TRACKS_BOTTOM", now, ros::Duration(1));
         listener.transformPose("WORLD", world_height, tracks_height);
-        ROS_INFO("Height is: %.2f\n", tracks_height.pose.position.z);
         pcpub.publish(base_point);
         ProjectLaserRange(height_map, &base_point, tracks_height.pose.position.z);
-
     }
     catch(tf::TransformException& ex){
         ROS_ERROR("PER: %s", ex.what());
@@ -204,84 +203,6 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher 
 
     lock.unlock();
 }
-
-//void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
-//{
-//    if(!loc_received) return;
-//    //return;
-//    lock.lock();
-//    Rotation t2 = ibeoRot.add(Rotation(0, -msg.angle_t2, 0));
-//    Rotation t1 = ibeoRot.add(Rotation(0, -msg.angle_t1, 0));
-//    Rotation b1 = ibeoRot.add(Rotation(0, -msg.angle_b1, 0));
-//    Rotation b2 = ibeoRot.add(Rotation(0, -msg.angle_b2, 0));
-//    Quaternion qt2 = GetFromRPY(t2);
-//    Quaternion qt1 = GetFromRPY(t1);
-//    Quaternion qb1 = GetFromRPY(b1);
-//    Quaternion qb2 = GetFromRPY(b2);
-//    Vec3D t2front = GetFrontVector(qt2.x,qt2.y,qt2.z,qt2.w), t2right = GetRightVector(qt2.x,qt2.y,qt2.z,qt2.w);
-//    Vec3D t1front = GetFrontVector(qt1.x,qt1.y,qt1.z,qt1.w), t1right = GetRightVector(qt1.x,qt1.y,qt1.z,qt1.w);
-//    Vec3D b1front = GetFrontVector(qb1.x,qb1.y,qb1.z,qb1.w), b1right = GetRightVector(qb1.x,qb1.y,qb1.z,qb1.w);
-//    Vec3D b2front = GetFrontVector(qb2.x,qb2.y,qb2.z,qb2.w), b2right = GetRightVector(qb2.x,qb2.y,qb2.z,qb2.w);
-
-//    Quaternion q = GetFromRPY(ibeoRot);
-//    Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
-//    Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
-//    Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
-
-//    Vec3D pos = position.add(front.multiply(IBEO_X)).add(right.multiply(IBEO_Y)).add(up.multiply(IBEO_Z-GPS_Z));
-
-
-//    double incrtop = msg.angle_increment;
-//    double incrbottom = msg.angle_increment;
-
-//    for(int i = 0; i < msg.ranges_t2.size(); i++)
-//    {
-//        //if(msg.ranges_t2[i] < 0.3*msg.range_max)
-//        ProjectLaserRange(
-//                    height_map,
-//                    t2right,
-//                    t2front,
-//                    pos,
-//                    msg.ranges_t2[i],
-//                    msg.angle_min_t + i*incrtop);
-//    }
-    
-//    for(int i = 0; i < msg.ranges_t1.size(); i++)
-//    {
-//        //if(msg.ranges_t1[i] < 0.3*msg.range_max)
-//        ProjectLaserRange(
-//                    height_map,
-//                    t1right,
-//                    t1front,
-//                    pos,
-//                    msg.ranges_t1[i],
-//                    msg.angle_min_t + i*incrtop);
-//    }
-//    for(int i = 0; i < msg.ranges_b1.size(); i++)
-//    {
-//        //if(msg.ranges_b1[i] < 0.3*msg.range_max)
-//        ProjectLaserRange(
-//                    height_map,
-//                    b1right,
-//                    b1front,
-//                    pos,
-//                    msg.ranges_b1[i],
-//                    msg.angle_min_b + i*incrbottom);
-//    }
-//    for(int i = 0; i < msg.ranges_b2.size(); i++)
-//    {
-//        //if(msg.ranges_b2[i] < 0.3*msg.range_max)
-//        ProjectLaserRange(
-//                    height_map,
-//                    b2right,
-//                    b2front,
-//                    pos,
-//                    msg.ranges_b2[i],
-//                    msg.angle_min_b + i*incrbottom);
-//    }
-    
-//    lock.unlock();
-//}
 
 void Mapper::handleSickL(const config::PER::sub::SensorSICK1& msg)
 {

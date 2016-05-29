@@ -205,8 +205,8 @@ void ComponentMain::publishMiniMap(config::PER::pub::MiniMap& msg)
 
 void ComponentMain::publishDebug(sensor_msgs::ImagePtr hmsg, sensor_msgs::ImagePtr tmsg)
 {
-    _pub_hMap.publish(hmsg);
-    _pub_tMap.publish(tmsg);
+    _pub_hMap.publish(*hmsg);
+    _pub_tMap.publish(*tmsg);
 }
 
 void ComponentMain::publishVOOdometry(config::PER::pub::VOOdometry& msg)
