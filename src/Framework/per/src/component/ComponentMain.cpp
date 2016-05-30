@@ -270,6 +270,10 @@ void ComponentMain::configCallback(per::configConfig &config, uint32_t level)
         flags += 1;
     if (config.typeMap)
         flags += 8;
+    if (config.Debug)
+        ros::param::set("/PER/DEBUG",true);
+    else
+        ros::param::set("/PER/DEBUG", false);
     Mapper::setVisualize((unsigned char)flags);
 }
 void ComponentMain::heartbeat(){

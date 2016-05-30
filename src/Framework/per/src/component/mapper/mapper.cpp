@@ -121,6 +121,8 @@ void Mapper::VisualizeLoop()
                 if (!stereo.empty())
                     imshow("stereo", stereo);
             }
+            if (!visualize)
+                destroyAllWindows();
             lock.unlock();
             waitKey(20);
         }
