@@ -34,7 +34,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	_pub_GpsSpeed=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GpsSpeed>(fetchParam(&_nh,"SHIFFON2ROS","GpsSpeed","pub"),10));
 	_pub_GpsSpeed2=ros::Publisher(_nh.advertise<std_msgs::Float64>("SENSORS/GPSSPEED2",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
-	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
+//	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 }
 
 
