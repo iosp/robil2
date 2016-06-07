@@ -2,6 +2,7 @@
 	
 	<!-- == GENERAL ===== -->
 	<include file="$(find robil2conf)/parametersLoad.launch" />
+	<include file="$(find robil2TF)/launch/robilTFpublisher.launch" />
 	<!-- ================ -->
 
 	<!-- == MONITORING == -->
@@ -11,32 +12,26 @@
 	<!-- ================ -->
 
 	<!-- == PERCEPTION == -->
-	<!--node name="sensors_node" type="sensors_node" pkg="sensors" output="screen"/-->
-	<node name="iedsim_node" type="iedsim_node" pkg="iedsim" output="screen"/>
-     <!--   <node pkg="tf" type="static_transform_publisher" name="ibeo_shiffon_broadcaster" args="-0.375 0.055 1.39 0 0.210 0 base_link ibeo 10" /> -->
 	<node name="per_node" type="per_node" pkg="per" output="screen" respawn="true"/>
-	<!--arg name="toDebug" default=""/>	
-	<param name="toDebug" value="$(arg toDebug)" />
-	<node name="road_detection" type="road_detection" pkg="per" output="screen" respawn="true" args="$(arg toDebug)"/-->
 	<node name="loc_node" type="loc_node" pkg="loc" output="screen" respawn="true"/>
 	<!-- ================ -->
 	
 	<!-- MISSION CONTROL  -->
 	<node name="smme_node" type="smme_node" pkg="smme" output="screen" respawn="true"/>
-	<node name="wsm_node" type="wsm_node" pkg="wsm" output="screen" respawn="true"/>
+        <node name="wsm_node" type="wsm_node" pkg="wsm" output="screen" respawn="true"/>
 	<node name="ocu_node" type="ocu_node" pkg="ocu" output="screen"/>
 	<!-- ================ -->
 	
 	<!-- == NAVIGATION == -->
 	<include file="$(find pp)/launch/navigation.launch" />
 	<node name="llc_node" type="llc_node" pkg="llc" output="screen" respawn="true"/>
-	<node name="llc_checkup" type="llc_checkup" pkg="llc" output="screen" respawn="true"/>
         <!--node name="lli_node" type="lli_node" pkg="lli" output="screen" respawn="true"/-->
-        <!--node name="shiffon2ros_node" type="shiffon2ros_node" pkg="shiffon2ros" output="screen" respawn="true"/-->
+
 	<!-- ================ -->
 	
-	
-	<!-- ==TF== -->
-	<include file="$(find robil2TF)/launch/robilTFpublisher.launch" />
+	<!-- == PLATFORM and SENSORS INTERFACEs == -->
+        <node name="IPON2ros" type="shiffon2ros_node" pkg="shiffon2ros" output="screen" respawn="true"/>
+        <node name="IBEO2ros" type="sickldmrs.py" pkg="sick_ldmrs" output="screen" respawn="true"/>
+
 
 </launch>

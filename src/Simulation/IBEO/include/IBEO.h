@@ -114,6 +114,6 @@ typedef struct
 	ibeoScanDataHeader  Header;
 	unsigned short commandID;
 //	unsigned short reserved;
-}startMeasurmantReplay;
+}ReplayMSG;
 
 #endif
