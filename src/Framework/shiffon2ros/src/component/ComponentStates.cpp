@@ -109,21 +109,12 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
 	ROS_INFO("shiffon2ros Ready !!");
 
-
-	//ros::Time prev_time = ros::Time::now();
-	//ros::Duration TD = ros::Duration(1/100);
 	ros::Rate IPON_rate(100);
 	while (ros::ok()) {
-
-		IPON_rate.sleep();
-		//if (ros::Time::now() - prev_time > TD )	{
-			//cout << "prev_time = " << prev_time << "   TD = " << TD << "\n";
-
 		COMPONENT->ReadAndPub_ShiphonGPS();
 		COMPONENT->ReadAndPub_ShiphonINS();
 		COMPONENT->ReadAndPub_ShiphonGpsSpeed();
-		//prev_time = ros::Time::now();
-		//}
+		IPON_rate.sleep();
 	}
 	return TaskResult::SUCCESS();
 }
