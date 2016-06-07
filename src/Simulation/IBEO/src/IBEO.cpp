@@ -18,6 +18,12 @@ namespace gazebo
   class IBEO : public ModelPlugin
   {
     public:
+	  ~IBEO()
+	  {
+			shutdown(newsockfd,SHUT_RDWR);
+			shutdown(sockfd,SHUT_RDWR);
+	  }
+
 
     //loadParametersFromSDFFile
 	void loadParametersFromSDFFile(sdf::ElementPtr _sdf)
@@ -126,13 +132,15 @@ namespace gazebo
 
 	  int flag =1;
 	  setsockopt(sockfd, SOL_SOCKET,SO_REUSEADDR ,&serv_addr,sizeof(serv_addr));
-	  setsockopt(sockfd, IPPROTO_TCP,TCP_NODELAY ,(char*)&flag,sizeof(int));
+	  setsockopt(sockfd, IPPROTO_TCP,TCP_NODELAY ,&flag,sizeof(int));
+//	  setsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &flag, sizeof(int));
 
 	  if(bind(sockfd,(struct sockaddr*) &serv_addr, sizeof(serv_addr))<0)
       {
 		ROS_ERROR("IBEO socket bind fail");
 		exit(1);
       }
+	  //ROS_INFO("sockfd = %d", sockfd);
 	}
 
 	//Load
@@ -142,8 +150,8 @@ namespace gazebo
 	      rviz_points_index=0;
 		  client_connected=false;
 //		  initMsgWasSend=false;
-	      newsockfd=0;
-
+		  sockfd = -1;
+	      newsockfd = -1;
 		  flag_fillMsg = false;
 
 	      loadParametersFromSDFFile(_sdf);
@@ -158,7 +166,8 @@ namespace gazebo
 		  initSocket();
 
 		  _tcpSenderThread=boost::thread(&IBEO::sendThreadMethod,this);
-		  _tcpRestartThread=boost::thread(&IBEO::restartThreadMethhod,this);
+		  _tcpRestartThread=boost::thread(&IBEO::responseThreadMethhod,this);
+		  _controlThread=boost::thread(&IBEO::controlThread,this);
 
 	      vecToSend = new (std::vector<std::pair<common::Time, char[10000]> *>);
 
@@ -168,45 +177,122 @@ namespace gazebo
 	      FC_counterOfMsgInSec = 0;
     }
 
+	void controlThread()
+	{
+		int d = 0;
+		while(true)
+		{
+			sleep(1);
+			if(vecToSend)
+				d = vecToSend->size();
+			if(d>10)
+			{
+				client_connected=false;
+				shutdown(newsockfd,SHUT_RDWR);
+				newsockfd=-1;
+				ROS_INFO("control thread closed the socket");
+			}
+		}
+	}
 
 	// This tread is used for situation where the parser on the side of the Robot, before transit to receiving data state performs sequence of seting parameters of the sensor
 	// we ignore the parameters that the parser requires and only replay with (false) acknowledge messages
-	void restartThreadMethhod()
+	void responseThreadMethhod()
 	{
-		char buffer[50];
+		char buffer[500];
 		while(true)
 		{
-			bzero(buffer, 50);
-			recv(newsockfd, &buffer, sizeof(startMeasurmantReplay), 0);
-			if(strlen(buffer) == 0)
+			if(!client_connected || newsockfd < 0)
+				continue;
+			int n = 0;
+			int rv = poll(&ufds[0], 1, -1);
+			if(rv == -1)
+				ROS_INFO("IBEO: error in poll() at responseThreadMethhod()");
+			if(ufds[0].revents & POLLIN)
 			{
-				sleep(1);
+				bzero(buffer, 500);
+				n = recv(newsockfd, buffer, sizeof(ibeoScanDataHeader), 0);
+				unsigned int sizeOfData = 0;
+				memcpy(&sizeOfData, buffer+8, 4);
+				sizeOfData = littleEndianToBig<unsigned int>(sizeOfData);
+				n += recv(newsockfd, &buffer[sizeof(ibeoScanDataHeader)], sizeOfData, 0);
+			}
+			else
+				continue;
+
+			if(strlen(buffer) == 0 || n < 0)
+			{
 				continue;
 			}
+
+			int magicWord = 0;
+			memcpy(&magicWord, buffer, 4);
+			if (magicWord != littleEndianToBig<int>(0xaffec0c2))
+				continue;
+
 //			initMsgWasSend = false;
-			int n = 0;
 			// there is 7 states in the sickldrs parser, we want to transit all of them to the StartMeasure state we forcefully send StartMeasure msg
+		    ReplayMSG repaly;
+		    repaly.Header.MagicWord = littleEndianToBig<int>(0xaffec0c2);
+		    repaly.Header.SizePreviousMessage = 0;
+		    repaly.Header.SizeCurrentMessage=littleEndianToBig<unsigned int>(sizeof(ReplayMSG) - sizeof(ibeoScanDataHeader) );
+		    repaly.Header.Reserved = 0;
+		    repaly.Header.DeviceID = 0;
+  		    repaly.Header.DataType = littleEndianToBig<unsigned short>(0x2020);
+	  	    repaly.Header.time_up = 0;	// NTP64
+		    repaly.Header.time_down = 0;  // NTP64
+		  	memcpy(buffer+24, &repaly.commandID, 2); //copy the command id from the received msg
+
+			n = 0;
 			for(int j = 0 ; j < 7 ; j++)
 			{
-			  startMeasurmantReplay repaly;
-
-			  repaly.Header.MagicWord = littleEndianToBig<int>(0xaffec0c2);//0xc2c0feaf;
-			  repaly.Header.SizePreviousMessage = 0;
-			  repaly.Header.SizeCurrentMessage=littleEndianToBig<unsigned int>(sizeof(startMeasurmantReplay) - sizeof(ibeoScanDataHeader) );
-			  repaly.Header.Reserved = 0;
-			  repaly.Header.DeviceID = 0;
-			  repaly.Header.DataType = littleEndianToBig<unsigned short>(0x2020);
-			  repaly.Header.time_up = 0;	// NTP64
-			  repaly.Header.time_down = 0;  // NTP64
-			  repaly.commandID = 0x0021;
-			  n = sendto(newsockfd,&repaly,sizeof(startMeasurmantReplay),0,(sockaddr *)&cli_addr,clilen);
+				int rv = poll(&ufds[1], 1, -1);
+				if(rv == -1)
+					ROS_INFO("IBEO: error in poll() at sendThreadMethod()");
+				if(ufds[1].revents & POLLOUT)
+				{
+					n = sendto(newsockfd,&repaly,sizeof(ReplayMSG),0,(sockaddr *)&cli_addr,clilen);
+				}
 			}
+
 //			initMsgWasSend = true;
 			//ignore the next setparams messages from the parser
 			sleep(1);
 			for(int j = 0 ; j < 5 ; j++)
-			  recv(newsockfd, &buffer, sizeof(startMeasurmantReplay), 0);
+			{
+				if(!client_connected || newsockfd < 0)
+					continue;
+				int n = 0;
+				int rv = poll(&ufds[0], 1, -1);
+				if(rv == -1)
+					ROS_INFO("IBEO: error in poll() at responseThreadMethhod()");
+				if(ufds[0].revents & POLLIN)
+				{
+					bzero(buffer, 500);
+					n = recv(newsockfd, buffer, sizeof(ibeoScanDataHeader), 0);
+					unsigned int sizeOfData = 0;
+					memcpy(&sizeOfData, buffer+8, 4);
+					sizeOfData = littleEndianToBig<unsigned int>(sizeOfData);
+					n += recv(newsockfd, &buffer[sizeof(ibeoScanDataHeader)], sizeOfData, 0);
+				}
+			}
+		}
+	}
 
+	void checkSocket(int sockfdToCheck)
+	{
+		int error = 0;
+		socklen_t len = sizeof(error);
+		int retval = getsockopt(sockfdToCheck, SOL_SOCKET, SO_ERROR, &error, &len);
+		if(retval != 0)
+		{
+			//there was a problem getting the error code
+			printf("error getting socket error code: %s\n", strerror(retval));
+		}
+		if(error!=0)
+		{
+			//socket has a non zero error status
+			printf("socket error: %s\n", strerror(error));
 		}
 	}
 
@@ -230,29 +316,33 @@ namespace gazebo
     		    int bytes_sent=0;
     			while(bytes_sent<(sizeof(SibeoScanData) +(numOfIbeoPoints*sizeof(IbeoScanPoint)) )&& client_connected /*&& initMsgWasSend*/)
 			    {
-    				int n = sendto(newsockfd,front->second+bytes_sent,(sizeof(SibeoScanData) + (numOfIbeoPoints*sizeof(IbeoScanPoint))) - bytes_sent,0x08,(sockaddr *)&cli_addr,clilen);
-	   			   //ROS_INFO("IBEO msg send time : %g  ", front->first.Double());
-
-				   if(n>0)
-				   {
-					   bytes_sent+=n;
-				   }
-				   if(n<0)
-				   {
-					   if(newsockfd>0)
+    				int rv = poll(&ufds[1], 1, -1);
+    				if(rv == -1)
+    					ROS_INFO("IBEO: error in poll() at sendThreadMethod()");
+    				if(ufds[1].revents & POLLOUT)
+    				{
+					   int n = sendto(newsockfd,front->second+bytes_sent,(sizeof(SibeoScanData) + (numOfIbeoPoints*sizeof(IbeoScanPoint))) - bytes_sent,0/*x08*/,(sockaddr *)&cli_addr,clilen);
+					   if(n>0)
 					   {
-						   shutdown(newsockfd,SHUT_RDWR);
-						   newsockfd=-1;
+						   bytes_sent+=n;
 					   }
-					   client_connected=false;
-					   break;
-				   }
+					   if(n<0)
+					   {
+						   //ROS_INFO("NOT SEND, errno = %d, %s", errno, strerror(errno));
+						   if(newsockfd>0)
+						   {
+							   shutdown(newsockfd,SHUT_RDWR);
+							   newsockfd=-1;
+						   }
+						   client_connected=false;
+						   break;
+					   }
+    				}
 			    }
-//    			cout << "bytes_sent = " << bytes_sent << endl;
     			vecToSend_mutex.lock();
 				vecToSend->erase( (vecToSend->begin()) );
-				delete front;
 		    	vecToSend_mutex.unlock();
+				delete front;
 
 				// frequency checking - if average of frequency is not correct for 10 seconds warn message will appear
       	  		if (sim_Time.sec - FC_LastTime_Second >= 1 )
@@ -278,6 +368,7 @@ namespace gazebo
       	  		{
       	  			FC_counterOfMsgInSec++;
       	  		}
+				// end frequency checking
     		}
     	}
     }
@@ -307,14 +398,18 @@ namespace gazebo
     bool acceptClient()
     {
       	  listen(sockfd,5);
-      	  socklen_t alen;
-      	  newsockfd=accept(sockfd,(struct sockaddr *)&cli_addr,&alen);
+      	  clilen = sizeof(sockaddr);
+      	  newsockfd=accept(sockfd,(struct sockaddr *)&cli_addr,&clilen);
       	  if(newsockfd<0)
       	  {
       		  return false;
       	  }
       	  else
       	  {
+      		  ufds[0].fd = newsockfd;
+      		  ufds[0].events = POLLIN;//recv
+      		  ufds[1].fd = newsockfd;
+      		  ufds[1].events = POLLOUT;//send
       		  client_connected=true;
       		  ROS_INFO("ibeo client connected");
       	  }
@@ -348,20 +443,20 @@ namespace gazebo
         m_ibeoScan.Header.time_down = 0;  // NTP64
         m_ibeoScan.Header.Reserved=0; //Reserved
 
-        m_ibeoScan.Scan.ScanNumber=3;//littleEndianToBig<unsigned short>(3);
-        m_ibeoScan.Scan.ScannerStatus=0x20;//littleEndianToBig<unsigned short>(0x20);
-        m_ibeoScan.Scan.SyncPhaseOffset=0;//littleEndianToBig<unsigned short>(0); //(1.0/_sensorT1->GetUpdateRate()/700);
+        m_ibeoScan.Scan.ScanNumber=3;
+        m_ibeoScan.Scan.ScannerStatus=0x20;
+        m_ibeoScan.Scan.SyncPhaseOffset=0;//(1.0/_sensorT1->GetUpdateRate()/700);
 
-        m_ibeoScan.Scan.ScanStratTimeDOWN=ros::Time::now().nsec;//littleEndianToBig<unsigned int>(ros::Time::now().sec);
-        m_ibeoScan.Scan.ScanStratTimeUP=ros::Time::now().sec;//littleEndianToBig<unsigned int>(ros::Time::now().sec);
-        m_ibeoScan.Scan.ScanEndTimeDOWN=ros::Time::now().nsec+1;//littleEndianToBig<unsigned int>(ros::Time::now().sec);
-        m_ibeoScan.Scan.ScanEndTimeUP=ros::Time::now().sec;//littleEndianToBig<unsigned int>(ros::Time::now().sec);
+        m_ibeoScan.Scan.ScanStratTimeDOWN=ros::Time::now().nsec;
+        m_ibeoScan.Scan.ScanStratTimeUP=ros::Time::now().sec;
+        m_ibeoScan.Scan.ScanEndTimeDOWN=ros::Time::now().nsec+1;
+        m_ibeoScan.Scan.ScanEndTimeUP=ros::Time::now().sec;
 
-        m_ibeoScan.Scan.AngelsTicks = 11520;//littleEndianToBig<unsigned short>(11520); //(0.0023);
-       m_ibeoScan.Scan.StartAngel = (short)(std::max(_rows_t_start_ang,_rows_b_start_ang) * (11520 / (2 * PI)));//(short)_rows_b_yaw_ang_min * (11520 / (2 * PI));//littleEndianToBig<short>((short)(_rows_b_yaw_ang_min * (11520 / (2 * PI))));  //160;//littleEndianToBig<short>(160); // + littleEndianToBig
-       m_ibeoScan.Scan.EndAngel = (short)(std::min(_rows_t_end_ang,_rows_b_end_ang) * (11520 / (2 * PI)));//littleEndianToBig<short>((short)(_rows_t_yaw_ang_max * (11520 / (2 * PI)))); //200;//littleEndianToBig<short>(200); // + littleEndianToBig
+        m_ibeoScan.Scan.AngelsTicks = 11520;//(0.0023);
+        m_ibeoScan.Scan.StartAngel = (short)(std::max(_rows_t_start_ang,_rows_b_start_ang) * (11520 / (2 * PI)));
+        m_ibeoScan.Scan.EndAngel = (short)(std::min(_rows_t_end_ang,_rows_b_end_ang) * (11520 / (2 * PI)));
 
-        m_ibeoScan.Scan.ScanPoints = rangesT1.size()+rangesT2.size()+rangesB1.size()+rangesB2.size();//littleEndianToBig<unsigned short>(rangesT1.size()+rangesT2.size()+rangesB1.size()+rangesB2.size()); // + littleEndianToBig
+        m_ibeoScan.Scan.ScanPoints = rangesT1.size()+rangesT2.size()+rangesB1.size()+rangesB2.size();
         m_ibeoScan.Scan.PositionYaw=0; //Reserved
         m_ibeoScan.Scan.PositionPitch=0; //Reserved
         m_ibeoScan.Scan.PositionRoll=0; //Reserved
@@ -376,8 +471,6 @@ namespace gazebo
         fillPoints(pointCounter, 1, _rows_b_start_ang , _rows_yaw_ang_increment, rangesB1);
         fillPoints(pointCounter, 2, _rows_t_start_ang , _rows_yaw_ang_increment, rangesT1);
         fillPoints(pointCounter, 3, _rows_t_start_ang , _rows_yaw_ang_increment, rangesT2);
-
-       // std::cout << "rangesB2.size() = " << rangesB2.size() << "   rangesB2[0] = " << rangesB2[0] << "     rangesB2[rangesB2.size()-1] = " <<  rangesB2[rangesB2.size()-1] << "\n";
     }
 
     //OnUpdate
@@ -416,13 +509,13 @@ namespace gazebo
 
 		  vector<double> rangesT1, rangesT2, rangesB1, rangesB2;
 		  getRanges(rangesT1, rangesT2, rangesB1, rangesB2);
-
 		  ros::Time new_scan_time_tag = ros::Time::now();
 		  Publish_RVIZ_Message(rangesT1, rangesT2, rangesB1, rangesB2, new_scan_time_tag);
 		  BroadcastTF(new_scan_time_tag);
 
 		  if(!client_connected && !acceptClient())
 		  {
+			  //return;
 		  }
 
 		  memset(&m_ibeoScan,0,sizeof(SibeoScanData));
@@ -435,10 +528,10 @@ namespace gazebo
 	      pairToPush->first = sim_Time;
 	      memcpy(pairToPush->second, &m_ibeoScan, sizeof(SibeoScanData));
 	      memcpy(pairToPush->second+sizeof(SibeoScanData)-sizeof(IbeoScanPoint*), m_ibeoScan.Point, sizeof(IbeoScanPoint)*numOfIbeoPoints);
-	      delete m_ibeoScan.Point;
 		  vecToSend_mutex.lock();
 	      vecToSend->insert(vecToSend->end(),pairToPush);
 	      vecToSend_mutex.unlock();
+	      delete m_ibeoScan.Point;
       }
     }
     
@@ -558,11 +651,13 @@ namespace gazebo
     int sockfd,newsockfd,portno;
     socklen_t clilen;
     struct sockaddr_in serv_addr,cli_addr;
+    struct pollfd ufds[2];
     std::atomic<bool> client_connected;
 //    std::atomic<bool> initMsgWasSend;
 
     boost::thread _tcpSenderThread;
     boost::thread _tcpRestartThread;
+    boost::thread _controlThread;
 
     boost::mutex vecToSend_mutex;
     std::vector<std::pair<common::Time, char[10000]> *> *vecToSend;
