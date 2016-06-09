@@ -35,7 +35,7 @@ class PlpWaypointRosHarness(object):
             "FUEL_CONSUMPTION_RATE": 10000,  # m/liter
             "BOBCAT_AVERAGE_SPEED": 20000,  # m/hour
             "RATE_PATH_LENGTH": 0.85,  # 0..1
-            "RATE_AERIAL_DISTANCE": 0.95  # 0..1
+            "RATE_AERIAL_DISTANCE": 0.95,  # 0..1
             "GOAL_DISTANCE": 5  # Meters from target to be considered a success.
         }
 
