@@ -31,7 +31,8 @@
 	
 	<!-- == PLATFORM and SENSORS INTERFACEs == -->
         <node name="IPON2ros" type="shiffon2ros_node" pkg="shiffon2ros" output="screen" respawn="true"/>
-        <node name="IBEO2ros" type="sickldmrs.py" pkg="sick_ldmrs" output="screen" respawn="true"/>
+        <!-- node name="IBEO2ros" type="sickldmrs.py" pkg="sick_ldmrs" output="screen" respawn="true"/-->
+         <node pkg="robil2conf" type="timed_roslaunch.sh" args="5 robil2conf sick.launch" name="timed_roslaunch" output="screen">   </node>
 
 
 </launch>

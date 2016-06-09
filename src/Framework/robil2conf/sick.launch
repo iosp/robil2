@@ -1,0 +1,8 @@
+<launch>
+	
+		
+	<!-- == PLATFORM and SENSORS INTERFACEs == -->
+        <node name="IBEO2ros" type="sickldmrs.py" pkg="sick_ldmrs" output="screen" respawn="true" />
+
+
+</launch>
