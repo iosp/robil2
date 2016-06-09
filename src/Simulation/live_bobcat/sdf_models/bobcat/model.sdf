@@ -916,73 +916,86 @@
 <commandTopic>/Sahar/cmd_vel</commandTopic>
 <broadcastTF>false</broadcastTF>
 </plugin>
-<include>
-<uri>model://SICK</uri>
-<pose>-0.2187 0.85 0.631 0 0 1.57</pose>
-<name>left_sick</name>
-</include>
-
-<include>
-<uri>model://SICK</uri>
-<pose>-0.2187 -0.85 0.631 0 0 -1.57</pose>
-<name>right_sick</name>
-</include>
-
-<include>
-<uri>model://GPS_INS</uri>
-<pose>0 0 0.5 0 0 0</pose>
-<name>gps_ins</name>
-</include>
-
-<include>
-<uri>model://IBEO</uri>
-<pose>-0.375 0.055 1.89 0 0.284 0</pose>
-<name>ibeo</name>
-</include>
-
-<include>
-<uri>model://FLEA3_L</uri>
-<pose>-0.3 0.25 2.02 0 0 0</pose>
-<name>left_flea3</name>
-</include>
-<include>
-<uri>model://FLEA3_R</uri>
-<pose>-0.3 -0.25 2.02 0 0 0</pose>
-<name>right_flea3</name>
-</include>
 
 
+<!--
+    <include>
+      <uri>model://SICK</uri>
+      <pose>-0.2187 0.85 0.631 0 0 1.57</pose>
+      <name>left_sick</name>
+    </include>
+
+    <include>
+      <uri>model://SICK</uri>
+      <pose>-0.2187 -0.85 0.631 0 0 -1.57</pose>
+      <name>right_sick</name>
+    </include>
+-->
+<!--
+    <include>
+      <uri>model://GPS_INS</uri>
+      <pose>-0.616 -0.155 2.133 0 0 0</pose>
+      <name>gps_ins</name>
+    </include>
+-->
 
 
-<include>
-<uri>model://wire_sensor</uri>
-<pose>-1.42 0.56 1.05 -1.6 2.3 0</pose>
-<name>arm_wire_sensor</name>
-</include>
+<!-- -->
+    <include>
+      <uri>model://IPON</uri>
+      <pose>-0.616 -0.155 2.133 0 0 0</pose>
+      <name>IPON</name>
+    </include>
 
-<include>
-<uri>model://wire_sensor_mount</uri>
-<pose>-1.31 0.56 1.28 -1.6 0 0</pose>
-<name>arm_wire_sensor_mount</name>
-</include>
-
-<include>
-<uri>model://wire_sensor</uri>
-<pose>0.3 0.3 0.85 0 -0.83 3.14</pose>
-<name>blade_wire_sensor</name>
-</include>
-
-<include>
-<uri>model://wire_sensor_mount</uri>
-<pose>0.59 0.3 0.52 0 -1 0</pose>
-<name>blade_wire_sensor_mount</name>
-</include>
+<!-- -->
+    <include>
+      <uri>model://IBEO</uri>
+      <pose>-0.360 0.014 1.902 0.005 0.201 0.107</pose>
+      <name>IBEO</name>
+    </include>
+    
 
 
+    <include>
+      <uri>model://FLEA3_L</uri>
+      <pose>-0.3 0.25 2.02 0 0 0</pose>
+      <name>left_flea3</name>
+    </include>
+    <include>
+      <uri>model://FLEA3_R</uri>
+      <pose>-0.3 -0.25 2.02 0 0 0</pose>
+      <name>right_flea3</name>
+    </include>
 
 
+    <include>
+      <uri>model://wire_sensor</uri>
+      <pose>-1.42 0.56 1.05 -1.6 2.3 0</pose>
+      <name>arm_wire_sensor</name>
+    </include>
 
+    <include>
+      <uri>model://wire_sensor_mount</uri>
+      <pose>-1.31 0.56 1.28 -1.6 0 0</pose>
+      <name>arm_wire_sensor_mount</name>
+    </include>
 
+    <include>
+      <uri>model://wire_sensor</uri>
+      <pose>0.3 0.3 0.85 0 -0.83 3.14</pose>
+      <name>blade_wire_sensor</name>
+    </include>
+
+    <include>
+      <uri>model://wire_sensor_mount</uri>
+      <pose>0.59 0.3 0.52 0 -1 0</pose>
+      <name>blade_wire_sensor_mount</name>
+    </include>
+    
+    
+
+    
+<!--
     <joint name='left_sick_joint' type='revolute'>
       <child>left_sick::link</child>
       <parent>body</parent>
@@ -1007,6 +1020,9 @@
         <dynamics/>
       </axis>
     </joint>
+-->
+
+<!--
     <joint name='gps_ins_joint' type='revolute'>
       <child>gps_ins::link</child>
       <parent>body</parent>
@@ -1019,8 +1035,26 @@
         <dynamics/>
       </axis>
     </joint>
-    <joint name='ibeo' type='revolute'>
-      <child>ibeo::link</child>
+-->
+
+
+    <joint name='ipon_joint' type='revolute'>
+      <child>IPON::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+
+<!-- -->
+    <joint name='ibeo_joint' type='revolute'>
+      <child>IBEO::link</child>
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
@@ -1111,6 +1145,7 @@
       </axis>
     </joint>
 
+<!-- -->
     <plugin name="arm_wire_sensor_plugin" filename="libwire_sensor.so">
     <sensor_name>Sahar::arm_wire_sensor::link</sensor_name>
     <mount_name>Sahar::arm_wire_sensor_mount::link</mount_name>
@@ -1123,6 +1158,8 @@
     <noise>0.1</noise>
     </plugin>
 
+    
+    <!--
 <plugin name='TFpublish' filename='libTFpublisher.so'>
 
 <tf1frame>gps_ins</tf1frame>
@@ -1146,5 +1183,7 @@
 
 <update_rate>20</update_rate>
 </plugin>
+-->
+
 </model>
 </sdf>
