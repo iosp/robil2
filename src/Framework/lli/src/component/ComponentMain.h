@@ -44,6 +44,7 @@ public:
 	//Thread Function for LLI Ctrl for QinetiQ
 	void   lliCtrlLoop();
 	static void * callPThread(void *pThis);
+	static void *callHeartbeat(void *pThis);
 	//This method is called when the state of the component is switching to State_Init
 	void workerFunc();
 
@@ -88,5 +89,6 @@ private:
 	pthread_t _mythread;
 	bool is_ready;
 	CS_STATE _state;
+	pthread_t _myHeartbeatThread;
 };
 #endif /* COMPONENTMAIN_H_ */
