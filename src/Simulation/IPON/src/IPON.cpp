@@ -118,7 +118,8 @@ namespace gazebo
 	{
 	      _start_latitude=_start_longitude=0;
 	      _frequency=100;
-	      Delay = 0.02;
+	      Delay = 0.00;
+	      IP = "127.0.0.1";
 	      //load config from sdf
 	      if (_sdf->HasElement("start_latitude"))
 	    	  _sdf->GetElement("start_latitude")->GetValue()->Get(_start_latitude);
@@ -132,6 +133,8 @@ namespace gazebo
 	    	  _sdf->GetElement("imu_unit_name")->GetValue()->Get<std::string>(_imu_unit_name);
 	      if (_sdf->HasElement("Delay"))
 	    	  _sdf->GetElement("Delay")->GetValue()->Get(Delay);
+	      if (_sdf->HasElement("IP"))
+	    	  _sdf->GetElement("IP")->GetValue()->Get<std::string>(IP);
 
 	    _gps_noise=_rp_noise=_yaw_noise=_gy_noise=_acc_noise=_acc_bias=_gy_bias=_spd_noise=0;
 	    if(_sdf->HasElement("noise"))
@@ -364,7 +367,7 @@ namespace gazebo
  		UDPPortno= atoi(UDP_PORT_IPON);
  		UDPserv_addr.sin_family=AF_INET;
  		UDPserv_addr.sin_port=htons(UDPPortno);
- 		if(inet_aton(UDP_SERVER, &UDPserv_addr.sin_addr)==0)
+ 		if(inet_aton(IP.c_str(), &UDPserv_addr.sin_addr)==0)
  		{
  			ROS_ERROR("IPON, function: initConnection(), IPON inet_aton() failed\n");
   	        return false;
@@ -1003,6 +1006,7 @@ namespace gazebo
 
     std::vector<std::pair<common::Time, char[1000]> *> *vecToSend;
 
+    string IP;
     double Delay;
     double FC_sumOfFrequencyForAverage;
     int FC_counterOfSecondsForFrequencyAverage;

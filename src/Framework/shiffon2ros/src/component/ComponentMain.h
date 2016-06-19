@@ -31,6 +31,8 @@ class ComponentMain {
 		ros::Publisher  _pub_GpsSpeed;
 		ros::Publisher  _pub_GpsSpeed2; //Temporary topic for displaying in RQT
 
+		string IPADDR;
+
 	  bool init(int argc,char** argv);
 	Shiphon_Ctrl * 	_shiphonCtrl;
 public:

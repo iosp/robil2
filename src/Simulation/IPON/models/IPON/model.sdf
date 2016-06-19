@@ -53,7 +53,8 @@
       <start_latitude>32.0111448</start_latitude>
       <start_longitude>34.91200118</start_longitude>
       <frequency>100</frequency>
-      <Delay>0.02</Delay>
+      <Delay>0.00</Delay>
+      <IP>127.0.0.1</IP>
   <!--
       <noise>
 	<gps>2.5</gps>

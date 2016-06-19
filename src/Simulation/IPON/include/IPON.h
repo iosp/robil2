@@ -10,7 +10,7 @@
 #define SENSOR_GPS_NAME		"gps_component"
 #define SENSOR_IMU_NAME		"imu_component"
 
-#define UDP_SERVER			"132.4.6.90"
+//#define UDP_SERVER			"132.4.6.90"
 #define UDP_PORT_IPON 		"2010"
 
 #define TCP_PORT_IPON 		2001
@@ -21,8 +21,6 @@ const double PI  =3.141592653589793238463;
 #define Deg2Pi 1/180
 #define TIME_INTERVAL_100HZ 0.01
 #define TIME_INTERVAL_1HZ 1
-
-//Akiva
 
 typedef struct{
 	float latitude;

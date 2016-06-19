@@ -248,7 +248,8 @@ def init_ros():
                                        numpy_msg(LaserScan))
     topics['scan3']  = rospy.Publisher('/%s/scan3' % node_name,
                                        numpy_msg(LaserScan))
-    topics['robil']  = rospy.Publisher('/SENSORS/IBEO/1', MultiLaserScan, queue_size = 1)
+    #topics['robil']  = rospy.Publisher('/SENSORS/IBEO/1', MultiLaserScan, queue_size = 1)
+    topics['robil']  = rospy.Publisher('/SENSORS/IBEO/2', MultiLaserScan, queue_size = 1)
    
 
 
@@ -333,7 +334,11 @@ def ros_main():
         try:
             # these two are not in the dynamic config as they are expected to be
             # statically mapped via launch file
-            host = rospy.get_param('~host',  '192.168.0.6')
+            #host = rospy.get_param('~host',  '192.168.0.6')
+	    if len(sys.argv) > 1:
+	    	host = rospy.get_param('~host',  sys.argv[1])
+	    else:
+		host = rospy.get_param('~host', '127.0.0.1')
             port = rospy.get_param('~port',  12002)
             xport = XPort(host,  port)
 
