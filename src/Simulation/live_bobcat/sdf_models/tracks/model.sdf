@@ -55,23 +55,7 @@
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
-<!--
-    <joint name='world_joint' type='revolute'>
-      <child>base_link</child>
-      <parent>world</parent>
-      <axis>
-        <limit>
-          <lower>0</lower>
-          <upper>0</upper>
-        </limit>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
-        <xyz>0 0 1</xyz>
-      </axis>
-    </joint>
--->
-<!--  Added by Nir -->
+
     <joint name='j33' type='revolute'>
       <child>base_link</child>
       <parent>l32</parent>
@@ -84,7 +68,6 @@
         <dynamics/>
       </axis>
     </joint>
-<!-- End of Added by Nir -->
     <link name='l2'>
       <pose>-0.12 0 0 0 1.1102e-16 0</pose>
       <inertial>
@@ -2240,8 +2223,9 @@
         <dynamics/>
       </axis>
     </joint>
-    <static>0</static>
-    <plugin name='gazebo_chain_plugin' filename='libchain_pagebo_plugin.so'>
+
+
+    <plugin name='gazebo_chain_plugin' filename='libchain_gazebo_plugin.so'>
       <robotNamespace>/Sahar</robotNamespace>
       <link1>base_link</link1>
       <link2>l32</link2>

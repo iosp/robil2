@@ -1,6 +1,0 @@
-<package>
-  <description brief="nirarm_gazebo">nirarm_gazebo</description>
-  <depend package="gazebo" />
-  <author>me</author>
-  <license>BSD</license>
-</package>
