@@ -248,8 +248,8 @@ def init_ros():
                                        numpy_msg(LaserScan))
     topics['scan3']  = rospy.Publisher('/%s/scan3' % node_name,
                                        numpy_msg(LaserScan))
-    #topics['robil']  = rospy.Publisher('/SENSORS/IBEO/1', MultiLaserScan, queue_size = 1)
-    topics['robil']  = rospy.Publisher('/SENSORS/IBEO/2', MultiLaserScan, queue_size = 1)
+    topics['robil']  = rospy.Publisher('/SENSORS/IBEO/1', MultiLaserScan, queue_size = 1)
+    #topics['robil']  = rospy.Publisher('/SENSORS/IBEO/2', MultiLaserScan, queue_size = 1)
    
 
 
