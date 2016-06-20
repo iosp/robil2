@@ -48,16 +48,16 @@ using namespace std;
 //
 //
 // In GAZEBO :  z - is directed upwards, positive Azimuth angel is counterclockwise
-//          y
-//         ^
-//         |
-//   ------------> x
-//         |
-//         |
+//          x
+//          ^
+//          |
+//  y <----------- 
+//          |
+//          |
 //
 //
-// therefore to translate theta = atan2(y,x) from gazebo to Azimuth :  Azimuth = PI/2 - theta  ,   Pitch_world = -pitch_gazebo
-// the x gazebo direction represent the East,
+// therefore to translate theta = atan2(y,x) from gazebo to Azimuth :  Azimuth = -theta  ,   Pitch_world = -pitch_gazebo
+// the x gazebo direction represent the West,
 // the y gazebo direction represent the North,
 // the z gazebo direction represent the Upwards
 //
@@ -695,7 +695,7 @@ namespace gazebo
     	bzero(&IPON_MsgToSend, sizeof(PHSPERIODIC100HZMESSAGE));
 
     	IPON_MsgToSend.Message_ID_Accepted_From_EGI		= E_MESSAGE_ID_ACCEPTED_FROM_EGI::E_MESSAGE_ID_ACCEPTED_FROM_EGI_PERIODIC_100HZ; // ID for 100Hz message
-     	IPON_MsgToSend.Azimuth_PD_geographic			= (PI/2-yaw)*Rad2Mills; //yaw * Rad2Mills; //  possible should be (PI/2-yaw)*Rad2Mills
+     	IPON_MsgToSend.Azimuth_PD_geographic			= (-yaw)*Rad2Mills; //yaw * Rad2Mills; //  possible should be (PI/2-yaw)*Rad2Mills
     	IPON_MsgToSend.Pitch_PD_Egi 					= -pitch * Rad2Mills;
      	IPON_MsgToSend.Roll_PD_Egi 						= roll * Rad2Mills;
 
