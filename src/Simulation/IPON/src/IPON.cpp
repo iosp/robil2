@@ -36,8 +36,8 @@ using namespace std;
 
 
 //
-// Real World : positive Azimuth angel is clockwise (from North to East, 0 is in the North)
-//              X is the North, Y is the East, Z - directed downwards
+// Real World : positive Azimuth angel is clockwise (from North to East, 0 is in the North) ==> azimuth = atan2(DY,DX)
+//              X is the North, Y is the East, Z - directed downwards  
 //        N (X)
 //         ^
 //         |
@@ -56,10 +56,15 @@ using namespace std;
 //          |
 //
 //
-// therefore to translate theta = atan2(y,x) from gazebo to Azimuth :  Azimuth = -theta  ,   Pitch_world = -pitch_gazebo
-// the x gazebo direction represent the West,
-// the y gazebo direction represent the North,
-// the z gazebo direction represent the Upwards
+// therefore :  
+//	Azimuth_world = -theta_gazebo 
+//	Pitch_world = -pitch_gazebo
+//	Roll_world = roll_gazebo
+//	bering = -atan2(Dy,Dx) , (for translation calculation)
+
+//	x_gazebo direction represent the North,
+//	y_gazebo direction represent the West,
+//	z_gazebo direction represent the Upwards
 //
 
 
@@ -211,11 +216,11 @@ namespace gazebo
 		double brng;
 		if(!(pos.GetLength()*_init_pos.GetLength()))
 		{
-			brng = PI/2 - atan2(pos.y,pos.x);
+			brng = - atan2(pos.y,pos.x);
 		}
 		else
 		{
-			brng = PI/2 - atan2((pos.y-_init_pos.y),(pos.x-_init_pos.x));
+			brng = - atan2((pos.y-_init_pos.y),(pos.x-_init_pos.x));
 		}
 
 		double R = 6378.1*1000;
