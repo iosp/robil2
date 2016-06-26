@@ -50,6 +50,7 @@ _sub_EffortsJn=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsJn","
 _sub_GpsSpeed=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorGpsSpeed","sub"), 10, &ComponentMain::handleGpsSpeed,this));
 _pub_GPS=ros::Publisher(_nh.advertise<config::PER::pub::GPS>(fetchParam(&_nh,"PER","GPS","pub"),10));
 _pub_PC=ros::Publisher(_nh.advertise<sensor_msgs::PointCloud>("/SENSORS/IBEO/PC", 10));
+_pub_PC_world=ros::Publisher(_nh.advertise<sensor_msgs::PointCloud>("/SENSORS/IBEO/WORLDPC", 10));
 _pub_INS=ros::Publisher(_nh.advertise<config::PER::pub::INS>(fetchParam(&_nh,"PER","INS","pub"),10));
 _pub_BladePosition=ros::Publisher(_nh.advertise<config::PER::pub::BladePosition>(fetchParam(&_nh,"PER","BladePosition","pub"),10));
 _pub_Map=ros::Publisher(_nh.advertise<config::PER::pub::Map>(fetchParam(&_nh,"PER","Map","pub"),10));
@@ -148,7 +149,7 @@ void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msg)
   int check=0; 
   ros::param::param("/LOC/Ready",check,0);
   if(!check) return;
-  Mapper::handleIBEO(msg, this->_pub_PC);
+  Mapper::handleIBEO(msg, this->_pub_PC_world, this->_pub_PC);
 }
 	
 

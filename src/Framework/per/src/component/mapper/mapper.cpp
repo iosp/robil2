@@ -141,7 +141,7 @@ void Mapper::setLanes(Mat lanes)
 }
 
 /** Until Here**/
-void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher pcpub)
+void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher pcpubworld, ros::Publisher pcpub)
 {
     if(!loc_received) return;
     //return;
@@ -150,20 +150,19 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher 
 
     ros::Time now = ros::Time(0);
     sensor_msgs::PointCloud ibeo_points, base_point;
-    int size = msg.ranges_t1.size() + msg.ranges_t1.size() + msg.ranges_t1.size() + msg.ranges_t1.size();
     ibeo_points.channels.resize(1);
 //    ibeo_points.channels[0].values.resize(size);
-    ibeo_points.channels[0].name = "intensities";
+//    ibeo_points.channels[0].name = "intensities";
 //    ibeo_points.points.resize(size);
     ibeo_points.header.frame_id = "IBEO";
     ibeo_points.header.stamp = now;
 
     int k = 0;
-    double incrtop = msg.angle_increment, min_ang;
+    float incrtop = msg.angle_increment, min_ang;
     for (int ray = 0;ray < 4; ray++)
     {
         vector<float> array;
-        double phi;
+        float phi;
         if (ray == 0)
             array = msg.ranges_t1, phi = msg.angle_t1, min_ang = msg.angle_min_t;
         else if (ray == 1)
@@ -180,9 +179,11 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher 
                 continue;
 
             geometry_msgs::Point32 p;
-            p.x = array[i] * cos(min_ang + i * incrtop) * cos(phi);
-            p.y = array[i] * sin(min_ang + i * incrtop) * cos(phi);
-            p.z = array[i] * sin(phi);
+            float theta = min_ang + i * incrtop;
+            float alfa = 1/(sqrt(1+pow(cos(phi),2)*pow(tan(theta),2)));
+            p.x = array[i] * alfa * cos(phi);
+            p.y = p.x * tan(theta);
+            p.z = array[i] * alfa * sin(phi);
             ibeo_points.points.push_back(p);
             ibeo_points.channels[0].values.push_back(100.0);
         }
@@ -196,7 +197,8 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher 
         world_height.pose.orientation.w = 1;
         listener.waitForTransform("WORLD", "TRACKS_BOTTOM", now, ros::Duration(1));
         listener.transformPose("WORLD", world_height, tracks_height);
-        pcpub.publish(base_point);
+        pcpubworld.publish(base_point);
+        pcpub.publish(ibeo_points);
         ProjectLaserRange(height_map, &base_point, tracks_height.pose.position.z);
     }
     catch(tf::TransformException& ex){
@@ -239,7 +241,7 @@ void Mapper::handleSickR(const config::PER::sub::SensorSICK2& msg)
     Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
     Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
 
-    Vec3D pos = position.add(front.multiply(-0.2187)).add(right.multiply(-0.85)).add(up.multiply(0.631));
+    Vec3D pos = position.add(front.multiply(-0.2187)).add(right.multiply(-0.85)).add(up.multiply(0.631));//why these values?
 
     for(int i = 0; i < msg.ranges.size(); i++)
         if(msg.ranges[i] < 0.5*msg.range_max && msg.ranges[i]>2)

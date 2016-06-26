@@ -46,6 +46,6 @@ def plot_points(points):
 
 print "starting GUI"
 rospy.init_node('ibeo_point_reader')
-sub = rospy.Subscriber('/SENSORS/IBEO/1',MultiLaserScan,plot_points)
+sub = rospy.Subscriber('/SENSORS/IBEO/1',MultiLaserScan,plot_points, queue_size=1)
 print "Subscribing to ",(sub.name)
 rospy.spin()

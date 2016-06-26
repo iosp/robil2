@@ -57,6 +57,7 @@ class ComponentMain {
 		ros::Publisher  _pub_VOOdometry;
 		ros::Publisher  _pub_GpsSpeed;
         ros::Publisher  _pub_PC;
+        ros::Publisher  _pub_PC_world;
         ros::Publisher _pub_hMap;
         ros::Publisher _pub_tMap;
 
