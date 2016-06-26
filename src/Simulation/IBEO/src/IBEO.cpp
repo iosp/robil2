@@ -511,7 +511,7 @@ namespace gazebo
 		  getRanges(rangesT1, rangesT2, rangesB1, rangesB2);
 		  ros::Time new_scan_time_tag = ros::Time::now();
 		  Publish_RVIZ_Message(rangesT1, rangesT2, rangesB1, rangesB2, new_scan_time_tag);
-		  BroadcastTF(new_scan_time_tag);
+		  // BroadcastTF(new_scan_time_tag);
 
 		  if(!client_connected && !acceptClient())
 		  {

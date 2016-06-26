@@ -41,6 +41,7 @@
     </collision>
   </link>
 
+
   <link name="cabin">
     <inertial>
       <origin
@@ -80,8 +81,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="cabin_joint"
-    type="fixed">
+  <joint name="cabin_joint" type="fixed">
     <origin
       xyz="-0.11317 0 0.61042"
       rpy="0 8.0491E-16 0" />
@@ -92,8 +92,58 @@
     <axis
       xyz="0 1 0" />
   </joint>
-
   
+  <link name="supporter_hinge">
+    <inertial>
+      <origin
+        xyz="-6.2676E-16 -2.2204E-16 1.1102E-16"
+        rpy="0 0 0" />
+      <mass
+        value="1.6828" />
+      <inertia
+        ixx="0.00017338"
+        ixy="-6.163E-33"
+        ixz="-1.9205E-35"
+        iyy="0.42748"
+        iyz="6.6217E-37"
+        izz="0.42748" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64706 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="supporter_hinge_joint" type="fixed">
+    <origin
+      xyz="-0.31547 0 0.68593"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="body" />
+    <child
+      link="supporter_hinge" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+
   <link name="base_arm">
     <inertial>
       <origin
@@ -133,8 +183,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="base_arm_joint"
-    type="revolute">
+  <joint name="base_arm_joint" type="revolute">
     <origin
       xyz="-1.9776 0 1.1773"
       rpy="0 2.1164E-16 0" />
@@ -190,8 +239,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="main_arm_joint"
-    type="revolute">
+  <joint name="main_arm_joint" type="revolute">
     <origin
       xyz="0.22304 0 0.5262"
       rpy="0 -2.1164E-16 0" />
@@ -247,8 +295,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="supporter_joint"
-    type="revolute">
+  <joint name="supporter_joint" type="revolute">
     <origin
       xyz="0.39771 0 -0.89486"
       rpy="0 8.0491E-16 0" />
@@ -304,8 +351,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="loader_joint"
-    type="revolute">
+  <joint name="loader_joint" type="revolute">
     <origin
       xyz="2.0984 0 -1.557"
       rpy="0 2.5362E-15 0" />
@@ -361,8 +407,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="brackets_joint"
-    type="revolute">
+  <joint name="brackets_joint" type="revolute">
     <origin
       xyz="0.33833 0 0.49449"
       rpy="0 0 0" />
@@ -378,64 +423,10 @@
       effort="1000000"
       velocity="1000000" />
   </joint>
-
-  <link name="supporter_hinge">
-    <inertial>
-      <origin
-        xyz="-6.2676E-16 -2.2204E-16 1.1102E-16"
-        rpy="0 0 0" />
-      <mass
-        value="1.6828" />
-      <inertia
-        ixx="0.00017338"
-        ixy="-6.163E-33"
-        ixz="-1.9205E-35"
-        iyy="0.42748"
-        iyz="6.6217E-37"
-        izz="0.42748" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.64706 0.61961 0.58824 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="supporter_hinge_joint"
-    type="fixed">
-    <origin
-      xyz="-0.31547 0 0.68593"
-      rpy="1.5708 0 1.5708" />
-    <parent
-      link="body" />
-    <child
-      link="supporter_hinge" />
-    <axis
-      xyz="1 0 0" />
-  </joint>
-
-
-
-
+ 
+  
   <!-- Transmissions for ROS Control -->
-
+  
   <transmission name="supporter_tran">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="supporter_joint">
@@ -465,16 +456,8 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-  
-    
-  <!-- ros_control plugin -->
-  <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>/Sahar</robotNamespace>
-    </plugin>
-  </gazebo>
-  
  
-
+     
+  
 </robot>
 
