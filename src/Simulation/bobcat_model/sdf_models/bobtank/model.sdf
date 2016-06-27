@@ -132,12 +132,12 @@
 	    </material>
 	</visual>
 	
-	<collision name='body_collision_Ibeo_link'>
+	<collision name='body_collision_top_installation_link'>
 	    <pose>-0.29575 0.03227 1.85972 1.5708 -6.10623e-16 1.5708</pose>
 	    <geometry>
 		<mesh>
 		  <scale>1 1 1</scale>
-		  <uri>model://bobtank/meshes_bobcat_with_boggies/Ibeo.STL</uri>
+		  <uri>model://bobtank/meshes_bobcat_with_boggies/top_installation.STL</uri>
 		</mesh>
 	    </geometry>
 	    <surface>
@@ -152,12 +152,12 @@
 		</friction>
 	    </surface>
 	</collision>
-	<visual name='body_visual_Ibeo_link'>
+	<visual name='body_visual_top_installation_link'>
 	    <pose>-0.29575 0.03227 1.85972 1.5708 -6.10623e-16 1.5708</pose>
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobtank/meshes_bobcat_with_boggies/Ibeo.STL</uri>
+		<uri>model://bobtank/meshes_bobcat_with_boggies/top_installation.STL</uri>
 	      </mesh>
 	    </geometry>
 	    <material>
