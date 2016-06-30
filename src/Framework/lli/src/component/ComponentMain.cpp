@@ -143,8 +143,8 @@ void ComponentMain::workerFunc()
 
 	pthread_create(&_mythread, NULL, &callPThread, this);
 
-	//pthread_create(&_mythread, NULL, &callHeartbeat, this);
-	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
+	pthread_create(&_mythread, NULL, &callHeartbeat, this);
+	//_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 
 
 
@@ -301,7 +301,7 @@ void ComponentMain::lliCtrlLoop()
 		    else msg.data=true;
 		    //if (count > 1000) msg.data=true;
 		    //count++;
-   			publishConnectedToPlatform(msg);
+   			//TEMP publishConnectedToPlatform(msg);
 			if (!_clli->PeriodicActivity())
 							break;
 

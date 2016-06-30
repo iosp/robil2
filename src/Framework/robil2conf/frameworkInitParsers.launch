@@ -9,9 +9,9 @@
 	<node name="ssm_heartbeat_monitor_node" type="ssm_heartbeat_monitor_node" pkg="ssm" output="screen"/>
 	<node name="ssm_node" type="ssm_node" pkg="ssm" output="screen"/>
 	<!-- == PLATFORM and SENSORS INTERFACEs == -->
-        <node name="ipon2ros" type="shiffon2ros_node" pkg="shiffon2ros" args="127.0.0.1" output="screen" respawn="true"/>
+        <node name="ipon2ros" type="shiffon2ros_node" pkg="shiffon2ros" args="132.4.6.60" output="screen" respawn="true"/>
 
-        <node name="ibeo2ros" type="sickldmrs.py" pkg="sick_ldmrs" args="127.0.0.1" output="screen" respawn="true"/>
+        <node name="ibeo2ros" type="sickldmrs.py" pkg="sick_ldmrs" args="192.168.0.6" output="screen" respawn="true"/>
 
          <!--node pkg="robil2conf" type="timed_roslaunch.sh" args="5 robil2conf sick.launch" name="timed_roslaunch" output="screen">   </node> -->
 
