@@ -183,7 +183,7 @@ void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t
 
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
 
-//	#define LLC_USE_LOCALIZATION
+#define LLC_USE_LOCALIZATION
 
 	ROS_INFO("LLC Ready");
 

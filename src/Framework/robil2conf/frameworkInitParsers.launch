@@ -12,7 +12,7 @@
         <node name="ipon2ros" type="shiffon2ros_node" pkg="shiffon2ros" args="132.4.6.60" output="screen" respawn="true"/>
 
         <node name="ibeo2ros" type="sickldmrs.py" pkg="sick_ldmrs" args="192.168.0.6" output="screen" respawn="true"/>
-
+    <node name="lli_node" type="lli_node" pkg="lli" output="screen" respawn="true" />
          <!--node pkg="robil2conf" type="timed_roslaunch.sh" args="5 robil2conf sick.launch" name="timed_roslaunch" output="screen">   </node> -->
 
 

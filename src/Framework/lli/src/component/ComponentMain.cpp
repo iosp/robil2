@@ -301,7 +301,7 @@ void ComponentMain::lliCtrlLoop()
 		    else msg.data=true;
 		    //if (count > 1000) msg.data=true;
 		    //count++;
-   			//TEMP publishConnectedToPlatform(msg);
+   			publishConnectedToPlatform(msg);
 			if (!_clli->PeriodicActivity())
 							break;
 
