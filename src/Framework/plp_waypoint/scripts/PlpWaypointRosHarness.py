@@ -35,7 +35,7 @@ class PlpWaypointRosHarness(object):
             "FUEL_CONSUMPTION_RATE": 10000,  # m/liter
             "BOBCAT_AVERAGE_SPEED": 20000,  # m/hour
             "RATE_PATH_LENGTH": 0.85,  # 0..1
-            "RATE_AERIAL_DISTANCE": 0.95  # 0..1
+            "RATE_AERIAL_DISTANCE": 0.95,  # 0..1
             "GOAL_DISTANCE": 5  # Meters from target to be considered a success.
         }
 
@@ -71,10 +71,14 @@ class PlpWaypointRosHarness(object):
         self.publisher = rospy.Publisher(PLP_TOPIC, PlpMessage, queue_size=5)
         rospy.Subscriber("/PER/MiniMap", Map, self.map_updated)
         rospy.Subscriber("/PP/Path", Path, self.path_updated)
-        rospy.Subscriber("/LOC/Pose", PoseWithCovarianceStamped, self.position_updated)
-        rospy.Subscriber("/OCU/SMME/NavigationTask", AssignNavTask, self.nav_task_assigned)
-        rospy.Subscriber("/OCU/SMME/MissionPlan", AssignMission, self.mission_assigned)
-        rospy.Subscriber("/decision_making/events", String, self.state_machine_change)
+        rospy.Subscriber("/LOC/Pose", PoseWithCovarianceStamped,
+                                                    self.position_updated)
+        rospy.Subscriber("/OCU/SMME/NavigationTask", AssignNavTask,
+                                                    self.nav_task_assigned)
+        rospy.Subscriber("/OCU/SMME/MissionPlan", AssignMission,
+                                                    self.mission_assigned)
+        rospy.Subscriber("/decision_making/events", String,
+                                                    self.state_machine_change)
 
         if self.monitor:
             rospy.loginfo("Trigger action: Monitoring")
@@ -114,7 +118,8 @@ class PlpWaypointRosHarness(object):
     def state_machine_change(self, event_string):
         """ This method has to do with trigger detection. We wait for the
             mission to be "spooling" - ROBIL-speak for "active", really -
-            and then we can have a "go" on the trigger w.r.t. a nav task being active.
+            and then we can have a "go" on the trigger w.r.t. a nav
+            task being active.
         """
         comps = event_string.data.split("/")
         # Test for the triggering of a task.
@@ -123,33 +128,38 @@ class PlpWaypointRosHarness(object):
                 comps[3] == "TaskActive" and
                 comps[5] == "TaskSpooling"):
             mission_id = comps[2]
+            self.activate_mission(mission_id)
 
-            if self.mission_state.has_key(mission_id):
-                self.mission_state[mission_id] += 1
-            else:
-                self.mission_state[mission_id] = 0
-
-            task_index = self.mission_state[mission_id]
-
-            # test if the task is a navigation task
-            rospy.loginfo(
-                "Task #{0} of mission {1} spooling".format(task_index, mission_id))
-            if self.missions.has_key(mission_id):
-                mission = self.missions[mission_id]
-                task_id = mission.tasks[task_index].task_id
-                if self.nav_tasks.has_key(task_id):
-                    rospy.loginfo("Will attempt calculation once local path is ready")
-                    self.trigger_local_path_published = False
-                    self.trigger_nav_task_active = True
-
-        elif (len(comps) == 4 and
-                comps[1] == "mission"):
+        elif len(comps) == 4 and comps[1] == "mission":
             mission_id = comps[2]
             event = comps[3]
             if event in {"AbortMission", "CompleteMission", "ClearMission"}:
                 if self.mission_state.has_key(mission_id):
                     del self.mission_state[mission_id]
                     self.reset_harness_data()
+            elif event == "StartMission":
+                self.activate_mission(mission_id)
+
+    def activate_mission(self, mission_id):
+        if self.mission_state.has_key(mission_id):
+            self.mission_state[mission_id] += 1
+        else:
+            self.mission_state[mission_id] = 0
+
+        task_index = self.mission_state[mission_id]
+
+        # test if the task is a navigation task
+        rospy.loginfo(
+            "Task #{0} of mission {1} spooling".format(task_index, mission_id))
+        if self.missions.has_key(mission_id):
+            mission = self.missions[mission_id]
+            # task_id = mission.tasks[task_index].task_id
+            # if self.nav_tasks.has_key(task_id):
+            # TODO validate that the task is a navigation task. Former method
+            #      based on indices does not work. Mayeb listen to a new topic?
+            rospy.loginfo("Will attempt calculation once local path is ready")
+            self.trigger_local_path_published = False
+            self.trigger_nav_task_active = True
 
     def consider_trigger(self):
         """

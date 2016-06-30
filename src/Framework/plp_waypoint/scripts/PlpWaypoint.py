@@ -65,14 +65,12 @@ class PlpWaypoint(object):
         res = self.detect_success()
         if not ( res is None ):
             return res
-
         res = self.detect_failures()
         if not ( res is None ):
             return res
-
         return None
 
-     def can_estimate(self):
+    def can_estimate(self):
         """
         Checks to see if this object has enough data calculate the estimation
         :return: True iff there is enough data; False otherwise.
@@ -133,7 +131,7 @@ class PlpWaypoint(object):
                 pow(self.constants["BOBCAT_AVERAGE_SPEED"], 2)
         return PlpAchieveResultFailureScenario("bobcat_turned_over", probability, time)
 
-    def get_estimation_confidence():
+    def get_estimation_confidence(self):
         return 0.7 + self.constants["BOBCAT_AVERAGE_SPEED"]/10000
 
     #
@@ -142,7 +140,7 @@ class PlpWaypoint(object):
     def detect_success(self):
         if self.variables().aerial_distance < self.constants["GOAL_DISTANCE"]:
             return PlpTermination(True, "Arrived at goal")
-        else
+        else:
             return None
 
     def detect_failures(self):

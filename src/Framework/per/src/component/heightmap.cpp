@@ -218,7 +218,8 @@ void HeightMap::displayConsole()
     }
 }
 int showX = -1, showY = -1;
-Mat HeightMap::generateMat(int enlarger)
+
+Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
 {
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
     cvtColor(image, image, CV_BGR2HSV);
@@ -241,8 +242,30 @@ Mat HeightMap::generateMat(int enlarger)
             image.at<Vec3b>(x,y) = Vec3b(120*(1-c),240, 240);
         }
     cvtColor(image, image, CV_HSV2BGR);
+
+    Mat arrow;
+    cv::Point2f pt(_arrow.rows/2, _arrow.cols/2);
+    cv::Mat r = cv::getRotationMatrix2D(pt, 90+rotation, 1.0);
+    cv::warpAffine(_arrow, arrow, r, cv::Size(_arrow.rows, _arrow.rows));
+    px *= 5;
+    py *= 5; //transformation to 20x20cm cell coords
+    px -= _refPoint.x;
+    py -= _refPoint.y;
+    if(px >= _width/2 || px <= -_width/2 || py >= _height/2 || py <= -_height/2)
+    {
+        return image;
+    }
+    px = _width/2 - px;
+    py = _height/2 - py;
+    for(int i = 0; i < _arrow.rows; i++)
+        for(int j = 0; j < _arrow.cols; j++)
+            if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0))
+                image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
+
+
     return image;
 }
+
 void onMouseClick2(int event, int x, int y, int flags, void *param)
 {
 
@@ -258,32 +281,8 @@ void onMouseClick2(int event, int x, int y, int flags, void *param)
 void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
 {
     // rdbg("gui enter");
-    Mat image = this->generateMat(enlarger);
+    Mat image = this->generateMat(rotation, px, py, enlarger);
     //put the tempory arrow representing my position and rotation on the map
-    Mat arrow;
-    cv::Point2f pt(_arrow.rows/2, _arrow.cols/2);
-    cv::Mat r = cv::getRotationMatrix2D(pt, 90+rotation, 1.0);
-    cv::warpAffine(_arrow, arrow, r, cv::Size(_arrow.rows, _arrow.rows));
-    px *= 5;
-    py *= 5; //transformation to 20x20cm cell coords
-    px -= _refPoint.x;
-    py -= _refPoint.y;
-    if(px >= _width/2 || px <= -_width/2 || py >= _height/2 || py <= -_height/2)
-    {
-        char name[30];
-        sprintf(name, "%f %d", _refPoint.x, py);
-        imshow(name, image);
-        //cv::waitKey(1);
-        return;
-    }
-    px = _width/2 - px;
-    py = _height/2 - py;
-    for(int i = 0; i < _arrow.rows; i++)
-        for(int j = 0; j < _arrow.cols; j++)
-            if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0))
-                image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
-    
-
     char name[30];
     sprintf(name, "GUI %d", _width);
 
@@ -306,9 +305,8 @@ void onMouseClick(int event, int x, int y, int flags, void *param)
     }
 }
 
-void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
+Mat HeightMap::generateMat(int enlarger)
 {
-    //int enlarger = 3;
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
     //cvtColor(image, image, CV_BGR2HSV);
 
@@ -351,6 +349,15 @@ void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
             }
         }
     }
+    return image;
+}
+
+void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
+{
+    //int enlarger = 3;
+    Mat image = generateMat(enlarger);
+    if (image.empty())
+        return;
     setMouseCallback("TerrainTypeUI", onMouseClick, &image);
     imshow("TerrainTypeUI", image);
     
@@ -371,10 +378,10 @@ void Morphology_Operations( int, void* )
 void HeightMap::calculateTypes(Vec3D position, Rotation myRot)
 {
     double pitch = myRot.pitch;
-    HeightMap m = this->deriveMap(position.x, position.y, myRot);
-    Mat image = m.generateMat(3);
-    if (image.empty())
-        return;
+//    HeightMap m = this->deriveMap(position.x, position.y, myRot);
+//    Mat image = m.generateMat(3);
+//    if (image.empty())
+//        return;
 
     //    Mat detected_edges, src_gray;
 

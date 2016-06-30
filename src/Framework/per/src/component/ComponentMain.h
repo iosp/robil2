@@ -56,6 +56,9 @@ class ComponentMain {
 		ros::Publisher  _pub_MiniMap;
 		ros::Publisher  _pub_VOOdometry;
 		ros::Publisher  _pub_GpsSpeed;
+        ros::Publisher  _pub_PC;
+        ros::Publisher _pub_hMap;
+        ros::Publisher _pub_tMap;
 
 	  bool init(int argc,char** argv);
 public:
@@ -79,6 +82,7 @@ public:
 	void publishBladePosition(config::PER::pub::BladePosition& msg);
 	void publishMap(config::PER::pub::Map& msg);
 	void publishMiniMap(config::PER::pub::MiniMap& msg);
+    void publishDebug(sensor_msgs::ImagePtr hmsg, sensor_msgs::ImagePtr tmsg);
 	void publishVOOdometry(config::PER::pub::VOOdometry& msg);
 	void publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg);
 	void handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg);

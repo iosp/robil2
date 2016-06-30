@@ -1,0 +1,74 @@
+<?xml version="1.0"?> 
+<sdf version="1.4">
+    <model name="IPON">
+      <pose>0 0 0.5 0 0 0</pose>
+      <link name="link">
+      <gravity>0</gravity> 
+          
+        <visual name="visual">
+	<pose>0 0 0 0 0 0 </pose>
+        <geometry>
+	<cylinder>
+	 <radius>.03</radius>
+	 <length>.01</length>
+	</cylinder>  
+	</geometry>
+	<material>
+		<ambient>15 74 47 1</ambient>
+		<diffuse>15 74 47 1</diffuse>
+		<specular>0.1 0.1 0.1 1</specular>
+		<emissive>0 0 0 0</emissive>
+	</material>
+        </visual>
+	
+        <visual name="visual">
+	<pose>0.266 0.155 -1.523 0 0 0 </pose>
+        <geometry>
+	<box>
+	 <size>.2 .1 .1</size>
+	</box>  
+	</geometry>
+        </visual>
+
+      <sensor name='imu_component' type='imu'>
+	<!-- <pose>0.01 0.04 0.007 0 -0.014 0</pose> -->
+	 <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose> 
+	<imu>
+	  <topic>ODED</topic>
+	</imu>
+	<always_on>1</always_on>
+	<update_rate>30</update_rate>
+	<visualize>1</visualize>
+
+		
+
+      </sensor>
+      
+      </link>
+
+
+    <plugin name="IPON" filename="libIPON.so">
+      <gps_ant_link_name>IPON::link</gps_ant_link_name>
+      <imu_unit_name>imu_component</imu_unit_name>
+      <start_latitude>32.0111448</start_latitude>
+      <start_longitude>34.91200118</start_longitude>
+      <frequency>100</frequency>
+      <Delay>0.00</Delay>
+      <IP>127.0.0.1</IP>
+  <!--
+      <noise>
+	<gps>2.5</gps>
+	<gps_speed>0.05</gps>
+	<rollpitch>0.2</rollpitch>
+	<yaw>0.8</yaw>
+	<acc_bias>0.0005886</acc_bias>
+	<gyro_bias>0.000833333</gyro_bias>
+	<acc_noise>0.000465329</acc_noise>
+	<gyro_noise>0.000252982</gyro_noise>
+      </noise>
+   -->
+      
+    </plugin>
+    </model>        
+</sdf>
+

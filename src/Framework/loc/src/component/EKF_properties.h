@@ -8,6 +8,7 @@
 #ifndef EKF_PROPERTIES_H_
 #define EKF_PROPERTIES_H_
 #include <opencv2/opencv.hpp>
+#include <tf/tf.h>
 #include "helpermath.h"
 using namespace cv;
 
@@ -74,7 +75,7 @@ public:
 	}
 	void modify_Q(double val)
 	{
-        Q = Mat::eye(s, s, CV_64F)*(val+0.0001);
+        Q = Mat::eye(s, s, CV_64F)*(val+0.000001);
 	}
 	void setdt(double tk1)
 	{
@@ -90,18 +91,14 @@ public:
 	}
 	void modify_F()
 	{
-	  F.at<double>(0,0) = 1;F.at<double>(0,3) = dt;F.at<double>(0,5) = dt*dt/2;
-	  F.at<double>(1,1) = 1;F.at<double>(1,4) = dt;F.at<double>(1,6) = dt*dt/2;
+      F.at<double>(0,0) = 1;F.at<double>(0,3) = dt;//F.at<double>(0,5) = dt*dt/2;
+      F.at<double>(1,1) = 1;F.at<double>(1,4) = dt;//F.at<double>(1,6) = dt*dt/2;
 	  /*
 	   * Started working with quaternions!! No more YAW. Instead modify measurements!
-	   */
-	  
-	  Rotation rot22 = GetRotation(Quaternion(z.at<double>(7,0),z.at<double>(8,0),z.at<double>(9,0),z.at<double>(10,0)));
-      z.at<double>(3,0) *= cos(rot22.yaw);
-      z.at<double>(4,0) *= sin(rot22.yaw);
-      F.at<double>(3,3) = 1;
-      F.at<double>(4,4) = 1;
-      F.at<double>(13,13) = 1;
+       */
+//      F.at<double>(3,3) = 1;
+//      F.at<double>(4,4) = 1;
+//      F.at<double>(13,13) = 1;
 	}
 	void modify_B(double yaw,double pitch)
 	{
@@ -112,9 +109,9 @@ public:
 	}
 public:
 	static const double Vacc = 0.0465329;
-    static const double Vgps = 5.25;
+    static const double Vgps = 0.1;
 	static const double Vz = 0.001;
-	static const double Vvel = 0.05;
+    static const double Vvel = 0.001;
 	static const double Vgyro = 0.000252982;
 	static const double Vori = 0.087266389;
 };

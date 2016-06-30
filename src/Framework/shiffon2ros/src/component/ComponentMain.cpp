@@ -28,13 +28,21 @@ const double PI_2_DEG = 180; //
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
+	if ( argc == 2 )
+	{
+		//if IP received from command line (as parameter), change the default (localhost - 127.0.0.1)
+		IPADDR = argv[1];
+	}
+	else
+		IPADDR = "127.0.0.1";
+
 	_pub_GPS=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GPS>(fetchParam(&_nh,"SHIFFON2ROS","GPS","pub"),10));
 	_pub_INS=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::INS>(fetchParam(&_nh,"SHIFFON2ROS","INS","pub"),10));
 	_pub_INS2=ros::Publisher(_nh.advertise<std_msgs::Float64>("SENSORS/INSSPEED",10));
 	_pub_GpsSpeed=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GpsSpeed>(fetchParam(&_nh,"SHIFFON2ROS","GpsSpeed","pub"),10));
 	_pub_GpsSpeed2=ros::Publisher(_nh.advertise<std_msgs::Float64>("SENSORS/GPSSPEED2",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
-	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
+//	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 }
 
 
@@ -42,8 +50,8 @@ void ComponentMain::InitShiphonConection() {
 
 	ROS_INFO("Initializing Shiphon Connection");
 	char ipAddr[16];
-	string tmpStr = "132.4.6.60";
-	strcpy (ipAddr, tmpStr.c_str());
+	//string tmpStr = "132.4.6.60";
+	strcpy (ipAddr, IPADDR.c_str());
 	int lPort = 2010;
 	int rPort = 4997;
 

@@ -1,0 +1,514 @@
+<?xml version="1.0"?>
+<robot
+  name="Sahar">
+  <link name="body">
+    <inertial>
+      <origin
+        xyz="-0.890714078986241 0.000176354230843794 0.525609535873677"
+        rpy="0 0 0" />
+      <mass
+        value="2112.2632057713" />
+      <inertia
+        ixx="330.451427275626"
+        ixy="0.1258707518716585"
+        ixz="-85.8115001993615"
+        iyy="750.047261721269"
+        iyz="-0.001202697501709275"
+        izz="817.534535636717" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/body.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.647058823529412 0.619607843137255 0.588235294117647 0.5" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/body.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="cabin">
+    <inertial>
+      <origin
+        xyz="-0.70338 -5.738E-08 0.72817"
+        rpy="0 0 0" />
+      <mass
+        value="496.33" />
+      <inertia
+        ixx="138.34"
+        ixy="-1.1017E-06"
+        ixz="8.4609"
+        iyy="150.8"
+        iyz="-2.3341E-06"
+        izz="117.01" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/cabin.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64706 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/cabin.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="cabin_joint" type="fixed">
+    <origin
+      xyz="-0.11317 0 0.61042"
+      rpy="0 8.0491E-16 0" />
+    <parent
+      link="body" />
+    <child
+      link="cabin" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  
+  <link name="top_installation">
+    <inertial>
+      <origin
+        xyz="-0.50455 -0.03223 -1.3338"
+        rpy="0 0 0" />
+      <mass
+        value="10.460" />
+      <inertia
+        ixx="8.1287"
+        ixy="0"
+        ixz="0.55289"
+        iyy="8.9548"
+        iyz="0"
+        izz="6.4192" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/top_installation.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/top_installation.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="top_installation_joint" type="fixed">
+    <origin
+      xyz="-0.18258 0.03227 1.2493"
+      rpy="1.570796327 -5.9328E-16 1.570796327" />
+    <parent
+      link="cabin" />
+    <child
+      link="top_installation" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  
+  <link name="supporter_hinge">
+    <inertial>
+      <origin
+        xyz="-6.2676E-16 -2.2204E-16 1.1102E-16"
+        rpy="0 0 0" />
+      <mass
+        value="1.6828" />
+      <inertia
+        ixx="0.00017338"
+        ixy="-6.163E-33"
+        ixz="-1.9205E-35"
+        iyy="0.42748"
+        iyz="6.6217E-37"
+        izz="0.42748" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64706 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="supporter_hinge_joint" type="fixed">
+    <origin
+      xyz="-0.31547 0 0.68593"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="body" />
+    <child
+      link="supporter_hinge" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+
+  <link name="base_arm">
+    <inertial>
+      <origin
+        xyz="0.066509 1.9771E-12 0.25686"
+        rpy="0 0 0" />
+      <mass
+        value="194.91" />
+      <inertia
+        ixx="50.76"
+        ixy="-2.9264E-11"
+        ixz="0.66798"
+        iyy="4.8017"
+        iyz="7.0403E-12"
+        izz="47.388" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/base_arm.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64706 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/base_arm.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="base_arm_joint" type="revolute">
+    <origin
+      xyz="-1.9776 0 1.1773"
+      rpy="0 2.1164E-16 0" />
+    <parent
+      link="body" />
+    <child
+      link="base_arm" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="1000000"
+      velocity="100" />
+  </joint>
+
+  <link name="main_arm">
+    <inertial>
+      <origin
+        xyz="1.1865 -4.0206E-07 -0.60466"
+        rpy="0 0 0" />
+      <mass
+        value="369.05" />
+      <inertia
+        ixx="133.74"
+        ixy="0.00012791"
+        ixz="-68.753"
+        iyy="216.24"
+        iyz="-4.6593E-05"
+        izz="268.55" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/main_arm.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89412 0.91373 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/main_arm.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="main_arm_joint" type="revolute">
+    <origin
+      xyz="0.22304 0 0.5262"
+      rpy="0 -2.1164E-16 0" />
+    <parent
+      link="base_arm" />
+    <child
+      link="main_arm" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="1000000"
+      velocity="100" />
+  </joint>
+
+  <link name="supporter">
+    <inertial>
+      <origin
+        xyz="0.51341 -4.9085E-16 -0.060486"
+        rpy="0 0 0" />
+      <mass
+        value="65.29" />
+      <inertia
+        ixx="16.898"
+        ixy="-2.3004E-13"
+        ixz="-0.76501"
+        iyy="6.6127"
+        iyz="-2.4072E-13"
+        izz="23.301" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/supporter.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.64706 0.61961 0.58824 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/supporter.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="supporter_joint" type="revolute">
+    <origin
+      xyz="0.39771 0 -0.89486"
+      rpy="0 8.0491E-16 0" />
+    <parent
+      link="main_arm" />
+    <child
+      link="supporter" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-0.2"
+      upper="1.5"
+      effort="1000000"
+      velocity="100" />
+  </joint>
+
+  <link name="loader">
+    <inertial>
+      <origin
+        xyz="0.37894 2.192E-15 0.067409"
+        rpy="0 0 0" />
+      <mass
+        value="98.03" />
+      <inertia
+        ixx="29.346"
+        ixy="0"
+        ixz="-1.55"
+        iyy="9.25"
+        iyz="0"
+        izz="32.05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/loader.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89412 0.91373 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/loader.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="loader_joint" type="revolute">
+    <origin
+      xyz="2.0984 0 -1.557"
+      rpy="0 2.5362E-15 0" />
+    <parent
+      link="main_arm" />
+    <child
+      link="loader" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="1000000"
+      velocity="100" />
+  </joint>
+  
+  <link name="brackets">
+    <inertial>
+      <origin
+        xyz="0.14213 -1.579E-16 0.33109"
+        rpy="0 0 0" />
+      <mass
+        value="12.857" />
+      <inertia
+        ixx="2.9339"
+        ixy="-2.9653E-16"
+        ixz="0.23718"
+        iyy="0.67251"
+        iyz="3.0656E-16"
+        izz="2.738" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/brackets.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bobtank/meshes_bobcat_with_boggies/brackets.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="brackets_joint" type="revolute">
+    <origin
+      xyz="0.33833 0 0.49449"
+      rpy="0 0 0" />
+    <parent
+      link="loader" />
+    <child
+      link="brackets" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="0"
+      upper="1"
+      effort="1000000"
+      velocity="1000000" />
+  </joint>
+ 
+  
+
+  <!-- Transmissions for ROS Control -->
+  
+  <transmission name="supporter_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="supporter_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="supporter_tran_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  
+  <transmission name="loader_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="loader_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="loader_tran_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+    
+  <transmission name="brackets_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="brackets_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="brackets_tran_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+ 
+     
+  
+</robot>
+

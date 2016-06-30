@@ -3,11 +3,12 @@
 #include <stdlib.h>
 #include <boost/thread.hpp>
 #include "../stereo.h"
-#include <geometry_msgs/PointStamped.h>
+#include <geometry_msgs/Point32.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/PointCloud.h>
-
-
 #include <sensor_msgs/image_encodings.h>
+#include <sensor_msgs/ChannelFloat32.h>
+
 bool Mapper::camL;
 bool Mapper::camR;
 bool Mapper::loc_received;
@@ -78,11 +79,24 @@ void Mapper::MainLoop(per::configConfig *p)
 
 void Mapper::VisualizeLoop()
 {
-    while(1)
+    while(ros::ok())
     {
         if(height_map != NULL)// && visualize > 0)
         {
             lock.lock();
+            bool debug;
+            ros::param::param("/PER/DEBUG", debug, false);
+            if (debug)
+            {
+                HeightMap m = height_map->deriveMap(position.x, position.y, myRot);
+                Mat im = m.generateMat(0,-5,0,1);
+                sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", im).toImageMsg();
+                HeightMap m2 = height_map->deriveMap(position.x, position.y, myRot);
+                Mat im2 = m.generateMat(1);
+                sensor_msgs::ImagePtr msg2 = cv_bridge::CvImage(std_msgs::Header(), "bgr8", im2).toImageMsg();
+                component->publishDebug(msg, msg2);
+            }
+
             if((visualize & VISUALIZE_MAP) != 0) //map needed
             {
                 HeightMap m = height_map->deriveMap(position.x, position.y, myRot);
@@ -107,6 +121,8 @@ void Mapper::VisualizeLoop()
                 if (!stereo.empty())
                     imshow("stereo", stereo);
             }
+            if (!visualize)
+                destroyAllWindows();
             lock.unlock();
             waitKey(20);
         }
@@ -125,150 +141,68 @@ void Mapper::setLanes(Mat lanes)
 }
 
 /** Until Here**/
-//void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
-//{
-//    if(!loc_received) return;
-//    //return;
-//    static tf::TransformListener listener;
-//    lock.lock();
-//    ros::Time now = ros::Time::now();
-
-//    double incrtop = msg.angle_increment;
-//    int counter = 0;
-//    for (int ray = 0;ray < 4; ray++)
-//    {
-//        vector<float> array;
-//        double phi;
-//        if (ray == 0)
-//        {
-//            array = msg.ranges_t1;
-//            phi = msg.angle_t1;
-//        }
-//        else if (ray == 1)
-//        {
-//            array = msg.ranges_t2;
-//            phi = msg.angle_t2;
-//        }
-//        else if (ray == 2)
-//        {
-//            array = msg.ranges_b1;
-//            phi = msg.angle_b1;
-//        }
-//        else if (ray == 3)
-//        {
-//            array = msg.ranges_b2;
-//            phi = msg.angle_b2;
-//        }
-////        cout << "ray: " << ray << "   " << array.size() << " =?= " << (msg.angle_max_t - msg.angle_min_t) / msg.angle_increment << endl;
-//        sensor_msgs::PointCloud ibeo_points, base_point;
-//        ibeo_points.channels.resize(1);
-//        ibeo_points.channels[0].values.resize(array.size());
-//        ibeo_points.channels[0].name = "intensities";
-//        ibeo_points.points.resize(array.size());
-//        for(int i = 0; i < array.size(); i++)
-//        {
-//            if (array[i] == 0.0)
-//                continue;
-
-//            ibeo_points.header.frame_id = "ibeo";
-//            ibeo_points.header.stamp = ros::Time::now();
-
-//            ibeo_points.points[i].x = array[i] * sin(msg.angle_min_t + i * incrtop) * sin(phi);
-//            ibeo_points.points[i].y = array[i] * cos(msg.angle_min_t + i * incrtop) * sin(phi);
-//            ibeo_points.points[i].z = array[i] * cos(phi);
-//            ibeo_points.channels[0].values[i] = 100;
-//        }
-//        try{
-//            listener.waitForTransform("base_link", "ibeo", now, ros::Duration(15));
-//            listener.transformPointCloud("base_link", ibeo_points, base_point);
-//            counter++;
-
-//        }
-//        catch(tf::TransformException& ex){
-//            ROS_ERROR("PER: %s", ex.what());
-//        }
-//            //cout << array[i] << "," << msg.angle_min_t + i*incrtop << endl;
-
-//    }
-//    //cout << counter << endl;
-//    lock.unlock();
-//}
-
-void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg)
+void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher pcpub)
 {
     if(!loc_received) return;
     //return;
+    tf::TransformListener listener;
     lock.lock();
-    Rotation t2 = ibeoRot.add(Rotation(0, -msg.angle_t2, 0));
-    Rotation t1 = ibeoRot.add(Rotation(0, -msg.angle_t1, 0));
-    Rotation b1 = ibeoRot.add(Rotation(0, -msg.angle_b1, 0));
-    Rotation b2 = ibeoRot.add(Rotation(0, -msg.angle_b2, 0));
-    Quaternion qt2 = GetFromRPY(t2);
-    Quaternion qt1 = GetFromRPY(t1);
-    Quaternion qb1 = GetFromRPY(b1);
-    Quaternion qb2 = GetFromRPY(b2);
-    Vec3D t2front = GetFrontVector(qt2.x,qt2.y,qt2.z,qt2.w), t2right = GetRightVector(qt2.x,qt2.y,qt2.z,qt2.w);
-    Vec3D t1front = GetFrontVector(qt1.x,qt1.y,qt1.z,qt1.w), t1right = GetRightVector(qt1.x,qt1.y,qt1.z,qt1.w);
-    Vec3D b1front = GetFrontVector(qb1.x,qb1.y,qb1.z,qb1.w), b1right = GetRightVector(qb1.x,qb1.y,qb1.z,qb1.w);
-    Vec3D b2front = GetFrontVector(qb2.x,qb2.y,qb2.z,qb2.w), b2right = GetRightVector(qb2.x,qb2.y,qb2.z,qb2.w);
 
-    Quaternion q = GetFromRPY(ibeoRot);
-    Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
-    Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
-    Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
+    ros::Time now = ros::Time(0);
+    sensor_msgs::PointCloud ibeo_points, base_point;
+    int size = msg.ranges_t1.size() + msg.ranges_t1.size() + msg.ranges_t1.size() + msg.ranges_t1.size();
+    ibeo_points.channels.resize(1);
+//    ibeo_points.channels[0].values.resize(size);
+    ibeo_points.channels[0].name = "intensities";
+//    ibeo_points.points.resize(size);
+    ibeo_points.header.frame_id = "IBEO";
+    ibeo_points.header.stamp = now;
 
-    Vec3D pos = position.add(front.multiply(IBEO_X)).add(right.multiply(IBEO_Y)).add(up.multiply(IBEO_Z-GPS_Z));
-
-
-    double incrtop = msg.angle_increment;
-    double incrbottom = msg.angle_increment;
-
-    for(int i = 0; i < msg.ranges_t2.size(); i++)
+    int k = 0;
+    double incrtop = msg.angle_increment, min_ang;
+    for (int ray = 0;ray < 4; ray++)
     {
-        //if(msg.ranges_t2[i] < 0.3*msg.range_max)
-        ProjectLaserRange(
-                    height_map,
-                    t2right,
-                    t2front,
-                    pos,
-                    msg.ranges_t2[i],
-                    msg.angle_min_t + i*incrtop);
+        vector<float> array;
+        double phi;
+        if (ray == 0)
+            array = msg.ranges_t1, phi = msg.angle_t1, min_ang = msg.angle_min_t;
+        else if (ray == 1)
+            array = msg.ranges_t2, phi = msg.angle_t2, min_ang = msg.angle_min_t;
+        else if (ray == 2)
+            array = msg.ranges_b1, phi = msg.angle_b1, min_ang = msg.angle_min_b;
+        else if (ray == 3)
+            array = msg.ranges_b2, phi = msg.angle_b2, min_ang = msg.angle_min_b;
+//        cout << "ray: " << ray << "   " << array.size() << " =?= " << (msg.angle_max_t - msg.angle_min_t) / msg.angle_increment << endl;
+
+        for(int i = 0; i < array.size(); i++)
+        {
+            if (array[i] == 0.0)
+                continue;
+
+            geometry_msgs::Point32 p;
+            p.x = array[i] * cos(min_ang + i * incrtop) * cos(phi);
+            p.y = array[i] * sin(min_ang + i * incrtop) * cos(phi);
+            p.z = array[i] * sin(phi);
+            ibeo_points.points.push_back(p);
+            ibeo_points.channels[0].values.push_back(100.0);
+        }
     }
-    
-    for(int i = 0; i < msg.ranges_t1.size(); i++)
-    {
-        //if(msg.ranges_t1[i] < 0.3*msg.range_max)
-        ProjectLaserRange(
-                    height_map,
-                    t1right,
-                    t1front,
-                    pos,
-                    msg.ranges_t1[i],
-                    msg.angle_min_t + i*incrtop);
+    try{
+        listener.waitForTransform("WORLD", "IBEO", now, ros::Duration(1));
+        listener.transformPointCloud("WORLD", ibeo_points, base_point);
+        geometry_msgs::PoseStamped tracks_height, world_height;
+        world_height.header.frame_id = "TRACKS_BOTTOM";
+        world_height.header.stamp = now;
+        world_height.pose.orientation.w = 1;
+        listener.waitForTransform("WORLD", "TRACKS_BOTTOM", now, ros::Duration(1));
+        listener.transformPose("WORLD", world_height, tracks_height);
+        pcpub.publish(base_point);
+        ProjectLaserRange(height_map, &base_point, tracks_height.pose.position.z);
     }
-    for(int i = 0; i < msg.ranges_b1.size(); i++)
-    {
-        //if(msg.ranges_b1[i] < 0.3*msg.range_max)
-        ProjectLaserRange(
-                    height_map,
-                    b1right,
-                    b1front,
-                    pos,
-                    msg.ranges_b1[i],
-                    msg.angle_min_b + i*incrbottom);
+    catch(tf::TransformException& ex){
+        ROS_ERROR("PER: %s", ex.what());
     }
-    for(int i = 0; i < msg.ranges_b2.size(); i++)
-    {
-        //if(msg.ranges_b2[i] < 0.3*msg.range_max)
-        ProjectLaserRange(
-                    height_map,
-                    b2right,
-                    b2front,
-                    pos,
-                    msg.ranges_b2[i],
-                    msg.angle_min_b + i*incrbottom);
-    }
-    
+
     lock.unlock();
 }
 

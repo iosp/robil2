@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+
+  <param name="robot_description" command="cat $(find bobcat_model)/urdf_models/bobcat_urdf_for_arm_control.URDF" />
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find bobcat_model)/config/bobcat_arm_control_params.yaml" command="load"/>
+
+  <!-- load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+	output="screen" ns="/Sahar" args="joint_state_controller
+					  loader_position_controller
+					  supporter_position_controller
+					  brackets_position_controller"/>
+
+<!--  -->
+  <node name="bobcat_arm_ros_controller_interface" pkg="bobcat_model" type="bobcat_arm_ros_controller_interface_node" ns="/Sahar" cwd="node" output="screen" /> 
+
+  
+  
+  <!-- convert joint states to TF transforms for rviz, etc   -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+	respawn="false" output="screen">
+     <remap from="/joint_states" to="/Sahar/joint_states" /> 
+  </node>
+
+  
+</launch>
