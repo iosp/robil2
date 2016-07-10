@@ -17,6 +17,7 @@
 #include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
+//#define TEST_HEARTBEAT
 
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
@@ -30,11 +31,23 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	_pub_EffortsSt=ros::Publisher(_nh.advertise<config::LLC::pub::EffortsSt>(fetchParam(&_nh,"LLC","EffortsSt","pub"),10));
 	_pub_EffortsJn=ros::Publisher(_nh.advertise<config::LLC::pub::EffortsJn>(fetchParam(&_nh,"LLC","EffortsJn","pub"),10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
-	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
+	//_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
+	    //Replace the thread group with a simple pthread because there is a SIGEV otherwise
+		// and I didn't find the reason.
+		// With pthread, it seems to work.
+#ifdef TEST_HEARTBEAT
+		_myHeartbeatThread = (pthread_t) NULL;
+		pthread_create(&_myHeartbeatThread, NULL, &callHeartbeat, this);
+#endif
 }
 
 ComponentMain::~ComponentMain() {
-
+#ifdef TEST_HEARTBEAT
+	if (_myHeartbeatThread) {
+		pthread_cancel(_myHeartbeatThread);
+		_myHeartbeatThread = (pthread_t)NULL;
+	}
+#endif
 }
 
 bool ComponentMain::init(int argc,char** argv){
@@ -128,15 +141,28 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 		msg.status.push_back(_report);
 		_pub_diagnostic.publish(msg);
 }
+
 void ComponentMain::heartbeat(){
-	using namespace boost::posix_time;
+	//using namespace boost::posix_time;
 	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);
-	double hz = HEARTBEAT_FREQUANCY;
+	double hz = HEARTBEAT_FREQUENCY;
+	double cycle = (1/hz);
+	ros::Duration oneSec(cycle);
+
 	while(ros::ok()){
-		boost::system_time stop_time = boost::get_system_time() + milliseconds((1/hz)*1000);
+		//boost::system_time stop_time = boost::get_system_time() + milliseconds((1/hz)*1000);
 		std_msgs::String msg;
 		msg.data = "LLC";
 		_pub.publish(msg);
-	    boost::this_thread::sleep(stop_time);
+		oneSec.sleep();
+	   // boost::this_thread::sleep(stop_time);
 	}
+}
+
+void * ComponentMain::callHeartbeat(void * pParam)
+{
+	ComponentMain *myHandle = (ComponentMain *) (pParam);
+
+	myHandle->heartbeat();
+
 }

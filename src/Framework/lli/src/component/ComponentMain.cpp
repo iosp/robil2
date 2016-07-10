@@ -20,6 +20,8 @@
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
+//#define TEST_HEARTBEAT
+
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
@@ -30,6 +32,9 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_pub_connected_to_platform=ros::Publisher(_nh.advertise<std_msgs::Bool>(fetchParam(&_nh,"LLI","ConnectedToPlatform","pub"),100));
 	//_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
+    //Replace the thread group with a simple pthread because there is a SIGEV otherwise
+	// and I didn't find the reason.
+	// With pthread, it seems to work.
 
 	_myHeartbeatThread = (pthread_t) NULL;
 
@@ -54,8 +59,14 @@ ComponentMain::~ComponentMain() {
 	if (_mythread) {
 		std::cout<< "destructor _mythread" << std::endl;
 		pthread_cancel(_mythread);
-		_mythread = 0;
+		_mythread = (pthread_t)NULL;
 	}
+#ifdef TEST_HEARTBEAT
+	if (_myHeartbeatThread) {
+		pthread_cancel(_myHeartbeatThread);
+		_myHeartbeatThread = (pthread_t)NULL;
+	}
+#endif
 }
 bool ComponentMain::init(int argc,char** argv){
 	ros::init(argc,argv,"LLI_node");
@@ -143,9 +154,10 @@ void ComponentMain::workerFunc()
 
 	pthread_create(&_mythread, NULL, &callPThread, this);
 
-	pthread_create(&_mythread, NULL, &callHeartbeat, this);
+#ifdef TEST_HEARTBEAT
+	pthread_create(&_myHeartbeatThread, NULL, &callHeartbeat, this);
 	//_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
-
+#endif
 
 
 }

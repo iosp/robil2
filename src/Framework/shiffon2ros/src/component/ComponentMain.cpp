@@ -23,6 +23,7 @@ const double MILS_2_DEG = 0.056250000; // (360/6400)
 const double MILS_2_RAD = 2*PI/6400;
 const double PI_2_DEG = 180; //
 
+//#define TEST_HEARTBEAT
 
 
 ComponentMain::ComponentMain(int argc,char** argv)
@@ -43,6 +44,14 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	_pub_GpsSpeed2=ros::Publisher(_nh.advertise<std_msgs::Float64>("SENSORS/GPSSPEED2",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 //	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
+    //Replace the thread group with a simple pthread because there is a SIGEV otherwise
+	// and I didn't find the reason.
+	// With pthread, it seems to work.
+#ifdef TEST_HEARTBEAT
+	_myHeartbeatThread = (pthread_t) NULL;
+	pthread_create(&_myHeartbeatThread, NULL, &callHeartbeat, this);
+#endif
+
 }
 
 
@@ -64,7 +73,13 @@ void ComponentMain::InitShiphonConection() {
 
 
 ComponentMain::~ComponentMain() {
-	//if(_roscomm) delete _roscomm; _roscomm=0;
+#ifdef TEST_HEARTBEAT
+	if (_myHeartbeatThread) {
+		pthread_cancel(_myHeartbeatThread);
+		_myHeartbeatThread = (pthread_t)NULL;
+	}
+#endif
+
 }
 
 bool ComponentMain::init(int argc,char** argv){
@@ -195,14 +210,26 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 		_pub_diagnostic.publish(msg);
 }
 void ComponentMain::heartbeat(){
-	using namespace boost::posix_time;
+	//using namespace boost::posix_time;
 	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);
-	double hz = HEARTBEAT_FREQUANCY;
+	double hz = HEARTBEAT_FREQUENCY;
+	double cycle = (1/hz);
+	ros::Duration oneSec(cycle);
+
 	while(ros::ok()){
-		boost::system_time stop_time = boost::get_system_time() + milliseconds((1/hz)*1000);
+		//boost::system_time stop_time = boost::get_system_time() + milliseconds((1/hz)*1000);
 		std_msgs::String msg;
 		msg.data = "SHIFFON2ROS";
 		_pub.publish(msg);
-	    boost::this_thread::sleep(stop_time);
+		oneSec.sleep();
+	   // boost::this_thread::sleep(stop_time);
 	}
+}
+
+void *ComponentMain::callHeartbeat(void * pParam)
+{
+	ComponentMain *myHandle = (ComponentMain *) (pParam);
+
+	myHandle->heartbeat();
+
 }
