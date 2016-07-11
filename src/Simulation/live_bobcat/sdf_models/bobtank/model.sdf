@@ -1191,7 +1191,7 @@
 <!-- IPON Sensor--> <!---->
     <include>
       <uri>model://IPON</uri>
-      <pose>-0.616 -0.155 2.133 0 0 0</pose>
+      <pose>-0.616 -0.155 2.223 0 0.020 0</pose>
       <name>IPON</name>
     </include>
     <joint name='ipon_joint' type='revolute'>
@@ -1211,7 +1211,7 @@
 <!-- IBEO Sensor --> <!---->
     <include>
       <uri>model://IBEO</uri>
-      <pose>-0.360 0.014 1.902 0.005 0.201 0.107</pose>
+      <pose>-0.360 0.014 1.992 0.005 0.221 0.107</pose>
       <name>IBEO</name>
     </include>
     <joint name='ibeo_joint' type='revolute'>
