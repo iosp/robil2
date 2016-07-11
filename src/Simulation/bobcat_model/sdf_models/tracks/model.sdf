@@ -25,12 +25,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -52,8 +62,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -93,12 +103,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -120,8 +140,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -160,12 +180,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -187,8 +217,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -227,12 +257,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -254,8 +294,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -294,12 +334,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -321,8 +371,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -361,12 +411,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -388,8 +448,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -428,12 +488,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -455,8 +525,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -495,12 +565,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -522,8 +602,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -562,12 +642,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -589,8 +679,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -629,12 +719,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -656,8 +756,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -696,12 +796,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -723,8 +833,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -763,12 +873,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -790,8 +910,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -830,12 +950,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -857,8 +987,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -897,12 +1027,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -924,8 +1064,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -964,12 +1104,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -991,8 +1141,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1031,12 +1181,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1058,8 +1218,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1098,12 +1258,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1125,8 +1295,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1165,12 +1335,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1192,8 +1372,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1232,12 +1412,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1259,8 +1449,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1299,12 +1489,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1332,8 +1532,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1372,12 +1572,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1405,8 +1615,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1445,12 +1655,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1478,8 +1698,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1518,12 +1738,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1551,8 +1781,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1591,12 +1821,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1624,8 +1864,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1664,12 +1904,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1697,8 +1947,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1737,12 +1987,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1770,8 +2030,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1810,12 +2070,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1843,8 +2113,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1881,14 +2151,24 @@
             <size>0.1 0.36 0.04</size>
           </box>
         </geometry>
-        <surface>
+         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1916,8 +2196,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1954,14 +2234,24 @@
             <size>0.1 0.36 0.04</size>
           </box>
         </geometry>
-        <surface>
+         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -1989,8 +2279,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -2029,12 +2319,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -2062,8 +2362,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -2102,12 +2402,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -2135,8 +2445,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -2175,12 +2485,22 @@
         </geometry>
         <surface>
           <contact>
-            <ode/>
+              <ode>
+                <soft_cfm>0.000000</soft_cfm>
+                <soft_erp>0.200000</soft_erp>
+                <kp>1000000000.000000</kp>
+                <kd>1.000000</kd>
+                <max_vel>10.00</max_vel>
+                <min_depth>0.05000</min_depth>
+              </ode>
           </contact>
           <friction>
             <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
+                <mu>50.000000</mu>
+                <mu2>50.000000</mu2>
+                <fdir1>0.000000 0.000000 0.000000</fdir1>
+                <slip1>0.000000</slip1>
+                <slip2>0.000000</slip2>
             </ode>
           </friction>
         </surface>
@@ -2208,8 +2528,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>0</linear>
-        <angular>0</angular>
+        <linear>1</linear>
+        <angular>1</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
