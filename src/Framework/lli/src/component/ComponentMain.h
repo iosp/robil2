@@ -44,6 +44,7 @@ public:
 	//Thread Function for LLI Ctrl for QinetiQ
 	void   lliCtrlLoop();
 	static void * callPThread(void *pThis);
+	static void *callHeartbeat(void *pThis);
 	//This method is called when the state of the component is switching to State_Init
 	void workerFunc();
 
@@ -57,8 +58,8 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishConnectedToPlatform(std_msgs::Bool& msg);
 	void heartbeat();
-
 
     void setReady();
     void setNotReady();
@@ -78,6 +79,7 @@ private:
     	ros::Subscriber _sub_EffortsTh;
     	ros::Subscriber _sub_EffortsSt;
     	ros::Subscriber _sub_EffortsJn;
+    	ros::Publisher _pub_connected_to_platform;
 
 
       bool init(int argc,char** argv);
@@ -87,5 +89,6 @@ private:
 	pthread_t _mythread;
 	bool is_ready;
 	CS_STATE _state;
+	pthread_t _myHeartbeatThread;
 };
 #endif /* COMPONENTMAIN_H_ */

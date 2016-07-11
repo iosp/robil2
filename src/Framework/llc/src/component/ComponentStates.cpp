@@ -183,7 +183,7 @@ void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t
 
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
 
-//	#define LLC_USE_LOCALIZATION
+//#define LLC_USE_LOCALIZATION
 
 	ROS_INFO("LLC Ready");
 
@@ -197,7 +197,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 #ifdef LLC_USE_LOCALIZATION
 
-	Kp = 0.12 ; Kd = 0.0 ; Ki = 0.1 ;
+	Kp = 0.30 ; Kd = 0.0 ; Ki = 0.2 ;
 	Kpz = -1.32 ; Kdz = 0.0 ; Kiz = -0.3 ;
 
 	geometry_msgs::Twist per_speed ;

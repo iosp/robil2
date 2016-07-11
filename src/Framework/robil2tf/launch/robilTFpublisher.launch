@@ -1,0 +1,11 @@
+<launch>
+	
+	<node name="robil2TF_publisher" type="robil2TF_node" pkg="robil2tf" output="screen"  
+	args="ODOM	GPS			0.000  0.000  0.000	0.000  0.000  0.000
+	      ODOM	INS			0.266  0.155 -1.683	0.000  0.000  0.000
+      	      ODOM	IBEO			0.256  0.169 -0.231	0.005  0.201  0.107
+
+	      ODOM	TRACKS_BOTTOM		0.000  0.000 -2.323	0.000  0.000  0.000
+	      ODOM	ROBOT_CENTER	       -0.380  0.155 -1.683	0.000  0.000  0.000	
+	      ODOM	body			0.616  0.155 -2.133	0.000  0.000  0.000"/>
+</launch>

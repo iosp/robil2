@@ -1,0 +1,29 @@
+<launch>
+	
+	<!-- ================ -->
+
+	<!-- == PERCEPTION == -->
+	<node name="per_node" type="per_node" pkg="per" output="screen" respawn="true"/>
+	<node name="loc_node" type="loc_node" pkg="loc" output="screen" respawn="true"/>
+	<!-- ================ -->
+	
+	<!-- MISSION CONTROL  -->
+	<node name="smme_node" type="smme_node" pkg="smme" output="screen" respawn="true"/>
+        <node name="wsm_node" type="wsm_node" pkg="wsm" output="screen" respawn="true"/>
+	<node name="ocu_node" type="ocu_node" pkg="ocu" output="screen"/>
+	<!-- ================ -->
+	
+	<!-- == NAVIGATION == -->
+	<include file="$(find pp)/launch/navigation.launch" />
+	<node name="llc_node" type="llc_node" pkg="llc" output="screen" respawn="true"/>
+	<node name="llc_checkup" type="llc_checkup" pkg="llc" output="screen" respawn="true"/>
+        <!--node name="lli_node" type="lli_node" pkg="lli" output="screen" respawn="true"/-->
+
+	<!-- ================ -->
+	
+	<!-- == PLATFORM and SENSORS INTERFACEs == -->
+
+         <!--node pkg="robil2conf" type="timed_roslaunch.sh" args="5 robil2conf sick.launch" name="timed_roslaunch" output="screen">   </node> -->
+
+
+</launch>

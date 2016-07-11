@@ -34,6 +34,7 @@ class ComponentMain {
 		ros::Publisher  _pub_EffortsSt;
 		ros::Publisher  _pub_EffortsJn;
 		ros::Publisher  _pub_Speed;
+		pthread_t _myHeartbeatThread;
 
 	  bool init(int argc,char** argv);
 public:
@@ -60,6 +61,8 @@ public:
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 	void heartbeat();
+	static void *callHeartbeat(void *pThis);
+
 };
 #endif /* COMPONENTMAIN_H_ */
 

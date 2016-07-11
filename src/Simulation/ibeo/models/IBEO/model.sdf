@@ -1,0 +1,188 @@
+<!-- -*- mode: XML -*- -->
+<?xml version="1.0"?> 
+<sdf version="1.4">
+  <model name="IBEO">  <!-- the center of origin located at the center of the back side of the sensor  , X - sensor forward, Z- sensor upward -->
+    <pose>0 0 1 0 0 0 </pose>
+    <link name="link">
+      <pose>0 0 0 0 0 0</pose>
+      <gravity>0</gravity>
+      
+      <visual name='visual'>
+	<pose>0 0 0 1.57079633 0 1.57079633</pose>
+	<geometry>
+	  <mesh>
+	    <uri>model://IBEO/meshes/IBEO.STL </uri>
+	  </mesh>
+	</geometry>
+      </visual>
+<!-- 
+      <collision name='collision'>
+	<pose>0 0 0 1.57079633 0 1.57079633</pose>
+	<geometry>
+	  <mesh>
+	    <uri>model://IBEO/meshes/IBEO.STL </uri>
+	  </mesh>
+	</geometry>
+      </collision>
+  -->   
+
+<!-- Top Planes -->
+      <sensor name='ibeo-t1' type='gpu_ray'> 	<!-- first top plane -->
+	<pose>0.044 0.01045 0.000 0 -0.00698132 0</pose> <!-- laser beam origin at (x,y,z) = (440mm,104.5mm,0mm) , beam center direction 0.4deg up (pitch = -0.4deg = -0.007rad) -->
+	<ray>
+	  <scan>
+	    <horizontal>
+	      <samples>71</samples>	 <!--range of top planes is 70deg, resulution 1deg: 70deg/1deg=70 => 71points (in combination with bottom plains the total resulution is 0.5deg)  -->
+	      <resolution>1</resolution>
+	      <min_angle>-0.77667</min_angle>    <!-- min_ang = -44.5deg -->
+	      <max_angle>0.44505</max_angle>	 <!-- max_ang = 25.5deg  -->
+	    </horizontal>
+	  </scan>
+	  <range>
+	    <min>0.3</min>	<!-- 0.3m -->
+	    <max>30</max>	<!-- 30m -->
+	    <resolution>1</resolution>
+	  </range>
+<!--	  <noise>
+	    <type>gaussian</type>
+	    <mean>0.0</mean>
+	    <stddev>0.1</stddev>  1_SIGMA = 100mm = 0.1m
+	  </noise> -->
+	</ray>
+	<always_on>1</always_on>
+	<update_rate>500</update_rate> <!-- 12.5Hz -->
+	<visualize>1</visualize>
+      </sensor>
+
+      <sensor name='ibeo-t2' type='gpu_ray'>	<!-- second top plane -->
+	<pose>0.044 0.01045 0.000 0 -0.02094395 0</pose> <!-- beam center direction 0.8deg up (pitch = -0.8deg = -0.0209rad) -->
+	<ray>
+	  <scan>
+	    <horizontal>
+	      <samples>71</samples>	 <!--range of top planes is 70deg, resulution 1deg: 70deg/1deg=70 => 71points (in combination with bottom plains the total resulution is 0.5deg)  -->
+	      <resolution>1</resolution>
+	      <min_angle>-0.77667</min_angle>    <!-- min_ang = -44.5deg -->
+	      <max_angle>0.44505</max_angle>	 <!-- max_ang = 25.5deg  -->
+	    </horizontal>
+	  </scan>
+	  <range>
+	    <min>0.3</min>	<!-- 0.3m -->
+	    <max>30</max>	<!-- 30m -->
+	    <resolution>1</resolution>
+	  </range>
+<!--	  <noise>
+	    <type>gaussian</type>
+	    <mean>0.0</mean>
+	    <stddev>0.1</stddev>  1_SIGMA = 100mm = 0.1m
+	  </noise> -->
+	</ray>
+	<always_on>1</always_on>
+	<update_rate>500</update_rate> <!-- 12.5Hz -->
+	<visualize>1</visualize>
+      </sensor>
+
+<!-- Bottom Planes -->      
+      <sensor name='ibeo-b1' type='gpu_ray'>
+	<pose>0.044 0.01045 0.000 0 0.00698132 0</pose> <!-- beam center direction -0.4deg up (pitch = 0.4deg = 0.007rad) -->
+	<ray>
+	  <scan>
+	    <horizontal>
+	      <samples>71</samples>	 <!--range of top planes is 70deg, resulution 1deg: 70deg/1deg=70 => 71points (in combination with bottom plains the total resulution is 0.5deg)  -->
+	      <resolution>1</resolution>
+	      <min_angle>-0.78534</min_angle>  <!-- min_ang = -45deg -->
+	      <max_angle>0.43633</max_angle>   <!-- max_ang = 25deg   -->
+	    </horizontal>
+	  </scan>
+	  <range>
+	    <min>0.3</min>	<!-- 0.3m -->
+	    <max>30</max>	<!-- 30m -->
+	    <resolution>1</resolution>
+	  </range>
+<!--	  <noise>
+	    <type>gaussian</type>
+	    <mean>0.0</mean>
+	    <stddev>0.1</stddev>  1_SIGMA = 100mm = 0.1m
+	  </noise> --> 
+	</ray>
+	<always_on>1</always_on>
+	<update_rate>500</update_rate> <!-- 12.5Hz -->
+	<visualize>1</visualize>
+      </sensor>
+      
+      <sensor name='ibeo-b2' type='gpu_ray'>
+	<pose>0.044 0.01045 0.000 0 0.02094395 0</pose> <!-- beam center direction -0.8deg up (pitch = 0.8deg = 0.0209rad) -->
+	<ray>
+	  <scan>
+	    <horizontal>
+	      <samples>71</samples>	 <!--range of top planes is 70deg, resulution 1deg: 70deg/1deg=70 => 71points (in combination with bottom plains the total resulution is 0.5deg)  -->
+	      <resolution>1</resolution>
+	      <min_angle>-0.78534</min_angle>  <!-- min_ang = -45deg -->
+	      <max_angle>0.43633</max_angle>   <!-- max_ang = 25deg   -->
+	    </horizontal>
+	  </scan>
+	  <range>
+	    <min>0.3</min>	<!-- 0.3m -->
+	    <max>30</max>	<!-- 30m -->
+	    <resolution>1</resolution>
+	  </range>
+<!--	  <noise>
+	    <type>gaussian</type>
+	    <mean>0.0</mean>
+	    <stddev>0.1</stddev>  1_SIGMA = 100mm = 0.1m
+	  </noise> --> 
+	</ray>
+	<always_on>1</always_on>
+	<update_rate>500</update_rate> <!-- 12.5Hz -->
+	<visualize>1</visualize>
+      </sensor> 
+   
+    </link>
+
+  <plugin name="IBEOPLUGIN" filename="libIBEO.so">
+	<Sensor_Name>IBEO</Sensor_Name>
+	<Robot_Name_Space>Robot</Robot_Name_Space>
+
+	<row_t1_name>ibeo-t1</row_t1_name>
+	<row_t2_name>ibeo-t2</row_t2_name>
+	<row_b1_name>ibeo-b1</row_b1_name>
+	<row_b2_name>ibeo-b2</row_b2_name>
+
+	<row_t1_pitch_ang>-0.006981</row_t1_pitch_ang>
+	<row_t2_pitch_ang>-0.020944</row_t2_pitch_ang>
+	<row_b1_pitch_ang>0.006981</row_b1_pitch_ang>
+	<row_b2_pitch_ang>0.020944</row_b2_pitch_ang>
+
+	<rows_t_start_ang>0.44505</rows_t_start_ang>
+	<rows_t_end_ang>-0.77667</rows_t_end_ang>
+	<rows_b_start_ang>0.43633</rows_b_start_ang>
+	<rows_b_end_ang>-0.78534</rows_b_end_ang>
+
+
+	<rows_yaw_ang_increment>-0.0174533</rows_yaw_ang_increment>  	<!-- 1.0deg=0.0174533rad    resulution of single row is 1deg in combination we get 0.5deg -->
+	<scanning_frequency>12.5</scanning_frequency> 		     	<!-- 12.5Hz -->
+	<distance_sample_resolution>0.04</distance_sample_resolution>	<!-- 40mm -->
+	<distance_min>0.3</distance_min>	<!-- 0.3m -->
+	<distance_max>30</distance_max>		<!-- 30m -->
+
+	<TF_parent_link_name>IBEO_base_link</TF_parent_link_name>
+	<laser_TF_point_of_origin_X>0.04400</laser_TF_point_of_origin_X>
+	<laser_TF_point_of_origin_Y>0.01045</laser_TF_point_of_origin_Y>
+	<laser_TF_point_of_origin_Z>0</laser_TF_point_of_origin_Z>
+	<laser_TF_point_of_origin_Rol>0</laser_TF_point_of_origin_Rol>
+	<laser_TF_point_of_origin_Pit>0</laser_TF_point_of_origin_Pit>
+	<laser_TF_point_of_origin_Yow>0</laser_TF_point_of_origin_Yow>
+
+	<Delay>0.00</Delay>
+  </plugin>
+
+<!--
+  <plugin name='TFpublish' filename='libTFpublisher.so'>
+	<tf1frame>IBEO_base_link</tf1frame>
+	<tf1parent>world</tf1parent>
+	<tf1pose>0 0 10 0 1.57079633 0</tf1pose>
+	<update_rate>20</update_rate>
+  </plugin>
+-->
+  </model>        
+</sdf>
+

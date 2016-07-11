@@ -35,6 +35,7 @@ class ComponentMain {
 
 	  bool init(int argc,char** argv);
 	Shiphon_Ctrl * 	_shiphonCtrl;
+	pthread_t _myHeartbeatThread;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -54,6 +55,7 @@ public:
 	void ReadAndPub_ShiphonINS();
 	void ReadAndPub_ShiphonGpsSpeed();
 	void heartbeat();
+	static void *callHeartbeat(void *pThis);
 
 };
 #endif /* COMPONENTMAIN_H_ */

@@ -83,5 +83,6 @@ namespace types{
 
 #define COMPONENT context.parameters<Params>().comp
 #define HEARTBEAT_FREQUANCY 2 //Hz
+#define HEARTBEAT_FREQUENCY 2 //Hz
 
 #endif /* PARAMETERTYPES_H_ */
