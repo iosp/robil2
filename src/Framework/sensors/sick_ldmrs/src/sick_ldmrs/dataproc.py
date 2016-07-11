@@ -321,10 +321,10 @@ class ProcessLDMRSData:
         msg.range_max = 80 
         msg.header.stamp = rospy.Time.now()
         msg.header.frame_id = 'ibeo'
-        msg.angle_t1 = 0.014
-        msg.angle_t2 = 0.028
-        msg.angle_b1 = -0.014
-        msg.angle_b2 = -0.028    
+        msg.angle_t1 = 0.0070   #0.014
+        msg.angle_t2 = 0.0209   #0.028
+        msg.angle_b1 = -0.0070  #-0.014
+        msg.angle_b2 = -0.0209  #-0.028    
 
         for i, scan in enumerate(self.scans):
             scan_id = "scan" + str(i)
