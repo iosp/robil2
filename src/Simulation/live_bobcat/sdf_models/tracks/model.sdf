@@ -62,8 +62,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -140,8 +140,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -217,8 +217,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -294,8 +294,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -371,8 +371,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -448,8 +448,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -525,8 +525,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -602,8 +602,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -679,8 +679,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -756,8 +756,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -833,8 +833,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -910,8 +910,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -987,8 +987,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1064,8 +1064,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1141,8 +1141,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1218,8 +1218,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1295,8 +1295,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1372,8 +1372,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1449,8 +1449,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1532,8 +1532,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1615,8 +1615,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1698,8 +1698,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1781,8 +1781,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1864,8 +1864,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -1947,8 +1947,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -2030,8 +2030,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -2113,8 +2113,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -2196,8 +2196,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -2279,8 +2279,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -2362,8 +2362,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -2445,8 +2445,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
@@ -2528,8 +2528,8 @@
       </visual>
       <gravity>1</gravity>
       <velocity_decay>
-        <linear>1</linear>
-        <angular>1</angular>
+        <linear>0</linear>
+        <angular>0</angular>
       </velocity_decay>
       <self_collide>1</self_collide>
     </link>
