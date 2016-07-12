@@ -2,6 +2,10 @@
 This package contains the waypoint PLP - the PLP responsible for predicting the result of navigating the Bobcat through a planned path.
 
 ## Running the node
+
+NOTE: The plp_waypoint node must be started before the tasks and missions are submitted
+      to the system. Preferably at system startup.
+
 Command to run the node:
 
     rosrun plp_waypoint PlpWaypointRosHarness.py
