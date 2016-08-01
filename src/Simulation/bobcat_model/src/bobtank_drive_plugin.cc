@@ -38,7 +38,7 @@
 // PID - Gain Values
 #define Kp 1000
 #define Klin 1
-#define Kang 1
+#define Kang 0.5
 #define wide 1.5
 
 // coefficients for linear surface
