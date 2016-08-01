@@ -10,17 +10,24 @@
 #include <bondcpp/bond.h>
 #include <llc/ControlParamsConfig.h>
 #include <dynamic_reconfigure/server.h>
-
+#include <geometry_msgs/TwistStamped.h>
+#include <robil_msgs/GpsSpeed.h>
 using namespace std;
 using namespace decision_making;
 #include "ComponentStates.h"
+
+
 double k_emrg=1;
 double hb_time = 0 ;
 const double t_out = 20.0 ;
 static double Kp = 1.3 , Kd = 0.0 , Ki = 0.0   ; 				/* PID constants of linear x */
 static double Kpz = -1.8 , Kdz = 0.01 , Kiz = -0.1   ;		/* PID constants of angular z */
- 
-
+ros::Time heartbeat_time;
+ros::Time GPS_time;
+ros::Time LOC_time;
+double linear_vel,angular_vel;
+double dt_GPS, dt_LOC;
+double wanted_linear_vel, wanted_angular_vel;
 class Params: public CallContextParameters{
 public:
 	ComponentMain* comp;
@@ -121,55 +128,42 @@ void hb_callback (const std_msgs::Bool &msg)
 		hb_time = t_out + 1.0;
 }
 
+
+
+void llc_status_heartbeat (const geometry_msgs::TwistStamped &msg)
+{
+	heartbeat_time = ros::Time::now();
+	wanted_linear_vel=msg.twist.linear.x;
+	wanted_angular_vel=msg.twist.angular.z;
+}
+
 void llc_status_callback (const std_msgs::Float64 &msg)
 {
 	k_emrg=msg.data;
 }
 
 
-geometry_msgs::Twist Translate(geometry_msgs::PoseWithCovarianceStamped model_state , geometry_msgs::Twist model_speed){
-
-	std_msgs::Float64 x[3] ;
-	std_msgs::Float64 z[3] ;
-	std_msgs::Float64 v[3] ;
-	std_msgs::Float64 w[3] ;
-	std_msgs::Float64 a , b , c, d ;
-
-	geometry_msgs::Twist model_coordinates ;
-	double model_coordinates_linear_speed ;
-	double model_coordinates_angular_speed ;
-
-
-	a.data = model_state.pose.pose.orientation.w ;
-	b.data = model_state.pose.pose.orientation.x ;
-	c.data = model_state.pose.pose.orientation.y ;
-	d.data = model_state.pose.pose.orientation.z ;
-
-	x[0].data = (pow(a.data,2) + pow(b.data,2) - pow(c.data,2) - pow(d.data,2));
-	x[1].data = 2*b.data*c.data + 2*a.data*d.data ;
-	x[2].data = 2*b.data*d.data - 2*a.data*c.data ;
-
-	z[0].data = 2*b.data*d.data + 2*a.data*c.data ;
-	z[1].data = 2*c.data*d.data - 2*a.data*b.data ;
-	z[2].data = (pow(a.data,2)-pow(b.data,2) - pow(c.data,2)+pow(d.data,2));
-
-	v[0].data = model_speed.linear.x;
-	v[1].data = model_speed.linear.y;
-	v[2].data = model_speed.linear.z;
-
-	w[0].data = model_speed.angular.x;
-	w[1].data = model_speed.angular.y;
-	w[2].data = model_speed.angular.z;
-
-	model_coordinates_linear_speed = (dot_prod(x,v,3) / norm(x,3));
-	model_coordinates_angular_speed = (dot_prod(z , w , 3) / norm(z ,3));
-
-	model_coordinates.linear.x = model_coordinates_linear_speed ;
-	model_coordinates.angular.z = model_coordinates_angular_speed ;
-
-	return (model_coordinates);
-
+void GPS_angular_vel_cb  (const robil_msgs::GpsSpeed &msg)
+{
+        
+	linear_vel=msg.speed;
+	dt_GPS=(ros::Time::now()-GPS_time).toSec();
+	GPS_time=ros::Time::now();
+	if(dt_GPS==0)dt_GPS=1;
+	//ROS_INFO("dt_GPS  = %lf ", dt_GPS);
 }
+
+
+void LOC_linear_vel_cb  (const geometry_msgs::TwistStamped &msg)
+{
+        
+	angular_vel=msg.twist.angular.z;
+	dt_LOC=(ros::Time::now()-LOC_time).toSec();
+	if(dt_LOC==0)dt_LOC=1;
+	LOC_time=ros::Time::now();
+	//ROS_INFO("dt_LOC  = %lf ", dt_LOC);
+}
+
 
 void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t level) {
 
@@ -183,50 +177,45 @@ void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t
 
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
 
-//#define LLC_USE_LOCALIZATION
+
 
 	ROS_INFO("LLC Ready");
-
-	double integral [2] = {} ; 								/* integration part */
-	double der [2] = {} ;  									/* the derivative of the error */
-	double integral_limit [2] = {1,-0.3};					/* emergency stop */
-	double angular_filter[1024] = {} ;
+	double linear_integral;
+	double angular_integral;
+	double linear_der;
+	double angular_der;
+	double linear_integral_limit = 5;
+	double angular_integral_limit = 5;
+	double err_epsilon = 0.01;
 	double old_err = 0;
-	int E_stop = 1;
 	COMPONENT->t_flag = 0 ;
 
-#ifdef LLC_USE_LOCALIZATION
 
-	Kp = 0.30 ; Kd = 0.0 ; Ki = 0.2 ;
-	Kpz = -1.32 ; Kdz = 0.0 ; Kiz = -0.3 ;
 
-	geometry_msgs::Twist per_speed ;
-	geometry_msgs::PoseWithCovarianceStamped per_location ;
-
-#endif
 
 	config::LLC::pub::EffortsSt Steering_rate ; 		/* steering rate  +- 1 */
 	config::LLC::pub::EffortsTh Throttle_rate ;			/* Throttle rate  +- 1 */
-	sensor_msgs::JointState Blade_pos;
+ 	sensor_msgs::JointState Blade_pos;
 
 	geometry_msgs::TwistStamped cur_error ; 			/* stores the current error signal */
 	geometry_msgs::TwistStamped old_error ; 			/* stores the last error signal */
-	geometry_msgs::Twist t ;							/* used for co-ordinates transform */
-	ros::Subscriber link_to_platform ;
-	ros::Subscriber link_to_comm_check;
-	ros::Publisher linear_error_publisher;
-	ros::Publisher angular_error_publisher;
-	ros::Publisher debug_publisher;
+	std_msgs::Float64 angular_error;
+	std_msgs::Float64 linear_error;							/* used for co-ordinates transform */
+	
+
 	ros::NodeHandle n;
-	link_to_platform = n.subscribe("/Sahar/link_with_platform" , 100, hb_callback);
-	link_to_comm_check = n.subscribe("/llc_status" , 100, llc_status_callback);
-	linear_error_publisher = n.advertise<std_msgs::Float64>("/linear_error", 100);
-        angular_error_publisher = n.advertise<std_msgs::Float64>("/angular_error", 100);
-	debug_publisher = n.advertise<std_msgs::Float64>("/or_debug", 100);
-	COMPONENT->WPD_desired_speed.twist.linear.x = 0;
-	COMPONENT->WPD_desired_speed.twist.angular.z = 0;
-	COMPONENT->WSM_desired_speed.twist.linear.x = 0;
-	COMPONENT->WSM_desired_speed.twist.angular.z = 0;
+
+	ros::Subscriber link_to_heatbeat = n.subscribe("/WPD/Speed" , 100, llc_status_heartbeat);
+	
+	ros::Subscriber link_to_platform = n.subscribe("/Sahar/link_with_platform" , 100, hb_callback);
+	ros::Subscriber GPS_angular_vel  = n.subscribe("/SENSORS/GPS/Speed" , 100, GPS_angular_vel_cb);
+	ros::Subscriber LOC_linear_vel  = n.subscribe("/LOC/Velocity" , 100, LOC_linear_vel_cb);
+	
+	ros::Publisher linear_error_publisher = n.advertise<std_msgs::Float64>("linear_error", 100);
+	ros::Publisher angular_error_publisher = n.advertise<std_msgs::Float64>("/angular_error", 100);
+	ros::Publisher Throttle_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EffortsTh", 100);
+	ros::Publisher Steering_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EffortsSt", 100);
+	
 
 	/* PID loop */
 
@@ -249,101 +238,62 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	/* get measurements and calculate error signal */
 
-#ifndef LLC_USE_LOCALIZATION
-
-	    ros::ServiceClient gmscl=n.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
-	    gazebo_msgs::GetModelState getmodelstate;
-	    getmodelstate.request.model_name ="Sahar";
-	    gmscl.call(getmodelstate);
-	    geometry_msgs::PoseWithCovarianceStamped gigi;
-	    gigi.pose.pose = getmodelstate.response.pose;
-	    t = Translate(gigi, getmodelstate.response.twist);
-
-#else
-
-	    per_location = COMPONENT->Per_pose ;
-	    per_speed = COMPONENT->Per_measured_speed;
-	    t = Translate(per_location, per_speed);
-#endif
 
 
-			if(COMPONENT->WPD_desired_speed.twist.linear.x ||COMPONENT->WPD_desired_speed.twist.angular.z ){
-				cur_error.twist.linear.x = (COMPONENT->WPD_desired_speed.twist.linear.x) - t.linear.x;
-				cur_error.twist.angular.z = ((COMPONENT->WPD_desired_speed.twist.angular.z) - t.angular.z);
+
+			if(wanted_linear_vel || wanted_angular_vel ){
+				cur_error.twist.linear.x = (wanted_linear_vel) -linear_vel;
+				cur_error.twist.angular.z = (wanted_angular_vel - angular_vel);
 			}
 			else{
-				cur_error.twist.linear.x = (COMPONENT->WSM_desired_speed.twist.linear.x) - t.linear.x;
-				cur_error.twist.angular.z = ((COMPONENT->WSM_desired_speed.twist.angular.z) - t.angular.z);
+				cur_error.twist.linear.x = (COMPONENT->WSM_desired_speed.twist.linear.x) - linear_vel;
+				cur_error.twist.angular.z = ((COMPONENT->WSM_desired_speed.twist.angular.z) - angular_vel);
 			}
-	std_msgs::Float64 angular_error;
-	std_msgs::Float64 linear_error;
-	std_msgs::Float64 debug_f;
+
+	
 	angular_error.data=cur_error.twist.angular.z;
 	linear_error.data=cur_error.twist.linear.x;
+	old_err = cur_error.twist.linear.x ;
 
-	debug_f.data=COMPONENT->WPD_desired_speed.twist.linear.x;
-	linear_error_publisher.publish(linear_error);
-	angular_error_publisher.publish(angular_error);
-	debug_publisher.publish(debug_f);
 
-			Push_elm(angular_filter,1024,cur_error.twist.angular.z);
-			//cur_error.twist.angular.z = _medianfilter(angular_filter,201);
-			cur_error.twist.angular.z = avg_filter(angular_filter , 1024.0);
-
-			cur_error.twist.linear.x = (1-0.125)*old_err + cur_error.twist.linear.x*(0.125);
-			old_err = cur_error.twist.linear.x ;
-
-			double dt = 0.001 ;
 
 	/* calculate integral and derivatives */
-	integral[0] += ((cur_error.twist.linear.x )* dt);
-	der[0] = ((cur_error.twist.linear.x - old_error.twist.linear.x)/dt);
-	integral[1] += ((cur_error.twist.angular.z)* dt);
-	der[1] = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt);
-	for(int k = 0 ; k < 2 ; k++){
-		if(integral[k] > integral_limit[k] )
-				integral[k] = integral_limit[k] ;
-		else if (integral[k] < -integral_limit[k])
-				integral[k] = -integral_limit[k] ;
-	}
-
-
-
-		//Kpz=Kpz*(1+abs(t.linear.x));
-//ROS_INFO("%f",Throttle_rate.data);
-	  	
-		//Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;  
+	if(dt_GPS==0)dt_GPS=1;
+	if(dt_LOC==0)dt_LOC=1;
+	linear_integral += ((cur_error.twist.linear.x )* dt_GPS);
+	linear_der = ((cur_error.twist.linear.x - old_error.twist.linear.x)/dt_GPS);
+	angular_integral += ((cur_error.twist.angular.z)* dt_LOC);
+	angular_der = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt_LOC);
 	
-	 
-	Throttle_rate.data =( Kp*cur_error.twist.linear.x + Ki*integral[0] + Kd*der[0] )*k_emrg;
-	Steering_rate.data =( Kpz*cur_error.twist.angular.z+Kdz*der[1]+Kiz*integral[1] )*k_emrg; 
+	/* limits to the integral */
+	if(linear_integral > linear_integral_limit )
+			linear_integral = linear_integral_limit ;
+	else if (linear_integral < -linear_integral_limit)
+			linear_integral = -linear_integral_limit ;
+		
+	if(angular_integral > angular_integral_limit)
+			angular_integral = angular_integral_limit ;
+	else if (angular_integral < -angular_integral_limit)
+			angular_integral = -angular_integral_limit ;
+	
+	/* reset the integral */
+	if(abs(cur_error.twist.linear.x)<err_epsilon ) linear_integral=0;
+	if(abs(cur_error.twist.angular.z)<err_epsilon ) angular_integral=0;
+
+	if((ros::Time::now()-heartbeat_time).toSec()>0.1) k_emrg=0;
+	else k_emrg=1;
+	
+	Throttle_rate.data =( Kp*cur_error.twist.linear.x + Ki*linear_integral + Kd*linear_der )*k_emrg;
+	Steering_rate.data =( Kpz*cur_error.twist.angular.z+Kdz*angular_der+Kiz*angular_integral )*k_emrg; 
 	
 
 
-/*/or controlers test
-if(COMPONENT->WPD_desired_speed.twist.angular.z>0){
-Steering_rate.data = E_stop*(Kpz*(cur_error.twist.angular.z+0.2) + Kiz*integral[1] - Kdz*der[1]) ;
-}
-if(COMPONENT->WPD_desired_speed.twist.angular.z<0){
-Steering_rate.data = E_stop*(Kpz*(cur_error.twist.angular.z-0.2) + Kiz*integral[1] - Kdz*der[1]) ;
-}
-if(COMPONENT->WPD_desired_speed.twist.angular.z==0){
-
-}
-*/
-
-
-	/*
-// stops (or's test)
-	if((COMPONENT->WPD_desired_speed.twist.linear.x==0 && COMPONENT->WPD_desired_speed.twist.angular.z==0)|| !(COMPONENT->WPD_desired_speed.twist.linear.x ||COMPONENT->WPD_desired_speed.twist.angular.z )){
-	Throttle_rate.data = 0; 
-	Steering_rate.data = 0;
-	}
-*/
 	/* publish */
-		COMPONENT->publishEffortsTh(Throttle_rate);
-		COMPONENT->publishEffortsSt(Steering_rate);
 
+	Throttle_rate_pub.publish(Throttle_rate);
+	Steering_rate_pub.publish(Steering_rate);
+	linear_error_publisher.publish(linear_error);
+	angular_error_publisher.publish(angular_error);
 
 	/* WSM blade controller */
 
@@ -362,12 +312,8 @@ if(COMPONENT->WPD_desired_speed.twist.angular.z==0){
 	old_error.twist.angular.z = cur_error.twist.angular.z ;
 	old_error.twist.linear.x = cur_error.twist.linear.x ;
 
-		if(!E_stop)
-			break ;
-		PAUSE(10);		/* wait dt time to recalculate error */
-
-		//usleep(100000);
 	}
+
 	ROS_INFO("cannot connect with platform");
 	/*
 	 * TODO: break bond diagnostics
@@ -377,9 +323,7 @@ if(COMPONENT->WPD_desired_speed.twist.angular.z==0){
 }
 
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
-	//PAUSE(10000);
-	//Event e("Activation");
-	//events.raiseEvent(e);
+
 	ROS_INFO("LLC Standby");
 
 	return TaskResult::SUCCESS();
@@ -409,3 +353,4 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	Fsmllc(&context, &events);
 
 }
+
