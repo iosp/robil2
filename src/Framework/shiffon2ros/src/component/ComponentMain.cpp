@@ -23,7 +23,7 @@ const double MILS_2_DEG = 0.056250000; // (360/6400)
 const double MILS_2_RAD = 2*PI/6400;
 const double PI_2_DEG = 180; //
 
-//#define TEST_HEARTBEAT
+#define TEST_HEARTBEAT
 
 
 ComponentMain::ComponentMain(int argc,char** argv)
