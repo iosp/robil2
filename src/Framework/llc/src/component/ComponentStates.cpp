@@ -265,7 +265,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 
 	/* calculate integral and derivatives */
-	ROS_INFO("dt_GPS  = %lf   dt_LOC  = %lf ", dt_GPS,dt_LOC );
+	//ROS_INFO("dt_GPS  = %lf   dt_LOC  = %lf ", dt_GPS,dt_LOC );
 
 	angular_integral += ((cur_error.twist.angular.z)* dt_LOC);
 	angular_der = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt_LOC);
