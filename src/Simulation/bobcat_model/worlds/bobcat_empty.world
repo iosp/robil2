@@ -29,10 +29,11 @@
 	
 	
         <include>
-      	    <uri>model://bobtank</uri>
+      	    <uri>model://bobcat</uri>
 	    <name>Sahar</name>
             <pose>0 0 0.5 0 0 0</pose>
         </include>
 
     </world>
 </sdf>
+

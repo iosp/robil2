@@ -20,7 +20,7 @@
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
-    <arg name="world_name" value="$(find live_bobcat)/worlds/bobtank_empty.world"/>
+    <arg name="world_name" value="$(find bobcat_model)/worlds/bobtank_empty.world"/>
   </include>
 
   
