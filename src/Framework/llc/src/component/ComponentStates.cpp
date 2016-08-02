@@ -28,6 +28,12 @@ ros::Time LOC_time;
 double linear_vel,angular_vel;
 double dt_GPS, dt_LOC;
 double wanted_linear_vel, wanted_angular_vel;
+	geometry_msgs::TwistStamped cur_error ; 			/* stores the current error signal */
+	geometry_msgs::TwistStamped old_error ; 			/* stores the last error signal */
+		double linear_integral;
+	double angular_integral;
+		double linear_der;
+	double angular_der;
 class Params: public CallContextParameters{
 public:
 	ComponentMain* comp;
@@ -149,7 +155,9 @@ void GPS_angular_vel_cb  (const robil_msgs::GpsSpeed &msg)
 	linear_vel=msg.speed;
 	dt_GPS=(ros::Time::now()-GPS_time).toSec();
 	GPS_time=ros::Time::now();
-	if(dt_GPS==0)dt_GPS=1;
+	if(dt_GPS < 0.01)dt_GPS=0.01;
+	linear_integral += ((cur_error.twist.linear.x )* dt_GPS);
+	linear_der = ((cur_error.twist.linear.x - old_error.twist.linear.x)/dt_GPS);
 	//ROS_INFO("dt_GPS  = %lf ", dt_GPS);
 }
 
@@ -159,8 +167,10 @@ void LOC_linear_vel_cb  (const geometry_msgs::TwistStamped &msg)
         
 	angular_vel=msg.twist.angular.z;
 	dt_LOC=(ros::Time::now()-LOC_time).toSec();
-	if(dt_LOC==0)dt_LOC=1;
+	if(dt_LOC < 0.01) dt_LOC = 0.01;
 	LOC_time=ros::Time::now();
+	angular_integral += ((cur_error.twist.angular.z)* dt_LOC);
+	angular_der = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt_LOC);
 	//ROS_INFO("dt_LOC  = %lf ", dt_LOC);
 }
 
@@ -180,8 +190,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 
 	ROS_INFO("LLC Ready");
-	double linear_integral;
-	double angular_integral;
+
 	double linear_der;
 	double angular_der;
 	double linear_integral_limit = 5;
@@ -197,8 +206,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	config::LLC::pub::EffortsTh Throttle_rate ;			/* Throttle rate  +- 1 */
  	sensor_msgs::JointState Blade_pos;
 
-	geometry_msgs::TwistStamped cur_error ; 			/* stores the current error signal */
-	geometry_msgs::TwistStamped old_error ; 			/* stores the last error signal */
+
 	std_msgs::Float64 angular_error;
 	std_msgs::Float64 linear_error;							/* used for co-ordinates transform */
 	
@@ -206,15 +214,14 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	ros::NodeHandle n;
 
 	ros::Subscriber link_to_heatbeat = n.subscribe("/WPD/Speed" , 100, llc_status_heartbeat);
-	
 	ros::Subscriber link_to_platform = n.subscribe("/Sahar/link_with_platform" , 100, hb_callback);
 	ros::Subscriber GPS_angular_vel  = n.subscribe("/SENSORS/GPS/Speed" , 100, GPS_angular_vel_cb);
 	ros::Subscriber LOC_linear_vel  = n.subscribe("/LOC/Velocity" , 100, LOC_linear_vel_cb);
 	
 	ros::Publisher linear_error_publisher = n.advertise<std_msgs::Float64>("linear_error", 100);
 	ros::Publisher angular_error_publisher = n.advertise<std_msgs::Float64>("/angular_error", 100);
-	ros::Publisher Throttle_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EffortsTh", 100);
-	ros::Publisher Steering_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EffortsSt", 100);
+	ros::Publisher Throttle_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Throttle", 100);
+	ros::Publisher Steering_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Steering", 100);
 	
 
 	/* PID loop */
@@ -258,10 +265,8 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 
 	/* calculate integral and derivatives */
-	if(dt_GPS==0)dt_GPS=1;
-	if(dt_LOC==0)dt_LOC=1;
-	linear_integral += ((cur_error.twist.linear.x )* dt_GPS);
-	linear_der = ((cur_error.twist.linear.x - old_error.twist.linear.x)/dt_GPS);
+	ROS_INFO("dt_GPS  = %lf   dt_LOC  = %lf ", dt_GPS,dt_LOC );
+
 	angular_integral += ((cur_error.twist.angular.z)* dt_LOC);
 	angular_der = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt_LOC);
 	
