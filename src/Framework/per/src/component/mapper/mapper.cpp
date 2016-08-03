@@ -189,13 +189,13 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher 
         }
     }
     try{
-        listener.waitForTransform("WORLD", "IBEO", now, ros::Duration(1));
+        listener.waitForTransform("WORLD", "IBEO", now, ros::Duration(0.5));
         listener.transformPointCloud("WORLD", ibeo_points, base_point);
         geometry_msgs::PoseStamped tracks_height, world_height;
         world_height.header.frame_id = "TRACKS_BOTTOM";
         world_height.header.stamp = now;
         world_height.pose.orientation.w = 1;
-        listener.waitForTransform("WORLD", "TRACKS_BOTTOM", now, ros::Duration(1));
+        listener.waitForTransform("WORLD", "TRACKS_BOTTOM", now, ros::Duration(0.5));
         listener.transformPose("WORLD", world_height, tracks_height);
         pcpubworld.publish(base_point);
         pcpub.publish(ibeo_points);

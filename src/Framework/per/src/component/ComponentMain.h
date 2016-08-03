@@ -23,6 +23,7 @@
 #include <iostream>     // std::cout
 #include <sstream>
 #include <boost/thread.hpp>
+
 using namespace std;
 // using namespace per;
 using namespace cv;
@@ -92,7 +93,7 @@ public:
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
     void configCallback(per::configConfig &config, uint32_t level);
-	
+    void handleSensorIBEOandINS(const sensor_msgs::ImuConstPtr& msgINS, const robil_msgs::MultiLaserScanConstPtr& msgIBEO);
 	void setVisualize(char);
 	void heartbeat();
 
@@ -105,6 +106,7 @@ private:
       sensor_msgs::Imu _imuData;
       sensor_msgs::NavSatFix _gpsData;
       HeightMap* height_map;
+      bool _should_pub;
 
       
       
