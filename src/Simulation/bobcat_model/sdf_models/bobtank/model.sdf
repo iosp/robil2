@@ -1051,8 +1051,6 @@
 
 
 
-
-
 <include>
     <uri>model://tracks</uri>
     <pose>-1.25 -0.84 0.6 0 3.95 3.14159</pose>

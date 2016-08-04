@@ -36,11 +36,11 @@
 #define steering_message_max_time_delay 0.03
 
 // PID - Gain Values
-#define Kp 1000
+#define Kp 1200
 #define Klin 1
 #define Kang 1
 #define wide 1.5
-
+#define max_force 1200
 // coefficients for linear surface
 #define l0 -0.09307
 #define l1 5.927*pow(10,-19)
@@ -104,7 +104,7 @@ namespace gazebo
 
     // Called by the world update start event, This function is the event that will be called every update
   public: void OnUpdate(const common::UpdateInfo & /*_info*/)  // we are not using the pointer to the info so its commanted as an option
-    {      
+    {
 	// Applying effort to the wheels , brakes if no message income
 	if (velocity_timer.GetElapsed().Float()>velocity_message_max_time_delay)
 	{
@@ -117,10 +117,27 @@ namespace gazebo
 	else
 	{
 	       // Accelerates
-	  this->back_left_joint->SetForce(0,Set_Velocity_Back_Left_Wheel_Effort(0));
-	  this->back_right_joint->SetForce(0,Set_Velocity_Back_Right_Wheel_Effort(0));
-	  this->front_left_joint->SetForce(0,Set_Velocity_Front_Left_Wheel_Effort(0));
-	  this->front_right_joint->SetForce(0,Set_Velocity_Front_Right_Wheel_Effort(0));
+	  double force_back_left = Set_Velocity_Back_Left_Wheel_Effort(0);
+	  double force_back_right = Set_Velocity_Back_Right_Wheel_Effort(0);
+	  double force_front_left = Set_Velocity_Front_Left_Wheel_Effort(0);
+	  double force_front_right =Set_Velocity_Front_Right_Wheel_Effort(0);
+	  
+	  if(force_back_left > max_force) force_back_left = max_force;
+	  if(force_back_left < -max_force) force_back_left = -max_force;
+	  
+	  if(force_back_right > max_force) force_back_right = max_force;
+	  if(force_back_right < -max_force) force_back_right = -max_force;
+	  
+	  if(force_front_left > max_force) force_front_left = max_force;
+	  if(force_front_left < -max_force) force_front_left = -max_force;
+	  
+	  if(force_front_right > max_force) force_front_right = max_force;
+	  if(force_front_right < -max_force) force_front_right = -max_force;
+	  
+	  this->back_left_joint->SetForce(0,force_back_left);
+	  this->back_right_joint->SetForce(0,force_back_right);
+	  this->front_left_joint->SetForce(0,force_front_left);
+	  this->front_right_joint->SetForce(0,force_front_right);
 	}
       
       std_msgs::Bool connection;
@@ -128,6 +145,10 @@ namespace gazebo
       platform_hb_pub_.publish(connection);
     }
 
+    
+    
+    
+    
     
     
      // Defining private Pointer to model
