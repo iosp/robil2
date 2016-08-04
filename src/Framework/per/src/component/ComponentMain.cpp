@@ -119,8 +119,9 @@ void ComponentMain::handleSensorINS(const config::PER::sub::SensorINS& msg)
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
     double acc2 = msg.linear_acceleration.x * msg.linear_acceleration.x + msg.linear_acceleration.y * msg.linear_acceleration.y;
-    if (abs(pitch) > 0.005)
-        _should_pub = false;
+    cout << msg.angular_velocity << endl;
+    if (abs(pitch) > _dyn_conf.pitch_filter)
+        _should_pub = true;
     else
         _should_pub = true;
 
