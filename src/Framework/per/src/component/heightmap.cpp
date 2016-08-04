@@ -375,142 +375,93 @@ int erode_size = 2;
 void Morphology_Operations( int, void* )
 {
 }
+
+double HeightMap::calc_height(int x, int y, int radius)
+{
+    if (_at(x, y) == HEIGHT_UNKNOWN)
+        return HEIGHT_UNKNOWN;
+    double height = 0;
+    int counter = 0;
+    for (int i = x - radius; i <= x + radius; i++)
+        for (int j = y - radius; j <= y + radius; j++)
+        {
+            if (i < 0 || i > _width || j < 0 || j > _height || _at(i, j) == HEIGHT_UNKNOWN)
+            {
+                counter++;
+                continue;
+            }
+            height += _at(i, j);
+        }
+    height /= (pow( 2 * radius + 1, 2) - counter);
+    return height;
+}
+
 void HeightMap::calculateTypes(Vec3D position, Rotation myRot)
 {
-    double pitch = myRot.pitch;
-//    HeightMap m = this->deriveMap(position.x, position.y, myRot);
-//    Mat image = m.generateMat(3);
-//    if (image.empty())
-//        return;
-
-    //    Mat detected_edges, src_gray;
-
-    //    /* Apply Canny edge detector */
-    //    int ratio = 3;
-    //    int kernel_size = 3;
-    //    cvtColor( image, src_gray, CV_BGR2GRAY );
-    //    blur( src_gray, detected_edges, Size(3,3) );
-    //    Canny( detected_edges, detected_edges,
-    //           lowThreshold, lowThreshold*ratio, kernel_size );
-    //    /* Remove from DST the uncharted areas */
-    //    for (int i = 0; i < src_gray.rows; i++ )
-    //        for (int j = 0; j < src_gray.cols; j++)
-    //            if (src_gray.at<uchar>(i,j) == 100)
-    //            {
-    //                if  (i-1 >= 0) detected_edges.at<uchar>(i-1,j) = 0;
-    //                if  (i+1 < src_gray.rows) detected_edges.at<uchar>(i+1,j) = 0;
-    //                if (j-1 >= 0) detected_edges.at<uchar>(i,j-1) = 0;
-    //                if ( j+1 < src_gray.cols) detected_edges.at<uchar>(i,j+1) = 0;
-    //                detected_edges.at<uchar>(i,j) = 0;
-    //            }
-
-    //    /* Apply Morphological closing operation */
-    //    Mat dst;
-    //    Mat element = getStructuringElement( morph_elem, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
-    //    if (morph_size)
-    //        morphologyEx( detected_edges, dst, MORPH_CLOSE, element );
-    //    else
-    //        dst = detected_edges;
-    //    char window_name[20] = "test";
-
-    //    /// Create Trackbar to select kernel type
-    //    createTrackbar( "Element:\n 0: Rect - 1: Cross - 2: Ellipse", window_name,
-    //                    &morph_elem, max_elem,
-    //                    Morphology_Operations );
-
-    //    /// Create Trackbar to choose kernel size
-    //    createTrackbar( "Kernel size:\n 2n +1", window_name,
-    //                    &morph_size, max_kernel_size,
-    //                    Morphology_Operations );
-    //    createTrackbar("Edges threshold", window_name,
-    //                   &lowThreshold, 100,
-    //                   Morphology_Operations);
-    //    createTrackbar("Erode size", window_name,
-    //                   &erode_size, max_kernel_size,
-    //                   Morphology_Operations);
-    //    //imshow(window_name, dst);
-    //    /* Remove from DST the uncharted areas */
-    //    for (int i = 0; i < src_gray.rows; i++ )
-    //        for (int j = 0; j < src_gray.cols; j++)
-    //            if (src_gray.at<uchar>(i,j) == 100)
-    //            {
-    //                if  (i-1 >= 0) dst.at<uchar>(i-1,j) = 0;
-    //                if  (i+1 < src_gray.rows) dst.at<uchar>(i+1,j) = 0;
-    //                if (j-1 >= 0) dst.at<uchar>(i,j-1) = 0;
-    //                if ( j+1 < src_gray.cols) dst.at<uchar>(i,j+1) = 0;
-    //                dst.at<uchar>(i,j) = 0;
-    //            }
-    //    /* Apply erode to remove edges */
-
-    //    Mat element2 = getStructuringElement( morph_elem, Size( 2*erode_size + 1, 2*erode_size+1 ), Point( erode_size, erode_size ) );
-    //    if (erode_size)
-    //        erode(dst, dst, element2);
-    //    Mat color_map = image;
-    //    cvtColor(color_map, color_map, CV_RGB2HSV);
-    //    for (int i = 0; i < dst.rows; i++)
-    //        for (int j = 0; j < dst.cols; j++)
-    //            if (dst.at<uchar>(i,j) == 0)
-    //                color_map.at<Vec3b>(i,j) = Vec3b(0,0,100);
-    //    imshow(window_name, color_map);
-
-
     int mul;
     const int road_thresh = 5;
     for(int i = 1; i < _width-1; i++)
         for(int j = 1; j < _height-1; j++)
         {
-            //if(_types[j*_width+i] != TYPE_UNSCANNED) continue;
-            double x = (_width/2 - position.x * 5 + _refPoint.x);
-            double y = (_height/2 - position.y * 5 + _refPoint.y);
-            double dist = sqrt((x-i) * (x-i) + (y-j) * (y-j));
-            if (dist < 30)
-                mul = 1;
-            else
-                mul = 2;
-            double height = _at(i, j);
-            double heightx1 = _at(i-1, j);
-            double heightx2 = _at(i+1, j);
-            double heighty1 = _at(i, j-1);
-            double heighty2 = _at(i, j+1);
-            if(height == HEIGHT_UNKNOWN)
-            {
-                if(heightx1 != HEIGHT_UNKNOWN && heightx2 != HEIGHT_UNKNOWN)
-                    height = _at(i,j) = (heightx1 + heightx2)/2;
-                else if(heighty1 != HEIGHT_UNKNOWN && heighty2 != HEIGHT_UNKNOWN)
-                    height = _at(i,j) = (heighty1 + heighty2)/2;
-                else
-                    continue;
-            }
-
-
-            //if (abs(height - position.z) > 0.8) _types[j*_width+i] = TYPE_OBSTACLE;
-            if(heighty2 != HEIGHT_UNKNOWN && heighty1 != HEIGHT_UNKNOWN && heightx2 != HEIGHT_UNKNOWN && heightx1 != HEIGHT_UNKNOWN)
-            {
-                if (abs(heighty2-heighty1)/2 > _dynamic->obstacle_threshold * mul || abs(heightx2-heightx1)/2 > _dynamic->slope_threshold * mul)
-                    _types[j*_width+i] = TYPE_OBSTACLE;
-                else if ((height - position.z) > _dynamic->obstacle_threshold * mul && (height - position.z) < 1.1)
-                    _types[j*_width+i] = TYPE_OBSTACLE;
-                else _types[j*_width+i] = TYPE_CLEAR;
-            }
-            else if ((height - position.z) > _dynamic->obstacle_threshold * mul && (height - position.z) < 1.1)
+            double height = calc_height(i,j, 2);
+            if (height > _dynamic->obstacle_threshold)
                 _types[j*_width+i] = TYPE_OBSTACLE;
-            else _types[j*_width+i] = TYPE_UNSCANNED;
-            //_types[j*_width+i] = TYPE_CLEAR;
+            else if(height == HEIGHT_UNKNOWN)
+                _types[j*_width+i] = TYPE_UNSCANNED;
+            else
+                _types[j*_width+i] = TYPE_CLEAR;
+            //if(_types[j*_width+i] != TYPE_UNSCANNED) continue;
+//            double x = (_width/2 - position.x * 5 + _refPoint.x);
+//            double y = (_height/2 - position.y * 5 + _refPoint.y);
+//            double dist = sqrt((x-i) * (x-i) + (y-j) * (y-j));
+//            if (dist < 30)
+//                mul = 1;
+//            else
+//                mul = 2;
+//            double height = _at(i, j);
+//            double heightx1 = _at(i-1, j);
+//            double heightx2 = _at(i+1, j);
+//            double heighty1 = _at(i, j-1);
+//            double heighty2 = _at(i, j+1);
+//            if(height == HEIGHT_UNKNOWN)
+//            {
+//                if(heightx1 != HEIGHT_UNKNOWN && heightx2 != HEIGHT_UNKNOWN)
+//                    height = _at(i,j) = (heightx1 + heightx2)/2;
+//                else if(heighty1 != HEIGHT_UNKNOWN && heighty2 != HEIGHT_UNKNOWN)
+//                    height = _at(i,j) = (heighty1 + heighty2)/2;
+//                else
+//                    continue;
+//            }
 
-            if(	i - road_thresh >= 0 &&
-                    j - road_thresh >= 0 &&
-                    i + road_thresh < _width-1 &&
-                    j + road_thresh < _height-1)
-            {
-                bool isClear = true;
-                for(int x = i - road_thresh; x < i + road_thresh; x++)
-                    for(int y = j - road_thresh; y < j + road_thresh; y++)
-                    {
-                        if(_types[y*_width+x] != TYPE_CLEAR) isClear = false;
-                    }
-                if(isClear) _features[(j*_width+i)] = FEATURE_ROAD;
-                else _features[(j*_width+i)] = FEATURE_UNKNOWN;
-            }
+
+//            //if (abs(height - position.z) > 0.8) _types[j*_width+i] = TYPE_OBSTACLE;
+//            if(heighty2 != HEIGHT_UNKNOWN && heighty1 != HEIGHT_UNKNOWN && heightx2 != HEIGHT_UNKNOWN && heightx1 != HEIGHT_UNKNOWN)
+//            {
+//                if (abs(heighty2-heighty1)/2 > _dynamic->obstacle_threshold * mul || abs(heightx2-heightx1)/2 > _dynamic->slope_threshold * mul)
+//                    _types[j*_width+i] = TYPE_OBSTACLE;
+//                else if ((height - position.z) > _dynamic->obstacle_threshold * mul && (height - position.z) < 1.1)
+//                    _types[j*_width+i] = TYPE_OBSTACLE;
+//                else _types[j*_width+i] = TYPE_CLEAR;
+//            }
+//            else if ((height - position.z) > _dynamic->obstacle_threshold * mul && (height - position.z) < 1.1)
+//                _types[j*_width+i] = TYPE_OBSTACLE;
+//            else _types[j*_width+i] = TYPE_UNSCANNED;
+//            //_types[j*_width+i] = TYPE_CLEAR;
+
+//            if(	i - road_thresh >= 0 &&
+//                    j - road_thresh >= 0 &&
+//                    i + road_thresh < _width-1 &&
+//                    j + road_thresh < _height-1)
+//            {
+//                bool isClear = true;
+//                for(int x = i - road_thresh; x < i + road_thresh; x++)
+//                    for(int y = j - road_thresh; y < j + road_thresh; y++)
+//                    {
+//                        if(_types[y*_width+x] != TYPE_CLEAR) isClear = false;
+//                    }
+//                if(isClear) _features[(j*_width+i)] = FEATURE_ROAD;
+//                else _features[(j*_width+i)] = FEATURE_UNKNOWN;
+//            }
 
         }
 }
