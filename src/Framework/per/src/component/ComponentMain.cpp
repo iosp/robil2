@@ -13,7 +13,7 @@
 #include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
-
+#include <sensor_msgs/Imu.h>
 #include "ComponentMain.h"
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
@@ -25,18 +25,26 @@
 #include "mapper/mapper.h"
 #include "rdbg.h"
 #include "per/configConfig.h"
+#include "robil_msgs/MultiLaserScan.h"
+#include <message_filters/subscriber.h>
+#include <message_filters/time_synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
 using namespace std; 
 typedef string String;
 typedef bool boolean;
 
-
+void cb(const sensor_msgs::ImuConstPtr& msgINS, const robil_msgs::MultiLaserScanConstPtr& msgIBEO)
+{
+    std::cout << "got data" << msgIBEO->header.stamp << ", " << msgINS->header.stamp << std::endl;
+}
 
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
+    _should_pub = true;
 _sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","Location","sub"), 10, &ComponentMain::handleLocation,this));
 //_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","PerVelocity","sub"), 10, &ComponentMain::handlePerVelocity,this));
-//_sub_SensorINS=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorINS","sub"), 10, &ComponentMain::handleSensorINS,this));
+_sub_SensorINS=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorINS","sub"), 10, &ComponentMain::handleSensorINS,this));
 //_sub_SensorGPS=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorGPS","sub"), 10, &ComponentMain::handleSensorGPS,this));
 _sub_SensorCamL=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorCamL","sub"), 10, &ComponentMain::handleSensorCamL,this));
 _sub_SensorCamR=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorCamR","sub"), 10, &ComponentMain::handleSensorCamR,this));
@@ -61,7 +69,13 @@ _pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("
 _pub_hMap = ros::Publisher(_nh.advertise<sensor_msgs::Image>("/PER/DEBUG/HEIGHTMAP",3));
 _pub_tMap = ros::Publisher(_nh.advertise<sensor_msgs::Image>("/PER/DEBUG/TYPEMAP",3));
 _maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
-
+//message_filters::Subscriber<sensor_msgs::Imu> ins_sub(_nh, "/SENSORS/INS", 1);
+//message_filters::Subscriber<robil_msgs::MultiLaserScan> ibeo_sub(_nh, "/SENSORS/IBEO/1", 1);
+// typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Imu, robil_msgs::MultiLaserScan> MySyncPolicy;
+//message_filters::Synchronizer<MySyncPolicy> sync(MySyncPolicy(10), ins_sub, ibeo_sub);
+//message_filters::TimeSynchronizer<sensor_msgs::Imu, robil_msgs::MultiLaserScan> sync(ins_sub, ibeo_sub, 10);
+//sync.registerCallback(boost::bind(&ComponentMain::handleSensorIBEOandINS, this, _1, _2));
+//sync.registerCallback(boost::bind(&cb, _1, _2));
 	 Mapper::component = this;
      //Mapper::listener = new(tf::TransformListener);
      boost::thread mapper(Mapper::MainLoop, &this->_dyn_conf);
@@ -99,10 +113,21 @@ void ComponentMain::handlePerVelocity(const config::PER::sub::PerVelocity& msg)
 
 void ComponentMain::handleSensorINS(const config::PER::sub::SensorINS& msg)
 {
-	_imuData = msg;
-	config::PER::pub::INS msg2;
-	msg2 = msg;
-	publishINS(msg2);	
+    _imuData = msg;
+    tf::Quaternion q(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w);
+    tf::Matrix3x3 m(q);
+    double roll, pitch, yaw;
+    m.getRPY(roll, pitch, yaw);
+    double acc2 = msg.linear_acceleration.x * msg.linear_acceleration.x + msg.linear_acceleration.y * msg.linear_acceleration.y;
+    if (abs(pitch) > 0.005)
+        _should_pub = false;
+    else
+        _should_pub = true;
+
+//    cout << "got INS\n";
+//    config::PER::pub::INS msg2;
+//    msg2 = msg;
+//    publishINS(msg2);
 }
 	
 
@@ -144,12 +169,28 @@ void ComponentMain::handleSensorSICK2(const config::PER::sub::SensorSICK2& msg)
 }
 	
 
-void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msg)
+void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msgIBEO)
 {
+    int check=0;
+    ros::param::param("/LOC/Ready",check,0);
+    if(!check) return;
+    if (_should_pub)
+        Mapper::handleIBEO(msgIBEO, this->_pub_PC_world, this->_pub_PC);
+}
+
+
+
+void ComponentMain::handleSensorIBEOandINS(const sensor_msgs::ImuConstPtr& msgINS, const robil_msgs::MultiLaserScanConstPtr& msgIBEO)
+{
+    std::cout << "Got iamge" << std::endl;
   int check=0; 
   ros::param::param("/LOC/Ready",check,0);
   if(!check) return;
-  Mapper::handleIBEO(msg, this->_pub_PC_world, this->_pub_PC);
+  // TODO if Pitch change is to extreme return from function and don't use IBEO measurement
+
+
+//  Mapper::handleIBEO(*msgIBEO, this->_pub_PC_world, this->_pub_PC);
+
 }
 	
 
