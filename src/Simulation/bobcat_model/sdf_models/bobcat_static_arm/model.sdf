@@ -177,7 +177,7 @@
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobcat_static_arm_static_arm/meshes/base_arm.STL</uri>
+		<uri>model://bobcat_static_arm/meshes/base_arm.STL</uri>
 	      </mesh>
 	    </geometry>
 	    <surface>
@@ -194,7 +194,7 @@
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobcat_static_arm_static_arm/meshes/base_arm.STL</uri>
+		<uri>model://bobcat_static_arm/meshes/base_arm.STL</uri>
 	      </mesh>
 	    </geometry>
 	    <material>
@@ -210,7 +210,7 @@
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobcat_static_arm_static_arm/meshes/main_arm.STL</uri>
+		<uri>model://bobcat_static_arm/meshes/main_arm.STL</uri>
 		</mesh>
 	    </geometry>
 	    <surface>
@@ -227,7 +227,7 @@
 	    <geometry>
 		<mesh>
 		    <scale>1 1 1</scale>
-		    <uri>model://bobcat_static_arm_static_arm/meshes/main_arm.STL</uri>
+		    <uri>model://bobcat_static_arm/meshes/main_arm.STL</uri>
 		</mesh>
 	    </geometry>
 	    <material>
@@ -243,7 +243,7 @@
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobcat_static_arm_static_arm/meshes/loader.STL</uri>
+		<uri>model://bobcat_static_arm/meshes/loader.STL</uri>
 		</mesh>
 	    </geometry>
 	    <surface>
@@ -263,7 +263,7 @@
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobcat_static_arm_static_arm/meshes/loader.STL</uri>
+		<uri>model://bobcat_static_arm/meshes/loader.STL</uri>
 		</mesh>
 	    </geometry>
 	    <material>
@@ -279,7 +279,7 @@
 	  <geometry>
 	      <mesh>
 	      <scale>1 1 1</scale>
-	      <uri>model://bobcat_static_arm_static_arm/meshes/brackets.STL</uri>
+	      <uri>model://bobcat_static_arm/meshes/brackets.STL</uri>
 	      </mesh>
 	  </geometry>
 	  <surface>
@@ -299,7 +299,7 @@
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobcat_static_arm_static_arm/meshes/brackets.STL</uri>
+		<uri>model://bobcat_static_arm/meshes/brackets.STL</uri>
 		</mesh>
 	    </geometry>
 	    <material>
@@ -315,7 +315,7 @@
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobcat_static_arm_static_arm/meshes/supporter.STL</uri>
+		<uri>model://bobcat_static_arm/meshes/supporter.STL</uri>
 	      </mesh>
 	    </geometry>
 	    <surface>
@@ -335,7 +335,7 @@
 	<geometry>
 	  <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobcat_static_arm_static_arm/meshes/supporter.STL</uri>
+	    <uri>model://bobcat_static_arm/meshes/supporter.STL</uri>
 	  </mesh>
 	</geometry>
 	<material>

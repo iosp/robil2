@@ -31,7 +31,7 @@
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobcat/meshes/body.STL</uri>
+		<uri>model://bobcat_static_arm/meshes/body.STL</uri>
 	      </mesh>
 	    </geometry>
 	    <surface>
@@ -51,7 +51,7 @@
 	    <geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobcat/meshes/body.STL</uri>
+	    <uri>model://bobcat_static_arm/meshes/body.STL</uri>
 	    </mesh>
 	    </geometry>
 	    <material>
@@ -67,7 +67,7 @@
 	    <geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobcat/meshes/cabin.STL</uri>
+	    <uri>model://bobcat_static_arm/meshes/cabin.STL</uri>
 	    </mesh>
 	    </geometry>
 	    <surface>
@@ -87,7 +87,7 @@
 	    <geometry>
 		<mesh>
 		    <scale>1 1 1</scale>
-		    <uri>model://bobcat/meshes/cabin.STL</uri>
+		    <uri>model://bobcat_static_arm/meshes/cabin.STL</uri>
 		</mesh>
 	    </geometry>
 	    <material>
@@ -103,7 +103,7 @@
 	    <geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobcat/meshes/supporter_hinge.STL</uri>
+	    <uri>model://bobcat_static_arm/meshes/supporter_hinge.STL</uri>
 	    </mesh>
 	    </geometry>
 	    <surface>
@@ -123,7 +123,7 @@
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobcat/meshes/supporter_hinge.STL</uri>
+		<uri>model://bobcat_static_arm/meshes/supporter_hinge.STL</uri>
 		</mesh>
 	    </geometry>
 	    <material>
@@ -139,7 +139,7 @@
 	    <geometry>
 		<mesh>
 		  <scale>1 1 1</scale>
-		  <uri>model://bobcat/meshes/top_installation.STL</uri>
+		  <uri>model://bobcat_static_arm/meshes/top_installation.STL</uri>
 		</mesh>
 	    </geometry>
 	    <surface>
@@ -159,7 +159,7 @@
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobcat/meshes/top_installation.STL</uri>
+		<uri>model://bobcat_static_arm/meshes/top_installation.STL</uri>
 	      </mesh>
 	    </geometry>
 	    <material>
@@ -387,7 +387,7 @@
 	  <pose>0 0 0 0 -0 0</pose>
 	  <geometry>
 	      <mesh>
-		<uri>model://bobcat/meshes/back_left_wheel.stl</uri>
+		<uri>model://bobcat_static_arm/meshes/back_left_wheel.stl</uri>
 	      </mesh>
 	  </geometry>
 	  <material>
@@ -456,7 +456,7 @@
 	<geometry>
 	    <mesh>
 	      <scale>1 1 1</scale>
-	      <uri>model://bobcat/meshes/back_right_wheel.stl</uri>
+	      <uri>model://bobcat_static_arm/meshes/back_right_wheel.stl</uri>
 	    </mesh>
 	</geometry>
 	<material>
@@ -525,7 +525,7 @@
 	<geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobcat/meshes/front_left_wheel.stl</uri>
+	    <uri>model://bobcat_static_arm/meshes/front_left_wheel.stl</uri>
 	    </mesh>
 	</geometry>
 	<material>
@@ -594,7 +594,7 @@
 	<geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobcat/meshes/front_right_wheel.stl</uri>
+	    <uri>model://bobcat_static_arm/meshes/front_right_wheel.stl</uri>
 	    </mesh>
 	</geometry>
 	<material>
