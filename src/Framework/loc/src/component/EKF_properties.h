@@ -82,8 +82,8 @@ public:
 		dt = tk1 - tk;
 		if (dt < 0.005)
 		{
-			dt = 0.005;
-			std::cout << "LOC says: dt= " << dt << std::endl;
+//			dt = 0.005;
+//			std::cout << "LOC says: dt= " << dt << std::endl;
 		}
 		tk = tk1;
 		modify_F();
