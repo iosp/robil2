@@ -173,7 +173,7 @@
 
 	
 	<collision name='base_arm_collision'>
-	    <pose>-1.9776 0 1.1773 0 2.1164e-16 0</pose>
+	    <pose>-1.9776 0 1.1773 0 0 0</pose>
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
@@ -190,7 +190,7 @@
 	    </surface>
 	</collision>
 	<visual name='base_arm_visual'>
-	    <pose>-1.9776 0 1.1773 0 2.1164e-16 0</pose>
+	    <pose>-1.9776 0 1.1773 0 0 0</pose>
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
@@ -239,7 +239,7 @@
 	</visual>
 
 	<collision name='loader_collision'>
-	    <pose>0.34384 0 0.1465 0 2.5362e-15 0</pose>
+	    <pose>0.34384 0 0.1465 0 0 0</pose>
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
@@ -259,7 +259,7 @@
 	    </surface>
 	</collision>
 	<visual name='loader_visual'>
-	    <pose>0.34384 0 0.1465 0 2.5362e-15 0</pose>
+	    <pose>0.34384 0 0.1465 0 0 0</pose>
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
@@ -311,7 +311,7 @@
 	</visual>
 	
 	<collision name='supporter_collision'>
-	    <pose>-1.35685 0 0.80864 0 8.0491e-16 0</pose>
+	    <pose>-1.35685 0 0.80864 0 0 0</pose>
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
@@ -331,7 +331,7 @@
 	    </surface>
 	</collision>
 	<visual name='supporter_visual'>
-	<pose>-1.35685 0 0.80864 0 8.0491e-16 0</pose>
+	<pose>-1.35685 0 0.80864 0 0 0</pose>
 	<geometry>
 	  <mesh>
 	    <scale>1 1 1</scale>
