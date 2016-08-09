@@ -17,7 +17,7 @@
 #include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
-//#define TEST_HEARTBEAT
+#define TEST_HEARTBEAT
 
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
