@@ -23,7 +23,7 @@ const double MILS_2_DEG = 0.056250000; // (360/6400)
 const double MILS_2_RAD = 2*PI/6400;
 const double PI_2_DEG = 180; //
 
-//#define TEST_HEARTBEAT
+#define TEST_HEARTBEAT
 
 
 ComponentMain::ComponentMain(int argc,char** argv)
@@ -39,9 +39,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 
 	_pub_GPS=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GPS>(fetchParam(&_nh,"SHIFFON2ROS","GPS","pub"),10));
 	_pub_INS=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::INS>(fetchParam(&_nh,"SHIFFON2ROS","INS","pub"),10));
-	_pub_INS2=ros::Publisher(_nh.advertise<std_msgs::Float64>("SENSORS/INSSPEED",10));
 	_pub_GpsSpeed=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GpsSpeed>(fetchParam(&_nh,"SHIFFON2ROS","GpsSpeed","pub"),10));
-	_pub_GpsSpeed2=ros::Publisher(_nh.advertise<std_msgs::Float64>("SENSORS/GPSSPEED2",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 //	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
     //Replace the thread group with a simple pthread because there is a SIGEV otherwise
@@ -137,7 +135,6 @@ void ComponentMain::ReadAndPub_ShiphonINS(){
 
 	std_msgs::Float64 INS_msg2;
 	INS_msg2.data = (float)((_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD);
-	publishINS2(INS_msg2);
 
 }
 
@@ -145,9 +142,6 @@ void ComponentMain::publishINS(config::SHIFFON2ROS::pub::INS& msg) {
 	_pub_INS.publish(msg);
 }
 
-void ComponentMain::publishINS2(std_msgs::Float64& msg) {
-	_pub_INS2.publish(msg);
-}
 
 void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 	config::SHIFFON2ROS::pub::GpsSpeed GpsSpeed_msg;
@@ -164,12 +158,7 @@ void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 	//Temporary
 	std_msgs::Float64 GpsSpeed2_msg;
 	GpsSpeed2_msg.data = GpsSpeed_msg.speed;
-	publishGpsSpeed2(GpsSpeed2_msg);
 
-}
-void ComponentMain::publishGpsSpeed2(std_msgs::Float64& msg)
-{
-	_pub_GpsSpeed2.publish(msg);
 }
 
 void ComponentMain::publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg)

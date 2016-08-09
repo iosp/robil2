@@ -22,7 +22,7 @@ class PlpIbeoRosHarness(object):
         # Init the ROS stuff
         rospy.init_node("plp_ibeo", anonymous=False)
         self.publisher = rospy.Publisher(PLP_TOPIC, PlpMessage, queue_size=5)
-        rospy.Subscriber("/SENSORS/IBEO/1", MultiLaserScan, self.ibeoScan)
+        rospy.Subscriber("/SENSORS/IBEO", MultiLaserScan, self.ibeoScan)
 
     def trigger_detection_start(self):
         """ Creates the PLP object, which starts the detection process. """

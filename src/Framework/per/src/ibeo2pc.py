@@ -50,5 +50,5 @@ def cb(msg=MultiLaserScan()):
 
 
 rospy.init_node('ib2pc')
-rospy.Subscriber('/SENSORS/IBEO/1', MultiLaserScan, cb)
+rospy.Subscriber('/SENSORS/IBEO', MultiLaserScan, cb)
 rospy.spin()

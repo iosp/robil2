@@ -18,7 +18,7 @@ if len(sys.argv) > 2:
 SIZE = 1024*1024*1024
 
 rospy.init_node('real_ibeo')
-pub = rospy.Publisher('/SENSORS/IBEO/2',MultiLaserScan)
+pub = rospy.Publisher('/SENSORS/IBEO',MultiLaserScan)
 
 def sendToIBEO(prnt):
   '''
