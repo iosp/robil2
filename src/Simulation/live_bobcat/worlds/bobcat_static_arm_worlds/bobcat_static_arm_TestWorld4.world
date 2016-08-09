@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <world name="default">
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <scene>
+            <sky>
+                <time>10</time>
+                <clouds>
+                    <speed>5</speed>
+                    <direction>1.14</direction>
+                    <humidity>0.3</humidity>
+                </clouds>
+            </sky>
+        </scene>
+        <gui>
+            <camera name="camera_pose">
+                <pose>80 -60 60 0 0.5 2</pose>
+            </camera>
+        </gui>
+        <include>
+            <uri>model://terrain100x100</uri>
+        </include>
+        <include>
+      	    <uri>model://bobcat_static_arm</uri>
+	    <name>Sahar</name>
+            <pose>40 10 1.8098 0 0 1.45844</pose>
+        </include>
+        <include>
+            <uri>model://tree1</uri>
+            <pose>74.3099 28.7836 1.12646 0.0187474 0.0262941 0.0906624</pose>
+            <scale>3.02751 3.02751 3.02751</scale>
+            <name>object0</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>41.1975 78.7885 1.18919 -0.0879448 -0.0370557 0.0120842</pose>
+            <scale>3.01301 3.01301 3.01301</scale>
+            <name>object1</name>
+        </include>
+        <include>
+            <uri>model://rock1</uri>
+            <pose>45.8029 54.48 1.01189 0.042132 0.0781257 0.0603965</pose>
+            <scale>1.30665 1.30665 1.30665</scale>
+            <name>object2</name>
+        </include>
+        <include>
+            <uri>model://cube1</uri>
+            <pose>43.609 85.9233 0.872666 -0.00680912 -0.0317826 0.0462102</pose>
+            <scale>2.06629 2.06629 2.06629</scale>
+            <name>obstacle_on_path0</name>
+        </include>
+        <include>
+            <uri>model://tree1</uri>
+            <pose>37.3479 42.6334 1.12862 0.0192479 0.0988846 0.0100706</pose>
+            <scale>3.17696 3.17696 3.17696</scale>
+            <name>obstacle_on_path1</name>
+        </include>
+        <include>
+            <uri>model://cube1</uri>
+            <pose>33.4233 54.5581 1.25659 0.0303118 0.024528 0.00371461</pose>
+            <scale>2.43268 2.43268 2.43268</scale>
+            <name>obstacle_on_path2</name>
+        </include>
+    </world>
+</sdf>

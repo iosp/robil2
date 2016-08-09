@@ -1,4 +1,5 @@
-<!-- -*- mode: XML -*- -->
+<?xml version="1.0" encoding="UTF-8"?>
+
 <launch>
 
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
@@ -7,7 +8,7 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
-  <arg name="robot_models" default="$(find live_bobcat)/sdf_models"/>
+  <arg name="robot_models" default="$(find bobcat_model)/sdf_models"/>
 
 <!-- setting gazebo path for platform and sensors models -->
   <env name="GAZEBO_MODEL_PATH" value="$(arg robot_models)" />
@@ -19,14 +20,11 @@
     <arg name="paused" value="$(arg paused)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
-    <arg name="world_name" value="$(find live_bobcat)/worlds/empty.world"/>
+    <arg name="world_name" value="$(find bobcat_model)/worlds/bobcat_empty.world"/>
   </include>
 
- <param name="robot_description" command="cat $(find bobcat)/urdf/BOBCAT_sdf_model.URDF" />
-  <param name="robot_descriptionSDF" command="cat $(find bobcat)/urdf/bobcatSDF.sdf" />
-  <!-- ros_control clam launch file -->
-  <include file="$(find bobcat_gazebo)/launch/bobcat_gazebo_control_sdf_model.launch" />
   
-  <node name="RateToEffort" pkg="rate2effort" type="rate2effort" cwd="node" output="screen" />
+  <include file="$(find bobcat_model)/launch/bobcat_arm_controler.launch" />
+
   
 </launch>
