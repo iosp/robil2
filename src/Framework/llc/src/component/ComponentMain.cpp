@@ -11,6 +11,7 @@
 ComponentMain::ComponentMain(int argc,char** argv)
 {
 	_roscomm = new RosComm(this,argc, argv);
+	_events = 0;
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -89,3 +90,31 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 	_roscomm->publishDiagnostic(header, _report);
 }
 
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsAborted"));
+}
+
+bool ComponentMain::isClosed() {
+	return _events->is_closed();
+}

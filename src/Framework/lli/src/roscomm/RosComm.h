@@ -35,6 +35,7 @@ public:
 	void EffortsStCallback(const config::LLI::sub::EffortsSt::ConstPtr &msg);
 	void EffortsJnCallback(const config::LLI::sub::EffortsJn::ConstPtr &msg);
 
+	void set_component(ComponentMain* c ){_comp = c;}
 
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);

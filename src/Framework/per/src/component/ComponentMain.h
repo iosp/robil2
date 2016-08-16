@@ -28,6 +28,8 @@ class HeightMap;
 class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -60,6 +62,12 @@ public:
 	
 	void setVisualize(char);
 	
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
+
 	/**
 	 * Walrus Changes:
 	 */

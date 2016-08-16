@@ -6,8 +6,11 @@ project(llc)
 find_package(catkin REQUIRED COMPONENTS
     roscpp rospy
     robil2conf
-    decision_making decision_making_parser
     dynamic_reconfigure
+    cognitao_io
+    cognitao
+    events_bus
+    cognitao_event_bus_converter
 )
 find_package(Boost REQUIRED COMPONENTS system)
 
@@ -16,9 +19,8 @@ generate_dynamic_reconfigure_options(cfg/ControlParams.cfg)
 catkin_package(
 	CATKIN_DEPENDS
 	robil2conf
-	decision_making
-	decision_making_parser
 	dynamic_reconfigure
+	cognitao_event_bus_converter
 )
 
 ###########
@@ -36,6 +38,7 @@ add_library(llc_rosComm  src/roscomm/RosComm.cpp
 add_library(llc_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
+  src/cognitao_v2/cognitao_v2.cpp
 )
 
 

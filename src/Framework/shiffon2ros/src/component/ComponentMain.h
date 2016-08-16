@@ -1,4 +1,3 @@
-
 /*
  * ComponentMain.h
  *
@@ -12,13 +11,16 @@
 #include <tf/tf.h>
 #include "../Shiphon_IO/Shiphon_IO.h"
 #include "../roscomm/RosComm.h"
+#include "../cognitao_v2/cognitao_v2.h"
 
 class RosComm;
 class ComponentMain {
-	RosComm* 		_roscomm;
-	Shiphon_Ctrl * 	_shiphonCtrl;
+	RosComm* _roscomm;
+	Shiphon_Ctrl * _shiphonCtrl;
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
 public:
-	ComponentMain(int argc,char** argv);
+	ComponentMain(int argc, char** argv);
 	virtual ~ComponentMain();
 
 	void publishGPS(config::SHIFFON2ROS::pub::GPS& msg);
@@ -26,15 +28,24 @@ public:
 	void publishINS2(std_msgs::Float64& msg);
 	void publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg);
 	void publishGpsSpeed2(std_msgs::Float64& msg);
-	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	void publishTransform(const tf::Transform& _tf, std::string srcFrame,
+			std::string distFrame);
+	tf::StampedTransform getLastTrasform(std::string srcFrame,
+			std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
-	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishDiagnostic(const std_msgs::Header& header,
+			const diagnostic_msgs::DiagnosticStatus& _report);
 
 	void InitShiphonConection();
 	void ReadAndPub_ShiphonGPS();
 	void ReadAndPub_ShiphonINS();
 	void ReadAndPub_ShiphonGpsSpeed();
+
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
 
 };
 #endif /* COMPONENTMAIN_H_ */

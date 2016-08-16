@@ -1,4 +1,3 @@
-
 /*
  * ComponentMain.cpp
  *
@@ -9,47 +8,45 @@
 #include "ros/time.h"
 #include "tf/LinearMath/Matrix3x3.h"
 
-
 const double PI = 3.14159;
 const double MILS_2_DEG = 0.056250000; // (360/6400)
-const double MILS_2_RAD = 2*PI/6400;
+const double MILS_2_RAD = 2 * PI / 6400;
 const double PI_2_DEG = 180; //
 
-
-
-ComponentMain::ComponentMain(int argc,char** argv)
-{
-	_roscomm = new RosComm(this,argc, argv);
+ComponentMain::ComponentMain(int argc, char** argv) {
+	_roscomm = new RosComm(this, argc, argv);
+	_events = 0;
 }
-
 
 void ComponentMain::InitShiphonConection() {
 
 	ROS_INFO("Initializing Shiphon Connection");
 	char ipAddr[16];
 	string tmpStr = "132.4.6.60";
-	strcpy (ipAddr, tmpStr.c_str());
+	strcpy(ipAddr, tmpStr.c_str());
 	int lPort = 2010;
 	int rPort = 4997;
 
-	_shiphonCtrl = new Shiphon_Ctrl ();
+	_shiphonCtrl = new Shiphon_Ctrl();
 	_shiphonCtrl->Init(ipAddr, lPort, rPort);
 
 	struct timeval start, end;
 	gettimeofday(&start, NULL);
 }
 
-
 ComponentMain::~ComponentMain() {
 	//if(_roscomm) delete _roscomm; _roscomm=0;
 }
 
-void ComponentMain::ReadAndPub_ShiphonGPS(){
+void ComponentMain::ReadAndPub_ShiphonGPS() {
 	config::SHIFFON2ROS::pub::GPS GPS_msg;
 
-	GPS_msg.latitude  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LAT_Egi * PI_2_DEG;
-	GPS_msg.longitude =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LONG_Egi * PI_2_DEG;
-	GPS_msg.altitude  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Altitude_MSL_EGI;
+	GPS_msg.latitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LAT_Egi
+			* PI_2_DEG;
+	GPS_msg.longitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LONG_Egi
+			* PI_2_DEG;
+	GPS_msg.altitude =
+			(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Altitude_MSL_EGI;
 
 	GPS_msg.header.stamp = ros::Time::now();
 
@@ -60,24 +57,35 @@ void ComponentMain::publishGPS(config::SHIFFON2ROS::pub::GPS& msg) {
 	_roscomm->publishGPS(msg);
 }
 
-
-void ComponentMain::ReadAndPub_ShiphonINS(){
+void ComponentMain::ReadAndPub_ShiphonINS() {
 	config::SHIFFON2ROS::pub::INS INS_msg;
 
-	INS_msg.linear_acceleration.x  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_X_Egi;
-	INS_msg.linear_acceleration.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Y_Egi;
-	INS_msg.linear_acceleration.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Z_Egi;
-	
-	INS_msg.angular_velocity.x  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_rate_X_PD_Egi * MILS_2_RAD;
-	INS_msg.angular_velocity.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_rate_Y_PD_Egi * MILS_2_RAD;
-	INS_msg.angular_velocity.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD;
+	INS_msg.linear_acceleration.x =
+			(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_X_Egi;
+	INS_msg.linear_acceleration.y =
+			(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Y_Egi;
+	INS_msg.linear_acceleration.z =
+			(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Z_Egi;
 
-	float Roll = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_PD_Egi * MILS_2_RAD;
-	float Pitch = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_PD_Egi * MILS_2_RAD;
-	float Yaw = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_PD_geographic * MILS_2_RAD;
+	INS_msg.angular_velocity.x =
+			(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_rate_X_PD_Egi
+					* MILS_2_RAD;
+	INS_msg.angular_velocity.y =
+			(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_rate_Y_PD_Egi
+					* MILS_2_RAD;
+	INS_msg.angular_velocity.z =
+			(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi
+					* MILS_2_RAD;
+
+	float Roll = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_PD_Egi
+			* MILS_2_RAD;
+	float Pitch = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_PD_Egi
+			* MILS_2_RAD;
+	float Yaw = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_PD_geographic
+			* MILS_2_RAD;
 
 	tf::Matrix3x3 obs_mat;
-	obs_mat.setEulerYPR(Yaw,Pitch,Roll);
+	obs_mat.setEulerYPR(Yaw, Pitch, Roll);
 
 	tf::Quaternion q_tf;
 	obs_mat.getRotation(q_tf);
@@ -87,13 +95,14 @@ void ComponentMain::ReadAndPub_ShiphonINS(){
 	INS_msg.orientation.z = q_tf.getZ();
 	INS_msg.orientation.w = q_tf.getW();
 
-
 	INS_msg.header.stamp = ros::Time::now();
 
 	publishINS(INS_msg);
 
 	std_msgs::Float64 INS_msg2;
-	INS_msg2.data = (float)((_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD);
+	INS_msg2.data =
+			(float) ((_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi
+					* MILS_2_RAD);
 	publishINS2(INS_msg2);
 
 }
@@ -108,15 +117,18 @@ void ComponentMain::publishINS2(std_msgs::Float64& msg) {
 
 void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 	config::SHIFFON2ROS::pub::GpsSpeed GpsSpeed_msg;
-	double East_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
-	double North_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
-	double Down_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
+	double East_vel =
+			(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
+	double North_vel =
+			(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
+	double Down_vel =
+			(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
 
-	GpsSpeed_msg.speed = sqrt(East_vel*East_vel + North_vel*North_vel + Down_vel*Down_vel);
+	GpsSpeed_msg.speed = sqrt(
+			East_vel * East_vel + North_vel * North_vel + Down_vel * Down_vel);
 	GpsSpeed_msg.header.stamp = ros::Time::now();
 
 	publishGpsSpeed(GpsSpeed_msg);
-
 
 	//Temporary
 	std_msgs::Float64 GpsSpeed2_msg;
@@ -124,31 +136,59 @@ void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 	publishGpsSpeed2(GpsSpeed2_msg);
 
 }
-void ComponentMain::publishGpsSpeed2(std_msgs::Float64& msg)
-{
+void ComponentMain::publishGpsSpeed2(std_msgs::Float64& msg) {
 	_roscomm->publishGpsSpeed2(msg);
 }
 
-void ComponentMain::publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg)
-{
+void ComponentMain::publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg) {
 	_roscomm->publishGpsSpeed(msg);
 }
-	
 
-
-void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
+void ComponentMain::publishTransform(const tf::Transform& _tf,
+		std::string srcFrame, std::string distFrame) {
 	//_roscomm->publishTransform(_tf, srcFrame, distFrame);
 }
 /*
-tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::string distFrame){
-	//return _roscomm->getLastTrasform(srcFrame, distFrame);
+ tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::string distFrame){
+ //return _roscomm->getLastTrasform(srcFrame, distFrame);
 
-}
-*/
+ }
+ */
 
-void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report){
+void ComponentMain::publishDiagnostic(
+		const diagnostic_msgs::DiagnosticStatus& _report) {
 	//_roscomm->publishDiagnostic(_report);
 }
-void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
+void ComponentMain::publishDiagnostic(const std_msgs::Header& header,
+		const diagnostic_msgs::DiagnosticStatus& _report) {
 	//_roscomm->publishDiagnostic(header, _report);
+}
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events) {
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/TaskIsPaused"));
 }

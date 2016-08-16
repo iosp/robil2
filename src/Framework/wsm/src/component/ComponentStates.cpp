@@ -1,6 +1,6 @@
 #include <iostream>
 #include <ros/ros.h>
-#include <decision_making/SynchCout.h>
+//#include <decision_making/SynchCout.h>
 
 // OLD
 //#include <decision_making/BT.h>
@@ -18,28 +18,29 @@ using namespace std;
 #include "ComponentStates.h"
 #include "WsmTask.h"
 
+#define DELETE(X) if(X){delete X; X=NULL;}
 
-#define DELETE(X) if(X != NULL){delete X; X=NULL;}
-
-ComponentMain *Global_comp ;
+ComponentMain *Global_comp;
 
 struct PauseStruct {
 private:
 	bool paused;
 	boost::mutex io_mutex;
 public:
-	PauseStruct ()
-	: paused (false){}
+	PauseStruct() :
+			paused(false) {
+	}
 
-	void set_pause (bool new_pause){
-		boost::mutex::scoped_lock stdout_lock (io_mutex);
+	void set_pause(bool new_pause) {
+		boost::mutex::scoped_lock stdout_lock(io_mutex);
 		paused = new_pause;
 		if (paused) {
 			cout << "\033[1;31m PAUSED \033[0m\n";
-		} else cout << "\033[1;31m RESUMED \033[0m\n";
+		} else
+			cout << "\033[1;31m RESUMED \033[0m\n";
 	}
-	bool get_pause (){
-		boost::mutex::scoped_lock stdout_lock (io_mutex);
+	bool get_pause() {
+		boost::mutex::scoped_lock stdout_lock(io_mutex);
 		return paused;
 	}
 };
@@ -55,12 +56,10 @@ sensor_msgs::JointState jointStates;
 //	std::string str()const{return "";}
 //};
 
-void JointStatesCallback(const sensor_msgs::JointStateConstPtr &msg)
-{
+void JointStatesCallback(const sensor_msgs::JointStateConstPtr &msg) {
 	jointStates = sensor_msgs::JointState(*msg);
 	Global_comp->jointStates = &jointStates;
 }
-
 
 //void pauseCallback(const std_msgs::StringConstPtr &msg)
 //{
@@ -95,28 +94,30 @@ void JointStatesCallback(const sensor_msgs::JointStateConstPtr &msg)
 //		return;
 //}
 
-
-void pause_checker(cognitao::bus::Event msg, ComponentMain * comp_ptr)
-{
-	if (comp_ptr == NULL) return;
-	if( (msg.name() == "ResumeTask") && (pause_time.get_pause()) ){
+void pause_checker(cognitao::bus::Event msg, ComponentMain * comp_ptr) {
+	if (comp_ptr == NULL)
+		return;
+	if ((msg.name() == "ResumeTask") && (pause_time.get_pause())) {
 		pause_time.set_pause(false);
-		if(comp_ptr->cur_mission == NULL){
+		if (comp_ptr->cur_mission == NULL) {
 //			ROS_ERROR("Not task to resume/pause");
 			return;
 		}
-		if((comp_ptr->cur_mission->Get_status() == "paused")){
+		if ((comp_ptr->cur_mission->Get_status() == "paused")) {
 			comp_ptr->cur_mission->Set_task_status("active");
 		} else {
-			ROS_ERROR("No Task to resume, has Task %d at status %s",comp_ptr->cur_mission->Get_Task_id(),comp_ptr->cur_mission->Get_status().c_str());
+			ROS_ERROR("No Task to resume, has Task %d at status %s",
+					comp_ptr->cur_mission->Get_Task_id(),
+					comp_ptr->cur_mission->Get_status().c_str());
 		}
 		return;
 	}
-	if(comp_ptr->cur_mission == NULL){
+	if (comp_ptr->cur_mission == NULL) {
 //		ROS_ERROR("Not task to resume/pause");
 		return;
 	}
-	if((msg.name() == "PauseMission")&&(comp_ptr->cur_mission->Get_status()=="active")){
+	if ((msg.name() == "PauseMission")
+			&& (comp_ptr->cur_mission->Get_status() == "active")) {
 		pause_time.set_pause(true);
 		comp_ptr->cur_mission->Set_task_status("paused");
 	}
@@ -292,24 +293,36 @@ void pause_checker(cognitao::bus::Event msg, ComponentMain * comp_ptr)
 //	return TaskResult::SUCCESS();
 //}
 
-class TaskGeneral {
+class AsyncTask {
 protected:
 	boost::thread run_thread;
 	ComponentMain* comp_ptr;
 	Processor * processor_ptr;
 	std::string context;
 public:
-	TaskGeneral (ComponentMain* comp, Processor * processor, std::string current_context)
-	: comp_ptr (comp)
-	, processor_ptr (processor)
-	, context (current_context)
-	{
-		run_thread = boost::thread (boost::bind (&TaskGeneral::run, this));
+	AsyncTask(ComponentMain* comp, Processor * processor,
+			std::string current_context) :
+			comp_ptr(comp), processor_ptr(processor), context(current_context) {
+		run_thread = boost::thread(boost::bind(&AsyncTask::run, this));
 	}
 
-	virtual void run (){}
+	virtual void run()=0;
 
-	virtual ~TaskGeneral (){
+	void pause(int millisec) {
+		int msI = (millisec / 100), msR = (millisec % 100);
+		for (int si = 0; si < msI and not comp_ptr->isClosed(); si++)
+			boost::this_thread::sleep(boost::posix_time::millisec(100));
+		if (msR > 0 and not comp_ptr->isClosed())
+			boost::this_thread::sleep(boost::posix_time::millisec(msR));
+	}
+
+	void offTask() {
+//		diagnostic_msgs::DiagnosticStatus status;
+//		comp_ptr->publishDiagnostic(status);
+		ROS_INFO("WSM OFF");
+	}
+
+	virtual ~AsyncTask() {
 		run_thread.interrupt();
 		run_thread.join();
 		comp_ptr = NULL;
@@ -317,205 +330,226 @@ public:
 	}
 };
 
-
-
-class TaskReady: public TaskGeneral {
+class TaskInit: public AsyncTask {
 public:
-	TaskReady (ComponentMain* comp, Processor * processor, std::string current_context) : TaskGeneral (comp, processor, current_context){};
-	void run (){
-		ROS_INFO("WSM At Ready");
-		while (!boost::this_thread::interruption_requested() and ros::ok()){
-			boost::this_thread::interruption_point();
-			while(comp_ptr->cur_mission == NULL){
-				boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-			}
-			while(comp_ptr->cur_mission->Get_status() == "active"){
-				comp_ptr->cur_mission->publish_step_diag(1,0);
-				comp_ptr->cur_mission->execute_next_step();
-				comp_ptr->cur_mission->Update_step();
-				boost::this_thread::sleep(boost::posix_time::milliseconds(100));
-			}
-			if(comp_ptr->cur_mission->Get_status() == "complete"){
-				cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("/CompleteTask"),
-												   cognitao::bus::Event::channel_t(""),
-												   cognitao::bus::Event::context_t(context));
-				processor_ptr->bus_events << ev_bus_event;
-				ROS_INFO("Mission complete");
-				if (comp_ptr->cur_mission == NULL) return;
-				delete comp_ptr->cur_mission ;
-				comp_ptr->cur_mission = NULL;
-			}
-		}
+	TaskInit(ComponentMain* comp, Processor * processor,
+			std::string current_context) :
+			AsyncTask(comp, processor, current_context) {
 	}
-	~TaskReady(){}
-};
+	;
+	void run() {
+//		while (!boost::this_thread::interruption_requested() and ros::ok()
+//				and comp_ptr->receivedLocation == NULL) {
+//			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+//		}
 
-class TaskStandby: public TaskGeneral {
-public:
-	TaskStandby (ComponentMain* comp, Processor * processor, std::string current_context) : TaskGeneral (comp, processor, current_context){};
-	void run (){
-		while(!boost::this_thread::interruption_requested() and ros::ok() and pause_time.get_pause()){
-			boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-			ROS_INFO("I'm in pause mode..");
-		}
-		cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("/wsm/Resume"),
-										   cognitao::bus::Event::channel_t(""),
-										   cognitao::bus::Event::context_t(context));
-		processor_ptr->bus_events << ev_bus_event;
-	}
-	~TaskStandby(){}
-};
+//		pause(10000);
+		ROS_INFO("WSM at Init");
 
-class TaskInit: TaskGeneral {
-public:
-	TaskInit (ComponentMain* comp, Processor * processor, std::string current_context) : TaskGeneral (comp, processor, current_context){};
-	void run (){
-		while(!boost::this_thread::interruption_requested() and ros::ok() and comp_ptr->receivedLocation == NULL){
-			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-		}
+		while (comp_ptr->receivedLocation == NULL)
+			;
 		comp_ptr->z_offset = comp_ptr->receivedLocation->pose.pose.position.z;
-		if(comp_ptr->z_offset < 0){
+		if (comp_ptr->z_offset < 0) {
 			comp_ptr->z_offset = fabs(comp_ptr->z_offset);
+		} else {
+//			comp_ptr->z_offset = fabs(comp_ptr->z_offset);
 		}
+//		ROS_INFO("Initial ground offset is: %g", comp_ptr->z_offset);
 		comp_ptr->z_offset = 0;
 
-		cognitao::bus::Event ev_bus_event (cognitao::bus::Event::name_t("/wsm/SensorConnected"),
-										   cognitao::bus::Event::channel_t(""),
-										   cognitao::bus::Event::context_t(context));
+		cognitao::bus::Event ev_bus_event(
+				cognitao::bus::Event::name_t("/wsm/SensorConnected"),
+				cognitao::bus::Event::channel_t(""),
+				cognitao::bus::Event::context_t(context));
 		processor_ptr->bus_events << ev_bus_event;
 	}
-	~TaskInit(){}
+	~TaskInit() {
+	}
 };
 
-TaskInit * task_init_ptr;
-TaskStandby * task_standby_ptr;
-TaskReady * task_ready_ptr;
+class TaskReady: public AsyncTask {
+public:
+	TaskReady(ComponentMain* comp, Processor * processor,
+			std::string current_context) :
+			AsyncTask(comp, processor, current_context) {
+	}
+	;
+	void run() {
+		ROS_INFO("WSM At Ready");
 
-void process_machine(cognitao::machine::Machine & machine, Processor & processor, ComponentMain& component){
-	while(processor.empty() == false){
+		while (1) {
+			if (comp_ptr->_events->is_closed() || !ros::ok()) /* checks whether the line is empty, or node failed */
+				ROS_INFO("STOPPED");
+
+			while (comp_ptr->cur_mission == NULL) {
+				pause(10000);
+				sleep(5);
+//				ROS_INFO("No new Task");
+			}
+
+			while (comp_ptr->cur_mission->Get_status() == "active") {
+//				comp_ptr->cur_mission->debug();
+				comp_ptr->cur_mission->publish_step_diag(1, 0);
+				comp_ptr->cur_mission->execute_next_step();
+				comp_ptr->cur_mission->Update_step();
+			}
+
+			if (comp_ptr->cur_mission->Get_status() == "complete") {
+				cognitao::bus::Event ev_bus_event(
+						cognitao::bus::Event::name_t("/CompleteTask"),
+						cognitao::bus::Event::channel_t(""),
+						cognitao::bus::Event::context_t(context));
+				processor_ptr->bus_events << ev_bus_event;
+				ROS_INFO("Mission complete");
+				DELETE(comp_ptr->cur_mission);
+			}
+		}
+	}
+	~TaskReady() {
+	}
+};
+
+class TaskStandby: public AsyncTask {
+public:
+	TaskStandby(ComponentMain* comp, Processor * processor,
+			std::string current_context) :
+			AsyncTask(comp, processor, current_context) {
+	}
+	;
+	void run() {
+//		while (!boost::this_thread::interruption_requested() and ros::ok()) {
+//			boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+//		}
+
+		ROS_INFO("WSM at Standby");
+		while (pause_time.get_pause()) {
+			ROS_INFO("I'm in pause mode..");
+			pause(1000);
+		}
+
+		cognitao::bus::Event ev_bus_event(
+				cognitao::bus::Event::name_t("/wsm/Resume"),
+				cognitao::bus::Event::channel_t(""),
+				cognitao::bus::Event::context_t(context));
+		processor_ptr->bus_events << ev_bus_event;
+	}
+	~TaskStandby() {
+	}
+};
+
+AsyncTask* task_ptr;
+
+void process_machine(cognitao::machine::Machine & machine,
+		Processor & processor, ComponentMain& component) {
+	while (processor.empty() == false) {
 		cognitao::machine::Event e_poped = processor.pop();
-		cout << "       PROCESS: " << e_poped.str() << endl;;
+		cout << "       PROCESS: " << e_poped.str() << endl;
+		;
 		cognitao::machine::Events p_events;
 		machine = machine->process(e_poped, p_events);
-		processor.insert( p_events );
+		processor.insert(p_events);
 
-		static const cognitao::machine::Event event_about_entry_to_state( "task_report?enter" );
-		if( event_about_entry_to_state.matches(e_poped) )
-		{
+		static const cognitao::machine::Event event_about_entry_to_state(
+				"task_report?enter");
+		if (event_about_entry_to_state.matches(e_poped)) {
 			size_t context_size = e_poped.context().size();
 			string current_event_context = e_poped.context().str();
-			if (context_size > 1){
-				std::string current_task = e_poped.context()[context_size-2];
-				ROS_WARN_STREAM (" Current task: " << current_task);
-				ROS_INFO_STREAM (" Current event context: " << current_event_context);
-				if (current_task == "init") {
-					DELETE (task_standby_ptr)
-					DELETE (task_ready_ptr)
-					if (task_init_ptr == NULL) task_init_ptr = new TaskInit (&component, &processor, current_event_context);
-				}
-				if (current_task == "ready") {
-					DELETE (task_init_ptr)
-					DELETE (task_standby_ptr)
-					if (task_ready_ptr == NULL) task_ready_ptr = new TaskReady (&component, &processor, current_event_context);
-				}
-				if (current_task == "standby") {
-					DELETE (task_init_ptr)
-					DELETE (task_ready_ptr)
-					if (task_standby_ptr == NULL) task_standby_ptr = new TaskStandby (&component, &processor, current_event_context); // TODO causes segmentation fault
-				}
-				if (current_task == "off") {
-					DELETE (task_init_ptr)
-					DELETE (task_standby_ptr)
-					DELETE (task_ready_ptr)
-				}
+			if (context_size > 1) {
+				std::string current_task = e_poped.context()[context_size - 2];
+				ROS_WARN_STREAM(" Current task: " << current_task);
+				ROS_INFO_STREAM(
+						" Current event context: " << current_event_context);
+				if (current_task == "off")
+					task_ptr->offTask();
+				DELETE(task_ptr);
+				if (current_task == "init")
+					task_ptr = new TaskInit(&component, &processor,
+							current_event_context);
+				if (current_task == "ready")
+					task_ptr = new TaskReady(&component, &processor,
+							current_event_context);
+				if (current_task == "standby")
+					task_ptr = new TaskStandby(&component, &processor,
+							current_event_context); // TODO causes segmentation fault
 			}
 		}
 	}
 }
 
-
-
-
-
-
-
-void runComponent(int argc, char** argv, ComponentMain& component){
+void runComponent(int argc, char** argv, ComponentMain& component) {
 
 	ros::NodeHandle node;
 	Global_comp = &component;
-	task_init_ptr = NULL;
-	task_standby_ptr = NULL;
-	task_ready_ptr = NULL;
 
-	ros::Subscriber jointstatesSub = node.subscribe<sensor_msgs::JointState>("/Sahar/joint_states", 100, &JointStatesCallback);
+	ros::Subscriber jointstatesSub = node.subscribe<sensor_msgs::JointState>(
+			"/Sahar/joint_states", 100, &JointStatesCallback);
 //	ros::Subscriber PauseMission = node.subscribe<std_msgs::String>("/decision_making/events" , 100 , &pauseCallback);
 
-
-	cognitao::bus::RosEventQueue events(node, NULL, 1000, "/robil/event_bus/events");
+	cognitao::bus::RosEventQueue events(node, NULL, 1000,
+			"/robil/event_bus/events");
 
 	std::stringstream mission_description_stream;
-	mission_description_stream	<< "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << endl
-								<< "<tao>" << endl
-								<< "	<machines>" << endl
-								<< "		<machine file=\"${rospack:wsm}/src/xml/wsm.xml\"/>" << endl
-								<< "		<root>wsm</root>" << endl
-								<< "	</machines>" << endl
-								<< "</tao>" << endl;
+	mission_description_stream << "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+			<< endl << "<tao>" << endl << "	<machines>" << endl
+			<< "		<machine file=\"${rospack:wsm}/src/xml/wsm.xml\"/>" << endl
+			<< "		<root>wsm</root>" << endl << "	</machines>" << endl
+			<< "</tao>" << endl;
 
-	cognitao::machine::Context context ("wsm"); // TODO do we need some context?
+	cognitao::machine::Context context("wsm"); // TODO do we need some context?
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines;
-	try{
+	try {
 		machines = parser.parse(mission_description_stream, context.str());
-	} catch(const cognitao::io::parser::ParsingError& error){
-		std::cerr <<"ParsingError:"<<endl<< error.message <<endl;
+	} catch (const cognitao::io::parser::ParsingError& error) {
+		std::cerr << "ParsingError:" << endl << error.message << endl;
 		return;
 	}
 
 	cognitao::io::compiler::Compiler compiler;
-	Processor processor( events );
-	compiler.add_builder( cognitao::io::compiler::MachineBuilder::Ptr( new cognitao::io::compiler::fsm::FsmBuilder(processor) ) );
-	compiler.add_builder( cognitao::io::compiler::MachineBuilder::Ptr( new cognitao::io::compiler::ftt::FttBuilder(processor) ) );
+	Processor processor(events);
+	compiler.add_builder(
+			cognitao::io::compiler::MachineBuilder::Ptr(
+					new cognitao::io::compiler::fsm::FsmBuilder(processor)));
+	compiler.add_builder(
+			cognitao::io::compiler::MachineBuilder::Ptr(
+					new cognitao::io::compiler::ftt::FttBuilder(processor)));
 
 	cognitao::io::compiler::CompilationObjectsCollector collector;
 	cognitao::io::compiler::CompiledMachine ready_machine;
 	try {
-		ready_machine = compiler.compile( machines, collector );
-	} catch(const cognitao::io::compiler::CompilerError& error){
-		std::cerr <<"CompilerError:"<<endl<< error.message <<endl;
+		ready_machine = compiler.compile(machines, collector);
+	} catch (const cognitao::io::compiler::CompilerError& error) {
+		std::cerr << "CompilerError:" << endl << error.message << endl;
 		return;
 	}
 
 	cout << endl << endl;
 	cognitao::machine::Events p_events;
-	cognitao::machine::Machine current_machine = ready_machine->machine->start_instance(context, p_events);
+	cognitao::machine::Machine current_machine =
+			ready_machine->machine->start_instance(context, p_events);
 	processor.insert(p_events);
-	process_machine (current_machine, processor, component);
+	process_machine(current_machine, processor, component);
 
-	time_duration max_wait_duration (0, 0, 5, 0);
+	time_duration max_wait_duration(0, 0, 5, 0);
 	bool is_timeout = false;
 	cognitao::bus::Event event;
-	while(events.wait_and_pop_timed(event, max_wait_duration, is_timeout) or ros::ok())
-	{
-		if (is_timeout){
+	while (events.wait_and_pop_timed(event, max_wait_duration, is_timeout)
+			or ros::ok()) {
+		if (is_timeout) {
 //			cout << "event bus timeout" << endl;
 			continue;
 		}
 		cout << "GET: " << event << endl;
-		if (event.context().str().find(context.str()) != 0) {
-			cout << "\033[1;31m SKIP event from other node \033[0m\n";
-			continue;
-		}
+//		if (event.context().str().find(context.str()) != 0) {
+//			cout << "\033[1;31m SKIP event from other node \033[0m\n";
+//			continue;
+//		}
 		pause_checker(event, Global_comp);
-		processor.send_no_pub (event);
-		process_machine (current_machine, processor, component);
+		processor.send_no_pub(event);
+		process_machine(current_machine, processor, component);
 	}
 
 	return;
-
-
-
-
 
 //	ros_decision_making_init(argc, argv);
 //	RosEventQueue events;
@@ -534,10 +568,4 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 //	Fsmwsm(&context, &events);
 //	//ROS_INFO("WSM AT FSM2");
 }
-
-
-
-
-
-
 

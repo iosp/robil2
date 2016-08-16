@@ -1,4 +1,3 @@
-
 /*
  * ComponentMain.h
  *
@@ -17,16 +16,26 @@ class MoveBase;
 class ComponentMain {
 	RosComm* _roscomm;
 	MoveBase* _move_base;
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
 public:
-	ComponentMain(int argc,char** argv);
+	ComponentMain(int argc, char** argv);
 	virtual ~ComponentMain();
 	void handleLocalPath(const config::WPD::sub::LocalPath& msg);
 	void handleMiniMap(const config::WPD::sub::MiniMap& msg);
 	void handleLocation(const config::WPD::sub::Location& msg);
 	void publishWPDVelocity(config::WPD::pub::WPDVelocity& msg);
-	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	void publishTransform(const tf::Transform& _tf, std::string srcFrame,
+			std::string distFrame);
+	tf::StampedTransform getLastTrasform(std::string srcFrame,
+			std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
-	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishDiagnostic(const std_msgs::Header& header,
+			const diagnostic_msgs::DiagnosticStatus& _report);
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
 };
 #endif /* COMPONENTMAIN_H_ */

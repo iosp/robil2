@@ -33,6 +33,8 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	  boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 	 //boost::thread mapper3(Mapper::StereoThread);
 	 //boost::this_thread::sleep(boost::posix_time::milliseconds(300));
+
+	  _events = 0;
 }
 ComponentMain::~ComponentMain() {
 	if(_roscomm) delete _roscomm; _roscomm=0;
@@ -190,6 +192,31 @@ void ComponentMain::handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg)
 void ComponentMain::publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg)
 {
 	_roscomm->publishGpsSpeed(msg);
+}
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsAborted"));
 }
 
 /**

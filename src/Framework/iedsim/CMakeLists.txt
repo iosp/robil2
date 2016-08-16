@@ -4,13 +4,16 @@ project(iedsim)
 find_package(catkin REQUIRED COMPONENTS
     roscpp rospy
     robil2conf
-    decision_making decision_making_parser
+    cognitao_io
+    cognitao
+    events_bus
+    cognitao_event_bus_converter
 )
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
 	CATKIN_DEPENDS
 	    robil2conf
-	    decision_making decision_making_parser
+	    cognitao_event_bus_converter
 )
 ###########
 ## Build ##
@@ -26,6 +29,7 @@ add_library(iedsim_rosComm
 add_library(iedsim_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
+  src/cognitao_v2/cognitao_v2.cpp
 )
 
 add_library(iedsim_logic

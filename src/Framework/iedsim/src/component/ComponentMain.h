@@ -11,10 +11,13 @@
 #include <ParameterTypes.h>
 #include <tf/tf.h>
 #include "IEDSimLogic.h"
+#include "../cognitao_v2/cognitao_v2.h"
 class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;
 	IEDSimLogic * _lg;
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
 
 public:
 	ComponentMain(int argc,char** argv);
@@ -26,5 +29,11 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
 };
 #endif /* COMPONENTMAIN_H_ */

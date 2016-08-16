@@ -6,7 +6,6 @@ find_package(catkin REQUIRED COMPONENTS
     cv_bridge
     robil2conf
     gazebo_ros
-    decision_making decision_making_parser
     cognitao_io
     cognitao
     events_bus
@@ -37,7 +36,6 @@ catkin_package(
 	CATKIN_DEPENDS
 	    robil2conf
 	    gazebo_ros
-	    decision_making decision_making_parser
 	    message_runtime
 	    cognitao_event_bus_converter
 )
@@ -50,9 +48,6 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${GAZEBO_INCLUDE_DIRS}
-  ${cognitao_io_INCLUDE_DIRS}
-  ${cognitao_INCLUDE_DIRS}
-  ${events_bus_INCLUDE_DIRS}
 ${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake
 )
 ## Declare a cpp library

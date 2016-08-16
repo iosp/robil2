@@ -44,15 +44,11 @@ RosEventQueue::RosEventQueue(EventQueue& parent_ref,size_t events_max_size, std:
 
 void RosEventQueue::connectToRos(){
 	ROS_INFO("Connect to %s: ...", events_topic_name.c_str());
-
 	ros::NodeHandle* _node = node;
 	if(not node) _node = new ros::NodeHandle();
-
 	output_events = _node->advertise<events_bus::Msg_Event>(events_topic_name,1000);
 	input_events  = _node->subscribe(events_topic_name, 1000 , &RosEventQueue::on_ros_event, this);
-
 	if(not node) delete _node;
-
 	this_thread::sleep(seconds(1));
 	ROS_INFO("Connect to  %s: Done", events_topic_name.c_str());
 }

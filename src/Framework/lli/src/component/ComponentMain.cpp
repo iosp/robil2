@@ -31,6 +31,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 
 //
 	//ros::Timer timer = nh.createTimer(ros::Duration(0.01), TimerCallback);
+    _events = 0;
 }
 
 ComponentMain::~ComponentMain() {
@@ -194,9 +195,9 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 void * ComponentMain::callPThread(void * pParam)
 {
 	ComponentMain *myHandle = (ComponentMain *) (pParam);
-
 	myHandle->lliCtrlLoop();
 
+	return 0;
 }
 
 void ComponentMain::lliCtrlLoop()
@@ -236,4 +237,29 @@ void ComponentMain::lliCtrlLoop()
 
 	   	}
 
+}
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsAborted"));
 }

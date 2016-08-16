@@ -1,6 +1,20 @@
 <?xml version="1.0"?>
 <robot
   name="Sahar">
+<!--
+  <link
+    name="world">    
+  </link>
+
+  <joint
+    name="world_joint"
+    type="fixed">
+    <parent
+      link="world" />
+    <child
+      link="body" />
+  </joint>
+-->
   <link
     name="body">
     <inertial>
@@ -126,7 +140,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0.2 0"
+        xyz="0 -0.2 0"
         rpy="1.5708 0 0" />
       <geometry>
         <cylinder length="0.4" radius="0.4" 
@@ -179,7 +193,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 -0.2 0"
+        xyz="0 0.2 0"
         rpy="1.5708 0 0" />
       <geometry>
         <cylinder length="0.4" radius="0.4" 
@@ -1100,54 +1114,60 @@
  <!-- Transmissions for ROS Control -->
   <transmission name="tran1">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="front_right_wheel_joint"/>
-    <actuator name="motor1">
+    <joint name="front_right_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran2">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="front_left_wheel_joint"/>
-    <actuator name="motor2">
+    <joint name="front_left_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran3">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="back_right_wheel_joint"/>
-    <actuator name="motor3">
+    <joint name="back_right_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor3">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran4">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="back_left_wheel_joint"/>
-    <actuator name="motor4">
+    <joint name="back_left_wheel_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor4">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran5">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="base_arm_joint"/>
-    <actuator name="motor5">
+    <joint name="base_arm_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor5">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
   <transmission name="tran6">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="main_arm_joint"/>
-    <actuator name="motor6">
+    <joint name="main_arm_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor6">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -1163,9 +1183,10 @@
 -->
   <transmission name="tran8">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="supporter_joint"/>
-    <actuator name="motor8">
+    <joint name="supporter_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor8">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -1181,9 +1202,10 @@
 -->
   <transmission name="tran10">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="loader_joint"/>
-    <actuator name="motor10">
+    <joint name="loader_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor10">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -1199,9 +1221,10 @@
 -->
   <transmission name="tran12">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="brackets_joint"/>
-    <actuator name="motor12">
+    <joint name="brackets_joint">
       <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor12">
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -1262,8 +1285,8 @@
     <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="back_left_wheel">
-    <mu1>0.5</mu1>
-    <mu2>0.5</mu2>
+    <mu1>0.8</mu1>
+    <mu2>0.8</mu2>
     <material>Gazebo/Grey</material>
   </gazebo>
   <gazebo reference="base_arm">
@@ -1318,5 +1341,23 @@
   <gazebo reference="front_sick">
     <material>Gazebo/Grey</material>
   </gazebo>
+
+<gazebo>
+  <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+    <updateRate>100.0</updateRate>
+    <robotNamespace>/</robotNamespace>
+    <leftFrontJoint>front_left_wheel_joint</leftFrontJoint>
+    <rightFrontJoint>front_right_wheel_joint</rightFrontJoint>
+    <leftRearJoint>back_left_wheel_joint</leftRearJoint>
+    <rightRearJoint>back_right_wheel_joint</rightRearJoint>
+    <wheelSeparation>1.7</wheelSeparation>
+    <wheelDiameter>0.8</wheelDiameter>
+    <robotBaseFrame>body</robotBaseFrame>
+    <torque>10gzsd	000</torque>
+    <topicName>cmd_vel</topicName>
+    <broadcastTF>false</broadcastTF>
+  </plugin>
+</gazebo>
+
 </robot>
 

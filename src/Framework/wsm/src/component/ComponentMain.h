@@ -18,6 +18,8 @@ class RosComm;
 
 class ComponentMain {
 	RosComm* _roscomm;
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
 public:
 	WsmTask* cur_mission;
 	config::WSM::sub::WorkSeqData * receivedWorkSeqData;
@@ -45,6 +47,11 @@ public:
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
 };
 
 #endif /* COMPONENTMAIN_H_ */

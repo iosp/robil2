@@ -19,6 +19,7 @@
 #include <events_bus/Srv_StatesMonitor_Status.h>
 #include <events_bus/Srv_StatesMonitor_Times.h>
 #include <events_bus/Srv_StatesMonitor_EndStates.h>
+#include <cognitao/bus/EventQueue.h>
 #include <std_srvs/Empty.h>
 
 namespace node{
@@ -45,7 +46,7 @@ using namespace cognitao::monitor;
 		ros::ServiceServer ss_clear_history;
 
 	public:
-		RosStatesMonitor(ros::NodeHandle& n, EventQueue& events);
+		RosStatesMonitor(ros::NodeHandle& n, cognitao::bus::EventQueue& events);
 		virtual ~RosStatesMonitor();
 
 		void process();

@@ -7,6 +7,7 @@
  */
 #include <ros/ros.h>
 #include <std_msgs/String.h>
+#include <boost/thread.hpp>
 #include "RosComm.h"
 #include "../component/ComponentMain.h"
 #include <string>       // std::string

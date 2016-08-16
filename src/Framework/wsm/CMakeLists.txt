@@ -4,7 +4,6 @@ project(wsm)
 find_package(catkin REQUIRED COMPONENTS
     roscpp rospy
     robil2conf
-    decision_making decision_making_parser
     cognitao_io
     cognitao
     events_bus
@@ -14,7 +13,6 @@ find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
 	CATKIN_DEPENDS
 	    robil2conf
-	    decision_making decision_making_parser
 	    cognitao_event_bus_converter
 )
 ###########

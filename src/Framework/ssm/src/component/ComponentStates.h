@@ -10,7 +10,7 @@ void startComponent(ComponentMain* component);
 void startSystem(ComponentMain* component);
 
 static void runComponent(int argc, char** argv, ComponentMain* component){
-	init_dm(argc, argv);
+//	init_dm(argc, argv);
 // 	boost::thread_group th;
 // 	th.add_thread( new boost::thread(boost::bind(&startSystem,component)) );
 // 	th.add_thread( new boost::thread(boost::bind(&startComponent,component)) );
