@@ -55,9 +55,9 @@ public:
 	}
 
 	void run() {
-		while (!boost::this_thread::interruption_requested() and ros::ok()) {
-			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-		}
+//		while (!boost::this_thread::interruption_requested() and ros::ok()) {
+//			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+//		}
 		ROS_INFO("shiffon2ros at Init");
 
 		comp_ptr->InitShiphonConection();

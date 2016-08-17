@@ -44,5 +44,6 @@ public:
 	void cancel_navigation();
 	void pause_navigation();
 	void resume_navigation();
+	bool isClosed();
 };
 #endif /* COMPONENTMAIN_H_ */

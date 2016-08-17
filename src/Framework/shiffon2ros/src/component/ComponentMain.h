@@ -46,6 +46,7 @@ public:
 	void rise_taskAborted();
 	void rise_taskStarted();
 	void rise_taskPaused();
+	bool isClosed();
 
 };
 #endif /* COMPONENTMAIN_H_ */

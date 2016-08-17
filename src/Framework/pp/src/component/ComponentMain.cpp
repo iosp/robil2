@@ -108,4 +108,6 @@ void ComponentMain::resume_navigation() {
 	ROS_DEBUG("PP: resume navigation (activate)");
 	_move_base->activate();
 }
-
+bool ComponentMain::isClosed() {
+	return _events->is_closed();
+}

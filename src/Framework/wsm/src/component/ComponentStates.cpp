@@ -378,7 +378,7 @@ public:
 		ROS_INFO("WSM At Ready");
 
 		while (1) {
-			if (comp_ptr->_events->is_closed() || !ros::ok()) /* checks whether the line is empty, or node failed */
+			if (comp_ptr->isClosed() || !ros::ok()) /* checks whether the line is empty, or node failed */
 				ROS_INFO("STOPPED");
 
 			while (comp_ptr->cur_mission == NULL) {

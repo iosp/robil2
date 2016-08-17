@@ -324,5 +324,5 @@ private:
       int 					Periodic_1Hz_Message_CONVERT_TO_PH(PHS_PERIODIC1HZMESSAGE* phsPtr, unsigned char* intfPtr);
 
 };
-#pragma pack (pop, 1)
+#pragma pack (pop)
 #endif

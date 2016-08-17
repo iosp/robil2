@@ -218,6 +218,9 @@ void ComponentMain::rise_taskPaused(){
 	if(not _events) return;
 	_events->rise(cognitao::bus::Event("/TaskIsAborted"));
 }
+bool ComponentMain::isClosed(){
+	return _events->is_closed();
+}
 
 /**
  * Walrus Changes:

@@ -178,3 +178,6 @@ void ComponentMain::rise_taskPaused() {
 		return;
 	_events->rise(cognitao::bus::Event("/TaskIsPaused"));
 }
+bool ComponentMain::isClosed() {
+	return _events->is_closed();
+}

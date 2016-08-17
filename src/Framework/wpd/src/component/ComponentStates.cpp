@@ -106,7 +106,7 @@ public:
 	}
 
 	void run() {
-		while (!boost::this_thread::interruption_requested() and ros::ok() and !comp_ptr->_events->is_closed())
+		while (!boost::this_thread::interruption_requested() and ros::ok() and !comp_ptr->isClosed())
 			pause(1000);
 		ROS_INFO("WPD at Ready");
 	}
