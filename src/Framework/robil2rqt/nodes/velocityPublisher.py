@@ -1,10 +1,12 @@
+#!/usr/bin/env python
+
 import rospy
 import math
 from gazebo_msgs.msg import ModelStates
 from std_msgs.msg import Float32
 
-velocity_linear_command_pub = rospy.Publisher('/paltform_velocity_monitor/linear', Float32 , queue_size=5)
-velocity_angular_command_pub = rospy.Publisher('/paltform_velocity_monitor/angular', Float32 , queue_size=5)
+velocity_linear_command_pub = rospy.Publisher('/RQT_paltform_velocity_monitor/linear', Float32 , queue_size=5)
+velocity_angular_command_pub = rospy.Publisher('/RQT_paltform_velocity_monitor/angular', Float32 , queue_size=5)
 
 def command_calback(msg):
 	names = msg.name
@@ -20,6 +22,7 @@ def command_calback(msg):
 	velocity_linear_command_pub.publish(velocityToPub)
 
 	velocity_angular_command_pub.publish(msg.twist[index].angular.z)
+	rospy.sleep(0.01)
 
 rospy.init_node('velocity_command_pub')
 rospy.Subscriber('/gazebo/model_states', ModelStates, command_calback)

@@ -1,0 +1,5 @@
+<launch>
+ <node name="velocityP" type="velocityPublisher.py" pkg="robil2rqt" args="" output="screen" respawn="true"/>
+ <node name="pubCMDLinear" type="pubWPDCommand.py" pkg="robil2rqt" args="" output="screen" respawn="true"/>
+ <node name="RQT" type="rqt_gui" pkg="rqt_gui" args="--perspective-file /home/robil/robil2/src/Framework/robil2rqt/config/default.perspective" output="screen" respawn="true"/>
+</launch>
