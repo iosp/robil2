@@ -14,8 +14,14 @@ def command_calback(msg):
    msgAngularToSnd = Float32()
    msgAngularToSnd.data = msg.twist.angular.z   
    WPD_command_pub_angular.publish(msgAngularToSnd)
-   rospy.sleep(0.01)
 
 rospy.init_node('wpd_command_pub')
-rospy.Subscriber('/WPD/Speed', TwistStamped, command_calback)
-rospy.spin()
+
+def main():
+	rate = rospy.Rate(100)
+	while not rospy.is_shutdown():
+		msg = rospy.wait_for_message('/WPD/Speed', TwistStamped)
+		command_calback(msg)
+		rate.sleep()
+
+main()

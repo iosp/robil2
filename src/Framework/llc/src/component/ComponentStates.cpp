@@ -236,7 +236,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 /*
  *  PID LOOP
  */
-
+        ros::Rate loop_rate(100);
 	while((ros::Time::now().toSec() - hb_time) < t_out){
 		if(events.isTerminated() || !ros::ok()){			/* checks whether the line is empty, or node failed */
 			ROS_INFO("STOPPED");
@@ -316,7 +316,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 	/* calibrate the error */
 	old_error.twist.angular.z = cur_error.twist.angular.z ;
 	old_error.twist.linear.x = cur_error.twist.linear.x ;
-
+	loop_rate.sleep();
 	}
 
 	ROS_INFO("cannot connect with platform");
