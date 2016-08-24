@@ -24,8 +24,5 @@
     <arg name="world_name" value="$(find live_bobcat)/worlds/bobcat_static_arm_worlds/bobcat_static_arm_stair.world"/>
   </include>
 
-  <!---->
-  <include file="$(find bobcat_model)/launch/bobcat_arm_controler.launch" />
-  
 
 </launch>
