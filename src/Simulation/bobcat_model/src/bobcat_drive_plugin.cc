@@ -116,13 +116,9 @@ namespace gazebo
 
    public: void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
       {
-          Pl=config.Lin_Vel_P;
-          Il=config.Lin_Vel_I;
-          Dl=config.Lin_Vel_D;
-
-          Pa=config.Ang_Vel_P;
-          Ia=config.Ang_Vel_I;
-          Da=config.Ang_Vel_D;
+          cP = config.Wheel_conntrol_P;
+          cI = config.Wheel_conntrol_I;
+          cD = config.Wheel_conntrol_D;
       }
 
 
@@ -172,7 +168,7 @@ namespace gazebo
 
         double error = ref_omega - wheel_omega;
 
-        double effort_command = Pl * error;
+        double effort_command = cP * error;
 
         if(effort_command > WHEEL_EFFORT_LIMIT) effort_command = WHEEL_EFFORT_LIMIT;
         if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
@@ -240,9 +236,6 @@ namespace gazebo
     }
 
 
-
-
-
      // Defining private Pointer to model
      private: physics::ModelPtr model;
 
@@ -285,8 +278,7 @@ namespace gazebo
      private: double Angular_ref_vel;
 
      private: dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
-     private: double Pl, Il ,Dl;		/* PID constants of linear x */
-     private: double Pa, Ia ,Da;
+     private: double cP, cI ,cD;		/* PID constants */
 
 
   };
