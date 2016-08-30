@@ -29,18 +29,28 @@
 // ROS Communication
 #include "ros/ros.h"
 
+// Dynamic Configuration
+#include <dynamic_reconfigure/server.h>
+#include <bobcat_model/bobcat_modelConfig.h>
+
+
 #include "std_msgs/Bool.h"
 
 // Maximum time delays
-#define velocity_message_max_time_delay 0.03
-#define steering_message_max_time_delay 0.03
+#define command_MAX_DELAY 0.03
+//#define steering_message_max_time_delay 0.03
 
 // PID - Gain Values
 #define Kp 1200
 #define Klin 1
 #define Kang 1
-#define wide 1.5
-#define max_force 1200
+
+#define WHEEL_EFFORT_LIMIT 1200
+
+#define PLAT_WIDE 1.5
+#define WHEEL_DIAMETER 0.77
+#define PI 3.14159265359
+
 // coefficients for linear surface
 #define l0 -0.09307
 #define l1 5.927*pow(10,-19)
@@ -75,269 +85,209 @@ namespace gazebo
     /// \param[in] _sdf A pointer to the plugin's SDF element.
   public: void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
+
       // Store the pointer to the model
       this->model = _model;
-	
+
       // Store the pointers to the joints
-      this->body_link = this->model->GetLink("body");
-      this->back_left_joint = this->model->GetJoint("back_left_wheel_joint");
-      this->back_right_joint = this->model->GetJoint("back_right_wheel_joint");
-      this->front_left_joint = this->model->GetJoint("front_left_wheel_joint");
+      this->back_left_joint   = this->model->GetJoint("back_left_wheel_joint");
+      this->back_right_joint  = this->model->GetJoint("back_right_wheel_joint");
+      this->front_left_joint  = this->model->GetJoint("front_left_wheel_joint");
       this->front_right_joint = this->model->GetJoint("front_right_wheel_joint");
       
       // Starting Timers
-      steering_timer.Start();
-      velocity_timer.Start();
+      command_timer.Start();
+
+      this->Ros_nh = new ros::NodeHandle("bobtankDrivePlugin_node");
 
       // Subscribe to the topic, and register a callback
-      Steering_rate_sub = n.subscribe("/LLC/EFFORTS/Steering" , 1000, &bobtankDrivePlugin::On_Angular_Msg, this);
-      Velocity_rate_sub = n.subscribe("/LLC/EFFORTS/Throttle" , 1000, &bobtankDrivePlugin::On_Velocity_Msg, this);
+      Steering_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Steering" , 1000, &bobtankDrivePlugin::On_Angular_command, this);
+      Velocity_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Throttle" , 1000, &bobtankDrivePlugin::On_Linear_command, this);
       
-      platform_hb_pub_ = n.advertise<std_msgs::Bool>("/Sahar/link_with_platform" , 100);
+      platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform" , 100);
 
-       
       // Listen to the update event. This event is broadcast every simulation iteration. 
       this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&bobtankDrivePlugin::OnUpdate, this, _1));
 
-
+      this->model_reconfiguration_server = new dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> (*(this->Ros_nh));
+      this->model_reconfiguration_server->setCallback(boost::bind(&bobtankDrivePlugin::dynamic_Reconfiguration_callback, this, _1, _2));
     }
+
+
+   public: void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
+      {
+          Pl=config.Lin_Vel_P;
+          Il=config.Lin_Vel_I;
+          Dl=config.Lin_Vel_D;
+
+          Pa=config.Ang_Vel_P;
+          Ia=config.Ang_Vel_I;
+          Da=config.Ang_Vel_D;
+      }
+
+
+
 
     // Called by the world update start event, This function is the event that will be called every update
-  public: void OnUpdate(const common::UpdateInfo & /*_info*/)  // we are not using the pointer to the info so its commanted as an option
+    public: void OnUpdate(const common::UpdateInfo & /*_info*/)  // we are not using the pointer to the info so its commanted as an option
     {
-	// Applying effort to the wheels , brakes if no message income
-	if (velocity_timer.GetElapsed().Float()>velocity_message_max_time_delay)
-	{
-		// Brakes
-	  this->back_left_joint->SetForce(0,Set_Velocity_Back_Left_Wheel_Effort(1));
-	  this->back_right_joint->SetForce(0,Set_Velocity_Back_Right_Wheel_Effort(1));
-	  this->front_left_joint->SetForce(0,Set_Velocity_Front_Left_Wheel_Effort(1));
-	  this->front_right_joint->SetForce(0,Set_Velocity_Front_Right_Wheel_Effort(1));
-	}
-	else
-	{
-	       // Accelerates
-	  double force_back_left = Set_Velocity_Back_Left_Wheel_Effort(0);
-	  double force_back_right = Set_Velocity_Back_Right_Wheel_Effort(0);
-	  double force_front_left = Set_Velocity_Front_Left_Wheel_Effort(0);
-	  double force_front_right =Set_Velocity_Front_Right_Wheel_Effort(0);
-	  
-	  if(force_back_left > max_force) force_back_left = max_force;
-	  if(force_back_left < -max_force) force_back_left = -max_force;
-	  
-	  if(force_back_right > max_force) force_back_right = max_force;
-	  if(force_back_right < -max_force) force_back_right = -max_force;
-	  
-	  if(force_front_left > max_force) force_front_left = max_force;
-	  if(force_front_left < -max_force) force_front_left = -max_force;
-	  
-	  if(force_front_right > max_force) force_front_right = max_force;
-	  if(force_front_right < -max_force) force_front_right = -max_force;
-	  
-	  this->back_left_joint->SetForce(0,force_back_left);
-	  this->back_right_joint->SetForce(0,force_back_right);
-	  this->front_left_joint->SetForce(0,force_front_left);
-	  this->front_right_joint->SetForce(0,force_front_right);
-	}
-      
-      std_msgs::Bool connection;
-      connection.data = true;
-      platform_hb_pub_.publish(connection);
+            // Applying effort to the wheels , brakes if no message income
+            if (command_timer.GetElapsed().Float()> command_MAX_DELAY)
+            {
+                // Brakes
+                   Linear_ref_vel = 0;
+                   Angular_ref_vel = 0;
+            }
+
+              update_ref_vels();
+
+              apply_efforts();
+
+
+              std_msgs::Bool connection;
+              connection.data = true;
+              platform_hb_pub_.publish(connection);
     }
 
     
-    
-    
-    
-    
-    
+
+    private: void update_ref_vels() // float linear_command, float angular_command)
+    {
+        Angular_command_mutex.lock();
+           float x = Angular_command;
+        Angular_command_mutex.unlock();
+
+        Linear_command_mutex.lock();
+           float y = Linear_command;
+        Linear_command_mutex.unlock();
+
+        Linear_ref_vel = y; //( l0 + l1*x + l2*y + l3*pow(x,2) + l4*x*y + l5*pow(y,2) + l6*pow(x,2)*y + l7*x*pow(y,2) + l8*pow(y,3)+0.1 )*1.15;
+        Angular_ref_vel = x; //a0 + a1*x + a2*y + a3*pow(x,2) + a4*x*y + a5*pow(y,2) + a6*pow(x,3) + a7*pow(x,2)*y + a8*x*pow(y,2);
+    }
+
+
+   private: void wheel_controller(physics::JointPtr wheel_joint, double ref_omega)
+   {
+        double wheel_omega = wheel_joint->GetVelocity(0);
+
+        double error = ref_omega - wheel_omega;
+
+        double effort_command = Pl * error;
+
+        if(effort_command > WHEEL_EFFORT_LIMIT) effort_command = WHEEL_EFFORT_LIMIT;
+        if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
+
+
+        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
+        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
+        //std::cout << "           Pl = " << Pl << std::endl;
+
+        wheel_joint->SetForce(0,effort_command);
+    }
+
+
+  private: void apply_efforts()
+    {
+
+        float right_side_vel = (Linear_ref_vel + Angular_ref_vel * PLAT_WIDE/2);
+        float left_side_vel = (Linear_ref_vel - Angular_ref_vel * PLAT_WIDE/2);
+
+        std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
+
+        float rigth_wheels_omega_ref = right_side_vel / (0.5 * WHEEL_DIAMETER);
+        float left_wheels_omega_ref = left_side_vel / (0.5 * WHEEL_DIAMETER);
+
+        std::cout << " rigth_wheels_omega_ref = " << rigth_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
+
+
+
+        wheel_controller(this->front_right_joint, rigth_wheels_omega_ref);
+        wheel_controller(this->back_right_joint , rigth_wheels_omega_ref);
+        wheel_controller(this->front_left_joint , left_wheels_omega_ref);
+        wheel_controller(this->back_left_joint  , left_wheels_omega_ref);
+    }
+
+
+    // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
+    private: void On_Angular_command(const std_msgs::Float64ConstPtr &msg)
+    {
+      Angular_command_mutex.lock();
+          // Recieving referance steering angle
+
+          Angular_command=100*msg->data;
+          if(msg->data>1) Angular_command=100;
+          if(msg->data<-1) Angular_command=-100;
+
+          // Reseting timer every time LLC publishes message
+          command_timer.Start();
+      Angular_command_mutex.unlock();
+    }
+
+
+    // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
+    private: void On_Linear_command(const std_msgs::Float64ConstPtr &msg)
+    {
+      Linear_command_mutex.lock();
+          // Recieving referance hammer velocity
+          Linear_command=100*msg->data;
+          if(msg->data>1) Linear_command=100;
+          if(msg->data<-1) Linear_command=-100;
+
+          // Reseting timer every time LLC publishes message
+          command_timer.Start();
+      Linear_command_mutex.unlock();
+
+    }
+
+
+
+
+
      // Defining private Pointer to model
-    private: physics::ModelPtr model;
+     private: physics::ModelPtr model;
 
-     // Defining private Pointer to joints
-    private: physics::JointPtr steering_joint;
-    private: physics::JointPtr back_left_joint;
-    private: physics::JointPtr back_right_joint;
-    private: physics::JointPtr front_left_joint;
-    private: physics::JointPtr front_right_joint;
-    private: physics::LinkPtr body_link;
-     // Defining private Pointer to link
-    private: physics::LinkPtr link;
-    private: math::Vector3 lin_v;
-    private: math::Vector3 ang_v;
-
-     // Defining private Pointer to the update event connection
-    private: event::ConnectionPtr updateConnection;
-
-    // Defining private Ros Node Handle
-    private: ros::NodeHandle n;
-    
-    // Defining private Ros Subscribers
-    private: ros::Subscriber Steering_rate_sub;
-    private: ros::Subscriber Velocity_rate_sub;
-    
-    // Defining private Ros Publishers
-    ros::Publisher platform_hb_pub_;
-
-    
-    // Defining private Timers
-    private: common::Timer steering_timer;
-    private: common::Timer velocity_timer;
-
-    // Defining private Reference Holders
-    private: float Angular_velocity_ref;
-    private: float Linear_velocity_ref;
-    private: float Angular_velocity_function;
-    private: float Linear_velocity_function;
-    // Defining private Mutex
-    private: boost::mutex Angular_velocity_ref_mutex;
-    private: boost::mutex Linear_velocity_ref_mutex;
-    private: boost::mutex Linear_velocity_function_mutex;
-    private: boost::mutex Angular_velocity_function_mutex;
+      // Defining private Pointer to joints
+     private: physics::JointPtr steering_joint;
+     private: physics::JointPtr back_left_joint;
+     private: physics::JointPtr back_right_joint;
+     private: physics::JointPtr front_left_joint;
+     private: physics::JointPtr front_right_joint;
 
 
 
-	private: float left_velocity_function(float linear_rate,float angular_rate)
-	{
-		float left_rate_output,linear_rate_private,angular_rate_private;
+      // Defining private Pointer to the update event connection
+     private: event::ConnectionPtr updateConnection;
+
+     // Defining private Ros Node Handle
+     private: ros::NodeHandle  *Ros_nh;
+
+     // Defining private Ros Subscribers
+     private: ros::Subscriber Steering_rate_sub;
+     private: ros::Subscriber Velocity_rate_sub;
+
+     // Defining private Ros Publishers
+     ros::Publisher platform_hb_pub_;
 
 
-		double x=angular_rate;
-		double y=linear_rate;
-
-		//TODO: map from the matlab function to left_rate_output
-		double vel= ( l0 + l1*x + l2*y + l3*pow(x,2) + l4*x*y + l5*pow(y,2) + l6*pow(x,2)*y + l7*x*pow(y,2) + l8*pow(y,3)+0.1 )*1.15;
-		double ang= a0 + a1*x + a2*y + a3*pow(x,2) + a4*x*y + a5*pow(y,2) + a6*pow(x,3) + a7*pow(x,2)*y + a8*x*pow(y,2);
-
-		linear_rate_private=vel;
-		angular_rate_private=ang;
-		//ROS_INFO("vel=%lf     ang=%lf",vel,ang);
-		lin_v=this->body_link-> GetRelativeLinearVel(); // get velocity in gazebo frame
-	    ang_v=this->body_link-> GetRelativeAngularVel(); // get velocity in gazebo frame
-
-		//ROS_INFO("body_link=%lf         body_ang=%lf",lin_v.x,ang_v.z);
-		   
-		
-		left_rate_output=linear_rate_private-angular_rate_private*wide;
-		return left_rate_output;
-	}
-	private: float right_velocity_function(float linear_rate,float angular_rate)
-	{
-		float right_rate_output,linear_rate_private,angular_rate_private;
+     // Defining private Timers
+     private: common::Timer command_timer;
 
 
-		double x=angular_rate;
-		double y=linear_rate;
 
-		//TODO: map from the matlab function to right_rate_output 
-		double vel= ( l0 + l1*x + l2*y + l3*pow(x,2) + l4*x*y + l5*pow(y,2) + l6*pow(x,2)*y + l7*x*pow(y,2) + l8*pow(y,3)+0.1 )*1.15;
-		double ang= a0 + a1*x + a2*y + a3*pow(x,2) + a4*x*y + a5*pow(y,2) + a6*pow(x,3) + a7*pow(x,2)*y + a8*x*pow(y,2);
-		
-		linear_rate_private=vel;
-		angular_rate_private=ang;
-		
-		
-		right_rate_output=linear_rate_private+angular_rate_private*wide;
-		return right_rate_output;
-	}
-	
-	
-	// The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
-	private: void On_Angular_Msg(const std_msgs::Float64ConstPtr &msg)
-	{
-	  Angular_velocity_ref_mutex.lock();
-		  // Recieving referance steering angle
-		  
-		  Angular_velocity_ref=100*msg->data;
-		  if(msg->data>1) Angular_velocity_ref=100;
-		  if(msg->data<-1) Angular_velocity_ref=-100;
-		
-		  // Reseting timer every time LLC publishes message
-		  steering_timer.Start();
-	  Angular_velocity_ref_mutex.unlock();
-	}
-
-	// The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
-	private: void On_Velocity_Msg(const std_msgs::Float64ConstPtr &msg)
-	{
-	  Linear_velocity_ref_mutex.lock();
-		  // Recieving referance hammer velocity
-		  Linear_velocity_ref=100*msg->data;
-		  if(msg->data>1) Linear_velocity_ref=100;
-		  if(msg->data<-1) Linear_velocity_ref=-100;
-		  		  
-		  // Reseting timer every time LLC publishes message
-		  velocity_timer.Start();
-	  Linear_velocity_ref_mutex.unlock();
-
-	}
+     // Defining private Mutex
+     private: boost::mutex Angular_command_mutex;
+     private: boost::mutex Linear_command_mutex;
 
 
-	// this function sets the efforts given to the hammer wheels according to error getting to refarance velocity, effort inserted via wheel_joints	
-	// if brake command is recieved refarance change to 0
-	private: float Set_Velocity_Back_Left_Wheel_Effort(int brake)
-	{
-		lin_v=this->body_link-> GetRelativeLinearVel(); // get velocity in gazebo frame
-	    ang_v=this->body_link-> GetRelativeAngularVel(); // get velocity in gazebo frame
-		double left_vel;
-		left_vel= lin_v.x  -  ang_v.z*wide/2;
-		Linear_velocity_function_mutex.lock();
-			float error,effort=0;
-			if (brake)
-				Linear_velocity_ref=0;
-			error = (left_velocity_function(Linear_velocity_ref*Klin,Angular_velocity_ref*Kang)-  left_vel     );
-			effort = Kp*error;
-		Linear_velocity_function_mutex.unlock();
-		return effort;
-	}
+     private: float Linear_command;
+     private: float Angular_command;
+     private: double Linear_ref_vel;
+     private: double Angular_ref_vel;
 
-	private: float Set_Velocity_Back_Right_Wheel_Effort(int brake)
-	{
-		lin_v=this->body_link-> GetRelativeLinearVel(); // get velocity in gazebo frame
-	    ang_v=this->body_link-> GetRelativeAngularVel(); // get velocity in gazebo frame
-		double right_vel;
-		right_vel= lin_v.x  +  ang_v.z*wide/2;
-		Linear_velocity_function_mutex.lock();
-			float error,effort=0;
-			if (brake)
-				Linear_velocity_ref=0;
-			error = (right_velocity_function(Linear_velocity_ref*Klin,Angular_velocity_ref*Kang)-    right_vel    );
-			effort = Kp*error;
-		Linear_velocity_function_mutex.unlock();
-		return effort;
-	}
+     private: dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
+     private: double Pl, Il ,Dl;		/* PID constants of linear x */
+     private: double Pa, Ia ,Da;
 
-	private: float Set_Velocity_Front_Left_Wheel_Effort(int brake)
-	{
-		lin_v=this->body_link-> GetRelativeLinearVel(); // get velocity in gazebo frame
-	    ang_v=this->body_link-> GetRelativeAngularVel(); // get velocity in gazebo frame
-		double left_vel;
-		left_vel= lin_v.x  -  ang_v.z*wide/2;
-		Linear_velocity_function_mutex.lock();
-			float error,effort=0;
-			if (brake)
-				Linear_velocity_ref=0;
-			error = (left_velocity_function(Linear_velocity_ref*Klin,Angular_velocity_ref*Kang)-  left_vel     );
-			effort = Kp*error;
-		Linear_velocity_function_mutex.unlock();
-		return effort;
-	}
-
-	private: float Set_Velocity_Front_Right_Wheel_Effort(int brake)
-	{
-		lin_v=this->body_link-> GetRelativeLinearVel(); // get velocity in gazebo frame
-	    ang_v=this->body_link-> GetRelativeAngularVel(); // get velocity in gazebo frame
-		double right_vel;
-		right_vel= lin_v.x  +  ang_v.z*wide/2;
-		Linear_velocity_function_mutex.lock();
-			float error,effort=0;
-			if (brake)
-				Linear_velocity_ref=0;
-			error = (right_velocity_function(Linear_velocity_ref*Klin,Angular_velocity_ref*Kang)-    right_vel    );
-			effort = Kp*error;
-		Linear_velocity_function_mutex.unlock();
-		return effort;
-	}
 
   };
 
