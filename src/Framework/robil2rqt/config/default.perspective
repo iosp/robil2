@@ -5,7 +5,7 @@
       "keys": {
         "running-plugins": {
           "type": "repr", 
-          "repr": "{u'rqt_plot/Plot': [4, 3, 2, 1]}"
+          "repr": "{u'rqt_reconfigure/Param': [1], u'rqt_plot/Plot': [4, 3, 2, 1], u'rqt_publisher/Publisher': [1]}"
         }
       }, 
       "groups": {
@@ -77,7 +77,7 @@
               "keys": {
                 "dockable": {
                   "type": "repr", 
-                  "repr": "u'true'"
+                  "repr": "True"
                 }, 
                 "parent": {
                   "type": "repr", 
@@ -147,7 +147,7 @@
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[67.33600000000001, 68.33600000000001]"
+                  "repr": "[208.761, 209.761]"
                 }
               }, 
               "groups": {}
@@ -194,7 +194,7 @@
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[67.786, 68.786]"
+                  "repr": "[207.356, 208.356]"
                 }
               }, 
               "groups": {}
@@ -241,7 +241,7 @@
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[67.595, 68.595]"
+                  "repr": "[206.509, 207.509]"
                 }
               }, 
               "groups": {}
@@ -288,7 +288,7 @@
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[68.212, 69.212]"
+                  "repr": "[199.097, 200.097]"
                 }
               }, 
               "groups": {}
@@ -302,7 +302,7 @@
               "keys": {
                 "dockable": {
                   "type": "repr", 
-                  "repr": "u'true'"
+                  "repr": "True"
                 }, 
                 "parent": {
                   "type": "repr", 
@@ -319,7 +319,7 @@
               "keys": {
                 "publishers": {
                   "type": "repr", 
-                  "repr": "u\"[{'type_name': 'geometry_msgs/TwistStamped', 'topic_name': '/WPD/Speed', 'enabled': False, 'rate': 50.0, 'expressions': {u'/WPD/Speed/twist/linear/z': '0', u'/WPD/Speed/twist/linear/x': '0', u'/WPD/Speed/twist/linear/y': '0', u'/WPD/Speed/twist/angular/z': '0', u'/WPD/Speed/twist/angular/x': '0', u'/WPD/Speed/twist/angular/y': '0'}, 'publisher_id': 0, 'counter': 0}, {'topic_name': '/LLC/EFFORTS/Throttle', 'type_name': 'std_msgs/Float64', 'enabled': False, 'rate': 50.0, 'expressions': {u'/LLC/EFFORTS/Throttle/data': '5'}, 'publisher_id': 1, 'counter': 0}, {'topic_name': '/LLC/EFFORTS/Steering', 'type_name': 'std_msgs/Float64', 'enabled': False, 'rate': 50.0, 'expressions': {u'/LLC/EFFORTS/Steering/data': '0'}, 'publisher_id': 2, 'counter': 0}]\""
+                  "repr": "u\"[{'topic_name': '/WPD/Speed', 'type_name': 'geometry_msgs/TwistStamped', 'enabled': False, 'rate': 50.0, 'expressions': {u'/WPD/Speed/twist/linear/z': '0', u'/WPD/Speed/twist/linear/x': '0', u'/WPD/Speed/twist/linear/y': '0', u'/WPD/Speed/twist/angular/z': '0', u'/WPD/Speed/twist/angular/x': '0', u'/WPD/Speed/twist/angular/y': '0'}, 'publisher_id': 0, 'counter': 0}, {'type_name': 'std_msgs/Float64', 'topic_name': '/LLC/EFFORTS/Throttle', 'enabled': False, 'rate': 50.0, 'expressions': {u'/LLC/EFFORTS/Throttle/data': '5'}, 'publisher_id': 1, 'counter': 0}, {'type_name': 'std_msgs/Float64', 'topic_name': '/LLC/EFFORTS/Steering', 'enabled': False, 'rate': 50.0, 'expressions': {u'/LLC/EFFORTS/Steering/data': '0'}, 'publisher_id': 2, 'counter': 0}]\""
                 }
               }, 
               "groups": {}
@@ -548,13 +548,13 @@
       "keys": {
         "geometry": {
           "type": "repr(QByteArray.hex)", 
-          "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb00010000000007c10000001800000eff00000437000007c10000001800000eff00000437000000000000')", 
-          "pretty-print": "           7       7   "
+          "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb0001000000000037fffffff2000007890000044100000041000000180000077f00000437000000010000')", 
+          "pretty-print": "     7     A A     7   "
         }, 
         "state": {
           "type": "repr(QByteArray.hex)", 
-          "repr(QByteArray.hex)": "QtCore.QByteArray('000000ff00000000fd00000001000000030000073f000003f1fc0100000005fb00000044007200710074005f00670072006100700068005f005f0052006f007300470072006100700068005f005f0032005f005f0052006f0073004700720061007000680055006901000000000000064b0000000000000000fb00000044007200710074005f00670072006100700068005f005f0052006f007300470072006100700068005f005f0031005f005f0052006f0073004700720061007000680055006901000003a30000039c0000000000000000fb0000004c007200710074005f0074006f007000690063005f005f0054006f0070006900630050006c007500670069006e005f005f0031005f005f0054006f00700069006300570069006400670065007401000000000000073f0000000000000000fc00000000000003a60000017700fffffffc0200000002fb00000042007200710074005f0070006c006f0074005f005f0050006c006f0074005f005f0031005f005f00440061007400610050006c006f00740057006900640067006500740100000019000002730000008c00fffffffb00000042007200710074005f0070006c006f0074005f005f0050006c006f0074005f005f0033005f005f00440061007400610050006c006f00740057006900640067006500740100000292000001780000008c00fffffffc000003ac000003930000017700fffffffc0200000002fb00000042007200710074005f0070006c006f0074005f005f0050006c006f0074005f005f0034005f005f00440061007400610050006c006f00740057006900640067006500740100000019000002730000008c00fffffffb00000042007200710074005f0070006c006f0074005f005f0050006c006f0074005f005f0032005f005f00440061007400610050006c006f00740057006900640067006500740100000292000001780000008c00ffffff0000073f0000000000000004000000040000000800000008fc00000001000000030000000100000036004d0069006e0069006d0069007a006500640044006f0063006b00570069006400670065007400730054006f006f006c0062006100720000000000ffffffff0000000000000000')", 
-          "pretty-print": "                 Drqt_graph__RosGraph__2__RosGraphUi          Drqt_graph__RosGraph__1__RosGraphUi          Lrqt_topic__TopicPlugin__1__TopicWidget              w                                            s                                           x                 Brqt_plot__Plot__4__DataPlotWidget          Brqt_plot__Plot__2__DataPlotWidget                            6MinimizedDockWidgetsToolbar        "
+          "repr(QByteArray.hex)": "QtCore.QByteArray('000000ff00000000fd00000001000000030000073f000003f1fc0100000006fb00000044007200710074005f00670072006100700068005f005f0052006f007300470072006100700068005f005f0032005f005f0052006f0073004700720061007000680055006901000000000000064b0000000000000000fb00000044007200710074005f00670072006100700068005f005f0052006f007300470072006100700068005f005f0031005f005f0052006f0073004700720061007000680055006901000003a30000039c0000000000000000fb0000004c007200710074005f0074006f007000690063005f005f0054006f0070006900630050006c007500670069006e005f005f0031005f005f0054006f00700069006300570069006400670065007401000000000000073f0000000000000000fc00000000000002360000017700fffffffc0200000002fb00000042007200710074005f0070006c006f0074005f005f0050006c006f0074005f005f0031005f005f00440061007400610050006c006f00740057006900640067006500740100000019000002720000008c00fffffffb00000042007200710074005f0070006c006f0074005f005f0050006c006f0074005f005f0033005f005f00440061007400610050006c006f00740057006900640067006500740100000291000001790000008c00fffffffc0000023c0000022b0000017700fffffffc0200000002fb00000042007200710074005f0070006c006f0074005f005f0050006c006f0074005f005f0034005f005f00440061007400610050006c006f00740057006900640067006500740100000019000002720000008c00fffffffb00000042007200710074005f0070006c006f0074005f005f0050006c006f0074005f005f0032005f005f00440061007400610050006c006f00740057006900640067006500740100000291000001790000008c00fffffffc0000046d000002d20000026600fffffffc0200000002fb00000058007200710074005f007000750062006c00690073006800650072005f005f005000750062006c00690073006800650072005f005f0031005f005f005000750062006c006900730068006500720057006900640067006500740100000019000001fe0000009300fffffffb0000006c007200710074005f007200650063006f006e006600690067007500720065005f005f0050006100720061006d005f005f0031005f005f005f0070006c007500670069006e0063006f006e007400610069006e00650072005f0074006f0070005f007700690064006700650074010000021d000001ed0000010f00ffffff0000073f0000000000000004000000040000000800000008fc00000001000000030000000100000036004d0069006e0069006d0069007a006500640044006f0063006b00570069006400670065007400730054006f006f006c0062006100720000000000ffffffff0000000000000000')", 
+          "pretty-print": "                 Drqt_graph__RosGraph__2__RosGraphUi          Drqt_graph__RosGraph__1__RosGraphUi          Lrqt_topic__TopicPlugin__1__TopicWidget            6 w                                            r                                           y                 Brqt_plot__Plot__4__DataPlotWidget          Brqt_plot__Plot__2__DataPlotWidget          m   f                                                                                                                              ?                                                      "
         }
       }, 
       "groups": {
