@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(bobcat_model)
 
+SET(CMAKE_CXX_FLAGS "-std=c++0x")
+
+
 find_package(catkin REQUIRED COMPONENTS
   gazebo_plugins
   gazebo_ros
@@ -44,9 +47,15 @@ add_library(bobcat_drive_plugin SHARED src/bobcat_drive_plugin.cc)
 target_link_libraries(bobcat_drive_plugin ${catkin_LIBRARIES}  ${Boost_LIBRARIES} )
 add_dependencies(bobcat_drive_plugin ${PROJECT_NAME}_gencfg)
 
+add_library(bobcat_threaded_drive_plugin SHARED src/bobcat_threaded_drive_plugin.cc)
+target_link_libraries(bobcat_threaded_drive_plugin ${catkin_LIBRARIES}  ${Boost_LIBRARIES} )
+add_dependencies(bobcat_threaded_drive_plugin ${PROJECT_NAME}_gencfg)
+
 
 add_library(chain_gazebo_plugin src/chain_plugin.cpp )
 target_link_libraries(chain_gazebo_plugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
+
+
 
 add_executable(bobcat_arm_ros_controller_interface_node src/bobcat_arm_ros_controller_interface_node.cpp)
 target_link_libraries(bobcat_arm_ros_controller_interface_node ${catkin_LIBRARIES}  ${Boost_LIBRARIES} )

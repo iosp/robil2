@@ -1101,9 +1101,10 @@
               <xyz>0.000000 1.000000 0.000000</xyz>
             </axis2>
 </joint>
-<!-- 
+
+
 <plugin name="bobcat_drive_control" filename="libbobcat_drive_plugin.so"/> 
-    -->
+
 
 <!-- bobcat arm controllers --> <!-- 
   <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>

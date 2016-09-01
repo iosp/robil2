@@ -52,7 +52,7 @@
 #define WHEEL_EFFORT_LIMIT 100000
 
 #define PLAT_WIDE 1.5
-#define WHEEL_DIAMETER 0.77
+#define WHEEL_DIAMETER 0.4
 #define PI 3.14159265359
 
 
@@ -76,9 +76,7 @@ namespace gazebo
       // Store the pointers to the joints
       this->back_left_joint   = this->model->GetJoint("back_left_wheel_joint");
       this->back_right_joint  = this->model->GetJoint("back_right_wheel_joint");
-      this->front_left_joint  = this->model->GetJoint("front_left_wheel_joint");
-      this->front_right_joint = this->model->GetJoint("front_right_wheel_joint");
-      
+
       // Starting Timers
       command_timer.Start();
 
@@ -243,9 +241,7 @@ namespace gazebo
 
         std::cout << " rigth_wheels_omega_ref = " << rigth_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
 
-        wheel_controller(this->front_right_joint, rigth_wheels_omega_ref);
         wheel_controller(this->back_right_joint , rigth_wheels_omega_ref);
-        wheel_controller(this->front_left_joint , left_wheels_omega_ref);
         wheel_controller(this->back_left_joint  , left_wheels_omega_ref);
     }
 
@@ -288,9 +284,6 @@ namespace gazebo
      private: physics::JointPtr steering_joint;
      private: physics::JointPtr back_left_joint;
      private: physics::JointPtr back_right_joint;
-     private: physics::JointPtr front_left_joint;
-     private: physics::JointPtr front_right_joint;
-
 
 
       // Defining private Pointer to the update event connection
