@@ -25,11 +25,10 @@ class ComponentMain {
 	  ros::Publisher _pub_diagnostic;
 	  boost::thread_group _maintains;
 
-		ros::Publisher  _pub_GPS;
+		ros::Publisher  _pub_GPSPose;
 		ros::Publisher  _pub_INS;
-		ros::Publisher  _pub_INS2;
 		ros::Publisher  _pub_GpsSpeed;
-		ros::Publisher  _pub_GpsSpeed2; //Temporary topic for displaying in RQT
+		ros::Publisher  _pub_GpsSpeedVec;
 
 		string IPADDR;
 

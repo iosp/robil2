@@ -37,9 +37,10 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	else
 		IPADDR = "127.0.0.1";
 
-	_pub_GPS=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GPS>(fetchParam(&_nh,"SHIFFON2ROS","GPS","pub"),10));
+	_pub_GPSPose=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GPS>(fetchParam(&_nh,"SHIFFON2ROS","GPS","pub"),10));
 	_pub_INS=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::INS>(fetchParam(&_nh,"SHIFFON2ROS","INS","pub"),10));
 	_pub_GpsSpeed=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GpsSpeed>(fetchParam(&_nh,"SHIFFON2ROS","GpsSpeed","pub"),10));
+	_pub_GpsSpeedVec=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GPS>("/SENSORS/GPS/SpeedVec",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 //	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
     //Replace the thread group with a simple pthread because there is a SIGEV otherwise
@@ -98,7 +99,7 @@ void ComponentMain::ReadAndPub_ShiphonGPS(){
 }
 
 void ComponentMain::publishGPS(config::SHIFFON2ROS::pub::GPS& msg) {
-	_pub_GPS.publish(msg);
+	_pub_GPSPose.publish(msg);
 }
 
 
@@ -145,6 +146,7 @@ void ComponentMain::publishINS(config::SHIFFON2ROS::pub::INS& msg) {
 
 void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 	config::SHIFFON2ROS::pub::GpsSpeed GpsSpeed_msg;
+
 	double East_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
 	double North_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
 	double Down_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
@@ -154,10 +156,12 @@ void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 
 	publishGpsSpeed(GpsSpeed_msg);
 
-
-	//Temporary
-	std_msgs::Float64 GpsSpeed2_msg;
-	GpsSpeed2_msg.data = GpsSpeed_msg.speed;
+	config::SHIFFON2ROS::pub::GPS GpsSpeedVec_msg;
+	GpsSpeedVec_msg.altitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
+	GpsSpeedVec_msg.longitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
+	GpsSpeedVec_msg.latitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
+	GpsSpeedVec_msg.header.stamp = ros::Time::now();
+	_pub_GpsSpeedVec.publish(GpsSpeedVec_msg);
 
 }
 

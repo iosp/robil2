@@ -418,8 +418,21 @@ namespace gazebo
     	return true;
     }
 
-	void sendIMUToUDP_1HZMESSAGE(const common::UpdateInfo & _info)
+    template<class T1, class T2>
+    void insertBetweenRanges(T1& dest, T2 src, double downLimit, double upLimit)
+    {
+      if(src < downLimit)
+        dest = downLimit;
+      else if(src > upLimit)
+        dest = upLimit;
+      else
+        dest = src;
+    }
+
+    void sendIMUToUDP_1HZMESSAGE(const common::UpdateInfo & _info)
 	{
+		//ATTENTION: if you change any of the constants values in this function, you must use the 'insertBetweenRanges' function according to the ICD of this message.
+		//example you can find in 'sendIMUToUDP_100HZMESSAGE' function
 		PHSPERIODIC1HZMESSAGE IPON_MsgToSend;
 
 		IPON_MsgToSend.SOM														= 42405; 		// defiantly not used in SAHAR (value is the default by the ICD)
@@ -428,10 +441,10 @@ namespace gazebo
 		IPON_MsgToSend.INS_Time_Of_Nav_Data										= ((time(NULL) - 315964800) % (7*24*60*60));
 		IPON_MsgToSend.GPS_TINE_EGI												= _info.realTime.Double();
 		IPON_MsgToSend.INS_DISTANCE_TRAVELED									= 0;	// defiantly not used in SAHAR
-    	LatLonAlt currentLatLonAlt = getLanLonAlt();
+		LatLonAlt currentLatLonAlt = getLanLonAlt();
 		IPON_MsgToSend.GPS_LAT_Egi												= currentLatLonAlt.latitude;	// defiantly not used in SAHAR
 		IPON_MsgToSend.GPS_LONG_Egi												= currentLatLonAlt.longitude;	// defiantly not used in SAHAR
-		IPON_MsgToSend.GPS_Altitude_Egi											= currentLatLonAlt.altitude;	// defiantly not used in SAHAR
+		insertBetweenRanges<double, double>(IPON_MsgToSend.GPS_Altitude_Egi, currentLatLonAlt.altitude, -16384, 16383); // defiantly not used in SAHAR
 		IPON_MsgToSend.Alignment_Countdown										= 0;
 
 		IPON_MsgToSend.Status_word.s1_status.INS_in_Exclusive_ZUPT_mode			= 0;
@@ -684,6 +697,7 @@ namespace gazebo
     	memcpy(pointToBuffer, (char*)&ushTemp, 2);
     	pointToBuffer+=2;
 	}
+
     void sendIMUToUDP_100HZMESSAGE(const common::UpdateInfo & _info)
     {
 
@@ -700,19 +714,23 @@ namespace gazebo
     	bzero(&IPON_MsgToSend, sizeof(PHSPERIODIC100HZMESSAGE));
 
     	IPON_MsgToSend.Message_ID_Accepted_From_EGI		= E_MESSAGE_ID_ACCEPTED_FROM_EGI::E_MESSAGE_ID_ACCEPTED_FROM_EGI_PERIODIC_100HZ; // ID for 100Hz message
-     	IPON_MsgToSend.Azimuth_PD_geographic			= (-yaw)*Rad2Mills; //yaw * Rad2Mills; //  possible should be (PI/2-yaw)*Rad2Mills
-    	IPON_MsgToSend.Pitch_PD_Egi 					= -pitch * Rad2Mills;
-     	IPON_MsgToSend.Roll_PD_Egi 						= roll * Rad2Mills;
 
-        IPON_MsgToSend.Azimuth_rate_Z_PD_Egi			= (_imu->GetAngularVelocity().z+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills;
-        IPON_MsgToSend.Pitch_rate_Y_PD_Egi				= (_imu->GetAngularVelocity().y+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills;
-        IPON_MsgToSend.Roll_rate_X_PD_Egi				= (_imu->GetAngularVelocity().x+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills;
+        yaw = -yaw;
+        if(yaw < 0)
+          yaw += (2 * M_PI);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Azimuth_PD_geographic, yaw*Rad2Mills, 0, 6399.9);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Pitch_PD_Egi, (-pitch) * Rad2Mills, -1600, 1600);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Roll_PD_Egi, roll * Rad2Mills, -1600, 1600);
+
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Azimuth_rate_Z_PD_Egi, (_imu->GetAngularVelocity().z+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Pitch_rate_Y_PD_Egi, (_imu->GetAngularVelocity().y+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Roll_rate_X_PD_Egi, (_imu->GetAngularVelocity().x+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
     	//ROS_INFO("Azimuth_rate_Z_PD_Egi: %f, Pitch_rate_Y_PD_Egi: %f, Roll_rate_X_PD_Egi: %f", IPON_MsgToSend.Azimuth_rate_Z_PD_Egi, IPON_MsgToSend.Pitch_rate_Y_PD_Egi, IPON_MsgToSend.Roll_rate_X_PD_Egi);
 
-    	IPON_MsgToSend.ECC_X_Egi 						= _imu->GetLinearAcceleration().x+_acc_bias+_acc_noise*sampleNormal();
-    	IPON_MsgToSend.ECC_Y_Egi 						= _imu->GetLinearAcceleration().y+_acc_bias+_acc_noise*sampleNormal();
-    	IPON_MsgToSend.ECC_Z_Egi 						= _imu->GetLinearAcceleration().z+_acc_bias+_acc_noise*sampleNormal();
-    	//ROS_INFO("ECC_X_Egi: %f, ECC_Y_Egi: %f, ECC_Z_Egi: %f", IPON_MsgToSend.ECC_X_Egi, IPON_MsgToSend.ECC_Y_Egi, IPON_MsgToSend.ECC_Z_Egi);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.ECC_X_Egi, _imu->GetLinearAcceleration().x+_acc_bias+_acc_noise*sampleNormal(), -50, 50);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.ECC_Y_Egi, _imu->GetLinearAcceleration().y+_acc_bias+_acc_noise*sampleNormal(), -50, 50);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.ECC_Z_Egi, _imu->GetLinearAcceleration().z+_acc_bias+_acc_noise*sampleNormal(), -50, 50);
+        //ROS_INFO("ECC_X_Egi: %f, ECC_Y_Egi: %f, ECC_Z_Egi: %f", IPON_MsgToSend.ECC_X_Egi, IPON_MsgToSend.ECC_Y_Egi, IPON_MsgToSend.ECC_Z_Egi);
 
     	IPON_MsgToSend.Alt_correction_Egi				= 18; // defiantly not used in SAHAR				//value from the real IPON
     	IPON_MsgToSend.Checksum_Egi						= 0; // defiantly not used in SAHAR
@@ -726,9 +744,9 @@ namespace gazebo
 
     	IPON_MsgToSend.Input_Message_Number_Echo_Egi	= 0; // defiantly not used in SAHAR
 
-    	LatLonAlt currentLatLonAlt = getLanLonAlt();
-    	IPON_MsgToSend.Altitude_MSL_EGI					= currentLatLonAlt.altitude;
-    	IPON_MsgToSend.LAT_Egi							= currentLatLonAlt.latitude * Deg2Pi; // Range: [-1.0, 1.0]
+        LatLonAlt currentLatLonAlt = getLanLonAlt();
+        insertBetweenRanges<double, float>(IPON_MsgToSend.Altitude_MSL_EGI, currentLatLonAlt.altitude, -16384, 16383);
+        IPON_MsgToSend.LAT_Egi							= currentLatLonAlt.latitude * Deg2Pi; // Range: [-1.0, 1.0]
     	IPON_MsgToSend.LONG_Egi							= currentLatLonAlt.longitude * Deg2Pi; // Range: [-1.0, 1.0]
     	//ROS_INFO("LAT_Egi: %f, LONG_Egi:%f", IPON_MsgToSend.LAT_Egi, IPON_MsgToSend.LONG_Egi);
 
@@ -751,9 +769,9 @@ namespace gazebo
     	IPON_MsgToSend.Validity_Word.Severe_INS_Fail_Egi= 0;
     	IPON_MsgToSend.Validity_Word.Temperature_Fail_Egi = 1;
 
-    	IPON_MsgToSend.Velocity_East_Egi 				= getLanLonAlt_Velocities().x;
-    	IPON_MsgToSend.Velocity_north_Egi				= getLanLonAlt_Velocities().y;
-    	IPON_MsgToSend.Velocity_down_Egi 				= -getLanLonAlt_Velocities().z;
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Velocity_East_Egi, getLanLonAlt_Velocities().x, -128, 127);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Velocity_north_Egi, getLanLonAlt_Velocities().y, -128, 127);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Velocity_down_Egi, (-getLanLonAlt_Velocities().z), -128, 127);
 
     	IPON_MsgToSend.blockLength						= 60; // defiantly not used in SAHAR (value is the default by the ICD)
 
