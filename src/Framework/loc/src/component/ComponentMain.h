@@ -48,7 +48,7 @@ public:
 	void handleGPS(const config::LOC::sub::GPS& msg);
 	void handleINS(const config::LOC::sub::INS& msg);
 	void handleVOOdometry(const config::LOC::sub::VOOdometry& msg);
-	void handleGpsSpeed(const config::LOC::sub::PerGpsSpeed& msg);
+    void handleGpsSpeed(const sensor_msgs::NavSatFix& msg);
 	void publishLocation(config::LOC::pub::Location& msg);
 	void publishPerVelocity(config::LOC::pub::PerVelocity& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);

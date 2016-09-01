@@ -30,7 +30,7 @@ ComponentMain::ComponentMain(int argc,char** argv)	: _inited(init(argc, argv))
 //	_sub_INS=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","INS","sub"), 10, &ComponentMain::handleINS,this));
     _sub_INS=ros::Subscriber(_nh.subscribe("/SENSORS/INS", 10, &ComponentMain::handleINS,this));
 //	_sub_VOOdometry=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LOC","VOOdometry","sub"), 10, &ComponentMain::handleVOOdometry,this));
-    _sub_GpsSpeed=ros::Subscriber(_nh.subscribe("/SENSORS/GPS/Speed", 10, &ComponentMain::handleGpsSpeed,this));
+    _sub_GpsSpeed=ros::Subscriber(_nh.subscribe("/SENSORS/GPS/SpeedVec", 10, &ComponentMain::handleGpsSpeed,this));
 	_pub_Location=ros::Publisher(_nh.advertise<config::LOC::pub::Location>(fetchParam(&_nh,"LOC","Location","pub"),10));
 	_pub_PerVelocity=ros::Publisher(_nh.advertise<config::LOC::pub::PerVelocity>(fetchParam(&_nh,"LOC","PerVelocity","pub"),10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
@@ -126,12 +126,10 @@ void ComponentMain::handleVOOdometry(const config::LOC::sub::VOOdometry& msg)
 	//std::cout<< "LOC say:" << msg << std::endl;
 }
 
-void ComponentMain::handleGpsSpeed(const config::LOC::sub::PerGpsSpeed& msg)
+void ComponentMain::handleGpsSpeed(const sensor_msgs::NavSatFix& msg)
 {
-    if(dyn_conf.noise)
-		_estimator.setGPSSpeedMeasurement(msg);
-	else
-		_observer.setGPSSpeedMeasurement(msg);
+
+    _estimator.setGPSSpeedMeasurement(msg);
 }	
 
 void ComponentMain::publishLocation(config::LOC::pub::Location& msg)

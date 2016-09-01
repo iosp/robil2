@@ -157,9 +157,9 @@ void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 	publishGpsSpeed(GpsSpeed_msg);
 
 	config::SHIFFON2ROS::pub::GPS GpsSpeedVec_msg;
-	GpsSpeedVec_msg.altitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
+    GpsSpeedVec_msg.altitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
 	GpsSpeedVec_msg.longitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
-	GpsSpeedVec_msg.latitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
+    GpsSpeedVec_msg.latitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
 	GpsSpeedVec_msg.header.stamp = ros::Time::now();
 	_pub_GpsSpeedVec.publish(GpsSpeedVec_msg);
 
