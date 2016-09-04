@@ -49,16 +49,16 @@
 #define Klin 1
 #define Kang 1
 
-#define WHEEL_EFFORT_LIMIT 5000
+#define WHEEL_EFFORT_LIMIT 100000
 
 #define PLAT_WIDE 1.5
-#define WHEEL_DIAMETER 0.270
+#define WHEEL_DIAMETER 0.4
 #define PI 3.14159265359
 
 
 namespace gazebo
 {
-
+  
   class bobtankDrivePlugin : public ModelPlugin
   {
     ///  Constructor
@@ -74,10 +74,8 @@ namespace gazebo
       this->model = _model;
 
       // Store the pointers to the joints
-      this->back_left_joint = this->model->GetJoint("back_left_boggie_joint");
-      this->back_right_joint = this->model->GetJoint("back_right_boggie_joint");
-      this->front_left_joint = this->model->GetJoint("front_left_boggie_joint");
-      this->front_right_joint = this->model->GetJoint("front_right_boggie_joint");
+      this->back_left_joint   = this->model->GetJoint("back_left_wheel_joint");
+      this->back_right_joint  = this->model->GetJoint("back_right_wheel_joint");
 
       // Starting Timers
       command_timer.Start();
@@ -87,10 +85,10 @@ namespace gazebo
       // Subscribe to the topic, and register a callback
       Steering_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Steering" , 1000, &bobtankDrivePlugin::On_Angular_command, this);
       Velocity_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Throttle" , 1000, &bobtankDrivePlugin::On_Linear_command, this);
-
+      
       platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform" , 100);
 
-      // Listen to the update event. This event is broadcast every simulation iteration.
+      // Listen to the update event. This event is broadcast every simulation iteration. 
       this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&bobtankDrivePlugin::OnUpdate, this, _1));
 
       this->model_reconfiguration_server = new dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> (*(this->Ros_nh));
@@ -101,13 +99,11 @@ namespace gazebo
       this->Linear_Noise_dist = new std::normal_distribution<double>(0,1);
       this->Angular_Noise_dist = new std::normal_distribution<double>(0,1);
 
-      calibration_data_setup();
-      }
 
-   void calibration_data_setup()
-    {
+
       // construct the grid in each dimension.
       // note that we will pass in a sequence of iterators pointing to the beginning of each grid
+
       double Throttle_commands_array[] =  { 0.00, 0.40, 0.70, 1.00};
 
       double Sttering_commands_array[] =  {-1.00,    -0.70,    -0.04,   0.00,   0.40,   0.70,    1.00};
@@ -146,8 +142,8 @@ namespace gazebo
       // construct the interpolator. the last two arguments are pointers to the underlying data
       Linear_vel_interp  =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vell_values.data(), Linear_vell_values.data() + num_elements);
       Angular_vel_interp =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vell_values.data(), Angular_vell_values.data() + num_elements);
-      }
 
+      }
 
 
 
@@ -222,8 +218,8 @@ namespace gazebo
         if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
 
 
-//        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
-//        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
+        //std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
+        //std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
         wheel_joint->SetForce(0,effort_command);
     }
@@ -232,21 +228,19 @@ namespace gazebo
   private: void apply_efforts()
     {
 
-        //std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
+      //  std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
 
         float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel * PLAT_WIDE/2);
         float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * PLAT_WIDE/2);
 
-        //std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
+      //  std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
 
         float rigth_wheels_omega_ref = right_side_vel / (0.5 * WHEEL_DIAMETER);
         float left_wheels_omega_ref = left_side_vel / (0.5 * WHEEL_DIAMETER);
 
-        //std::cout << " rigth_wheels_omega_ref = " << rigth_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
+      //  std::cout << " rigth_wheels_omega_ref = " << rigth_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
 
-        wheel_controller(this->front_right_joint, rigth_wheels_omega_ref);
         wheel_controller(this->back_right_joint , rigth_wheels_omega_ref);
-        wheel_controller(this->front_left_joint , left_wheels_omega_ref);
         wheel_controller(this->back_left_joint  , left_wheels_omega_ref);
     }
 
@@ -255,7 +249,7 @@ namespace gazebo
     private: void On_Angular_command(const std_msgs::Float64ConstPtr &msg)
     {
       Angular_command_mutex.lock();
-          // Recieving referance steering angle
+          // Recieving referance steering angle  
           if(msg->data > 1)       { Angular_command =  1;          }
           else if(msg->data < -1) { Angular_command = -1;          }
           else                    { Angular_command = msg->data;   }
@@ -289,9 +283,6 @@ namespace gazebo
      private: physics::JointPtr steering_joint;
      private: physics::JointPtr back_left_joint;
      private: physics::JointPtr back_right_joint;
-     private: physics::JointPtr front_left_joint;
-     private: physics::JointPtr front_right_joint;
-
 
 
       // Defining private Pointer to the update event connection
@@ -310,6 +301,7 @@ namespace gazebo
 
      // Defining private Timers
      private: common::Timer command_timer;
+
 
 
      // Defining private Mutex
