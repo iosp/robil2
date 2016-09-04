@@ -191,8 +191,8 @@ namespace gazebo
         Linear_command_mutex.unlock();
         Angular_command_mutex.unlock();
 
-        printf("Linear_command = %f,  Angular_command = %f --->  Linear_vel_interp  = %f  \n", args[0], args[1],  Linear_vel_interp->interp(args.begin()) );
-        printf("Linear_command = %f,  Angular_command = %f --->  Angular_vel_interp = %f \n", args[0], args[1],  Angular_vel_interp->interp(args.begin()) );
+        //printf("Linear_command = %f,  Angular_command = %f --->  Linear_vel_interp  = %f  \n", args[0], args[1],  Linear_vel_interp->interp(args.begin()) );
+        //printf("Linear_command = %f,  Angular_command = %f --->  Angular_vel_interp = %f \n", args[0], args[1],  Angular_vel_interp->interp(args.begin()) );
 
         double Linear_nominal_vell = Linear_vel_interp->interp(args.begin());
         double Angular_nominal_vell = Angular_vel_interp->interp(args.begin());
@@ -218,9 +218,8 @@ namespace gazebo
         if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
 
 
-        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
-        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
-        //std::cout << "           Pl = " << controll_P << std::endl;
+        //std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
+        //std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
         wheel_joint->SetForce(0,effort_command);
     }
@@ -229,17 +228,17 @@ namespace gazebo
   private: void apply_efforts()
     {
 
-        std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
+      //  std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
 
         float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel * PLAT_WIDE/2);
         float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * PLAT_WIDE/2);
 
-        std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
+      //  std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
 
         float rigth_wheels_omega_ref = right_side_vel / (0.5 * WHEEL_DIAMETER);
         float left_wheels_omega_ref = left_side_vel / (0.5 * WHEEL_DIAMETER);
 
-        std::cout << " rigth_wheels_omega_ref = " << rigth_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
+      //  std::cout << " rigth_wheels_omega_ref = " << rigth_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
 
         wheel_controller(this->back_right_joint , rigth_wheels_omega_ref);
         wheel_controller(this->back_left_joint  , left_wheels_omega_ref);

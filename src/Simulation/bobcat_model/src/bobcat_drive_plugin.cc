@@ -101,11 +101,13 @@ namespace gazebo
       this->Linear_Noise_dist = new std::normal_distribution<double>(0,1);
       this->Angular_Noise_dist = new std::normal_distribution<double>(0,1);
 
+      calibration_data_setup();
+      }
 
-
+   void calibration_data_setup()
+    {
       // construct the grid in each dimension.
       // note that we will pass in a sequence of iterators pointing to the beginning of each grid
-
       double Throttle_commands_array[] =  { 0.00, 0.40, 0.70, 1.00};
 
       double Sttering_commands_array[] =  {-1.00,    -0.70,    -0.04,   0.00,   0.40,   0.70,    1.00};
@@ -144,12 +146,9 @@ namespace gazebo
       // construct the interpolator. the last two arguments are pointers to the underlying data
       Linear_vel_interp  =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vell_values.data(), Linear_vell_values.data() + num_elements);
       Angular_vel_interp =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vell_values.data(), Angular_vell_values.data() + num_elements);
-
       }
 
-
-
-   public: void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
+    public: void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
       {
           controll_P = config.Wheel_conntrol_P;
           controll_I = config.Wheel_conntrol_I;
@@ -158,9 +157,6 @@ namespace gazebo
           command_lN = config.Command_Linear_Noise;
           command_aN = config.Command_Angular_Noise;
       }
-
-
-
 
     // Called by the world update start event, This function is the event that will be called every update
     public: void OnUpdate(const common::UpdateInfo & /*_info*/)  // we are not using the pointer to the info so its commanted as an option
@@ -184,7 +180,6 @@ namespace gazebo
               platform_hb_pub_.publish(connection);
     }
 
-
     private: void update_ref_vels() // float linear_command, float angular_command)
     {
         Linear_command_mutex.lock();
@@ -193,8 +188,8 @@ namespace gazebo
         Linear_command_mutex.unlock();
         Angular_command_mutex.unlock();
 
-        printf("Linear_command = %f,  Angular_command = %f --->  Linear_vel_interp  = %f  \n", args[0], args[1],  Linear_vel_interp->interp(args.begin()) );
-        printf("Linear_command = %f,  Angular_command = %f --->  Angular_vel_interp = %f \n", args[0], args[1],  Angular_vel_interp->interp(args.begin()) );
+        //printf("Linear_command = %f,  Angular_command = %f --->  Linear_vel_interp  = %f  \n", args[0], args[1],  Linear_vel_interp->interp(args.begin()) );
+        //printf("Linear_command = %f,  Angular_command = %f --->  Angular_vel_interp = %f \n", args[0], args[1],  Angular_vel_interp->interp(args.begin()) );
 
         double Linear_nominal_vell = Linear_vel_interp->interp(args.begin());
         double Angular_nominal_vell = Angular_vel_interp->interp(args.begin());
@@ -206,10 +201,8 @@ namespace gazebo
         Angular_ref_vel =  (1 + AngularNoise) * Angular_nominal_vell;
     }
 
-
-
-   private: void wheel_controller(physics::JointPtr wheel_joint, double ref_omega)
-   {
+    private: void wheel_controller(physics::JointPtr wheel_joint, double ref_omega)
+    {
         double wheel_omega = wheel_joint->GetVelocity(0);
 
         double error = ref_omega - wheel_omega;
@@ -220,9 +213,8 @@ namespace gazebo
         if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
 
 
-        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
-        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
-        //std::cout << "           Pl = " << controll_P << std::endl;
+//        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
+//        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
         wheel_joint->SetForce(0,effort_command);
     }
@@ -231,17 +223,17 @@ namespace gazebo
   private: void apply_efforts()
     {
 
-        std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
+        //std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
 
         float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel * PLAT_WIDE/2);
         float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * PLAT_WIDE/2);
 
-        std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
+        //std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
 
         float rigth_wheels_omega_ref = right_side_vel / (0.5 * WHEEL_DIAMETER);
         float left_wheels_omega_ref = left_side_vel / (0.5 * WHEEL_DIAMETER);
 
-        std::cout << " rigth_wheels_omega_ref = " << rigth_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
+        //std::cout << " rigth_wheels_omega_ref = " << rigth_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
 
         wheel_controller(this->front_right_joint, rigth_wheels_omega_ref);
         wheel_controller(this->back_right_joint , rigth_wheels_omega_ref);
@@ -309,7 +301,6 @@ namespace gazebo
 
      // Defining private Timers
      private: common::Timer command_timer;
-
 
 
      // Defining private Mutex
