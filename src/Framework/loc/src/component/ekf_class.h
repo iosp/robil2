@@ -41,7 +41,7 @@ public:
 	/*
 	 * set the speed measurement that the GPS provides
 	 */
-	void setGPSSpeedMeasurement(robil_msgs::GpsSpeed _speed);
+    void setGPSSpeedMeasurement(sensor_msgs::NavSatFix _speed);
 	/**
 	 * Perform the kalman filter estimation process
 	 */

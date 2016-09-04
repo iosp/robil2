@@ -717,7 +717,7 @@ namespace gazebo
 
         yaw = -yaw;
         if(yaw < 0)
-          yaw+=6400;
+          yaw += (2 * M_PI);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Azimuth_PD_geographic, yaw*Rad2Mills, 0, 6399.9);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Pitch_PD_Egi, (-pitch) * Rad2Mills, -1600, 1600);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Roll_PD_Egi, roll * Rad2Mills, -1600, 1600);
