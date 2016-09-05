@@ -64,13 +64,13 @@ class PlpWaypointRosHarness(object):
         rospy.Subscriber("/PER/MiniMap", Map, self.map_updated)
         rospy.Subscriber("/PP/Path", Path, self.path_updated)
         rospy.Subscriber("/LOC/Pose", PoseWithCovarianceStamped,
-                                                    self.position_updated)
+                         self.position_updated)
         rospy.Subscriber("/OCU/SMME/NavigationTask", AssignNavTask,
-                                                    self.nav_task_assigned)
+                         self.nav_task_assigned)
         rospy.Subscriber("/OCU/SMME/MissionPlan", AssignMission,
-                                                    self.mission_assigned)
+                         self.mission_assigned)
         rospy.Subscriber("/decision_making/events", String,
-                                                    self.state_machine_change)
+                         self.state_machine_change)
 
         if self.monitor:
             rospy.loginfo("Trigger action: Monitoring")
@@ -116,9 +116,9 @@ class PlpWaypointRosHarness(object):
         comps = event_string.data.split("/")
         # Test for the triggering of a task.
         if (len(comps) == 8 and
-                comps[1] == "mission" and
-                comps[3] == "TaskActive" and
-                comps[5] == "TaskSpooling"):
+                    comps[1] == "mission" and
+                    comps[3] == "TaskActive" and
+                    comps[5] == "TaskSpooling"):
             mission_id = comps[2]
             self.activate_mission(mission_id)
 
@@ -172,7 +172,7 @@ class PlpWaypointRosHarness(object):
         """
         rospy.loginfo("Activating PLP")
         self.plp = PlpWaypoint(self.plp_constants, self.plp_params, self)
-        self.plp_params.callback=self.plp
+        self.plp_params.callback = self.plp
         self.plp.request_estimation()
 
     def reset_harness_data(self):
@@ -229,8 +229,8 @@ class PlpWaypointRosHarness(object):
     def capture_params(self):
         capture_file = open(self.capture_filename, "w")
         pickle.dump(self.plp_params, capture_file)
-
         capture_file.close()
+
         rospy.loginfo("Captured parameters at trigger time to file '%s'" % self.capture_filename)
 
 

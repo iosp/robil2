@@ -33,9 +33,25 @@ class PlpWaypointParameters(object):
 
 class PlpWaypointVariables(object):
     """Stores the variables (as defined in the PLP doc)"""
-
     def __init__(self):
-        self.distanceToWaypoint = None
-        self.mapOccupancy = None
-        self.heightVariablity = None
-        self.aerialDistanceToWaypoint = None
+        self.local_path_distance = None
+        self.map_occupancy = None
+        self.height_variability = None
+        self.aerial_distance = None
+
+
+class PlpWaypointDevNullCallback(object):
+    def plp_estimation(self, plp_achieve_result):
+        pass
+
+    def plp_terminated(self, plp_termination):
+        pass
+
+    def plp_no_preconditions(self):
+        pass
+
+    def plp_missing_data(self):
+        pass
+
+    def plp_monitor_message(self, message):
+        pass

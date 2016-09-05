@@ -1,12 +1,26 @@
+#!/usr/bin/env python
 #
 #  Scans a directory of scenarios and creates a CSV file to be used as an input for machine learning.
 #
 
+import rospy
 import os
 import sys
+import pickle
 import yaml
-from PlpWaypoint import PlpWaypoint
+
+# From Glue
+from robil_msgs.msg import Map, Path, AssignNavTask, AssignMission
+from geometry_msgs.msg import PoseWithCovarianceStamped
+
+# Because PLP messages
+from std_msgs.msg import String, Header  # TODO replace with the plp message
+from plp_waypoint.msg import PlpMessage
+
+# Imported generated classes
+from PlpWaypoint import *
 from PlpWaypointClasses import *
+
 
 ############################################
 # Constants
@@ -83,7 +97,7 @@ def parse_target(path):
     line = target_file.read().split("---")[0]  # Sometimes there's more than a single result, we load only the first.
     target_file.close()
     target = yaml.load(line)
-    return target
+    return target["data"]
 
 
 def parse_parameters_file(path):
@@ -105,21 +119,16 @@ def calculate_variables(cases):
     :return: calculated variables, ready to be written to CSV.
     """
     plp_params = PlpWaypointParameters
-    plp = PlpWaypoint(PlpWaypoint.constants_map(), plp_params, None)
+    plp = PlpWaypoint(PlpWaypoint.constants_map(), plp_params, PlpWaypointDevNullCallback())
     for case in cases:
         log_info("Parsing case %s" % case.source)
-        for param_name in case.data.keys():
-            value = case.data[param_name]
-            if isinstance(value, dict):
-                setattr(plp_params, param_name, GenericMessage(value))
-            else:
-                setattr(plp_params, param_name, value)
-
+        plp.parameters = case.data
         plp.parameters_updated()
         plp.calculate_variables()
-        case.variables = plp.variables
+        case.variables = plp.variables()
 
         case.success = 1 if is_considered_success(case) else 0
+        print(repr(case.variables))
 
     return cases
 
@@ -139,7 +148,7 @@ def is_considered_success(case):
 def print_csv(cases, out_file):
     # 1. Decide on titles
     sample_case = cases[0]
-    feature_titles = list(sample_case.variables.keys())
+    feature_titles = [e for e in dir(sample_case.variables) if not e.startswith("_")]
     feature_titles.sort()
 
     # 2. Print title line
@@ -156,7 +165,7 @@ def print_csv(cases, out_file):
     for case in cases:
         line_buffer = list()
         for ft in feature_titles:
-            line_buffer.append(case.variables[ft])
+            line_buffer.append(getattr(case.variables, ft))
         line_buffer.extend(case.target)
         line_buffer.append(case.success)
 
@@ -178,8 +187,11 @@ def log_warn(msg):
 ############################################
 # Main
 ############################################
+# NOTE If we end up running as a ROS node, use rospy.myargv(argv=sys.argv) rather than sys.argv
 if __name__ == '__main__':
-    rootDir = sys.argv[1]
+    argv = rospy.myargv(argv=sys.argv)
+    # argv = sys.argv
+    rootDir = argv[1]
     outFilePath = None
 
     log_info("Reading directory %s" % rootDir)
