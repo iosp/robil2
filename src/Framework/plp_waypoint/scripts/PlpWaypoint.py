@@ -6,6 +6,7 @@ from PlpWaypointClasses import *
 # Number of frames of variable history needed for monitoring.
 PLP_WAYPOINT_HISTORY_LENGTH = 2
 
+
 # TODO: Make sure variables are calculated at most once per parameter update.
 # TODO: Also ensure var history does not update once per variable calculation
 # TODO: Add progress measure timer to the PLP Harness.
@@ -289,3 +290,16 @@ class PlpWaypoint(object):
         return sqrt(pow(point_a.position.x - point_b.position.x, 2) +
                     pow(point_a.position.y - point_b.position.y, 2) +
                     pow(point_a.position.z - point_b.position.z, 2))
+
+    @staticmethod
+    def constants_map():
+        return {
+            "MIN_LOC_ERROR": 5,  # meters
+            "BOBCAT_SIZE": (3.5, 2, 1.7),  # LxHxW, meters
+            "MIN_BLADE_CLEARANCE": 1,  # meters
+            "FUEL_CONSUMPTION_RATE": 10000,  # m/liter
+            "BOBCAT_AVERAGE_SPEED": 20000,  # m/hour
+            "RATE_PATH_LENGTH": 0.85,  # 0..1
+            "RATE_AERIAL_DISTANCE": 0.95,  # 0..1
+            "GOAL_DISTANCE": 5  # Meters from target to be considered a success.
+        }

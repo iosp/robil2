@@ -5,7 +5,7 @@ once we get to it.
 
 
 class PlpWaypointParameters(object):
-    """ Stores the parameterd for the waypoint PLP."""
+    """ Stores the parameters for the waypoint PLP."""
 
     def __init__(self):
         self.callback = None

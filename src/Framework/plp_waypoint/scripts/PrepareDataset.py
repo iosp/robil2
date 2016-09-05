@@ -11,10 +11,11 @@ from PlpWaypointClasses import *
 ############################################
 # Constants
 ############################################
-TARGET_FILENAME = "results.txt"
+TARGET_FILENAME = "grades.txt"
+PARAMETERS_FILENAME = "capture.txt"
 TARGET_TITLES = ["minimal_distance_to_obstacle", "roll", "pitch", "distance_to_destination"]
-PARAMETERS_FILENAME = "out.txt"
-RECORD_DELIMITER = "###"
+RECORD_DELIMITER = "= "
+
 
 ############################################
 # Helper Classes
@@ -27,7 +28,23 @@ class CaseResults(object):
         self.data = data
         self.target = target
         self.source = source
-        self.variables = None # To be filled later, e.g. in calculate_variables.
+        self.variables = None  # To be filled later, e.g. in calculate_variables.
+        self.success = None  # To be filled later, e.g. in calculate_variables.
+
+
+class GenericMessage(object):
+    """
+    Used to re-create the message objects from the yaml dictionaries
+    """
+    def __init__(self, data):
+        for name, value in data.iteritems():
+            setattr(self, name, self._wrap(value))
+
+    def _wrap(self, value):
+        if isinstance(value, (tuple, list, set, frozenset)):
+            return type(value)([self._wrap(v) for v in value])
+        else:
+            return GenericMessage(value) if isinstance(value, dict) else value
 
 
 ############################################
@@ -63,9 +80,9 @@ def parse_target(path):
     :return: An array of the results.
     """
     target_file = open(path, "r")
-    line = target_file.read()
-    target = yaml.load(line)
+    line = target_file.read().split("---")[0]  # Sometimes there's more than a single result, we load only the first.
     target_file.close()
+    target = yaml.load(line)
     return target
 
 
@@ -73,32 +90,11 @@ def parse_parameters_file(path):
     """
     Parses the PLP harness' dump files into a dictionary with the parameters contained in the dump.
     :param path: A path to the dump file
-    :return: Dictionary with the topic name and the last messaege sent on the topic when the dump occurred.
+    :return: The PlpParameters object
     """
     features_file = open(path, "r")
-    lines = features_file.readlines()
-    # Stage 1: Separate to dictionary of names and yaml strings
-    initial_dict = {}
-    cur_record = None
-    cur_title = None
-    for line in lines:
-        if line.startswith(RECORD_DELIMITER):
-            if cur_record is not None:
-                initial_dict[cur_title] = "".join(cur_record)
-            cur_title = line[3:].strip()
-            cur_record = list()
-        else:
-            cur_record.append(line)
-
-    initial_dict[cur_title] = "\n".join(cur_record)
+    parameters = pickle.load(features_file)
     features_file.close()
-
-    # Stage 2: Parse the yaml strings and make an object out of it.
-    parameters = {}
-    for key in initial_dict.keys():
-        parameters[key] = yaml.load(initial_dict[key])
-
-    # Stage 3: Compute the values of the topics into features.
     return parameters
 
 
@@ -111,16 +107,36 @@ def calculate_variables(cases):
     plp_params = PlpWaypointParameters
     plp = PlpWaypoint(PlpWaypoint.constants_map(), plp_params, None)
     for case in cases:
-        # placeholder: setting PLP parameters from case.data
-        # placeholder: calling plp.calculate_variables()
-        # placeholder: vars = plp.variables
-        variables = {"idx": case.data["Object1"]["indexx"], "case": case.data["Object1"]["case"], "b": case.data["Object1"]["b"]}
-        case.variables = variables
+        log_info("Parsing case %s" % case.source)
+        for param_name in case.data.keys():
+            value = case.data[param_name]
+            if isinstance(value, dict):
+                setattr(plp_params, param_name, GenericMessage(value))
+            else:
+                setattr(plp_params, param_name, value)
+
+        plp.parameters_updated()
+        plp.calculate_variables()
+        case.variables = plp.variables
+
+        case.success = 1 if is_considered_success(case) else 0
 
     return cases
 
 
-def print_csv(cases, outFile):
+def is_considered_success(case):
+    """
+    Calculates weather a case can be considered a success.
+     This function should be re-written per PLP test.
+    :param case: The case we judge
+    :return: True iff (definitions from Daniel)
+                1. minimal distance from obstacle should be > 0.5m
+                2. distance to destination: < 5m
+    """
+    return case.target[0] > 0.5 and case.target[3] < 5
+
+
+def print_csv(cases, out_file):
     # 1. Decide on titles
     sample_case = cases[0]
     feature_titles = list(sample_case.variables.keys())
@@ -132,8 +148,9 @@ def print_csv(cases, outFile):
         title_row.append("f:" + ttl)
     for ttl in TARGET_TITLES:
         title_row.append("t:" + ttl)
-    outFile.write(", ".join(title_row))
-    outFile.write("\n")
+    title_row.append("t:success")
+    out_file.write(", ".join(title_row))
+    out_file.write("\n")
 
     # 3. Print body
     for case in cases:
@@ -141,9 +158,10 @@ def print_csv(cases, outFile):
         for ft in feature_titles:
             line_buffer.append(case.variables[ft])
         line_buffer.extend(case.target)
+        line_buffer.append(case.success)
 
-        outFile.write(", ".join(map(str, line_buffer)))
-        outFile.write("\n")
+        out_file.write(", ".join(map(str, line_buffer)))
+        out_file.write("\n")
 
 
 ############################################
@@ -169,7 +187,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         outFilePath = sys.argv[2]
         outFile = open(outFilePath, "w")
-        log_info("dataset file: %s" % outFilePath)
+        log_info("output file: %s" % outFilePath)
     else:
         outFile = sys.stdout
 

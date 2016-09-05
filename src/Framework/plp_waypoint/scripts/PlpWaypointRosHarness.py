@@ -2,6 +2,7 @@
 # always
 import rospy
 import sys
+import pickle
 
 # From Glue
 from robil_msgs.msg import Map, Path, AssignNavTask, AssignMission
@@ -28,16 +29,7 @@ class PlpWaypointRosHarness(object):
         # The constants table is defined in the PLP document
         # under "Values/Constants"
 
-        self.plp_constants = {
-            "MIN_LOC_ERROR": 5,  # meters
-            "BOBCAT_SIZE": (3.5, 2, 1.7),  # LxHxW, meters
-            "MIN_BLADE_CLEARANCE": 1,  # meters
-            "FUEL_CONSUMPTION_RATE": 10000,  # m/liter
-            "BOBCAT_AVERAGE_SPEED": 20000,  # m/hour
-            "RATE_PATH_LENGTH": 0.85,  # 0..1
-            "RATE_AERIAL_DISTANCE": 0.95,  # 0..1
-            "GOAL_DISTANCE": 5  # Meters from target to be considered a success.
-        }
+        self.plp_constants = PlpWaypoint.constants_map()
 
         self.node_setup()
 
@@ -236,24 +228,11 @@ class PlpWaypointRosHarness(object):
     # Capture parameters at trigger ############################
     def capture_params(self):
         capture_file = open(self.capture_filename, "w")
-        capture_file.write("= map =\n")
-        capture_file.write(repr(self.plp_params.map))
-        capture_file.write("\n")
-        capture_file.write("= map_error =\n")
-        capture_file.write(repr(self.plp_params.map_error))
-        capture_file.write("\n")
-        capture_file.write("= position =\n")
-        capture_file.write(repr(self.plp_params.position))
-        capture_file.write("\n")
-        capture_file.write("= position_error =\n")
-        capture_file.write(repr(self.plp_params.position_error))
-        capture_file.write("\n")
-        capture_file.write("= path =\n")
-        capture_file.write(repr(self.plp_params.path))
-        capture_file.write("\n")
+        pickle.dump(self.plp_params, capture_file)
 
         capture_file.close()
         rospy.loginfo("Captured parameters at trigger time to file '%s'" % self.capture_filename)
+
 
 if __name__ == '__main__':
     try:
