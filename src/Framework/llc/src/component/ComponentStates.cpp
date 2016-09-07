@@ -41,6 +41,8 @@ double LocVelLinearY;
 double LocVelAngularZ;
 double WpdSpeedLinear;
 double WpdSpeedAngular;
+double currentYaw;
+double currentVelocity;
 
 class Params: public CallContextParameters{
 public:
@@ -133,6 +135,8 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 	LocVelAngularZ = 0;
 	WpdSpeedLinear = 0;
 	WpdSpeedAngular = 0;
+	currentYaw = 0;
+	currentVelocity = 0;
 	for(int i = 0 ; i < 1000 ; i++)
 	  {
 	    errorLinearArray[i] = 0;
@@ -154,6 +158,17 @@ void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t
 	I_angular=config.angularVelocity_I;
 	D_angular=config.angularVelocity_D;
 }
+
+void cb_currentYaw(geometry_msgs::PoseWithCovarianceStamped msg)
+{
+  double roll, pitch, yaw = 0;
+        tf::Quaternion q(  msg.pose.pose.orientation.x ,  msg.pose.pose.orientation.y,   msg.pose.pose.orientation.z,   msg.pose.pose.orientation.w);
+          tf::Matrix3x3 rot_mat(q);
+          rot_mat.getEulerYPR(yaw,pitch,roll);
+
+          currentYaw = yaw;
+}
+
 
 double calcIntegral_linearError(double currError)
 {
@@ -204,6 +219,25 @@ void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
   LocVelLinearY = msg.twist.linear.y;
 
   LocVelAngularZ = msg.twist.angular.z;
+
+  currentVelocity = 0;
+
+  double V_normal = sqrt((LocVelLinearX * LocVelLinearX) + (LocVelLinearY * LocVelLinearY));
+  if (V_normal > 0.01)
+    {
+      double x_normal = LocVelLinearX/V_normal;
+      double y_noraml = LocVelLinearY/V_normal;
+      double theta = atan2(y_noraml, x_normal);
+
+      if(abs(theta - currentYaw) - M_PI/2 > 0.01)
+        {
+          currentVelocity = -V_normal;
+        }
+      else
+        {
+          currentVelocity = V_normal;
+        }
+    }
 }
 
 void cb_WpdSpeedLinear(geometry_msgs::TwistStamped msg)
@@ -214,8 +248,8 @@ void cb_WpdSpeedLinear(geometry_msgs::TwistStamped msg)
 
 void pubThrottkeAndSteering()
 {
-    double locVelLin = sqrt((LocVelLinearX * LocVelLinearX) + (LocVelLinearY * LocVelLinearY));
-    double linearError = WpdSpeedLinear - locVelLin;
+
+    double linearError = WpdSpeedLinear - currentVelocity;
 
     double linearEffortCMD = P_linear * linearError + I_linear* calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
 
@@ -241,6 +275,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
         Steering_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Steering", 100);
 
         ros::Subscriber locVel= n.subscribe("/LOC/Velocity" , 10, cb_LocVelpcityUpdate);
+        ros::Subscriber locPose= n.subscribe("/LOC/Pose" , 10, cb_currentYaw);
         ros::Subscriber wpdSpeed = n.subscribe("/WPD/Speed" , 10, cb_WpdSpeedLinear);
 
         ROS_INFO("LLC Ready");
