@@ -306,7 +306,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           // Reseting timer every time LLC publishes message
 
         #if (ROS_VERSION_MINIMUM(1,11,16))
-           Angular_command_timer.Reset()
+           Angular_command_timer.Reset();
         #endif
            Angular_command_timer.Start();
 
@@ -326,7 +326,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 
           // Reseting timer every time LLC publishes message
         #if (ROS_VERSION_MINIMUM(1,11,16))
-           Linear_command_timer.Reset()
+           Linear_command_timer.Reset();
         #endif
            Linear_command_timer.Start();
 
