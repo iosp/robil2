@@ -20,6 +20,7 @@
 #include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/math/gzmath.hh>
+#include <gazebo/gazebo_config.h>
 
 
 // ROS Communication
@@ -68,6 +69,7 @@ namespace gazebo
     /// \param[in] _sdf A pointer to the plugin's SDF element.
   public: void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
+      float gazebo_ver = std::stof(GAZEBO_VERSION);
 
       // Store the pointer to the model
       this->model = _model;
@@ -263,12 +265,11 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
 
-        #if(ROS_VERSION_MINIMUM(1,11,16))
+        #if( gazebo_ver >= 5 )
                 wheel_joint->SetVelocity(0,ref_omega);
         #else
                 wheel_joint->SetForce(0,effort_command);
         #endif
-
     }
 
 
@@ -303,9 +304,8 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else if(msg->data < -1) { Angular_command = -1;          }
           else                    { Angular_command = msg->data;   }
 
-          // Reseting timer every time LLC publishes message
-
-        #if (ROS_VERSION_MINIMUM(1,11,16))
+        // Reseting timer every time LLC publishes message
+        #if( gazebo_ver >= 5 )
            Angular_command_timer.Reset();
         #endif
            Angular_command_timer.Start();
@@ -324,8 +324,8 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else if(msg->data < -1) { Linear_command = -1;          }
           else                    { Linear_command = msg->data;   }
 
-          // Reseting timer every time LLC publishes message
-        #if (ROS_VERSION_MINIMUM(1,11,16))
+        // Reseting timer every time LLC publishes message
+        #if( gazebo_ver >= 5 )
            Linear_command_timer.Reset();
         #endif
            Linear_command_timer.Start();
@@ -333,6 +333,8 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
       Linear_command_mutex.unlock();
     }
 
+
+     private: float gazebo_ver;
 
      // Defining private Pointer to model
      private: physics::ModelPtr model;
