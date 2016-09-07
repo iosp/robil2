@@ -44,11 +44,6 @@
 // Maximum time delays
 #define command_MAX_DELAY 0.3
 
-// PID - Gain Values
-#define Kp 1200
-#define Klin 1
-#define Kang 1
-
 #define WHEEL_EFFORT_LIMIT 5000
 
 #define PLAT_WIDE 1.5

@@ -44,17 +44,16 @@
 // Maximum time delays
 #define command_MAX_DELAY 0.3
 
-// PID - Gain Values
-#define Kp 1200
-#define Klin 1
-#define Kang 1
-
 #define WHEEL_EFFORT_LIMIT 100000
 
-#define PLAT_WIDE 1.5
+#define WHEELS_BASE 0.95
+#define STEERING_FRICTION_COMPENSATION 2; // compensate the the daliure of reaching the angular velosity
+
 #define WHEEL_DIAMETER 0.77
 #define PI 3.14159265359
 
+#define LINEAR_COMMAND_FILTER_ARRY_SIZE 750
+#define ANGULAR_COMMAND_FILTER_ARRY_SIZE 500
 
 namespace gazebo
 {
@@ -80,7 +79,8 @@ namespace gazebo
       this->front_right_joint = this->model->GetJoint("front_right_wheel_joint");
       
       // Starting Timers
-      command_timer.Start();
+      Linear_command_timer.Start();
+      Angular_command_timer.Start();
 
       this->Ros_nh = new ros::NodeHandle("bobtankDrivePlugin_node");
 
@@ -102,27 +102,48 @@ namespace gazebo
       this->Angular_Noise_dist = new std::normal_distribution<double>(0,1);
 
       calibration_data_setup();
+
+      Linear_command_sum = 0;
+      Angular_command_sum = 0;
+      Linear_command_index = 0;
+      Angular_command_index = 0;
+      for (int i=0 ; i<LINEAR_COMMAND_FILTER_ARRY_SIZE ; i++)
+          {
+          Linear_command_array[i] = 0;
+          }
+
+      for (int i=0 ; i<ANGULAR_COMMAND_FILTER_ARRY_SIZE ; i++)
+          {
+          Angular_command_array[i] = 0;
+          }
+
       }
 
    void calibration_data_setup()
     {
       // construct the grid in each dimension.
       // note that we will pass in a sequence of iterators pointing to the beginning of each grid
-      double Throttle_commands_array[] =  { 0.00, 0.40, 0.70, 1.00};
+      double Throttle_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
 
-      double Sttering_commands_array[] =  {-1.00,    -0.70,    -0.04,   0.00,   0.40,   0.70,    1.00};
+      double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.04,     0.00,    0.40,     0.70,      1.00};
 
-                                         //r=-1.00  r=-0.70   r=-0.40  r=0.00  r=0.40   r=0.70   r=1.00
-      double Linear_vell_values_array[] = {  0.40,    0.17,     0.00,   0.00,   0.00,    0.17,    0.40,    //t=0.00
-                                             0.14,    0.16,     0.23,   0.20,   0.18,    0.16,    0.14,    //t=0.40
-                                             0.65,    0.70,     0.75,   0.80,   0.75,    0.70,    0.65,    //t=0.70
-                                             1.20,    1.30,     1.40,   1.50,   1.40,    1.30,    1.20};   //t=1.00
+                                         //r=-1.00    r=-0.70   r=-0.40   r=0.00   r=0.40     r=0.70    r=1.00
+      double Linear_vell_values_array[] = { -1.20,    -1.30,    -1.40,    -1.50,    -1.40,    -1.30,    -1.20,    //t=-1.00
+                                            -0.65,    -0.70,    -0.75,    -0.80,    -0.75,    -0.70,    -0.65,    //t=-0.70
+                                            -0.14,    -0.16,    -0.23,    -0.20,    -0.18,    -0.16,    -0.14,    //t=-0.40
+                                             0.40,     0.17,     0.00,     0.00,     0.00,     0.17,     0.40,    //t=0.00
+                                             0.14,     0.16,     0.23,     0.20,     0.18,     0.16,     0.14,    //t=0.40
+                                             0.65,     0.70,     0.75,     0.80,     0.75,     0.70,     0.65,    //t=0.70
+                                             1.20,     1.30,     1.40,     1.50,     1.40,     1.30,     1.20};   //t=1.00
 
-                                         //r=-1.00  r=-0.70   r=-0.40  r=0.00  r=0.40   r=0.70   r=1.00
-      double Angular_vell_values_array[] = { -1.22,  -0.24,     0.00,   0.00,   0.00,   0.24,     1.22,   //t=0.00
-                                             -1.32,  -0.34,    -0.10,   0.00,   0.10,   0.34,     1.32,   //t=0.40
-                                             -1.36,  -0.38,    -0.14,   0.00,   0.14,   0.38,     1.36,   //t=0.70
-                                             -1.40,  -0.42,    -0.18,   0.00,   0.18,   0.42,     1.40};  //t=1.00
+                                         //r=-1.00    r=-0.70   r=-0.40   r=0.00    r=0.40    r=0.70    r=1.00
+      double Angular_vell_values_array[] = { 1.40,     0.42,     0.18,     0.00,    -0.18,    -0.42,    -1.40,    //t=-1.00
+                                             1.36,     0.38,     0.14,     0.00,    -0.14,    -0.38,    -1.36,    //t=-0.70
+                                             1.32,     0.34,     0.10,     0.00,    -0.10,    -0.34,    -1.32,    //t=-0.40
+                                            -1.22,    -0.24,     0.00,     0.00,     0.00,     0.24,     1.22,    //t=0.00
+                                            -1.32,    -0.34,    -0.10,     0.00,     0.10,     0.34,     1.32,    //t=0.40
+                                            -1.36,    -0.38,    -0.14,     0.00,     0.14,     0.38,     1.36,    //t=0.70
+                                            -1.40,    -0.42,    -0.18,     0.00,     0.18,     0.42,     1.40};   //t=1.00
 
 
       std::vector<double> Throttle_commands(Throttle_commands_array, Throttle_commands_array+ sizeof(Throttle_commands_array)/sizeof(double));
@@ -165,10 +186,15 @@ namespace gazebo
            // std::cout << "command_timer = " << command_timer.GetElapsed().Float() << std::endl;
 
             // Applying effort to the wheels , brakes if no message income
-            if (command_timer.GetElapsed().Float()> command_MAX_DELAY)
+            if (Linear_command_timer.GetElapsed().Float()> command_MAX_DELAY)
             {
                 // Brakes
                    Linear_command = 0;
+            }
+
+            if (Angular_command_timer.GetElapsed().Float()> command_MAX_DELAY)
+            {
+                // Brakes
                    Angular_command = 0;
             }
 
@@ -179,6 +205,23 @@ namespace gazebo
               connection.data = true;
               platform_hb_pub_.publish(connection);
     }
+
+
+double command_fillter(double prev_commands_array[], int array_size, double& commmand_sum, int &command_index , double command)
+   {
+        commmand_sum -= prev_commands_array[command_index];
+        commmand_sum += command;
+
+        prev_commands_array[command_index] = command;
+
+        if( ++command_index == array_size)
+            command_index = 0;
+
+        double filtered_command = commmand_sum/array_size;
+
+        return(filtered_command);
+   }
+
 
     private: void update_ref_vels() // float linear_command, float angular_command)
     {
@@ -194,11 +237,14 @@ namespace gazebo
         double Linear_nominal_vell = Linear_vel_interp->interp(args.begin());
         double Angular_nominal_vell = Angular_vel_interp->interp(args.begin());
 
+        double Linear_vell = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index , Linear_nominal_vell);
+        double Angular_vell = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index , Angular_nominal_vell);
+
         double LinearNoise  = command_lN * (*Linear_Noise_dist)(generator);  //((std::rand() % 100)-50)/50;
         double AngularNoise = command_aN * (*Angular_Noise_dist)(generator); //((std::rand() % 100)-50)/50;
 
-        Linear_ref_vel  =  (1 + LinearNoise)  * Linear_nominal_vell;
-        Angular_ref_vel =  (1 + AngularNoise) * Angular_nominal_vell;
+        Linear_ref_vel  =  (1 + LinearNoise)  * Linear_vell;
+        Angular_ref_vel =  (1 + AngularNoise) * Angular_vell;
     }
 
     private: void wheel_controller(physics::JointPtr wheel_joint, double ref_omega)
@@ -216,7 +262,13 @@ namespace gazebo
 //        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
-        wheel_joint->SetForce(0,effort_command);
+
+        #if(ROS_VERSION_MINIMUM(1,11,16))
+                wheel_joint->SetVelocity(0,ref_omega);
+        #else
+                wheel_joint->SetForce(0,effort_command);
+        #endif
+
     }
 
 
@@ -225,8 +277,8 @@ namespace gazebo
 
         //std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
 
-        float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel * PLAT_WIDE/2);
-        float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * PLAT_WIDE/2);
+        float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel * WHEELS_BASE/2)*STEERING_FRICTION_COMPENSATION;
+        float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * WHEELS_BASE/2)*STEERING_FRICTION_COMPENSATION;
 
         //std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
 
@@ -252,7 +304,13 @@ namespace gazebo
           else                    { Angular_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
-          command_timer.Start();
+
+        #if (ROS_VERSION_MINIMUM(1,11,16))
+           Angular_command_timer.Reset()
+        #endif
+           Angular_command_timer.Start();
+
+
       Angular_command_mutex.unlock();
     }
 
@@ -267,9 +325,12 @@ namespace gazebo
           else                    { Linear_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
-          command_timer.Start();
-      Linear_command_mutex.unlock();
+        #if (ROS_VERSION_MINIMUM(1,11,16))
+           Linear_command_timer.Reset()
+        #endif
+           Linear_command_timer.Start();
 
+      Linear_command_mutex.unlock();
     }
 
 
@@ -300,7 +361,9 @@ namespace gazebo
 
 
      // Defining private Timers
-     private: common::Timer command_timer;
+     private: common::Timer Linear_command_timer;
+     private: common::Timer Angular_command_timer;
+
 
 
      // Defining private Mutex
@@ -311,6 +374,14 @@ namespace gazebo
      private: float Angular_command;
      private: double Linear_ref_vel;
      private: double Angular_ref_vel;
+
+     private: double Linear_command_array[LINEAR_COMMAND_FILTER_ARRY_SIZE];
+     private: double Angular_command_array[ANGULAR_COMMAND_FILTER_ARRY_SIZE];
+     private: double Linear_command_sum;
+     private: double Angular_command_sum;
+     private: int Linear_command_index;
+     private: int Angular_command_index;
+
 
      private: dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
      private: double controll_P, controll_I ,controll_D;		// PID constants
