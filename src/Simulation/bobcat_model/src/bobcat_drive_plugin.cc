@@ -262,7 +262,13 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 //        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
-        wheel_joint->SetForce(0,effort_command);
+
+        #if(ROS_VERSION_MINIMUM(1,11,16))
+                wheel_joint->SetVelocity(0,ref_omega);
+        #else
+                wheel_joint->SetForce(0,effort_command);
+        #endif
+
     }
 
 
@@ -298,7 +304,13 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Angular_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
-          Angular_command_timer.Start();
+
+        #if (ROS_VERSION_MINIMUM(1,11,16))
+           Angular_command_timer.Reset()
+        #endif
+           Angular_command_timer.Start();
+
+
       Angular_command_mutex.unlock();
     }
 
@@ -313,9 +325,12 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Linear_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
-          Linear_command_timer.Start();
-      Linear_command_mutex.unlock();
+        #if (ROS_VERSION_MINIMUM(1,11,16))
+           Linear_command_timer.Reset()
+        #endif
+           Linear_command_timer.Start();
 
+      Linear_command_mutex.unlock();
     }
 
 
