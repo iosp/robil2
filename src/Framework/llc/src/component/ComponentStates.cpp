@@ -278,11 +278,11 @@ void pubThrottkeAndSteering()
     double linearFactor = 1.3;
     double linearError = (linearFactor*WpdSpeedLinear) - currentVelocity;
 
-    cout << " currentVelocity = " <<  currentVelocity << endl;
+    //cout << " currentVelocity = " <<  currentVelocity << endl;
 
     double integral = calcIntegral_linearError(linearError);
     double linearEffortCMD = P_linear * linearError + I_linear* integral;//calcIntegral_linearError(linearError)+ D_linear * calcDiferencial_linearError(linearError);
-    cout << "linearError = " << linearError << endl;
+    //cout << "linearError = " << linearError << endl;
 //    cout << "integral = " << integral << endl;
 //    cout << "linearEffortCMD = " << linearEffortCMD << endl << endl;
     //linearEffortCMD /= linearNormalizer;
