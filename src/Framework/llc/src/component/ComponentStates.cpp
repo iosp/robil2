@@ -251,8 +251,8 @@ void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
       double x_normal = LocVelLinearX/V_normal;
       double y_noraml = LocVelLinearY/V_normal;
       double theta = atan2(y_noraml, x_normal);
-      cout << "theta      = " << theta << endl;
-      cout << "currentYaw = " << currentYaw << endl;
+      //cout << "theta      = " << theta << endl;
+      //cout << "currentYaw = " << currentYaw << endl;
       if(abs(theta - currentYaw) - 3.0/8.0*M_PI < 0.01)
         {
           currentVelocity = V_normal;
