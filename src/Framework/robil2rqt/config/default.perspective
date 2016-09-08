@@ -143,11 +143,11 @@
                 }, 
                 "y_limits": {
                   "type": "repr", 
-                  "repr": "[-1.4316814678125, 2.2920308113098145]"
+                  "repr": "[-2.0, 2.0]"
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[208.761, 209.761]"
+                  "repr": "[156.392, 181.392]"
                 }
               }, 
               "groups": {}
@@ -190,11 +190,11 @@
                 }, 
                 "y_limits": {
                   "type": "repr", 
-                  "repr": "[-2.06963934947061, 1.0]"
+                  "repr": "[-1.1, 1.1]"
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[207.356, 208.356]"
+                  "repr": "[72.364, 97.364]"
                 }
               }, 
               "groups": {}
@@ -237,11 +237,11 @@
                 }, 
                 "y_limits": {
                   "type": "repr", 
-                  "repr": "[-1.7404851079887953, 7.311488571910074]"
+                  "repr": "[-1.1, 1.1]"
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[206.509, 207.509]"
+                  "repr": "[71.56500000000001, 96.56500000000001]"
                 }
               }, 
               "groups": {}
@@ -284,11 +284,11 @@
                 }, 
                 "y_limits": {
                   "type": "repr", 
-                  "repr": "[0.0, 1.3233399391174316]"
+                  "repr": "[-2.0, 2.0]"
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[199.097, 200.097]"
+                  "repr": "[71.19099999999999, 96.19099999999999]"
                 }
               }, 
               "groups": {}
@@ -548,8 +548,8 @@
       "keys": {
         "geometry": {
           "type": "repr(QByteArray.hex)", 
-          "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb0001000000000037fffffff2000007890000044100000041000000180000077f00000437000000010000')", 
-          "pretty-print": "     7     A A     7   "
+          "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb00010000000007b7fffffff200000f0900000425000007c10000001800000eff00000437000000000000')", 
+          "pretty-print": "           %       7   "
         }, 
         "state": {
           "type": "repr(QByteArray.hex)", 

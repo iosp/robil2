@@ -114,9 +114,9 @@ void ComponentMain::ReadAndPub_ShiphonINS(){
 	INS_msg.angular_velocity.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_rate_Y_PD_Egi * MILS_2_RAD;
 	INS_msg.angular_velocity.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD;
 
-	float Roll = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_PD_Egi * MILS_2_RAD;
-	float Pitch = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_PD_Egi * MILS_2_RAD;
-	float Yaw = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_PD_geographic * MILS_2_RAD;
+	float Roll  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_PD_Egi * MILS_2_RAD;
+	float Pitch = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_PD_Egi * MILS_2_RAD;
+	float Yaw   = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_PD_geographic * MILS_2_RAD;
 
 	tf::Matrix3x3 obs_mat;
 	obs_mat.setEulerYPR(Yaw,Pitch,Roll);
@@ -145,21 +145,22 @@ void ComponentMain::publishINS(config::SHIFFON2ROS::pub::INS& msg) {
 
 
 void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
-	config::SHIFFON2ROS::pub::GpsSpeed GpsSpeed_msg;
 
+	config::SHIFFON2ROS::pub::GpsSpeed GpsSpeed_msg;
+/*
 	double East_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
 	double North_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
 	double Down_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
 
 	GpsSpeed_msg.speed = sqrt(East_vel*East_vel + North_vel*North_vel + Down_vel*Down_vel);
 	GpsSpeed_msg.header.stamp = ros::Time::now();
-
+*/
 	publishGpsSpeed(GpsSpeed_msg);
 
 	config::SHIFFON2ROS::pub::GPS GpsSpeedVec_msg;
-    GpsSpeedVec_msg.altitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
+	GpsSpeedVec_msg.latitude  = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
 	GpsSpeedVec_msg.longitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
-    GpsSpeedVec_msg.latitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
+	GpsSpeedVec_msg.altitude  = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
 	GpsSpeedVec_msg.header.stamp = ros::Time::now();
 	_pub_GpsSpeedVec.publish(GpsSpeedVec_msg);
 

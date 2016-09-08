@@ -20,11 +20,12 @@ using namespace decision_making;
 using namespace ros;
 
 #define DT 0.01
-#define LENGTH_OF_RECORD_IN_SECONDS 10
+#define LENGTH_OF_RECORD_IN_SECONDS 1
 #define LENGTH_OF_RECORD_IN_FRAMES (1/DT)*LENGTH_OF_RECORD_IN_SECONDS
 
 static double P_linear = 1.3 , D_linear = 0.0 , I_linear = 0.0   ; 				/* PID constants of linear x */
 static double P_angular = -1.8 , D_angular = 0.01 , I_angular = -0.1   ;		/* PID constants of angular z */
+static double linearNormalizer;
 double sum_linear;
 double sum_angular;
 ros::Publisher Throttle_rate_pub;
@@ -43,6 +44,9 @@ double WpdSpeedLinear;
 double WpdSpeedAngular;
 double currentYaw;
 double currentVelocity;
+//double DT;
+//double LENGTH_OF_RECORD_IN_SECONDS;
+//double LENGTH_OF_RECORD_IN_FRAMES;
 
 class Params: public CallContextParameters{
 public:
@@ -137,6 +141,10 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 	WpdSpeedAngular = 0;
 	currentYaw = 0;
 	currentVelocity = 0;
+	linearNormalizer = 1;
+//	DT = 0.01;
+//	LENGTH_OF_RECORD_IN_SECONDS = 5;
+//	LENGTH_OF_RECORD_IN_FRAMES = (1/DT)*LENGTH_OF_RECORD_IN_SECONDS;
 	for(int i = 0 ; i < 1000 ; i++)
 	  {
 	    errorLinearArray[i] = 0;
@@ -157,6 +165,13 @@ void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t
 	P_angular=config.angularVelocity_P;
 	I_angular=config.angularVelocity_I;
 	D_angular=config.angularVelocity_D;
+	linearNormalizer=config.linearNormalizer;
+//	if(LENGTH_OF_RECORD_IN_SECONDS != config.LENGTH_OF_RECORD)
+//	  {
+//	    LENGTH_OF_RECORD_IN_SECONDS=config.LENGTH_OF_RECORD;
+//	    LENGTH_OF_RECORD_IN_FRAMES = (1/DT)*LENGTH_OF_RECORD_IN_SECONDS;
+//	    sum_linear = 0;
+//	  }
 }
 
 void cb_currentYaw(geometry_msgs::PoseWithCovarianceStamped msg)
@@ -176,6 +191,14 @@ double calcIntegral_linearError(double currError)
   sum_linear += currError;
 
   errorLinearArray[indexOf_errorLinearArray] = currError;
+//  if(abs(currError) < 0.01)
+//    {
+//      for(int i = 0 ; i < LENGTH_OF_RECORD_IN_FRAMES ; i++)
+//        {
+//          errorLinearArray[i] = 0;
+//        }
+//        sum_linear = 0;
+//    }
 
   if(++indexOf_errorLinearArray == LENGTH_OF_RECORD_IN_FRAMES)
           indexOf_errorLinearArray = 0;
@@ -228,15 +251,18 @@ void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
       double x_normal = LocVelLinearX/V_normal;
       double y_noraml = LocVelLinearY/V_normal;
       double theta = atan2(y_noraml, x_normal);
-
-      if(abs(theta - currentYaw) - M_PI/2 > 0.01)
-        {
-          currentVelocity = -V_normal;
-        }
-      else
+      cout << "theta      = " << theta << endl;
+      cout << "currentYaw = " << currentYaw << endl;
+      if(abs(theta - currentYaw) - 3.0/8.0*M_PI < 0.01)
         {
           currentVelocity = V_normal;
         }
+      else if (abs(theta - currentYaw) - 5.0/8.0*M_PI < 0.01)
+        {
+          currentVelocity = 0;
+        }
+      else
+        currentVelocity = -V_normal;
     }
 }
 
@@ -249,17 +275,24 @@ void cb_WpdSpeedLinear(geometry_msgs::TwistStamped msg)
 void pubThrottkeAndSteering()
 {
 
-    double linearError = WpdSpeedLinear - currentVelocity;
+    double linearFactor = 1.3;
+    double linearError = (linearFactor*WpdSpeedLinear) - currentVelocity;
 
-    double linearEffortCMD = P_linear * linearError + I_linear* calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
+    cout << " currentVelocity = " <<  currentVelocity << endl;
 
+    double integral = calcIntegral_linearError(linearError);
+    double linearEffortCMD = P_linear * linearError + I_linear* integral;//calcIntegral_linearError(linearError)+ D_linear * calcDiferencial_linearError(linearError);
+    cout << "linearError = " << linearError << endl;
+//    cout << "integral = " << integral << endl;
+//    cout << "linearEffortCMD = " << linearEffortCMD << endl << endl;
+    //linearEffortCMD /= linearNormalizer;
     std_msgs::Float64 msglinearEffortCMD;
     msglinearEffortCMD.data = linearEffortCMD;
     Throttle_rate_pub.publish(msglinearEffortCMD);
 
-
-    double angularError = WpdSpeedAngular - LocVelAngularZ;
-    double angularEffortCMD = P_angular * angularError + I_angular* calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError) ;
+    double angularFactor = 2;
+    double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
+    double angularEffortCMD = P_angular * angularError + I_angular* calcIntegral_angularError(angularError);// + D_angular * calcDiferencial_angularError(angularError) ;
 
     std_msgs::Float64 msgAngularEffortCMD;
     msgAngularEffortCMD.data = angularEffortCMD;

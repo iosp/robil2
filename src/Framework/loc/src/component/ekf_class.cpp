@@ -116,7 +116,8 @@ void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
     tf::Matrix3x3 m(qut);
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
-    qut.setRPY(-roll, pitch, -yaw); yaw *= -1;
+    qut.setRPY(roll, pitch, yaw);
+    //qut.setRPY(-roll, pitch, -yaw); yaw *= -1;
 
     z.at<double>(5,0) = (measurement.linear_acceleration.x - Eacc) * cos(yaw);
     z.at<double>(6,0) = (measurement.linear_acceleration.x - Eacc) * sin(yaw);
@@ -141,7 +142,7 @@ void ekf::setGPSSpeedMeasurement(sensor_msgs::NavSatFix _speed)
 //    z.at<double>(3,0) = _speed.speed * cos(yaw);// * cos(xk.at<double>(9,0));
 //    z.at<double>(4,0) = _speed.speed * sin(yaw);// * sin(xk.at<double>(9,0));
     z.at<double>(3,0) = _speed.latitude;
-    z.at<double>(4,0) = _speed.longitude;
+    z.at<double>(4,0) = -_speed.longitude;
 }
 
 void ekf::estimator()
