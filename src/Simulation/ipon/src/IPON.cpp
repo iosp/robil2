@@ -769,8 +769,8 @@ namespace gazebo
     	IPON_MsgToSend.Validity_Word.Severe_INS_Fail_Egi= 0;
     	IPON_MsgToSend.Validity_Word.Temperature_Fail_Egi = 1;
 
-        insertBetweenRanges<double, double>(IPON_MsgToSend.Velocity_East_Egi, getLanLonAlt_Velocities().x, -128, 127);
-        insertBetweenRanges<double, double>(IPON_MsgToSend.Velocity_north_Egi, getLanLonAlt_Velocities().y, -128, 127);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Velocity_East_Egi, (-getLanLonAlt_Velocities().y), -128, 127);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Velocity_north_Egi, getLanLonAlt_Velocities().x, -128, 127);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Velocity_down_Egi, (-getLanLonAlt_Velocities().z), -128, 127);
 
     	IPON_MsgToSend.blockLength						= 60; // defiantly not used in SAHAR (value is the default by the ICD)
