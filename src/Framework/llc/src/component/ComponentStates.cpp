@@ -44,9 +44,9 @@ double WpdSpeedLinear;
 double WpdSpeedAngular;
 double currentYaw;
 double currentVelocity;
-//double DT;
-//double LENGTH_OF_RECORD_IN_SECONDS;
-//double LENGTH_OF_RECORD_IN_FRAMES;
+double wpdSpeedTimeInMiili;
+double linearFactor;
+double angularFactor;
 
 class Params: public CallContextParameters{
 public:
@@ -142,9 +142,7 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 	currentYaw = 0;
 	currentVelocity = 0;
 	linearNormalizer = 1;
-//	DT = 0.01;
-//	LENGTH_OF_RECORD_IN_SECONDS = 5;
-//	LENGTH_OF_RECORD_IN_FRAMES = (1/DT)*LENGTH_OF_RECORD_IN_SECONDS;
+	wpdSpeedTimeInMiili = 0;
 	for(int i = 0 ; i < 1000 ; i++)
 	  {
 	    errorLinearArray[i] = 0;
@@ -165,13 +163,9 @@ void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t
 	P_angular=config.angularVelocity_P;
 	I_angular=config.angularVelocity_I;
 	D_angular=config.angularVelocity_D;
-	linearNormalizer=config.linearNormalizer;
-//	if(LENGTH_OF_RECORD_IN_SECONDS != config.LENGTH_OF_RECORD)
-//	  {
-//	    LENGTH_OF_RECORD_IN_SECONDS=config.LENGTH_OF_RECORD;
-//	    LENGTH_OF_RECORD_IN_FRAMES = (1/DT)*LENGTH_OF_RECORD_IN_SECONDS;
-//	    sum_linear = 0;
-//	  }
+
+	linearFactor=config.linearFactor;
+	angularFactor=config.angularFactor;
 }
 
 void cb_currentYaw(geometry_msgs::PoseWithCovarianceStamped msg)
@@ -191,14 +185,6 @@ double calcIntegral_linearError(double currError)
   sum_linear += currError;
 
   errorLinearArray[indexOf_errorLinearArray] = currError;
-//  if(abs(currError) < 0.01)
-//    {
-//      for(int i = 0 ; i < LENGTH_OF_RECORD_IN_FRAMES ; i++)
-//        {
-//          errorLinearArray[i] = 0;
-//        }
-//        sum_linear = 0;
-//    }
 
   if(++indexOf_errorLinearArray == LENGTH_OF_RECORD_IN_FRAMES)
           indexOf_errorLinearArray = 0;
@@ -251,8 +237,6 @@ void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
       double x_normal = LocVelLinearX/V_normal;
       double y_noraml = LocVelLinearY/V_normal;
       double theta = atan2(y_noraml, x_normal);
-      //cout << "theta      = " << theta << endl;
-      //cout << "currentYaw = " << currentYaw << endl;
       if(abs(theta - currentYaw) - 3.0/8.0*M_PI < 0.01)
         {
           currentVelocity = V_normal;
@@ -266,33 +250,35 @@ void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
     }
 }
 
-void cb_WpdSpeedLinear(geometry_msgs::TwistStamped msg)
+void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
 {
+  ros::Time RosTimeNow = ros::Time::now();
+  wpdSpeedTimeInMiili = RosTimeNow.toSec()*1000 + RosTimeNow.toNSec()/1000000;
   WpdSpeedLinear = msg.twist.linear.x;
   WpdSpeedAngular = msg.twist.angular.z;
 }
 
 void pubThrottkeAndSteering()
 {
+    ros::Time RosTimeNow = ros::Time::now();
+    double RosTimeNowInMilli = RosTimeNow.toSec()*1000 + RosTimeNow.toNSec()/1000000;
 
-    double linearFactor = 1.3;
+    //if there is no WPD command as long as  500ms, give the zero command
+    if(wpdSpeedTimeInMiili + 500 - RosTimeNowInMilli <= 0)
+      {
+        WpdSpeedLinear = 0;
+        WpdSpeedAngular = 0;
+      }
+
     double linearError = (linearFactor*WpdSpeedLinear) - currentVelocity;
 
-    cout << " currentVelocity = " <<  currentVelocity << endl;
-
-    double integral = calcIntegral_linearError(linearError);
-    double linearEffortCMD = P_linear * linearError + I_linear* integral;//calcIntegral_linearError(linearError)+ D_linear * calcDiferencial_linearError(linearError);
-    cout << "linearError = " << linearError << endl;
-//    cout << "integral = " << integral << endl;
-//    cout << "linearEffortCMD = " << linearEffortCMD << endl << endl;
-    //linearEffortCMD /= linearNormalizer;
+    double linearEffortCMD = P_linear * linearError + I_linear* calcIntegral_linearError(linearError)+ D_linear * calcDiferencial_linearError(linearError);
     std_msgs::Float64 msglinearEffortCMD;
     msglinearEffortCMD.data = linearEffortCMD;
     Throttle_rate_pub.publish(msglinearEffortCMD);
 
-    double angularFactor = 2;
     double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
-    double angularEffortCMD = P_angular * angularError + I_angular* calcIntegral_angularError(angularError);// + D_angular * calcDiferencial_angularError(angularError) ;
+    double angularEffortCMD = P_angular * angularError + I_angular* calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError) ;
 
     std_msgs::Float64 msgAngularEffortCMD;
     msgAngularEffortCMD.data = angularEffortCMD;
@@ -309,7 +295,7 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
         ros::Subscriber locVel= n.subscribe("/LOC/Velocity" , 10, cb_LocVelpcityUpdate);
         ros::Subscriber locPose= n.subscribe("/LOC/Pose" , 10, cb_currentYaw);
-        ros::Subscriber wpdSpeed = n.subscribe("/WPD/Speed" , 10, cb_WpdSpeedLinear);
+        ros::Subscriber wpdSpeed = n.subscribe("/WPD/Speed" , 10, cb_WpdSpeed);
 
         ROS_INFO("LLC Ready");
 
