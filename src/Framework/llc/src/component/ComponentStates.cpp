@@ -270,9 +270,10 @@ void pubThrottkeAndSteering()
         WpdSpeedAngular = 0;
       }
 
-    double linearError = (linearFactor*WpdSpeedLinear) - currentVelocity;
 
+    double linearError = (linearFactor*WpdSpeedLinear) - currentVelocity;
     double linearEffortCMD = P_linear * linearError + I_linear* calcIntegral_linearError(linearError)+ D_linear * calcDiferencial_linearError(linearError);
+
     std_msgs::Float64 msglinearEffortCMD;
     msglinearEffortCMD.data = linearEffortCMD;
     Throttle_rate_pub.publish(msglinearEffortCMD);
