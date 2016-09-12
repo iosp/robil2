@@ -56,6 +56,8 @@
 #define LINEAR_COMMAND_FILTER_ARRY_SIZE 750
 #define ANGULAR_COMMAND_FILTER_ARRY_SIZE 500
 
+#define MY_GAZEBO_VER 2
+
 namespace gazebo
 {
   
@@ -69,7 +71,7 @@ namespace gazebo
     /// \param[in] _sdf A pointer to the plugin's SDF element.
   public: void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
-      float gazebo_ver = std::stof(GAZEBO_VERSION);
+      //float gazebo_ver = std::stof(GAZEBO_VERSION);
 
       // Store the pointer to the model
       this->model = _model;
@@ -265,7 +267,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
 
-        #if( gazebo_ver >= 5 )
+        #if( MY_GAZEBO_VER >= 5  )
                 wheel_joint->SetVelocity(0,ref_omega);
         #else
                 wheel_joint->SetForce(0,effort_command);
@@ -305,7 +307,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Angular_command = msg->data;   }
 
         // Reseting timer every time LLC publishes message
-        #if( gazebo_ver >= 5 )
+        #if( MY_GAZEBO_VER >= 5 )
            Angular_command_timer.Reset();
         #endif
            Angular_command_timer.Start();
@@ -325,7 +327,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Linear_command = msg->data;   }
 
         // Reseting timer every time LLC publishes message
-        #if( gazebo_ver >= 5 )
+	#if( MY_GAZEBO_VER >= 5 )
            Linear_command_timer.Reset();
         #endif
            Linear_command_timer.Start();

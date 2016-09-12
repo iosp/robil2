@@ -50,6 +50,8 @@
 #define WHEEL_DIAMETER 0.270
 #define PI 3.14159265359
 
+#define MY_GAZEBO_VER 2
+
 
 namespace gazebo
 {
@@ -256,7 +258,14 @@ namespace gazebo
           else                    { Angular_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
-          command_timer.Start();
+            #if (MY_GAZEBO_VER >= 5)
+            command_timer.Reset(); // for ROS Jade
+            #endif
+            command_timer.Start();
+
+
+
+
       Angular_command_mutex.unlock();
     }
 
@@ -271,7 +280,11 @@ namespace gazebo
           else                    { Linear_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
-          command_timer.Start();
+            #if (MY_GAZEBO_VER >= 5)
+            command_timer.Reset(); // for ROS Jade
+            #endif
+            command_timer.Start();
+
       Linear_command_mutex.unlock();
 
     }
