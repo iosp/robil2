@@ -22,7 +22,7 @@
 
 	
 	<include>
-	    <uri>model://ground_plane</uri>
+	    <uri>model://robil_ground_plane</uri>
 	    <name>ground_plane</name>
             <pose>0 0 0 0 0 0</pose>
         </include>
