@@ -56,7 +56,7 @@
 #define LINEAR_COMMAND_FILTER_ARRY_SIZE 750
 #define ANGULAR_COMMAND_FILTER_ARRY_SIZE 500
 
-#define MY_GAZEBO_VER 2
+//#define MY_GAZEBO_VER 5
 
 namespace gazebo
 {
@@ -71,8 +71,11 @@ namespace gazebo
     /// \param[in] _sdf A pointer to the plugin's SDF element.
   public: void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
+      //std::cout << "GAZEBO_VERSION = [" << GAZEBO_VERSION << "]"<<std::endl; 
       //float gazebo_ver = std::stof(GAZEBO_VERSION);
-
+      //std::cout << "GAZEBO_MAJOR_VERSION = [" << GAZEBO_MAJOR_VERSION  << "]"<<std::endl; 
+      //if (GAZEBO_MAJOR_VERSION > 2.0) std::cout << "GADOL"<<std::endl; 
+      //else std::cout << "NOT GADOL"<<std::endl; 
       // Store the pointer to the model
       this->model = _model;
 
@@ -267,11 +270,11 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
 
-        #if( MY_GAZEBO_VER >= 5  )
+#if GAZEBO_MAJOR_VERSION >= 5  
                 wheel_joint->SetVelocity(0,ref_omega);
-        #else
+#else
                 wheel_joint->SetForce(0,effort_command);
-        #endif
+#endif        
     }
 
 
@@ -307,9 +310,9 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Angular_command = msg->data;   }
 
         // Reseting timer every time LLC publishes message
-        #if( MY_GAZEBO_VER >= 5 )
+#if GAZEBO_MAJOR_VERSION >= 5 
            Angular_command_timer.Reset();
-        #endif
+#endif
            Angular_command_timer.Start();
 
 
@@ -327,9 +330,9 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Linear_command = msg->data;   }
 
         // Reseting timer every time LLC publishes message
-	#if( MY_GAZEBO_VER >= 5 )
+#if GAZEBO_MAJOR_VERSION >= 5
            Linear_command_timer.Reset();
-        #endif
+#endif
            Linear_command_timer.Start();
 
       Linear_command_mutex.unlock();
