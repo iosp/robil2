@@ -15,15 +15,15 @@
 	</velocity_decay>
 	<self_collide>1</self_collide>
 	<inertial>
-	    <pose>-0.873221 -0.0104657 0.683626 0 -0 0</pose>
-	    <mass>2000</mass>
+	    <pose>-1.00 0.00 0.20 0 -0 0</pose>
+	    <mass>2500</mass>
 	    <inertia>
-		<ixx>818.884</ixx>
-		<ixy>0</ixy>
-		<ixz>0</ixz>
-		<iyy>1232.58</iyy>
-		<iyz>0</iyz>
-		<izz>1232.58</izz>
+		<ixx>800.00</ixx>
+		<ixy>0.00</ixy>
+		<ixz>0.00</ixz>
+		<iyy>1200.00</iyy>
+		<iyz>0.00</iyz>
+		<izz>1000.00</izz>
 	    </inertia>
 	</inertial>
 	<collision name='body_collision'>
