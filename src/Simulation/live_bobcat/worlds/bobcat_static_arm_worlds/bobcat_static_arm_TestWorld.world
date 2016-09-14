@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <world name="default">
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <scene>
+            <sky>
+                <time>10</time>
+                <clouds>
+                    <speed>5</speed>
+                    <direction>1.14</direction>
+                    <humidity>0.3</humidity>
+                </clouds>
+            </sky>
+        </scene>
+        <gui>
+            <camera name="camera_pose">
+                <pose>80 -60 60 0 0.5 2</pose>
+            </camera>
+        </gui>
+        <include>
+            <uri>model://nisuy100x100x2</uri>
+        </include>
+        <include>
+            <uri>model://bobcat_static_arm</uri>
+            <pose>60 15 1.37059 0 0 1.5</pose>
+            <name>Sahar</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>78.8378 6.04798 0.91643 -0.0492568 0.0526497 -3.03002</pose>
+            <scale>1 1 1</scale>
+            <name>object0</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>66.6508 27.1684 0.764139 0.00777842 -0.0314583 -1.90192</pose>
+            <scale>1 1 1</scale>
+            <name>obstacle_on_path0</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>73.6311 39.5797 0.827858 0.00712465 -0.059394 -0.947047</pose>
+            <scale>1 1 1</scale>
+            <name>obstacle_on_path1</name>
+        </include>
+        <include>
+            <uri>model://barrel1</uri>
+            <pose>87.3877 53.9991 0.832183 -0.00134605 -0.0650813 1.98241</pose>
+            <scale>1 1 1</scale>
+            <name>obstacle_on_path2</name>
+        </include>
+
+    </world>
+</sdf>

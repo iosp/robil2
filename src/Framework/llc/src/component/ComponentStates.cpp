@@ -20,11 +20,11 @@ using namespace decision_making;
 using namespace ros;
 
 #define DT 0.01
-#define LENGTH_OF_RECORD_IN_SECONDS 1
+#define LENGTH_OF_RECORD_IN_SECONDS 3
 #define LENGTH_OF_RECORD_IN_FRAMES (1/DT)*LENGTH_OF_RECORD_IN_SECONDS
 
-static double P_linear, I_linear, D_linear; 	 /* PID constants of linear x */
-static double P_angular, I_angular, D_angular;		/* PID constants of angular z */
+static double P_linear, D_linear, I_linear; 				/* PID constants of linear x */
+static double P_angular, D_angular, I_angular;		/* PID constants of angular z */
 static double linearNormalizer;
 double sum_linear;
 double sum_angular;
@@ -200,8 +200,6 @@ double calcDiferencial_linearError(double currError)
   return result;
 }
 
-
-
 double calcIntegral_angularError(double currError)
 {
   sum_angular -= errorAngularArray[indexOf_errorAngularArray];
@@ -250,9 +248,6 @@ void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
       else
         currentVelocity = -V_normal;
     }
-
-  cout << " LocVelpcityUpdate_RosTimeNow = " << ros::Time::now() << endl;
-
 }
 
 void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
@@ -261,9 +256,6 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   wpdSpeedTimeInMiili = RosTimeNow.toSec()*1000 + RosTimeNow.toNSec()/1000000;
   WpdSpeedLinear = msg.twist.linear.x;
   WpdSpeedAngular = msg.twist.angular.z;
-
-  cout << " cb_WpdSpeed_RosTimeNow = " << RosTimeNow << endl;
-
 }
 
 void pubThrottleAndSteering()
@@ -272,25 +264,15 @@ void pubThrottleAndSteering()
     double RosTimeNowInMilli = RosTimeNow.toSec()*1000 + RosTimeNow.toNSec()/1000000;
 
     //if there is no WPD command as long as  500ms, give the zero command
-    if(wpdSpeedTimeInMiili + 1000 - RosTimeNowInMilli <= 0)
+    if(wpdSpeedTimeInMiili + 500 - RosTimeNowInMilli <= 0)
       {
         WpdSpeedLinear = 0;
         WpdSpeedAngular = 0;
-        cout << "WPD = 0;" << endl;
       }
 
 
     double linearError = (linearFactor*WpdSpeedLinear) - currentVelocity;
-    double errorIntegral = calcIntegral_linearError(linearError);
-    double errorDiffreccial = calcDiferencial_linearError(linearError);
-    //double linearEffortCMD = P_linear * linearError + I_linear* calcIntegral_linearError(linearError)+ D_linear * calcDiferencial_linearError(linearError);
-
-    double linearEffortCMD = P_linear * linearError + I_linear* errorIntegral + D_linear * errorDiffreccial;
-
-
-  //  if (linearEffortCMD < 0){
-
-        cout << "ros::Time::now() = " << ros::Time::now()  << " linearFactor = " << linearFactor << " WpdSpeedLinear = " << WpdSpeedLinear << "   currentVelocity = " << currentVelocity   << "      linearEffortCMD = " << linearEffortCMD << "  linearError = " << linearError << "  errorIntegral = " << errorIntegral << "   errorDiffreccial = " << errorDiffreccial << endl;  //  }
+    double linearEffortCMD = P_linear * linearError + I_linear* calcIntegral_linearError(linearError)+ D_linear * calcDiferencial_linearError(linearError);
 
     std_msgs::Float64 msglinearEffortCMD;
     msglinearEffortCMD.data = linearEffortCMD;
