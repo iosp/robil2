@@ -7,4 +7,4 @@ Starting tag: https://github.com/iosp/robil2/releases/tag/Wheels_Stable_Model:
 roslaunch live_bobcat bobcat_static_arm_TestWorld4.launch 
 roslaunch live_bobcat bobcat_static_arm_empty_world.launch
 roslaunch live_bobcat bobcat_static_arm_stair_world.launch
-- The launch files with the name bobtank are not working
+- This version supports migration to Gazebo 5 and ROS Jade: see http://www.robil.org/trac_robil/wiki/MovingToJade
