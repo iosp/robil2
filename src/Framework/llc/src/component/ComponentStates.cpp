@@ -277,11 +277,11 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   sumOfWpdSpeedAngular -= wpdCmdAngularArray[indexOf_wpdCmdAngularArray];
   sumOfWpdSpeedAngular += msg.twist.angular.z;
 
-  wpdCmdLinearArray[indexOf_wpdCmdLinearArray++] = msg.twist.linear.x;
-  wpdCmdAngularArray[indexOf_wpdCmdAngularArray++] = msg.twist.angular.z;
-  if(indexOf_wpdCmdLinearArray >= SIZE_OF_WPD_INTEGRAL)
+  wpdCmdLinearArray[indexOf_wpdCmdLinearArray] = msg.twist.linear.x;
+  wpdCmdAngularArray[indexOf_wpdCmdAngularArray] = msg.twist.angular.z;
+  if(++indexOf_wpdCmdLinearArray >= SIZE_OF_WPD_INTEGRAL)
     indexOf_wpdCmdLinearArray = 0;
-  if(indexOf_wpdCmdAngularArray >= SIZE_OF_WPD_INTEGRAL)
+  if(++indexOf_wpdCmdAngularArray >= SIZE_OF_WPD_INTEGRAL)
     indexOf_wpdCmdAngularArray = 0;
 
   WpdSpeedLinear = sumOfWpdSpeedLinear/SIZE_OF_WPD_INTEGRAL;
@@ -299,7 +299,6 @@ void pubThrottleAndSteering()
         WpdSpeedAngular = 0;
       }
 
-
     double linearError = (linearFactor*WpdSpeedLinear) - currentVelocity;
     double linearEffortCMD = P_linear * linearError + I_linear* calcIntegral_linearError(linearError)+ D_linear * calcDiferencial_linearError(linearError);
 
@@ -308,8 +307,10 @@ void pubThrottleAndSteering()
     Throttle_rate_pub.publish(msglinearEffortCMD);
 
     double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
-    double angularEffortCMD = P_angular * angularError + I_angular* calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError) ;
+    double angularEffortCMD = P_angular * angularError + I_angular* calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
 
+    if(linearEffortCMD < 0)
+      angularEffortCMD = -angularEffortCMD;
     std_msgs::Float64 msgAngularEffortCMD;
     msgAngularEffortCMD.data = angularEffortCMD;
     Steering_rate_pub.publish(msgAngularEffortCMD);
