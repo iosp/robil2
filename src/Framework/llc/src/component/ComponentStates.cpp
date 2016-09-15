@@ -22,7 +22,7 @@ using namespace ros;
 #define DT 0.01
 #define LENGTH_OF_RECORD_IN_SECONDS 3
 #define LENGTH_OF_RECORD_IN_FRAMES (1/DT)*LENGTH_OF_RECORD_IN_SECONDS
-
+#define SIZE_OF_WPD_INTEGRAL 3
 static double P_linear, D_linear, I_linear; 				/* PID constants of linear x */
 static double P_angular, D_angular, I_angular;		/* PID constants of angular z */
 static double linearNormalizer;
@@ -35,16 +35,22 @@ double errorAngularArray[1000];
 int indexOf_errorAngularArray;
 double errorLinearArray[1000];
 int indexOf_errorLinearArray;
+double wpdCmdLinearArray[SIZE_OF_WPD_INTEGRAL];
+int indexOf_wpdCmdLinearArray;
+double wpdCmdAngularArray[SIZE_OF_WPD_INTEGRAL];
+int indexOf_wpdCmdAngularArray;
 double lastLinearError;
 double lastAngularError;
 double LocVelLinearX;
 double LocVelLinearY;
 double LocVelAngularZ;
+double sumOfWpdSpeedLinear;
+double sumOfWpdSpeedAngular;
 double WpdSpeedLinear;
 double WpdSpeedAngular;
 double currentYaw;
 double currentVelocity;
-double wpdSpeedTimeInMiili;
+double wpdSpeedTimeInMilli;
 double linearFactor;
 double angularFactor;
 
@@ -139,14 +145,26 @@ TaskResult state_INIT(string id, const CallContext& context, EventQueue& events)
 	LocVelAngularZ = 0;
 	WpdSpeedLinear = 0;
 	WpdSpeedAngular = 0;
+	indexOf_errorAngularArray = 0;
+	indexOf_errorLinearArray = 0;
+	indexOf_wpdCmdAngularArray = 0;
+	indexOf_wpdCmdLinearArray = 0;
+	sumOfWpdSpeedLinear = 0;
+	sumOfWpdSpeedAngular = 0;
 	currentYaw = 0;
 	currentVelocity = 0;
 	linearNormalizer = 1;
-	wpdSpeedTimeInMiili = 0;
+	wpdSpeedTimeInMilli = 0;
+
 	for(int i = 0 ; i < 1000 ; i++)
 	  {
 	    errorLinearArray[i] = 0;
 	    errorAngularArray[i] = 0;
+	  }
+	for(int i = 0 ; i < SIZE_OF_WPD_INTEGRAL ; i++)
+	  {
+	    wpdCmdLinearArray[i] = 0;
+	    wpdCmdAngularArray[i] = 0;
 	  }
 	Event e("EndOfInit");
 	events.raiseEvent(e);
@@ -252,19 +270,30 @@ void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
 
 void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
 {
-  ros::Time RosTimeNow = ros::Time::now();
-  wpdSpeedTimeInMiili = RosTimeNow.toSec()*1000 + RosTimeNow.toNSec()/1000000;
-  WpdSpeedLinear = msg.twist.linear.x;
-  WpdSpeedAngular = msg.twist.angular.z;
+  wpdSpeedTimeInMilli = ros::Time::now().toSec()*1000; // toSec() return seconds.milliSecconds
+
+  sumOfWpdSpeedLinear -= wpdCmdLinearArray[indexOf_wpdCmdLinearArray];
+  sumOfWpdSpeedLinear += msg.twist.linear.x;
+  sumOfWpdSpeedAngular -= wpdCmdAngularArray[indexOf_wpdCmdAngularArray];
+  sumOfWpdSpeedAngular += msg.twist.angular.z;
+
+  wpdCmdLinearArray[indexOf_wpdCmdLinearArray++] = msg.twist.linear.x;
+  wpdCmdAngularArray[indexOf_wpdCmdAngularArray++] = msg.twist.angular.z;
+  if(indexOf_wpdCmdLinearArray >= SIZE_OF_WPD_INTEGRAL)
+    indexOf_wpdCmdLinearArray = 0;
+  if(indexOf_wpdCmdAngularArray >= SIZE_OF_WPD_INTEGRAL)
+    indexOf_wpdCmdAngularArray = 0;
+
+  WpdSpeedLinear = sumOfWpdSpeedLinear/SIZE_OF_WPD_INTEGRAL;
+  WpdSpeedAngular = sumOfWpdSpeedAngular/SIZE_OF_WPD_INTEGRAL;
 }
 
 void pubThrottleAndSteering()
 {
-    ros::Time RosTimeNow = ros::Time::now();
-    double RosTimeNowInMilli = RosTimeNow.toSec()*1000 + RosTimeNow.toNSec()/1000000;
+    double RosTimeNowInMilli = ros::Time::now().toSec()*1000;  // toSec() return seconds.milliSecconds
 
     //if there is no WPD command as long as  500ms, give the zero command
-    if(wpdSpeedTimeInMiili + 500 - RosTimeNowInMilli <= 0)
+    if(wpdSpeedTimeInMilli + 500 - RosTimeNowInMilli <= 0)
       {
         WpdSpeedLinear = 0;
         WpdSpeedAngular = 0;
