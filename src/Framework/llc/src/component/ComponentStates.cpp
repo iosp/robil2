@@ -204,7 +204,7 @@ double calcIntegral_linearError(double currError)
 
   errorLinearArray[indexOf_errorLinearArray] = currError;
 
-  if(++indexOf_errorLinearArray == LENGTH_OF_RECORD_IN_FRAMES)
+  if(++indexOf_errorLinearArray >= LENGTH_OF_RECORD_IN_FRAMES)
           indexOf_errorLinearArray = 0;
 
   return sum_linear*DT;
@@ -226,7 +226,7 @@ double calcIntegral_angularError(double currError)
   errorAngularArray[indexOf_errorAngularArray] = currError;
   indexOf_errorAngularArray++;
 
-  if(indexOf_errorAngularArray == LENGTH_OF_RECORD_IN_FRAMES)
+  if(indexOf_errorAngularArray >= LENGTH_OF_RECORD_IN_FRAMES)
           indexOf_errorAngularArray = 0;
 
   return sum_angular*DT;
@@ -314,7 +314,6 @@ void pubThrottleAndSteering()
     std_msgs::Float64 msgAngularEffortCMD;
     msgAngularEffortCMD.data = angularEffortCMD;
     Steering_rate_pub.publish(msgAngularEffortCMD);
-
 }
 
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
