@@ -134,7 +134,7 @@
 	    </material>
 	</visual>
 	
-	<collision name='body_collision_top_installation_link'>
+	<collision name='body_collision_top_installation'>
 	    <pose>-0.29575 0.03227 1.85972 1.5708 -6.10623e-16 1.5708</pose>
 	    <geometry>
 		<mesh>
@@ -154,7 +154,7 @@
 		</friction>
 	    </surface>
 	</collision>
-	<visual name='body_visual_top_installation_link'>
+	<visual name='body_visual_top_installation'>
 	    <pose>-0.29575 0.03227 1.85972 1.5708 -6.10623e-16 1.5708</pose>
 	    <geometry>
 	      <mesh>
