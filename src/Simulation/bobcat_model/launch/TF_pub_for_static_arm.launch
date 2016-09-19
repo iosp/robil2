@@ -2,6 +2,9 @@
 
 <launch>
 
+  <node name="world_to_body_TF_pub" pkg="bobcat_model" type="world_to_body_TF_pub.py" respawn="true" output="screen"/>
+  
+  
   <param name="robot_description" command="cat $(find bobcat_model)/urdf_models/bobcat_urdf_for_static_arm.URDF" />
   
   <!-- convert joint states to TF transforms for rviz, etc   -->
