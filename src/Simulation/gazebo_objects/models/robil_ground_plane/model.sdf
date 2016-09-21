@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.5">
+<sdf version="1.4">
   <model name="robil_ground_plane">
     <static>true</static>
     <link name="link">
@@ -7,7 +7,7 @@
         <geometry>
           <plane>
             <normal>0 0 1</normal>
-            <size>100 100</size>
+            <size>500 500</size>
           </plane>
         </geometry>
         <surface>
@@ -24,7 +24,7 @@
         <geometry>
           <plane>
             <normal>0 0 1</normal>
-            <size>100 100</size>
+            <size>500 500</size>
           </plane>
         </geometry>
         <material>
