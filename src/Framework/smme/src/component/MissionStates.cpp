@@ -1,149 +1,156 @@
 #include <iostream>
 #include <ros/ros.h>
-#include <decision_making/SynchCout.h>
-#include <decision_making/BT.h>
-#include <decision_making/FSM.h>
-#include <decision_making/ROSTask.h>
-#include <decision_making/DecisionMaking.h>
+//#include <decision_making/SynchCout.h>
+//#include <decision_making/BT.h>
+//#include <decision_making/FSM.h>
+//#include <decision_making/ROSTask.h>
+//#include <decision_making/DecisionMaking.h>
 using namespace std;
-using namespace decision_making;
+//using namespace decision_making;
 #include "ComponentStates.h"
 #include "MissionManager.h"
 
-class MissionParams: public CallContextParameters{
-public:
-	ComponentMain* comp;
-	string mission_id;
-	MissionParams():comp(0), mission_id(""){struct MissionParametersConstructorEmpty{}; throw MissionParametersConstructorEmpty();}
-	MissionParams(ComponentMain* comp, string mission_id)
-		:comp(comp), mission_id(mission_id)
-	{
-
-	}
-	std::string str()const{return "";}
-};
+//class MissionParams: public CallContextParameters{
+//public:
+//	ComponentMain* comp;
+//	string mission_id;
+//	MissionParams():comp(0), mission_id(""){struct MissionParametersConstructorEmpty{}; throw MissionParametersConstructorEmpty();}
+//	MissionParams(ComponentMain* comp, string mission_id)
+//		:comp(comp), mission_id(mission_id)
+//	{
+//
+//	}
+//	std::string str()const{return "";}
+//};
 
 #define MID_PREF(X) string("/mission/")+X
+#define DELETE(X) if(X){delete X; X=NULL;}
+#define EVENT(X) \
+		cognitao::bus::Event( \
+				cognitao::bus::Event::name_t(X), \
+				cognitao::bus::Event::channel_t(""), \
+				cognitao::bus::Event::context_t(context))
+#define RAISE(X) processor_ptr->bus_events << EVENT(X)
 #define MISSION_ID MID_PREF(FSM_CONTEXT.parameters<MissionParams>().mission_id)
 
-FSM(MissionActive)
-{
-	FSM_STATES
-	{
-		MissionSpooling,
-		MissionPaused,
-		MissionAborted,
-		MissionFinished,
-	}
-	FSM_START(MissionSpooling);
-	FSM_BGN
-	{
-		FSM_STATE(MissionSpooling)
-		{
-			FSM_RAISE(MISSION_ID+"/StartTask")
-			FSM_RAISE(MISSION_ID+"/ResumeTask")
-			FSM_CALL_TASK(MissionSpooling)
-			FSM_TRANSITIONS
-			{
-				FSM_ON_EVENT(MISSION_ID+"/CompleteMission", FSM_NEXT(MissionFinished));
-				FSM_ON_EVENT(MISSION_ID+"/AbortMission", FSM_NEXT(MissionAborted));
-				FSM_ON_EVENT(MISSION_ID+"/PauseMission", FSM_NEXT(MissionPaused));
-			}
-		}
-		FSM_STATE(MissionPaused)
-		{
-			//FSM_RAISE(MISSION_ID+"/PauseTask")
-			FSM_RAISE(MISSION_ID+"/StopTask")
-			FSM_CALL_TASK(MissionPaused)
-			FSM_TRANSITIONS
-			{
-				FSM_ON_EVENT(MISSION_ID+"/CompleteMission", FSM_NEXT(MissionFinished));
-				FSM_ON_EVENT(MISSION_ID+"/AbortMission", FSM_NEXT(MissionAborted));
-				FSM_ON_EVENT(MISSION_ID+"/ResumeMission", FSM_NEXT(MissionSpooling));
-			}
-		}
-		FSM_STATE(MissionAborted)
-		{
-			FSM_RAISE(MISSION_ID+"/StopTask")
-			FSM_CALL_TASK(MissionAborted)
-			FSM_TRANSITIONS
-			{
-				FSM_ON_EVENT(MISSION_ID+"/StartMission", FSM_NEXT(MissionSpooling));
-			}
-		}
-		FSM_STATE(MissionFinished)
-		{
-			FSM_RAISE(MISSION_ID+"/StopTask")
-			FSM_CALL_TASK(MissionFinished)
-			FSM_TRANSITIONS
-			{
-				FSM_ON_EVENT(MISSION_ID+"/StartMission", FSM_NEXT(MissionSpooling));
-			}
-		}
-	}
-	FSM_END
-}
+//FSM(MissionActive)
+//{
+//	FSM_STATES
+//	{
+//		MissionSpooling,
+//		MissionPaused,
+//		MissionAborted,
+//		MissionFinished,
+//	}
+//	FSM_START(MissionSpooling);
+//	FSM_BGN
+//	{
+//		FSM_STATE(MissionSpooling)
+//		{
+//			FSM_RAISE(MISSION_ID+"/StartTask")
+//			FSM_RAISE(MISSION_ID+"/ResumeTask")
+//			FSM_CALL_TASK(MissionSpooling)
+//			FSM_TRANSITIONS
+//			{
+//				FSM_ON_EVENT(MISSION_ID+"/CompleteMission", FSM_NEXT(MissionFinished));
+//				FSM_ON_EVENT(MISSION_ID+"/AbortMission", FSM_NEXT(MissionAborted));
+//				FSM_ON_EVENT(MISSION_ID+"/PauseMission", FSM_NEXT(MissionPaused));
+//			}
+//		}
+//		FSM_STATE(MissionPaused)
+//		{
+//			//FSM_RAISE(MISSION_ID+"/PauseTask")
+//			FSM_RAISE(MISSION_ID+"/StopTask")
+//			FSM_CALL_TASK(MissionPaused)
+//			FSM_TRANSITIONS
+//			{
+//				FSM_ON_EVENT(MISSION_ID+"/CompleteMission", FSM_NEXT(MissionFinished));
+//				FSM_ON_EVENT(MISSION_ID+"/AbortMission", FSM_NEXT(MissionAborted));
+//				FSM_ON_EVENT(MISSION_ID+"/ResumeMission", FSM_NEXT(MissionSpooling));
+//			}
+//		}
+//		FSM_STATE(MissionAborted)
+//		{
+//			FSM_RAISE(MISSION_ID+"/StopTask")
+//			FSM_CALL_TASK(MissionAborted)
+//			FSM_TRANSITIONS
+//			{
+//				FSM_ON_EVENT(MISSION_ID+"/StartMission", FSM_NEXT(MissionSpooling));
+//			}
+//		}
+//		FSM_STATE(MissionFinished)
+//		{
+//			FSM_RAISE(MISSION_ID+"/StopTask")
+//			FSM_CALL_TASK(MissionFinished)
+//			FSM_TRANSITIONS
+//			{
+//				FSM_ON_EVENT(MISSION_ID+"/StartMission", FSM_NEXT(MissionSpooling));
+//			}
+//		}
+//	}
+//	FSM_END
+//}
+//
+//FSM(Mission)
+//{
+//	FSM_STATES
+//	{
+//		MissionUnloaded,
+//		MissionPending,
+//		MissionActive
+//	}
+//	FSM_START(MissionPending);
+//	call_ctx.pop();
+//	FSM_BGN
+//	{
+//		FSM_STATE(MissionUnloaded)
+//		{
+//			FSM_RAISE(MISSION_ID+"/StopTask");
+//			FSM_CALL_TASK(MissionUnloaded)
+//			FSM_TRANSITIONS
+//			{
+//				FSM_ON_EVENT("MissionUnloaded/Stopped", FSM_STOP("Stopped",TaskResult::SUCCESS()));
+//			}
+//		}
+//		FSM_STATE(MissionPending)
+//		{
+//			FSM_CALL_TASK(MissionPending)
+//			FSM_TRANSITIONS
+//			{
+//				//NOTE: It's not clear for transition from MissionPending to NoMissionLoaded
+//				FSM_ON_EVENT(MISSION_ID+"/DeleteMission", FSM_NEXT(MissionUnloaded));
+//				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
+//
+//				FSM_ON_EVENT(MISSION_ID+"/StartMission", FSM_NEXT(MissionActive));
+//			}
+//		}
+//		FSM_STATE(MissionActive)
+//		{
+//			FSM_CALL_FSM(MissionActive)
+//			FSM_TRANSITIONS
+//			{
+//				//NOTE: It's not clear for transition from MissionActive to NoMissionLoaded
+//				FSM_ON_EVENT(MISSION_ID+"/DeleteMission", FSM_NEXT(MissionUnloaded));
+//				FSM_ON_EVENT(MISSION_ID+"/Standby", FSM_NEXT(MissionUnloaded));
+//				FSM_ON_EVENT(MISSION_ID+"/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
+//			}
+//		}
+//
+//	}
+//	FSM_END
+//}
 
-FSM(Mission)
-{
-	FSM_STATES
-	{
-		MissionUnloaded,
-		MissionPending,
-		MissionActive
-	}
-	FSM_START(MissionPending);
-	call_ctx.pop();
-	FSM_BGN
-	{
-		FSM_STATE(MissionUnloaded)
-		{
-			FSM_RAISE(MISSION_ID+"/StopTask");
-			FSM_CALL_TASK(MissionUnloaded)
-			FSM_TRANSITIONS
-			{
-				FSM_ON_EVENT("MissionUnloaded/Stopped", FSM_STOP("Stopped",TaskResult::SUCCESS()));
-			}
-		}
-		FSM_STATE(MissionPending)
-		{
-			FSM_CALL_TASK(MissionPending)
-			FSM_TRANSITIONS
-			{
-				//NOTE: It's not clear for transition from MissionPending to NoMissionLoaded
-				FSM_ON_EVENT(MISSION_ID+"/DeleteMission", FSM_NEXT(MissionUnloaded));
-				FSM_ON_EVENT("/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
+//#define PARAMS \
+//		std::string mid = context.parameters<MissionParams>().mission_id;\
+//		ComponentMain* comp = context.parameters<MissionParams>().comp;
 
-				FSM_ON_EVENT(MISSION_ID+"/StartMission", FSM_NEXT(MissionActive));
-			}
-		}
-		FSM_STATE(MissionActive)
-		{
-			FSM_CALL_FSM(MissionActive)
-			FSM_TRANSITIONS
-			{
-				//NOTE: It's not clear for transition from MissionActive to NoMissionLoaded
-				FSM_ON_EVENT(MISSION_ID+"/DeleteMission", FSM_NEXT(MissionUnloaded));
-				FSM_ON_EVENT(MISSION_ID+"/Standby", FSM_NEXT(MissionUnloaded));
-				FSM_ON_EVENT(MISSION_ID+"/ClearMissionBuffer", FSM_NEXT(MissionUnloaded));
-			}
-		}
 
-	}
-	FSM_END
-}
-
-#define PARAMS \
-		std::string mid = context.parameters<MissionParams>().mission_id;\
-		ComponentMain* comp = context.parameters<MissionParams>().comp;
-#define MM comp->mission_manager()
-
-bool extend_events_names(Event& e, std::string mid_pref, EventQueue& events){
+bool extend_events_names(cognitao::bus::Event& e, std::string mid_pref, cognitao::bus::EventQueue* events){
 #		define EXTEND(NAME) \
-		if(e == Event(NAME)){\
+		if(e == cognitao::bus::Event(NAME)){\
 			std::string ex=mid_pref+NAME;\
 			ROS_INFO("Extend event: "NAME" to %s",ex.c_str());\
-			events.raiseEvent(Event(mid_pref+NAME));\
+			events->rise(cognitao::bus::Event(mid_pref+NAME));\
 			return true;\
 		}
 		//----------- TASK GLOBAL EVENT -------------
@@ -161,71 +168,202 @@ bool extend_events_names(Event& e, std::string mid_pref, EventQueue& events){
 #		undef EXTEND
 }
 
-TaskResult state_MissionUnloaded(string id, const CallContext& context, EventQueue& events){
-	PARAMS
-	MM->remove(mid);
-	events.raiseEvent(Event("Stopped",context));
-	return TaskResult::SUCCESS();
-}
-TaskResult state_MissionPending(string id, const CallContext& context, EventQueue& events){
-	PARAMS
-	MissionManager::MissionID cmid = MM->get_current_mission().mid;
-	MM->change_mission(mid);
-	MM->mission_state("pending");
-	MM->change_mission(cmid);
-	return TaskResult::SUCCESS();
-}
+class AsyncMission {
+protected:
+	ComponentMain * comp_ptr;
+	boost::thread run_thread;
+	Processor * processor_ptr;
+	std::string context;
 
-TaskResult state_MissionSpooling(string id, const CallContext& context, EventQueue& events){
-	PARAMS
-	MM->change_mission(mid);
-	MM->mission_state("spooling");
-	while(events.isTerminated()==false and ros::ok()){
-		Event e = events.waitEvent();
-		extend_events_names(e, MID_PREF(mid), events);
-		if(e == Event(MID_PREF(mid)+"/CompleteTask") or e == Event(MID_PREF(mid)+"/StopTask")){
-			std::string ex = MID_PREF(mid)+"/CompleteTask";
-			ROS_INFO("Event %s detected. got next or complete mission", ex.c_str());
-			if( MM->next_task() ){
-				this_thread::sleep(milliseconds(100));
-				events.raiseEvent(MID_PREF(mid)+"/StartTask");
-			}else{
-				events.raiseEvent(MID_PREF(mid)+"/CompleteMission");
+public:
+
+#define MID std::string mid = MM->get_current_mission().mid;	// TODO: check this
+#define MM comp_ptr->mission_manager()
+
+	AsyncMission(ComponentMain* comp, Processor * processor,
+			std::string current_context) : comp_ptr(comp),processor_ptr(processor),context(context) {
+		run_thread = boost::thread(boost::bind(&AsyncMission::run, this));
+	}
+
+	virtual void run() = 0;
+
+	void pause(int millisecs) {
+		int msI = (millisecs / 100), msR = (millisecs % 100);
+		for (int si = 0; si < msI and not comp_ptr->events()->is_closed(); si++)
+			boost::this_thread::sleep(boost::posix_time::millisec(100));
+		if (msR > 0 and not comp_ptr->events()->is_closed())
+			boost::this_thread::sleep(boost::posix_time::millisec(msR));
+	}
+
+	void onPending() {
+		MID
+		MissionManager::MissionID cmid = MM->get_current_mission().mid;
+		MM->change_mission(mid);
+		MM->mission_state("pending");
+		MM->change_mission(cmid);
+	}
+
+	void onUnloaded() {
+		MID
+		MM->remove(mid);
+
+		RAISE(MID_PREF(mid) + "/Stopped");
+	}
+
+	virtual ~AsyncMission() {
+		run_thread.interrupt();
+		run_thread.join();
+		comp_ptr = NULL;
+		processor_ptr = NULL;
+	}
+};
+
+class AsyncMissionSpooling : public AsyncMission {
+public:
+	AsyncMissionSpooling(ComponentMain* comp, Processor * processor,
+			std::string current_context) : AsyncMission(comp,processor,current_context) {
+		run_thread = boost::thread(boost::bind(&AsyncMissionSpooling::run, this));
+	}
+
+	void run() {
+		MID
+
+		RAISE(MID_PREF(mid) + "/StartTask");
+		RAISE(MID_PREF(mid) + "/ResumeTask");
+
+		MM->change_mission(mid);
+		MM->mission_state("spooling");
+		while(comp_ptr->events()->is_closed()==false and ros::ok()){
+			cognitao::bus::Event e = comp_ptr->events()->waitEvent();
+			extend_events_names(e, MID_PREF(mid), comp_ptr->events());
+			if(e == cognitao::bus::Event(MID_PREF(mid)+"/CompleteTask") or e == cognitao::bus::Event(MID_PREF(mid)+"/StopTask")){
+				std::string ex = MID_PREF(mid)+"/CompleteTask";
+				ROS_INFO("Event %s detected. got next or complete mission", ex.c_str());
+				if(MM->next_task()){
+					this_thread::sleep(milliseconds(100));
+					RAISE(MID_PREF(mid) + "/StartTask");
+				}else{
+					RAISE(MID_PREF(mid) + "/CompleteMission");
+				}
 			}
 		}
 	}
-	return TaskResult::SUCCESS();
-}
-TaskResult state_MissionPaused(string id, const CallContext& context, EventQueue& events){
-	PARAMS
-	MM->mission_state("paused");
-	while(events.isTerminated()==false and ros::ok()){
-		Event e = events.waitEvent();
-		//extend_events_names(e, MID_PREF(mid), events);
+};
+
+class AsyncMissionPaused : public AsyncMission {
+public:
+	AsyncMissionPaused(ComponentMain* comp, Processor * processor,
+			std::string current_context) : AsyncMission(comp,processor,current_context) {
+		run_thread = boost::thread(boost::bind(&AsyncMissionPaused::run, this));
 	}
-	return TaskResult::SUCCESS();
-}
-TaskResult state_MissionAborted(string id, const CallContext& context, EventQueue& events){
-	PARAMS
-	MM->mission_state("aborted");
-	return TaskResult::SUCCESS();
-}
-TaskResult state_MissionFinished(string id, const CallContext& context, EventQueue& events){
-	PARAMS
-	MM->mission_state("finished");
-	return TaskResult::SUCCESS();
-}
 
+	void run() {
+		MID
+		RAISE(MID_PREF(mid) + "/StopTask");
 
+		MM->mission_state("paused");
+		while(comp_ptr->events()->is_closed()==false and ros::ok()){
+			cognitao::bus::Event e = comp_ptr->events()->waitEvent();
+			//extend_events_names(e, MID_PREF(mid), comp_ptr->events());
+		}
+	}
+};
 
-void initMissionTasks(){
-	LocalTasks::registration("MissionUnloaded",state_MissionUnloaded);
-	LocalTasks::registration("MissionPending",state_MissionPending);
-	LocalTasks::registration("MissionSpooling",state_MissionSpooling);
-	LocalTasks::registration("MissionPaused",state_MissionPaused);
-	LocalTasks::registration("MissionAborted",state_MissionAborted);
-	LocalTasks::registration("MissionFinished",state_MissionFinished);
-}
+class AsyncMissionAborted : public AsyncMission {
+public:
+	AsyncMissionAborted(ComponentMain* comp, Processor * processor,
+			std::string current_context) : AsyncMission(comp,processor,current_context) {
+		run_thread = boost::thread(boost::bind(&AsyncMissionAborted::run, this));
+	}
+
+	void run() {
+		MID
+		RAISE(MID_PREF(mid) + "/StopTask");
+
+		MM->mission_state("aborted");
+	}
+};
+
+class AsyncMissionFinished : public AsyncMission {
+public:
+	AsyncMissionFinished(ComponentMain* comp, Processor * processor,
+			std::string current_context) : AsyncMission(comp,processor,current_context) {
+		run_thread = boost::thread(boost::bind(&AsyncMissionFinished::run, this));
+	}
+
+	void run() {
+		MID
+		RAISE(MID_PREF(mid) + "/StopTask");
+
+		MM->mission_state("finished");
+	}
+};
+
+//TaskResult state_MissionUnloaded(string id, const CallContext& context, EventQueue& events){
+//	PARAMS
+//	MM->remove(mid);
+//	events.raiseEvent(Event("Stopped",context));
+//	return TaskResult::SUCCESS();
+//}
+//TaskResult state_MissionPending(string id, const CallContext& context, EventQueue& events){
+//	PARAMS
+//	MissionManager::MissionID cmid = MM->get_current_mission().mid;
+//	MM->change_mission(mid);
+//	MM->mission_state("pending");
+//	MM->change_mission(cmid);
+//	return TaskResult::SUCCESS();
+//}
+//
+//TaskResult state_MissionSpooling(string id, const CallContext& context, EventQueue& events){
+//	PARAMS
+//	MM->change_mission(mid);
+//	MM->mission_state("spooling");
+//	while(events.isTerminated()==false and ros::ok()){
+//		Event e = events.waitEvent();
+//		extend_events_names(e, MID_PREF(mid), events);
+//		if(e == Event(MID_PREF(mid)+"/CompleteTask") or e == Event(MID_PREF(mid)+"/StopTask")){
+//			std::string ex = MID_PREF(mid)+"/CompleteTask";
+//			ROS_INFO("Event %s detected. got next or complete mission", ex.c_str());
+//			if( MM->next_task() ){
+//				this_thread::sleep(milliseconds(100));
+//				events.raiseEvent(MID_PREF(mid)+"/StartTask");
+//			}else{
+//				events.raiseEvent(MID_PREF(mid)+"/CompleteMission");
+//			}
+//		}
+//	}
+//	return TaskResult::SUCCESS();
+//}
+//TaskResult state_MissionPaused(string id, const CallContext& context, EventQueue& events){
+//	PARAMS
+//	MM->mission_state("paused");
+//	while(events.isTerminated()==false and ros::ok()){
+//		Event e = events.waitEvent();
+//		//extend_events_names(e, MID_PREF(mid), events);
+//	}
+//	return TaskResult::SUCCESS();
+//}
+//TaskResult state_MissionAborted(string id, const CallContext& context, EventQueue& events){
+//	PARAMS
+//	MM->mission_state("aborted");
+//	return TaskResult::SUCCESS();
+//}
+//TaskResult state_MissionFinished(string id, const CallContext& context, EventQueue& events){
+//	PARAMS
+//	MM->mission_state("finished");
+//	return TaskResult::SUCCESS();
+//}
+//
+//
+//
+//void initMissionTasks(){
+//	LocalTasks::registration("MissionUnloaded",state_MissionUnloaded);
+//	LocalTasks::registration("MissionPending",state_MissionPending);
+//	LocalTasks::registration("MissionSpooling",state_MissionSpooling);
+//	LocalTasks::registration("MissionPaused",state_MissionPaused);
+//	LocalTasks::registration("MissionAborted",state_MissionAborted);
+//	LocalTasks::registration("MissionFinished",state_MissionFinished);
+//}
 
 MissionMachine::MissionMachine(ComponentMain* comp,std::string mid)
 :
@@ -236,22 +374,134 @@ MissionMachine::MissionMachine(ComponentMain* comp,std::string mid)
 	manager->start_mission(mid);
 }
 
+AsyncMission* mission_ptr;
+
+void process_mission(cognitao::machine::Machine & machine,
+		Processor & processor, ComponentMain& component) {
+	while (processor.empty() == false) {
+		cognitao::machine::Event e_poped = processor.pop();
+		cout << "       PROCESS: " << e_poped.str() << endl;
+		;
+		cognitao::machine::Events p_events;
+		machine = machine->process(e_poped, p_events);
+		processor.insert(p_events);
+
+		static const cognitao::machine::Event event_about_entry_to_state(
+				"task_report?enter");
+		if (event_about_entry_to_state.matches(e_poped)) {
+			size_t context_size = e_poped.context().size();
+			string current_event_context = e_poped.context().str();
+			if (context_size > 1) {
+				std::string current_task = e_poped.context()[context_size - 2];
+				ROS_WARN_STREAM(" Current mission: " << current_task);
+				ROS_INFO_STREAM(
+						" Current event context: " << current_event_context);
+				if (current_task == "unloaded")
+					mission_ptr->onUnloaded();
+				if (current_task == "pending")
+					mission_ptr->onPending();
+				DELETE(mission_ptr);
+				if (current_task == "spooling")
+					mission_ptr = new AsyncMissionSpooling(&component, &processor,
+							current_event_context);
+				if (current_task == "paused")
+					mission_ptr = new AsyncMissionPaused(&component, &processor,
+							current_event_context);
+				if (current_task == "aborted")
+					mission_ptr = new AsyncMissionAborted(&component, &processor,
+							current_event_context);
+				if (current_task == "finished")
+					mission_ptr = new AsyncMissionFinished(&component, &processor,
+							current_event_context);
+			}
+		}
+	}
+}
 
 void MissionMachine::startMission(ComponentMain* component, std::string mission_id){
 
-	RosEventQueue events;
-	events_ptr = &events;
-	CallContext context;
-	context.push("mission");
-	context.push(mission_id);
-	context.createParameters(new MissionParams(component, mission_id));
+	ros::NodeHandle node;
+	cognitao::bus::RosEventQueue events(node, NULL, 1000,
+			"/robil/event_bus/events");
 
-	ROS_INFO_STREAM("Starting smme (Mission:"<<mission_id<<")...");
-	FsmMission(&context, &events);
-	ROS_INFO_STREAM("Stop smme (Mission:"<<mission_id<<")");
+	component->set_events(&events);
+
+	std::stringstream mission_description_stream;
+	mission_description_stream << "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+			<< endl << "<tao>" << endl << "	<machines>" << endl
+			<< "		<machine file=\"${rospack:smme}/src/xml/smme_mission.xml\" MID=\"" << mission_id << "\" />"
+			<< endl << "		<root>mission</root>" << endl << "	</machines>" << endl
+			<< "</tao>" << endl;
+
+	cognitao::machine::Context context("smme"); // TODO do  need some context?
+	cognitao::io::parser::xml::XMLParser parser;
+	cognitao::io::parser::MachinesCollection machines;
+	try {
+		machines = parser.parse(mission_description_stream, context.str());
+	} catch (const cognitao::io::parser::ParsingError& error) {
+		std::cerr << "ParsingError:" << endl << error.message << endl;
+		return;
+	}
+
+	cognitao::io::compiler::Compiler compiler;
+	Processor processor(events);
+	compiler.add_builder(
+			cognitao::io::compiler::MachineBuilder::Ptr(
+					new cognitao::io::compiler::fsm::FsmBuilder(processor)));
+	compiler.add_builder(
+			cognitao::io::compiler::MachineBuilder::Ptr(
+					new cognitao::io::compiler::ftt::FttBuilder(processor)));
+
+	cognitao::io::compiler::CompilationObjectsCollector collector;
+	cognitao::io::compiler::CompiledMachine ready_machine;
+	try {
+		ready_machine = compiler.compile(machines, collector);
+	} catch (const cognitao::io::compiler::CompilerError& error) {
+		std::cerr << "CompilerError:" << endl << error.message << endl;
+		return;
+	}
+
+	cout << endl << endl;
+	cognitao::machine::Events p_events;
+	cognitao::machine::Machine current_machine =
+			ready_machine->machine->start_instance(context, p_events);
+	processor.insert(p_events);
+	process_mission(current_machine, processor, *component);
+
+	time_duration max_wait_duration(0, 0, 5, 0);
+	bool is_timeout = false;
+	cognitao::bus::Event event;
+	while (events.wait_and_pop_timed(event, max_wait_duration, is_timeout)
+			or ros::ok()) {
+		if (is_timeout) {
+//			cout << "event bus timeout" << endl;
+			continue;
+		}
+		cout << "GET: " << event << endl;
+//		if (event.context().str().find(context.str()) != 0) {
+//			cout << "\033[1;31m SKIP event from other node \033[0m\n";
+//			continue;
+//		}
+		processor.send_no_pub(event);
+		process_mission(current_machine, processor, *component);
+	}
+
+	return;
+
+//	RosEventQueue events;
+//	events_ptr = &events;
+//	CallContext context;
+//	context.push("mission");
+//	context.push(mission_id);
+//	context.createParameters(new MissionParams(component, mission_id));
+//
+//	ROS_INFO_STREAM("Starting smme (Mission:"<<mission_id<<")...");
+//	FsmMission(&context, &events);
+//	ROS_INFO_STREAM("Stop smme (Mission:"<<mission_id<<")");
 }
+
 void MissionMachine::stop(){
 	task.stop();
-	static_cast<RosEventQueue*>(events_ptr)->close();
+	static_cast<cognitao::bus::RosEventQueue*>(events_ptr)->close();
 	thread.join_all();
 }

@@ -19,6 +19,7 @@
 	<build_depend>nav_msgs</build_depend>
 	<build_depend>tf</build_depend>
 	<build_depend>cognitao_event_bus_converter</build_depend>
+	<build_depend>cognitao_v2</build_depend>
 	<run_depend>cognitao_io</run_depend>
 	<run_depend>cognitao</run_depend>
 	<run_depend>events_bus</run_depend>
@@ -26,6 +27,7 @@
 	<run_depend>nav_msgs</run_depend>
 	<run_depend>tf</run_depend>
 	<run_depend>cognitao_event_bus_converter</run_depend>
+	<run_depend>cognitao_v2</run_depend>
 	<!-- for tf -->
 	<build_depend>tf_geometry</build_depend>
 	<run_depend>tf_geometry</run_depend>

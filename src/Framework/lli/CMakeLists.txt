@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
     cognitao
     events_bus
     cognitao_event_bus_converter
+    cognitao_v2
     
 )
 find_package(Boost REQUIRED COMPONENTS system)
@@ -22,6 +23,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
+  ${cognitao_v2_INCLUDE_DIRS}
 )
 ## Declare a cpp library
 add_library(lli_rosComm
@@ -34,14 +36,13 @@ add_library(LLICtrl
 add_library(lli_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
-  src/cognitao_v2/cognitao_v2.cpp
  ## src/component/lliCtrlManager.cpp
 )
 
 add_executable(lli_node src/main.cpp)
-target_link_libraries(lli_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(lli_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(lli_node lli_compMain lli_rosComm LLICtrl ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(lli_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
+target_link_libraries(lli_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
+target_link_libraries(lli_node lli_compMain lli_rosComm LLICtrl ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2
 )
 
 

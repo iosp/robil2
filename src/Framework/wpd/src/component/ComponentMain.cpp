@@ -85,5 +85,8 @@ void ComponentMain::rise_taskPaused() {
 	_events->rise(cognitao::bus::Event("/TaskIsPaused"));
 }
 bool ComponentMain::isClosed() {
-	return _events->is_closed();
+//	ROS_INFO_STREAM("events = " << _events);
+//	if(_events != NULL)
+		return _events->is_closed();
+//	return false;
 }

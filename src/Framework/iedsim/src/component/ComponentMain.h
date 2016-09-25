@@ -11,7 +11,7 @@
 #include <ParameterTypes.h>
 #include <tf/tf.h>
 #include "IEDSimLogic.h"
-#include "../cognitao_v2/cognitao_v2.h"
+#include <cognitao_v2/cognitao_v2.h>
 class RosComm;
 class ComponentMain {
 	RosComm* _roscomm;

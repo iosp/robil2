@@ -19,6 +19,12 @@ using namespace std;
 #include "WsmTask.h"
 
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define EVENT(X) \
+		cognitao::bus::Event( \
+				cognitao::bus::Event::name_t(X), \
+				cognitao::bus::Event::channel_t(""), \
+				cognitao::bus::Event::context_t(context))
+#define RAISE(X) processor_ptr->bus_events << EVENT(X)
 
 ComponentMain *Global_comp;
 
@@ -357,11 +363,7 @@ public:
 //		ROS_INFO("Initial ground offset is: %g", comp_ptr->z_offset);
 		comp_ptr->z_offset = 0;
 
-		cognitao::bus::Event ev_bus_event(
-				cognitao::bus::Event::name_t("/wsm/SensorConnected"),
-				cognitao::bus::Event::channel_t(""),
-				cognitao::bus::Event::context_t(context));
-		processor_ptr->bus_events << ev_bus_event;
+		RAISE("/wsm/SensorConnected");
 	}
 	~TaskInit() {
 	}
@@ -395,11 +397,7 @@ public:
 			}
 
 			if (comp_ptr->cur_mission->Get_status() == "complete") {
-				cognitao::bus::Event ev_bus_event(
-						cognitao::bus::Event::name_t("/CompleteTask"),
-						cognitao::bus::Event::channel_t(""),
-						cognitao::bus::Event::context_t(context));
-				processor_ptr->bus_events << ev_bus_event;
+				RAISE("/CompleteTask");
 				ROS_INFO("Mission complete");
 				DELETE(comp_ptr->cur_mission);
 			}
@@ -427,11 +425,7 @@ public:
 			pause(1000);
 		}
 
-		cognitao::bus::Event ev_bus_event(
-				cognitao::bus::Event::name_t("/wsm/Resume"),
-				cognitao::bus::Event::channel_t(""),
-				cognitao::bus::Event::context_t(context));
-		processor_ptr->bus_events << ev_bus_event;
+		RAISE("/wsm/Resume");
 	}
 	~TaskStandby() {
 	}
@@ -488,6 +482,8 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 	cognitao::bus::RosEventQueue events(node, NULL, 1000,
 			"/robil/event_bus/events");
 
+	component.set_events(&events);
+
 	std::stringstream mission_description_stream;
 	mission_description_stream << "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 			<< endl << "<tao>" << endl << "	<machines>" << endl
@@ -497,10 +493,10 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 
 	cognitao::machine::Context context("wsm"); // TODO do we need some context?
 	cognitao::io::parser::xml::XMLParser parser;
-	cognitao::io::parser::MachinesCollection machines;
+	cognitao::io::parser::core::MachinesCollection machines;
 	try {
 		machines = parser.parse(mission_description_stream, context.str());
-	} catch (const cognitao::io::parser::ParsingError& error) {
+	} catch (const cognitao::io::parser::core::ParsingError& error) {
 		std::cerr << "ParsingError:" << endl << error.message << endl;
 		return;
 	}
@@ -530,7 +526,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 	processor.insert(p_events);
 	process_machine(current_machine, processor, component);
 
-	time_duration max_wait_duration(0, 0, 5, 0);
+	boost::posix_time::time_duration max_wait_duration(0, 0, 5, 0);
 	bool is_timeout = false;
 	cognitao::bus::Event event;
 	while (events.wait_and_pop_timed(event, max_wait_duration, is_timeout)

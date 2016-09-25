@@ -6,8 +6,8 @@
  */
 
 #include "AblManager.h"
-#include <decision_making/EventSystem.h>
-using namespace decision_making;
+//#include <decision_making/EventSystem.h>
+//using namespace decision_making;
 
 AblManager::AblManager(ComponentMain* comp)
 :
@@ -67,11 +67,11 @@ bool AblManager::on_event(std::string event_name){
 	if(is_trigger(event_name)) return on_trigger(event_name);
 	return on_compliment(event_name);
 }
-void AblManager::listen(decision_making::EventQueue* events){
-	while(ros::ok() and events->isTerminated()==false){
-		Event event = events->waitEvent();
-		if(not event) continue;
-		std::string event_name = event.name();
+void AblManager::listen(cognitao::bus::EventQueue* events){
+	while(ros::ok() and events->is_closed()==false){
+		cognitao::bus::Event event = events->waitEvent();
+		if(event == cognitao::bus::Event()) continue;
+		std::string event_name = event.name().text;
 		if(is_abl_event(event_name))
 			on_event(event_name);
 	}
@@ -134,7 +134,7 @@ static const string POLICY_MEDIUM=std::string("2");
 static const string POLICY_TELEOPERATION=std::string("3");
 
 void AblManager::on_activation(const Activated& act){
-	decision_making::EventQueue* events = this->component->events();
+	cognitao::bus::EventQueue* events = this->component->events();
 	if(!events) return;
 	switch_str(act.trigger.name){
 		case_str( "CommFail" ){
@@ -142,12 +142,12 @@ void AblManager::on_activation(const Activated& act){
 				case_str(POLICY_AUTONOMY){
 				}
 				case_str(POLICY_MEDIUM){
-					events->raiseEvent("/pauseMission");
+					events->rise(cognitao::bus::Event("/pauseMission"));
 				}
 				case_str(POLICY_TELEOPERATION){
-					events->raiseEvent("/goBack");
+					events->rise(cognitao::bus::Event("/goBack"));
 
-					events->raiseEvent("/pp/Resume");
+					events->rise(cognitao::bus::Event("/pp/Resume"));
 					boost::this_thread::sleep(boost::posix_time::milliseconds(500));
 					path_recorder.publish_plan();
 					path_recorder.stop_record();
@@ -249,7 +249,7 @@ void AblManager::on_activation(const Activated& act){
 	}
 }
 void AblManager::on_deactivation(const Activated& act){
-	decision_making::EventQueue* events = this->component->events();
+	cognitao::bus::EventQueue* events = this->component->events();
 	switch_str(act.trigger.name){
 		case_str( "CommFail" ){
 			switch_str(act.policy){
@@ -257,11 +257,11 @@ void AblManager::on_deactivation(const Activated& act){
 
 				}
 				case_str(POLICY_MEDIUM){
-						events->raiseEvent("/resumeMission");
+						events->rise(cognitao::bus::Event("/resumeMission"));
 				}
 				case_str(POLICY_TELEOPERATION){
 
-					events->raiseEvent("/pp/Standby");
+					events->rise(cognitao::bus::Event("/pp/Standby"));
 					path_recorder.clean_path();
 					path_recorder.start_record();
 				}

@@ -10,7 +10,7 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
-#include "../cognitao_v2/cognitao_v2.h"
+#include <cognitao_v2/cognitao_v2.h>
 
 
 class WsmTask;
@@ -53,6 +53,7 @@ public:
 	void rise_taskStarted();
 	void rise_taskPaused();
 	bool isClosed();
+	cognitao::bus::RosEventQueue* events(){return _events;}
 };
 
 #endif /* COMPONENTMAIN_H_ */

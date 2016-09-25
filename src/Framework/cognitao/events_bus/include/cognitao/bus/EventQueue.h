@@ -79,6 +79,7 @@ public:
 	bool _pop(Event& e);
 	bool pop(Event& e);
 	void clear();
+	Event waitEvent();
 	bool wait_and_pop(Event& e);
 	bool wait_and_pop_timed(Event& e, const time_duration& duration, bool& is_timeout);
 	bool wait_for(Event& e);

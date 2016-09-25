@@ -6,6 +6,12 @@
 #include "ComponentStates.h"
 
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define EVENT(X) \
+		cognitao::bus::Event( \
+				cognitao::bus::Event::name_t(X), \
+				cognitao::bus::Event::channel_t(""), \
+				cognitao::bus::Event::context_t(context))
+#define RAISE(X) processor_ptr->bus_events << EVENT(X)
 
 // OLD B
 //			#include <decision_making/BT.h>
@@ -16,6 +22,7 @@
 // OLD E
 
 using namespace std;
+
 // OLD B
 //using namespace decision_making;
 
@@ -76,11 +83,7 @@ public:
 		pause(1000);
 		ROS_INFO("PP at Init");
 
-		cognitao::bus::Event ev_bus_event(
-				cognitao::bus::Event::name_t("/pp/EndOfInit"),
-				cognitao::bus::Event::channel_t(""),
-				cognitao::bus::Event::context_t(context));
-		processor_ptr->bus_events << ev_bus_event;
+		RAISE("/pp/EndOfInit");
 	}
 
 	~TaskInit() {
@@ -306,10 +309,10 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 
 	cognitao::machine::Context context("path_planer"); // TODO do  need some context?
 	cognitao::io::parser::xml::XMLParser parser;
-	cognitao::io::parser::MachinesCollection machines;
+	cognitao::io::parser::core::MachinesCollection machines;
 	try {
 		machines = parser.parse(mission_description_stream, context.str());
-	} catch (const cognitao::io::parser::ParsingError& error) {
+	} catch (const cognitao::io::parser::core::ParsingError& error) {
 		std::cerr << "ParsingError:" << endl << error.message << endl;
 		return;
 	}
@@ -339,7 +342,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 	processor.insert(p_events);
 	process_machine(current_machine, processor, component);
 
-	time_duration max_wait_duration(0, 0, 5, 0);
+	boost::posix_time::time_duration max_wait_duration(0, 0, 5, 0);
 	bool is_timeout = false;
 	cognitao::bus::Event event;
 	while (events.wait_and_pop_timed(event, max_wait_duration, is_timeout)

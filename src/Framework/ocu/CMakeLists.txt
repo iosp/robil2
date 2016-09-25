@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
     cognitao
     events_bus
     cognitao_event_bus_converter
+    cognitao_v2
 )
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
@@ -25,6 +26,7 @@ include_directories(
   ${cognitao_io_INCLUDE_DIRS}
   ${cognitao_INCLUDE_DIRS}
   ${events_bus_INCLUDE_DIRS}
+  ${cognitao_v2_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
@@ -34,12 +36,11 @@ add_library(ocu_rosComm
 add_library(ocu_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
-  src/cognitao_v2/cognitao_v2.cpp
 )
 add_executable(ocu_node src/main.cpp)
-target_link_libraries(ocu_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(ocu_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(ocu_node ocu_compMain ocu_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(ocu_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
+target_link_libraries(ocu_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
+target_link_libraries(ocu_node ocu_compMain ocu_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2
 )
 
 install(PROGRAMS

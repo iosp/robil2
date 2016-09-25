@@ -7,6 +7,12 @@
 #include "TwistRetranslator.h"
 
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define EVENT(X) \
+		cognitao::bus::Event( \
+				cognitao::bus::Event::name_t(X), \
+				cognitao::bus::Event::channel_t(""), \
+				cognitao::bus::Event::context_t(context))
+#define RAISE(X) processor_ptr->bus_events << EVENT(X)
 
 // don't need: too OLD
 //#include <decision_making/BT.h>
@@ -26,27 +32,44 @@ using namespace std;
 //	std::string str()const{return "";}
 //};
 
+ComponentMain * global_comp;
+
 class AsyncTask {
 protected:
 	boost::thread run_thread;
 	ComponentMain* comp_ptr;
 	Processor* processor_ptr;
 	std::string context;
+//	bool is_alive;
+//	boost::mutex m;
 public:
 	AsyncTask(ComponentMain* comp, Processor * processor,
 			std::string current_context) :
 			comp_ptr(comp), processor_ptr(processor), context(current_context) {
+//		is_alive=true;
 		run_thread = boost::thread(boost::bind(&AsyncTask::run, this));
 	}
 
 	virtual void run()=0;
 
 	void pause(int millisec) {
-		int msI = (millisec / 100), msR = (millisec % 100);
-		for (int si = 0; si < msI and not comp_ptr->isClosed(); si++)
-			boost::this_thread::sleep(boost::posix_time::millisec(100));
-		if (msR > 0 and not comp_ptr->isClosed())
-			boost::this_thread::sleep(boost::posix_time::millisec(msR));
+//		try {
+			int msI = (millisec / 100), msR = (millisec % 100);
+			for (int si = 0; si < msI and not global_comp->isClosed(); si++){
+//				boost::mutex::scoped_lock l(m);
+				boost::this_thread::sleep(boost::posix_time::millisec(100));
+//				if(boost::this_thread::interruption_requested()) return false;
+//				ROS_INFO("loop");
+			}
+			if (msR > 0 and not global_comp->isClosed())
+				boost::this_thread::sleep(boost::posix_time::millisec(msR));
+//		}
+
+//		catch (boost::thread_interrupted & ref) {
+//			return false;
+//		}
+
+//		return true;
 	}
 
 	void offTask() {
@@ -60,8 +83,13 @@ public:
 	}
 
 	virtual ~AsyncTask() {
-		run_thread.interrupt();
+		{
+//			boost::mutex::scoped_lock l(m);
+//			is_alive=false;
+			run_thread.interrupt();
+		}
 		run_thread.join();
+//		ROS_INFO("joined");
 		comp_ptr = NULL;
 		processor_ptr = NULL;
 	}
@@ -83,11 +111,7 @@ public:
 //		pause(10000);
 		ROS_INFO("WPD at Init");
 
-		cognitao::bus::Event ev_bus_event(
-				cognitao::bus::Event::name_t("/wpd/EndOfInit"),
-				cognitao::bus::Event::channel_t(""),
-				cognitao::bus::Event::context_t(context));
-		processor_ptr->bus_events << ev_bus_event;
+		RAISE("/wpd/EndOfInit");
 	}
 
 	~TaskInit() {
@@ -106,8 +130,9 @@ public:
 	}
 
 	void run() {
-		while (!boost::this_thread::interruption_requested() and ros::ok() and !comp_ptr->isClosed())
+		while (!boost::this_thread::interruption_requested() and ros::ok() and !global_comp->isClosed()) {
 			pause(1000);
+		}
 		ROS_INFO("WPD at Ready");
 	}
 
@@ -294,9 +319,13 @@ void process_machine(cognitao::machine::Machine & machine,
 
 void runComponent(int argc, char** argv, ComponentMain& component) {
 
+	global_comp = &component;
+
 	ros::NodeHandle node;
 	cognitao::bus::RosEventQueue events(node, NULL, 1000,
 			"/robil/event_bus/events");
+
+	component.set_events(&events);
 
 	std::stringstream mission_description_stream;
 	mission_description_stream << "<?xml version=\"1.0\" encoding=\"utf-8\"?>"

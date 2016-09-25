@@ -5,15 +5,8 @@
  *      Author: assaf
  */
 
-/*
- * cognitao_v2.h
- *
- *  Created on: Apr 11, 2016
- *      Author: misha
- */
-
-#ifndef FRAMEWORK_IEDSIM_SRC_COGNITAO_V2_COGNITAO_V2_H_
-#define FRAMEWORK_IEDSIM_SRC_COGNITAO_V2_COGNITAO_V2_H_
+#ifndef FRAMEWORK_COGNITAO_SRC_COGNITAO_V2_COGNITAO_V2_H_
+#define FRAMEWORK_COGNITAO_SRC_COGNITAO_V2_COGNITAO_V2_H_
 
 #pragma push_macro("cout")
 #undef cout
@@ -25,6 +18,8 @@
 #include <cognitao/events_adapter/FsmEventsAdapter.h>
 #include <cognitao/events_adapter/FttEventsAdapter.h>
 #pragma pop_macro("cout")
+
+#define DELETE(X) if(X){delete X; X=NULL;}
 
 typedef list<cognitao::machine::Event> LocalEventsQueue;
 std::vector<cognitao::machine::Event> events_bus_to_internal(
@@ -58,4 +53,4 @@ public:
 	;
 };
 
-#endif /* FRAMEWORK_IEDSIM_SRC_COGNITAO_V2_COGNITAO_V2_H_ */
+#endif /* FRAMEWORK_COGNITAO_SRC_COGNITAO_V2_COGNITAO_V2_H_ */

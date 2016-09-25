@@ -16,6 +16,12 @@ using namespace std;
 #include "ComponentStates.h"
 
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define EVENT(X) \
+		cognitao::bus::Event( \
+				cognitao::bus::Event::name_t(X), \
+				cognitao::bus::Event::channel_t(""), \
+				cognitao::bus::Event::context_t(context))
+#define RAISE(X) processor_ptr->bus_events << EVENT(X)
 
 double k_emrg = 1;
 double hb_time = 0;
@@ -144,11 +150,7 @@ public:
 //		}
 
 //		pause(10000);
-		cognitao::bus::Event ev_bus_event(
-				cognitao::bus::Event::name_t("/llc/EndOfInit"),
-				cognitao::bus::Event::channel_t(""),
-				cognitao::bus::Event::context_t(context));
-		processor_ptr->bus_events << ev_bus_event;
+		RAISE("/llc/EndOfInit");
 	}
 
 	~TaskInit() {

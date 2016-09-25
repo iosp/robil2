@@ -13,6 +13,12 @@ using namespace std;
 //#include <decision_making/ROSTask.h>
 
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define EVENT(X) \
+		cognitao::bus::Event( \
+				cognitao::bus::Event::name_t(X), \
+				cognitao::bus::Event::channel_t(""), \
+				cognitao::bus::Event::context_t(context))
+#define RAISE(X) processor_ptr->bus_events << EVENT(X)
 
 class AsyncTask {
 protected:
@@ -71,11 +77,7 @@ public:
 		pause(10000);
 		ROS_INFO("SSM at Init");
 
-		cognitao::bus::Event ev_bus_event(
-				cognitao::bus::Event::name_t("/ssm/EndOfInit"),
-				cognitao::bus::Event::channel_t(""),
-				cognitao::bus::Event::context_t(context));
-		processor_ptr->bus_events << ev_bus_event;
+		RAISE("/ssm/EndOfInit");
 	}
 
 	~TaskInit() {

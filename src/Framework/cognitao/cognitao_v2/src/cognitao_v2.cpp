@@ -5,7 +5,7 @@
  *      Author: misha
  */
 
-#include "cognitao_v2.h"
+#include <cognitao_v2/cognitao_v2.h>
 
 std::vector<cognitao::machine::Event> events_bus_to_internal(
 		const cognitao::bus::Event& original) {

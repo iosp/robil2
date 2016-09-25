@@ -16,7 +16,7 @@
 #include <boost/thread.hpp>
 #include <pthread.h>
 #include "../QinetiQ_IO/LLICtrl.h"
-#include "../cognitao_v2/cognitao_v2.h"
+#include <cognitao_v2/cognitao_v2.h>
 
 
 class RosComm;

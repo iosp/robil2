@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
     events_bus
     cognitao_event_bus_converter
     geometry_msgs nav_msgs sensor_msgs tf
+    cognitao_v2
 )
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
@@ -25,6 +26,7 @@ include_directories(
   ${cognitao_io_INCLUDE_DIRS}
   ${cognitao_INCLUDE_DIRS}
   ${events_bus_INCLUDE_DIRS}
+  ${cognitao_v2_INCLUDE_DIRS}
 )
 ## Declare a cpp library
 add_library(wpd_rosComm
@@ -32,14 +34,13 @@ add_library(wpd_rosComm
 )
 add_library(wpd_compMain
   src/component/ComponentMain.cpp
-  src/cognitao_v2/cognitao_v2.cpp
   src/component/ComponentStates.cpp
   src/component/TwistRetranslator.cpp
   src/component/MoveBase.cpp
 )
 add_executable(wpd_node src/main.cpp)
-target_link_libraries(wpd_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(wpd_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(wpd_node wpd_compMain wpd_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES}
+target_link_libraries(wpd_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
+target_link_libraries(wpd_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
+target_link_libraries(wpd_node wpd_compMain wpd_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2
 )
 

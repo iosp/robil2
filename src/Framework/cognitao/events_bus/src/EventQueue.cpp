@@ -118,6 +118,15 @@ void EventQueue::clear(){
 	if(closed) return;
 	events.clear();
 }
+Event EventQueue::waitEvent(){
+	boost::mutex::scoped_lock l(m);
+	while(closed==false && events.empty())	new_event.wait(l);
+	if(closed)
+		return Event();
+	Event e = events.front();
+	events.pop_front();
+	return e;
+}
 bool EventQueue::wait_and_pop(Event& e){
 	mutex::scoped_lock l(m);
 	if(closed) return false;

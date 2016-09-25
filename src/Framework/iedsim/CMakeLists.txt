@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
     cognitao
     events_bus
     cognitao_event_bus_converter
+    cognitao_v2
 )
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
@@ -21,6 +22,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
+  ${cognitao_v2_INCLUDE_DIRS}
 )
 ## Declare a cpp library
 add_library(iedsim_rosComm
@@ -29,7 +31,6 @@ add_library(iedsim_rosComm
 add_library(iedsim_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
-  src/cognitao_v2/cognitao_v2.cpp
 )
 
 add_library(iedsim_logic
@@ -38,7 +39,7 @@ add_library(iedsim_logic
 
 add_executable(iedsim_node src/main.cpp)
 add_executable(iedsim_test src/test/iedTest.cpp)
-target_link_libraries(iedsim_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(iedsim_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(iedsim_node iedsim_compMain iedsim_rosComm iedsim_logic ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(iedsim_test iedsim_compMain iedsim_rosComm iedsim_logic ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(iedsim_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
+target_link_libraries(iedsim_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
+target_link_libraries(iedsim_node iedsim_compMain iedsim_rosComm iedsim_logic ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
+target_link_libraries(iedsim_test iedsim_compMain iedsim_rosComm iedsim_logic ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)

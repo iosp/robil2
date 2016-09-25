@@ -11,7 +11,7 @@
 #include <tf/tf.h>
 #include "../Shiphon_IO/Shiphon_IO.h"
 #include "../roscomm/RosComm.h"
-#include "../cognitao_v2/cognitao_v2.h"
+#include <cognitao_v2/cognitao_v2.h>
 
 class RosComm;
 class ComponentMain {

@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
     geometry_msgs nav_msgs tf
     tf_geometry
     plpcpp
+    cognitao_v2
 )
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(OpenCV REQUIRED)
@@ -26,6 +27,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+  ${cognitao_v2_INCLUDE_DIRS}
 )
 ## Declare a cpp library
 add_library(pp_rosComm
@@ -33,18 +35,17 @@ add_library(pp_rosComm
 )
 add_library(pp_compMain
   src/component/ComponentMain.cpp
-  src/cognitao_v2/cognitao_v2.cpp
   src/component/ComponentStates.cpp
   src/component/MoveBase.cpp
 )
 add_executable(pp_node src/main.cpp)
-target_link_libraries(pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
-target_link_libraries(pp_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
-target_link_libraries(pp_node pp_compMain pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES} cognitao_v2)
+target_link_libraries(pp_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES} cognitao_v2)
+target_link_libraries(pp_node pp_compMain pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES} cognitao_v2)
 
 
 add_executable(pp_test src/tester/Tester.cpp)
-target_link_libraries(pp_test ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(pp_test ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES} cognitao_v2)
 
 
 

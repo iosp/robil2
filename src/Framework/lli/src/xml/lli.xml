@@ -34,6 +34,7 @@
 			</tasks>
 			<ftt>
 				<start>ON</start>
+				<fail><task>OFF</task></fail>
 			</ftt>
 		</machine>
 		<root>lli</root>

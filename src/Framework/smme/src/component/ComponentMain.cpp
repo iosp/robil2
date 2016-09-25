@@ -9,7 +9,7 @@
 #include "../roscomm/RosComm.h"
 #include "MissionManager.h"
 #include "ComponentStates.h"
-#include <decision_making/ROSTask.h>
+//#include <decision_making/ROSTask.h>
 #include <tf/transform_listener.h>
 
 std::map<std::string, boost::shared_ptr<MissionMachine> > machines;
@@ -107,7 +107,7 @@ void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& ms
 			if(location_global.point not_in knownIEDObjects){
 				std:stringstream buff;
 				check_if_not_contains(location_global.point, knownIEDObjects, buff);
-				if(events()) events()->raiseEvent("/IEDDetected");
+				if(events()) events()->rise(cognitao::bus::Event("/IEDDetected"));
 				knownIEDObjects.insert(location_global.point);
 				ROS_INFO_STREAM("SMME: new IED object detected: its global pose is "<<location_global.point.x<<", "<<location_global.point.y<<", "<<location_global.point.z);
 				ROS_INFO_STREAM("SMME: new IED object detected: ... \n"<<buff.str());

@@ -12,6 +12,12 @@ using namespace std;
 #include "ComponentStates.h"
 
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define EVENT(X) \
+		cognitao::bus::Event( \
+				cognitao::bus::Event::name_t(X), \
+				cognitao::bus::Event::channel_t(""), \
+				cognitao::bus::Event::context_t(context))
+#define RAISE(X) processor_ptr->bus_events << EVENT(X)
 
 /*
  * OLD B
@@ -172,10 +178,12 @@ public:
 };
 
 class TaskInit: public AsyncTask {
+protected:
+	bool is_alive;
 public:
 	TaskInit(ComponentMain* comp, Processor* processor,
 			std::string current_context) :
-			AsyncTask(comp, processor, current_context) {
+			AsyncTask(comp, processor, current_context),is_alive(true) {
 		run_thread = boost::thread(boost::bind(&TaskInit::run, this));
 	}
 
@@ -185,29 +193,23 @@ public:
 		comp_ptr->workerFunc();
 		ros::Duration oneSec(1.0);
 		oneSec.sleep();
-		while (comp_ptr->IsCLLIStillInInit()) {
+		while (is_alive and comp_ptr->IsCLLIStillInInit()) {
 			if (counter > 10000)
 				break;
+			cout << "===COUNTER=== " << counter << endl;
 			oneSec.sleep();
 			counter++;
 		}
 		if (counter > 10000) {
 			printf("LLI STOPPED WO INITIALIZATION COMPLETED\n");
-			cognitao::bus::Event ev_bus_event(
-					cognitao::bus::Event::name_t("/lli/Shutdown"),
-					cognitao::bus::Event::channel_t(""),
-					cognitao::bus::Event::context_t(context));
-			processor_ptr->bus_events << ev_bus_event;
+			RAISE("/lli/Shutdown");
 		}
 
-		cognitao::bus::Event ev_bus_event(
-				cognitao::bus::Event::name_t("/lli/EndOfInit"),
-				cognitao::bus::Event::channel_t(""),
-				cognitao::bus::Event::context_t(context));
-		processor_ptr->bus_events << ev_bus_event;
+		RAISE("/lli/EndOfInit");
 	}
 
 	~TaskInit() {
+		is_alive = false;
 	}
 }
 ;
@@ -224,11 +226,7 @@ public:
 		ROS_INFO("LLI at Ready");
 		if (!ros::ok()) {
 			ROS_INFO("LLI STOPPED");
-			cognitao::bus::Event ev_bus_event(
-					cognitao::bus::Event::name_t("/lli/Shutdown"),
-					cognitao::bus::Event::channel_t(""),
-					cognitao::bus::Event::context_t(context));
-			processor_ptr->bus_events << ev_bus_event;
+			RAISE("/lli/Shutdown");
 		}
 	}
 
@@ -251,11 +249,7 @@ public:
 		comp_ptr->checkReady();
 		while (comp_ptr->StateNotReady())
 			comp_ptr->checkReady();
-		cognitao::bus::Event ev_bus_event(
-				cognitao::bus::Event::name_t("/lli/Ready"),
-				cognitao::bus::Event::channel_t(""),
-				cognitao::bus::Event::context_t(context));
-		processor_ptr->bus_events << ev_bus_event;
+		RAISE("/lli/Ready");
 	}
 
 	~TaskStandby() {
