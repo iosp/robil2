@@ -20,53 +20,130 @@
             </camera>
         </gui>
 
-	
-      <model name="akiva_plain">
-        <static>true</static>
-	 <link name='chassis'>
-            <pose>0 0 .05 0 0 0</pose>
-
-            <collision name='collision'>
-              <geometry>
-                <box>
-                  <size>40 40 .1</size>
-                </box>
-              </geometry>
-            </collision>
-
-            <visual name='visual'>
-              <geometry>
-                <box>
-                  <size>40 40 .01</size>
-                </box>
-
-              </geometry>
-	      	<material>
-		<ambient>15 74 47 1</ambient>
-		<diffuse>15 74 47 1</diffuse>
-		<specular>0.1 0.1 0.1 1</specular>
-		<emissive>0 0 0 0</emissive>
-		</material>
-            </visual>
-          </link>
-	</model>
-	  
-	  
-	
     <include>
-      <name>graund</name>
-      <uri>model://ground_plane</uri>
+      <name>robil_ground_plane</name>
+      <uri>model://robil_ground_plane</uri>
       <pose>0.0 0.0 0.0 0 0 0</pose>
     </include>
     
     
-	
-	
         <include>
       	    <uri>model://bobtank_static_arm</uri>
 	    <name>Sahar</name>
             <pose>0 0 0.5 0 0 0</pose>
         </include>
+	
+	
+	
+
+	
+        <include>
+      	    <uri>model://step</uri>
+	    <name>step_5cm_center</name>
+            <pose>20 0 0.05 0 0 0</pose>
+        </include>	
+	
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>15 -2.5 0 0 0 0</pose>
+	</include>
+	
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>20 2.5 0 0 0 0</pose>
+	</include>
+    
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>35 -2.5 0 0 0 0</pose>
+	</include>	
+	
+	
+		
+
+
+
+
+
+	
+	<include>
+      	    <uri>model://step</uri>
+	    <name>step_5cm_left</name>
+            <pose>50 5 0.05 0 0 0.785</pose>
+        </include>	
+	
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>45 -2.5 0 0 0 0</pose>
+	</include>
+
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>50 2.5 0 0 0 0</pose>
+	</include>
+	
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>65 -2.5 0 0 0 0</pose>
+	</include>
+	
+	
+
+	
+	
+	<include>
+      	    <uri>model://step</uri>
+	    <name>step_5cm_right</name>
+            <pose>80 -5 0.05 0 0 -0.785</pose>
+        </include>
+
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>75 -2.5 0 0 0 0</pose>
+	</include>	
+	
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>80 2.5 0 0 0 0</pose>
+	</include>
+    
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>95 -2.5 0 0 0 0</pose>
+	</include>
+	
+	
+	
+	
+	
+
+	
+	
+	
+
+		
+	<include>
+      	    <uri>model://step</uri>
+	    <name>step_10cm_center</name>
+            <pose>110 0 0.10 0 0 0</pose>
+        </include>
+
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>115 -2.5 0 0 0 0</pose>
+	</include>	
+	
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>110 2.5 0 0 0 0</pose>
+	</include>
+    
+	<include>
+	  <uri>model://barrel1</uri>
+	  <pose>125 -2.5 0 0 0 0</pose>
+	</include>
+	
 
     </world>
 </sdf>
+
