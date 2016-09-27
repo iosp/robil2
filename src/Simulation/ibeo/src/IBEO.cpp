@@ -166,7 +166,6 @@ namespace gazebo
 		  initSocket();
 
 		  _tcpSenderThread=boost::thread(&IBEO::sendThreadMethod,this);
-		  _tcpRestartThread=boost::thread(&IBEO::responseThreadMethhod,this);
 		  _controlThread=boost::thread(&IBEO::controlThread,this);
 
 	      vecToSend = new (std::vector<std::pair<common::Time, char[10000]> *>);
@@ -201,13 +200,8 @@ namespace gazebo
 	{
 	  char buffer[500];
 	  unsigned int sizeOfData;
-	  while(true)
+	  while(client_connected && newsockfd >= 0)
 	  {
-	    if(!client_connected || newsockfd < 0)
-	    {
-	      usleep(100);
-	      continue;
-	    }
 
 	    int n = 0;
 	    int rv = poll(&ufds[0], 1, -1);
@@ -392,8 +386,10 @@ namespace gazebo
       		  ufds[0].events = POLLIN;//recv
       		  ufds[1].fd = newsockfd;
       		  ufds[1].events = POLLOUT;//send
-      		  client_connected=true;
+                  client_connected = true;
       		  ROS_INFO("ibeo client connected");
+
+                  _tcpRestartThread=boost::thread(&IBEO::responseThreadMethhod,this);
       	  }
       	  return true;
     }
