@@ -20,18 +20,18 @@
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
-	_sub_IEDLocation=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","IEDLocation","sub"), 10, &ComponentMain::handleIEDLocation,this));
-	_sub_MissionAcceptance=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","MissionAcceptance","sub"), 10, &ComponentMain::handleMissionAcceptance,this));
-	_sub_LocalPath=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","LocalPath","sub"), 10, &ComponentMain::handleLocalPath,this));
-	_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","BladePosition","sub"), 10, &ComponentMain::handleBladePosition,this));
-	_sub_Map=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","Map","sub"), 10, &ComponentMain::handleMap,this));
-	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","Location","sub"), 10, &ComponentMain::handleLocation,this));
-	_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","PerVelocity","sub"), 10, &ComponentMain::handlePerVelocity,this));
-	_pub_CustomIED=ros::Publisher(_nh.advertise<config::OCU::pub::CustomIED>(fetchParam(&_nh,"OCU","CustomIED","pub"),10));
-	_pub_PositionUpdate=ros::Publisher(_nh.advertise<config::OCU::pub::PositionUpdate>(fetchParam(&_nh,"OCU","PositionUpdate","pub"),10));
-	_pub_AssignNavTask=ros::Publisher(_nh.advertise<config::OCU::pub::AssignNavTask>(fetchParam(&_nh,"OCU","AssignNavTask","pub"),10));
-	_pub_AssignManTask=ros::Publisher(_nh.advertise<config::OCU::pub::AssignManTask>(fetchParam(&_nh,"OCU","AssignManTask","pub"),10));
-	_pub_AssignMission=ros::Publisher(_nh.advertise<config::OCU::pub::AssignMission>(fetchParam(&_nh,"OCU","AssignMission","pub"),10));
+//	_sub_IEDLocation=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","IEDLocation","sub"), 10, &ComponentMain::handleIEDLocation,this));
+//	_sub_MissionAcceptance=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","MissionAcceptance","sub"), 10, &ComponentMain::handleMissionAcceptance,this));
+//	_sub_LocalPath=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","LocalPath","sub"), 10, &ComponentMain::handleLocalPath,this));
+//	_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","BladePosition","sub"), 10, &ComponentMain::handleBladePosition,this));
+//	_sub_Map=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","Map","sub"), 10, &ComponentMain::handleMap,this));
+//	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","Location","sub"), 10, &ComponentMain::handleLocation,this));
+//	_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","PerVelocity","sub"), 10, &ComponentMain::handlePerVelocity,this));
+//	_pub_CustomIED=ros::Publisher(_nh.advertise<robil_msgs::IEDLocation>("/OCU/IED/Location",10));
+	_pub_PositionUpdate=ros::Publisher(_nh.advertise<geometry_msgs::PoseStamped>("/OCU/PositionUpdate",10));
+	_pub_AssignNavTask=ros::Publisher(_nh.advertise<robil_msgs::AssignNavTask>("/OCU/SMME/NavigationTask",10));
+	_pub_AssignManTask=ros::Publisher(_nh.advertise<robil_msgs::AssignManipulatorTask>("/OCU/SMME/ManipulationTask",10));
+	_pub_AssignMission=ros::Publisher(_nh.advertise<robil_msgs::AssignMission>("/OCU/SMME/MissionPlan",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 
