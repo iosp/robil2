@@ -20,11 +20,11 @@
 
 ComponentMain::ComponentMain(int argc,char** argv)	: _inited(init(argc, argv))
 {
-	_sub_GlobalPath=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PP","GlobalPath","sub"), 10, &ComponentMain::handleGlobalPath,this));
-	_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PP","BladePosition","sub"), 10, &ComponentMain::handleBladePosition,this));
-	_sub_Map=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PP","Map","sub"), 10, &ComponentMain::handleMap,this));
-	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PP","Location","sub"), 10, &ComponentMain::handleLocation,this));
-	_pub_LocalPath=ros::Publisher(_nh.advertise<config::PP::pub::LocalPath>(fetchParam(&_nh,"PP","LocalPath","pub"),10));
+	_sub_GlobalPath=ros::Subscriber(_nh.subscribe("/SMME/GlobalPath", 10, &ComponentMain::handleGlobalPath,this));
+	_sub_BladePosition=ros::Subscriber(_nh.subscribe("/PER/BladPosition", 10, &ComponentMain::handleBladePosition,this));
+	_sub_Map=ros::Subscriber(_nh.subscribe("/PER/Map", 10, &ComponentMain::handleMap,this));
+	_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+	_pub_LocalPath=ros::Publisher(_nh.advertise<robil_msgs::Path>("/PP/Path",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 
