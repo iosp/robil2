@@ -94,7 +94,7 @@ public:
 		EventTranslator(comp_ptr, comp_ptr->events());
 	}
 
-	void ~SysReadyTask() {
+	~SysReadyTask() {
 		delete abl_m;
 	}
 };
