@@ -19,9 +19,9 @@
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
-	_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SSM","BladePosition","sub"), 10, &ComponentMain::handleBladePosition,this));
-	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SSM","Location","sub"), 10, &ComponentMain::handleLocation,this));
-	_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SSM","PerVelocity","sub"), 10, &ComponentMain::handlePerVelocity,this));
+	_sub_BladePosition=ros::Subscriber(_nh.subscribe("/PER/BladPosition", 10, &ComponentMain::handleBladePosition,this));
+	_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+	_sub_PerVelocity=ros::Subscriber(_nh.subscribe("/LOC/Velocity", 10, &ComponentMain::handlePerVelocity,this));
 
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
