@@ -22,14 +22,14 @@
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
-	_sub_WPDVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","WPDVelocity","sub"), 10, &ComponentMain::handleWPDVelocity,this));
-	_sub_WSMVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","WSMVelocity","sub"), 10, &ComponentMain::handleWSMVelocity,this));
-	_sub_BladePositionCommand=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","BladePositionCommand","sub"), 10, &ComponentMain::handleBladePositionCommand,this));
-	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","Location","sub"), 10, &ComponentMain::handleLocation,this));
-	_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","PerVelocity","sub"), 10, &ComponentMain::handlePerVelocity,this));
-	_pub_EffortsTh=ros::Publisher(_nh.advertise<config::LLC::pub::EffortsTh>(fetchParam(&_nh,"LLC","EffortsTh","pub"),10));
-	_pub_EffortsSt=ros::Publisher(_nh.advertise<config::LLC::pub::EffortsSt>(fetchParam(&_nh,"LLC","EffortsSt","pub"),10));
-	_pub_EffortsJn=ros::Publisher(_nh.advertise<config::LLC::pub::EffortsJn>(fetchParam(&_nh,"LLC","EffortsJn","pub"),10));
+	_sub_WPDVelocity=ros::Subscriber(_nh.subscribe("/WPD/Speed", 10, &ComponentMain::handleWPDVelocity,this));
+	_sub_WSMVelocity=ros::Subscriber(_nh.subscribe("/WSM/Speed", 10, &ComponentMain::handleWSMVelocity,this));
+	_sub_BladePositionCommand=ros::Subscriber(_nh.subscribe("/WSM/BladePosition", 10, &ComponentMain::handleBladePositionCommand,this));
+	_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+	_sub_PerVelocity=ros::Subscriber(_nh.subscribe("/LOC/Velocity", 10, &ComponentMain::handlePerVelocity,this));
+	_pub_EffortsTh=ros::Publisher(_nh.advertise<std_msgs::Float64>("/LLC/EFFORTS/Throttle",10));
+	_pub_EffortsSt=ros::Publisher(_nh.advertise<std_msgs::Float64>("/LLC/EFFORTS/Steering",10));
+	_pub_EffortsJn=ros::Publisher(_nh.advertise<std_msgs::Float64>("/LLC/EFFORTS/Joints",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	//_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 	    //Replace the thread group with a simple pthread because there is a SIGEV otherwise
