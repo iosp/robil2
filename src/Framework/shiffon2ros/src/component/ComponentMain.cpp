@@ -14,7 +14,7 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include "ParameterHandler.h"
+//#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
@@ -40,7 +40,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	_pub_GPSPose=ros::Publisher(_nh.advertise<sensor_msgs::NavSatFix>("/SENSORS/GPS",10));
 	_pub_INS=ros::Publisher(_nh.advertise<sensor_msgs::Imu>("/SENSORS/INS",10));
 	_pub_GpsSpeed=ros::Publisher(_nh.advertise<robil_msgs::GpsSpeed>("/SENSORS/GPS/Speed",10));
-	_pub_GpsSpeedVec=ros::Publisher(_nh.advertise<config::SHIFFON2ROS::pub::GPS>("/SENSORS/GPS/SpeedVec",10));
+	_pub_GpsSpeedVec=ros::Publisher(_nh.advertise<sensor_msgs::NavSatFix>("/SENSORS/GPS/SpeedVec",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 //	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
     //Replace the thread group with a simple pthread because there is a SIGEV otherwise
