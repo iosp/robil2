@@ -110,7 +110,7 @@ void process_machine(cognitao::machine::Machine & machine,
 		Processor & processor, ComponentMain& component) {
 	while (processor.empty() == false) {
 		cognitao::machine::Event e_poped = processor.pop();
-		cout << "       PROCESS: " << e_poped.str() << endl;
+//		cout << "       PROCESS: " << e_poped.str() << endl;
 		;
 		cognitao::machine::Events p_events;
 		machine = machine->process(e_poped, p_events);
@@ -292,7 +292,7 @@ void startComponent(ComponentMain* component) {
 //			cout << "event bus timeout" << endl;
 			continue;
 		}
-		cout << "GET: " << event << endl;
+//		cout << "GET: " << event << endl;
 //		if (event.context().str().find(context.str()) != 0) {
 //			cout << "\033[1;31m SKIP event from other node \033[0m\n";
 //			continue;

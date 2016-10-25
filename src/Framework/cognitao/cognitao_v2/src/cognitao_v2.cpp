@@ -67,11 +67,11 @@ void Processor::send(const cognitao::machine::Event& original) {
 
 void Processor::send_no_pub(const cognitao::machine::Event& original) {
 	queue.push_back(original); // add events throw RosEventQueue
-	cout << "           ADD: " << original << endl;
+//	cout << "           ADD: " << original << endl;
 }
 
 void Processor::send_no_pub(const cognitao::bus::Event & event) {
-	cout << "       CONVERT: " << event << endl;
+//	cout << "       CONVERT: " << event << endl;
 	std::vector<cognitao::machine::Event> internal_events_array =
 			events_bus_to_internal(event);
 	BOOST_FOREACH ( const cognitao::machine::Event& e, internal_events_array ) {
