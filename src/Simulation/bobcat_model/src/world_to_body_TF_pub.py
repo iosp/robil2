@@ -25,7 +25,7 @@ def command_calback(msg):
 				  (ori_x, ori_y ,ori_z, ori_w),
 				  rospy.Time.now(),
                                   "body",
-                                  "WORLD")
+                                  "world_gazebo")
 	
 	else:
 		print 'Sahar::body dosn\'t exist in the Gazebo'

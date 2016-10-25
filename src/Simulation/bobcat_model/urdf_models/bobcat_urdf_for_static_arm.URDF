@@ -22,7 +22,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/body.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/body.STL" />
       </geometry>
       <material
         name="">
@@ -36,7 +36,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/body.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/body.STL" />
       </geometry>
     </collision>
   </link>
@@ -62,7 +62,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/cabin.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/cabin.STL" />
       </geometry>
       <material
         name="">
@@ -76,7 +76,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/cabin.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/cabin.STL" />
       </geometry>
     </collision>
   </link>
@@ -113,7 +113,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/top_installation.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/top_installation.STL" />
       </geometry>
       <material
         name="">
@@ -127,7 +127,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/top_installation.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/top_installation.STL" />
       </geometry>
     </collision>
   </link>
@@ -164,7 +164,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/supporter_hinge.STL" />
       </geometry>
       <material
         name="">
@@ -178,7 +178,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/supporter_hinge.STL" />
       </geometry>
     </collision>
   </link>
@@ -215,7 +215,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/base_arm.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/base_arm.STL" />
       </geometry>
       <material
         name="">
@@ -229,7 +229,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/base_arm.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/base_arm.STL" />
       </geometry>
     </collision>
   </link>
@@ -271,7 +271,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/main_arm.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/main_arm.STL" />
       </geometry>
       <material
         name="">
@@ -285,7 +285,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/main_arm.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/main_arm.STL" />
       </geometry>
     </collision>
   </link>
@@ -327,7 +327,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/supporter.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/supporter.STL" />
       </geometry>
       <material
         name="">
@@ -341,7 +341,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/supporter.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/supporter.STL" />
       </geometry>
     </collision>
   </link>
@@ -383,7 +383,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/loader.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/loader.STL" />
       </geometry>
       <material
         name="">
@@ -397,7 +397,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/loader.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/loader.STL" />
       </geometry>
     </collision>
   </link>
@@ -439,7 +439,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/brackets.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/brackets.STL" />
       </geometry>
       <material
         name="">
@@ -453,7 +453,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://bobtank/meshes_bobcat_with_boggies/brackets.STL" />
+          filename="package://bobcat_model/sdf_models/bobcat_static_arm/meshes/brackets.STL" />
       </geometry>
     </collision>
   </link>
