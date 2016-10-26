@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <launch>
 	
 	<node name="robil2TF_publisher" type="robil2TF_node" pkg="robil2tf" output="screen"  
@@ -6,7 +8,8 @@
       	      ODOM	IBEO			0.256  0.169 -0.231	0.005  0.201  0.107
 
 	      ODOM	TRACKS_BOTTOM		0.000  0.000 -2.323	0.000  0.000  0.000
-	      ODOM	ROBOT_CENTER	       -0.380  0.155 -1.683	0.000  0.000  0.000
+	      ODOM	ROBOT_CENTER	       -0.380  0.155 -1.683	0.000  0.000  0.000"/>
 	      
-	      WORLD     world_gazebo            0.000  0.000 -2.323	0.000  0.000  0.000"/>
+        <node name="world_gazebo_to_WORLD_TF_pub" type="world_gazebo_to_WORLD_TF_pub.py" pkg="robil2tf" respawn="true" output="screen"/>
+
 </launch>
