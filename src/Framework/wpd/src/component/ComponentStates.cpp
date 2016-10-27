@@ -40,36 +40,60 @@ protected:
 	ComponentMain* comp_ptr;
 	Processor* processor_ptr;
 	std::string context;
-//	bool is_alive;
-//	boost::mutex m;
+	boost::mutex m;
 public:
-	AsyncTask(ComponentMain* comp, Processor * processor,
-			std::string current_context) :
-			comp_ptr(comp), processor_ptr(processor), context(current_context) {
-//		is_alive=true;
-		run_thread = boost::thread(boost::bind(&AsyncTask::run, this));
+	AsyncTask(ComponentMain* comp, Processor * processor, std::string event_context) :
+			comp_ptr(comp), processor_ptr(processor),  context(event_context) {
+		boost::mutex::scoped_lock l(m);
 	}
 
-	virtual void run()=0;
+	AsyncTask* start(){
+		run_thread = boost::thread(boost::bind(&AsyncTask::start_run, this));
+		return this;
+	}
+
+	virtual void run() {
+		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+	}
+
+	void start_run() {
+		boost::mutex::scoped_lock l(m);
+		try
+		{
+			cout<<"[d][wpd::AsyncTask]running"<<endl;
+			this->run();
+		}
+		catch (boost::thread_interrupted& thi_ex) {
+			cout<<"[e][wpd::AsyncTask] thread interrupt signal"<<endl;
+		}
+		catch (...) {
+			cout<<"[e][wpd::AsyncTask] unknown exception"<<endl;
+		}
+	}
+
+//	void assign(std::string current_context, std::string task) {
+//		run_thread.interrupt();
+//		run_thread.join();
+//
+//		context = current_context;
+//
+//		if (task == "off")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::off, this));
+//		if (task == "init")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::init, this));
+//		if (task == "ready")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::ready, this));
+//		if (task == "standby")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::standby, this));
+//	}
 
 	void pause(int millisec) {
-//		try {
 			int msI = (millisec / 100), msR = (millisec % 100);
 			for (int si = 0; si < msI and not global_comp->isClosed(); si++){
-//				boost::mutex::scoped_lock l(m);
 				boost::this_thread::sleep(boost::posix_time::millisec(100));
-//				if(boost::this_thread::interruption_requested()) return false;
-//				ROS_INFO("loop");
 			}
 			if (msR > 0 and not global_comp->isClosed())
 				boost::this_thread::sleep(boost::posix_time::millisec(msR));
-//		}
-
-//		catch (boost::thread_interrupted & ref) {
-//			return false;
-//		}
-
-//		return true;
 	}
 
 	void offTask() {
@@ -82,28 +106,7 @@ public:
 //		comp_ptr->publishDiagnostic(status);
 	}
 
-	virtual ~AsyncTask() {
-		{
-//			boost::mutex::scoped_lock l(m);
-//			is_alive=false;
-			run_thread.interrupt();
-		}
-		run_thread.join();
-//		ROS_INFO("joined");
-		comp_ptr = NULL;
-		processor_ptr = NULL;
-	}
-};
-
-class TaskInit: public AsyncTask {
-public:
-	TaskInit(ComponentMain* comp, Processor* processor,
-			std::string current_context) :
-			AsyncTask(comp, processor, current_context) {
-		run_thread = boost::thread(boost::bind(&TaskInit::run, this));
-	}
-
-	void run() {
+	void init() {
 //		while (!boost::this_thread::interruption_requested() and ros::ok()) {
 //			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
 //		}
@@ -114,7 +117,50 @@ public:
 		RAISE("/wpd/EndOfInit");
 	}
 
-	~TaskInit() {
+	void ready() {
+		TwistRetranslator* translator_ptr = new TwistRetranslator(comp_ptr);
+
+		while (!boost::this_thread::interruption_requested() and ros::ok() and !global_comp->isClosed()) {
+			pause(1000);
+		}
+		ROS_INFO("WPD at Ready");
+
+		delete(translator_ptr);
+	}
+
+	void standby() {
+//		while (!boost::this_thread::interruption_requested() and ros::ok())
+//			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+
+//		pause(10000);
+		ROS_INFO("WPD at Standby");
+	}
+
+	virtual ~AsyncTask() {
+		run_thread.interrupt();
+		run_thread.join();
+		comp_ptr = NULL;
+		processor_ptr = NULL;
+	}
+};
+
+class TaskInit: public AsyncTask {
+public:
+	TaskInit(ComponentMain* comp, Processor* processor,
+			std::string current_context) :
+			AsyncTask(comp, processor, current_context) {
+//		run_thread = boost::thread(boost::bind(&TaskInit::run, this));
+	}
+
+	virtual void run() {
+//		while (!boost::this_thread::interruption_requested() and ros::ok()) {
+//			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+//		}
+
+//		pause(10000);
+		ROS_INFO("WPD at Init");
+
+		RAISE("/wpd/EndOfInit");
 	}
 };
 
@@ -126,17 +172,17 @@ public:
 			std::string current_context) :
 			AsyncTask(comp, processor, current_context), translator_ptr(
 					new TwistRetranslator(comp)) {
-		run_thread = boost::thread(boost::bind(&TaskReady::run, this));
+//		run_thread = boost::thread(boost::bind(&TaskReady::run, this));
 	}
 
-	void run() {
+	virtual void run() {
 		while (!boost::this_thread::interruption_requested() and ros::ok() and !global_comp->isClosed()) {
 			pause(1000);
 		}
 		ROS_INFO("WPD at Ready");
 	}
 
-	~TaskReady() {
+	virtual ~TaskReady() {
 		DELETE(translator_ptr);
 	}
 };
@@ -149,15 +195,12 @@ public:
 		run_thread = boost::thread(boost::bind(&TaskStandby::run, this));
 	}
 
-	void run() {
+	virtual void run() {
 //		while (!boost::this_thread::interruption_requested() and ros::ok())
 //			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
 
 //		pause(10000);
 		ROS_INFO("WPD at Standby");
-	}
-
-	~TaskStandby() {
 	}
 };
 
@@ -180,20 +223,22 @@ void process_machine(cognitao::machine::Machine & machine,
 			string current_event_context = e_poped.context().str();
 			if (context_size > 1) {
 				std::string current_task = e_poped.context()[context_size - 2];
-				ROS_WARN_STREAM(" Current task: " << current_task);
-				ROS_INFO_STREAM(
-						" Current event context: " << current_event_context);
-				if (current_task == "off")
+//				ROS_WARN_STREAM(" Current task: " << current_task);
+//				ROS_INFO_STREAM(
+//						" Current event context: " << current_event_context);
+//				if (current_task == "off" || current_task == "init" || current_task == "ready" || current_task == "standby")
+//					task_ptr->assign(current_event_context, current_task);
+				if (task_ptr && current_task == "off")
 					task_ptr->offTask();
 				DELETE(task_ptr);
 				if (current_task == "init")
-					task_ptr = new TaskInit(&component, &processor,
-							current_event_context);
+					task_ptr = (new TaskInit(&component, &processor,
+							current_event_context))->start();
 				if (current_task == "ready")
-					task_ptr = new TaskReady(&component, &processor,
-							current_event_context);
+					task_ptr = (new TaskReady(&component, &processor,
+							current_event_context))->start();
 				if (current_task == "standby")
-					task_ptr = new TaskStandby(&component, &processor, current_event_context);
+					task_ptr = (new TaskStandby(&component, &processor, current_event_context))->start();
 			}
 		}
 	}
@@ -363,6 +408,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 	}
 
 	cout << endl << endl;
+//	task_ptr = new AsyncTask(global_comp, &processor);
 	cognitao::machine::Events p_events;
 	cognitao::machine::Machine current_machine =
 			ready_machine->machine->start_instance(context, p_events);
@@ -386,6 +432,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 		processor.send_no_pub(event);
 		process_machine(current_machine, processor, component);
 	}
+//	delete(task_ptr);
 
 //	ros_decision_making_init(argc, argv);
 //	RosEventQueue events;

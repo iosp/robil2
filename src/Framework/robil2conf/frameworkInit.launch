@@ -24,6 +24,8 @@
 	<node name="smme_node" type="smme_node" pkg="smme" output="screen" respawn="true"/>
 	<node name="wsm_node" type="wsm_node" pkg="wsm" output="screen" respawn="true"/>
 	<node name="ocu_node" type="ocu_node" pkg="ocu" output="screen"/>
+	<node name="cognitao_event_translator" type="cognitao_event_translator" pkg="cognitao_event_translator" output="screen"/>
+	
 	<!-- ================ -->
 	
 	<!-- == NAVIGATION == -->

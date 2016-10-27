@@ -12,8 +12,8 @@
 				
 				<task id="PENDING">
 					<reaction on_event="?/smme/ClearMissionBuffer" target="UNLOADED" />
-					<reaction on_event="?/smme/${MID}/DeleteMission" target="UNLOADED" />
-					<reaction on_event="?/smme/${MID}/StartMission" target="ACTIVE" />
+					<reaction on_event="?/smme/mission/${MID}/DeleteMission" target="UNLOADED" />
+					<reaction on_event="?/smme/mission/${MID}/StartMission" target="ACTIVE" />
 				</task>     
        
 				<task id="ACTIVE">
@@ -21,32 +21,32 @@
 						<tasks>
 
 							<task id="SPOOLING">
-								<reaction on_event="?/smme/${MID}/CompleteMission" target="FINISHED" />
-								<reaction on_event="?/smme/${MID}/AbortMission" target="ABORTED" />
-								<reaction on_event="?/smme/${MID}/PauseMission" target="PAUSED" />
+								<reaction on_event="?/smme/mission/${MID}/CompleteMission" target="FINISHED" />
+								<reaction on_event="?/smme/mission/${MID}/AbortMission" target="ABORTED" />
+								<reaction on_event="?/smme/mission/${MID}/PauseMission" target="PAUSED" />
 							</task>           
 							
 							<task id="PAUSED"> 
-								<reaction on_event="?/smme/${MID}/CompleteMission" target="FINISHED" />
-								<reaction on_event="?/smme/${MID}/AbortMission" target="ABORTED" />
-								<reaction on_event="?/smme/${MID}/ResumeMission" target="SPOOLING" />
+								<reaction on_event="?/smme/mission/${MID}/CompleteMission" target="FINISHED" />
+								<reaction on_event="?/smme/mission/${MID}/AbortMission" target="ABORTED" />
+								<reaction on_event="?/smme/mission/${MID}/ResumeMission" target="SPOOLING" />
 							</task>    
 
 							<task id="ABORTED"> 
-								<reaction on_event="?/smme/${MID}/StartMission" target="SPOOLING" />
+								<reaction on_event="?/smme/mission/${MID}/StartMission" target="SPOOLING" />
 							</task>   
 	
 							<task id="FINISHED"> 
-								<reaction on_event="?/smme/${MID}/StartMission" target="SPOOLING" />
+								<reaction on_event="?/smme/mission/${MID}/StartMission" target="SPOOLING" />
 							</task>   
 						</tasks>
 						<ftt>
 							<start>SPOOLING</start>
 						</ftt>
 					</machine>
-					<reaction on_event="?/smme/${MID}/DeleteMission" target="UNLOADED" />
-					<reaction on_event="?/smme/${MID}/Standby" target="UNLOADED" />
-					<reaction on_event="?/smme/${MID}/ClearMissionBuffer" target="UNLOADED" />
+					<reaction on_event="?/smme/mission/${MID}/DeleteMission" target="UNLOADED" />
+					<reaction on_event="?/smme/mission/${MID}/Standby" target="UNLOADED" />
+					<reaction on_event="?/smme/mission/${MID}/ClearMissionBuffer" target="UNLOADED" />
 				</task>
 				
 			</tasks>

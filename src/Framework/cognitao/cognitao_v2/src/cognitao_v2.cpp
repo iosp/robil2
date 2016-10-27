@@ -80,11 +80,11 @@ void Processor::send_no_pub(const cognitao::bus::Event & event) {
 }
 
 void Processor::send_bus_event(const cognitao::machine::Event& e) {
-	cout << "       CONVERT: " << e << endl;
+//	cout << "       CONVERT: " << e << endl;
 	std::vector<cognitao::bus::Event> bus_events_array = internal_event_to_bus(
 			e);
 	BOOST_FOREACH( const cognitao::bus::Event& bus_e, bus_events_array ) {
 		bus_events << bus_e;
-		cout << "           PUB: " << bus_e << endl;
+//		cout << "           PUB: " << bus_e << endl;
 	}
 }

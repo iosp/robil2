@@ -24,14 +24,37 @@ protected:
 	ComponentMain* comp_ptr;
 	Processor* processor_ptr;
 	std::string context;
+	boost::mutex m;
 public:
 	AsyncTask(ComponentMain* comp, Processor * processor,
 			std::string current_context) :
 			comp_ptr(comp), processor_ptr(processor), context(current_context) {
-		run_thread = boost::thread(boost::bind(&AsyncTask::run, this));
+		boost::mutex::scoped_lock l(m);
 	}
 
-	virtual void run()=0;
+	AsyncTask* start(){
+		run_thread = boost::thread(boost::bind(&AsyncTask::start_run, this));
+		return this;
+	}
+
+	void start_run() {
+		boost::mutex::scoped_lock l(m);
+		try
+		{
+			cout<<"[d][iedsim::AsyncTask]running"<<endl;
+			this->run();
+		}
+		catch (boost::thread_interrupted& thi_ex) {
+			cout<<"[e][iedsim::AsyncTask] thread interrupt signal"<<endl;
+		}
+		catch (...) {
+			cout<<"[e][iedsim::AsyncTask] unknown exception"<<endl;
+		}
+	}
+
+	virtual void run() {
+		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+	}
 
 	void pause(int millisec) {
 		int msI = (millisec / 100), msR = (millisec % 100);
@@ -64,10 +87,10 @@ public:
 	TaskInit(ComponentMain* comp, Processor* processor,
 			std::string current_context) :
 			AsyncTask(comp, processor, current_context) {
-		run_thread = boost::thread(boost::bind(&TaskInit::run, this));
+//		run_thread = boost::thread(boost::bind(&TaskInit::run, this));
 	}
 
-	void run() {
+	virtual void run() {
 		ROS_INFO("IEDSim at Init");
 //		while (!boost::this_thread::interruption_requested() and ros::ok()) {
 //			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
@@ -76,9 +99,6 @@ public:
 		pause(10000);
 		RAISE("/iedsim/EndOfInit");
 	}
-
-	~TaskInit() {
-	}
 };
 
 class TaskReady: public AsyncTask {
@@ -86,17 +106,83 @@ public:
 	TaskReady(ComponentMain* comp, Processor* processor,
 			std::string current_context) :
 			AsyncTask(comp, processor, current_context) {
-		run_thread = boost::thread(boost::bind(&TaskReady::run, this));
+//		run_thread = boost::thread(boost::bind(&TaskReady::run, this));
 	}
 
-	void run() {
+	virtual void run() {
 		ROS_INFO("IEDSim at Ready");
 		pause(10000);
 	}
-
-	~TaskReady() {
-	}
 };
+
+//class AsyncTask {
+//protected:
+//	boost::thread run_thread;
+//	ComponentMain* comp_ptr;
+//	Processor* processor_ptr;
+//	std::string context;
+//public:
+//	AsyncTask(ComponentMain* comp, Processor * processor) :
+//			comp_ptr(comp), processor_ptr(processor) {
+////		run_thread = boost::thread(boost::bind(&AsyncTask::run, this));
+//	}
+//
+////	virtual void run()=0;
+//
+//	void assign(std::string current_context, std::string task) {
+//		run_thread.interrupt();
+//		run_thread.join();
+//
+//		context = current_context;
+//
+//		if (task == "off")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::off, this));
+//		if (task == "init")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::init, this));
+//		if (task == "ready")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::ready, this));
+//	}
+//
+//	void pause(int millisec) {
+//		int msI = (millisec / 100), msR = (millisec % 100);
+//		for (int si = 0; si < msI and not comp_ptr->isClosed(); si++)
+//			boost::this_thread::sleep(boost::posix_time::millisec(100));
+//		if (msR > 0 and not comp_ptr->isClosed())
+//			boost::this_thread::sleep(boost::posix_time::millisec(msR));
+//	}
+//
+//	void off() {
+////		while (!boost::this_thread::interruption_requested() and ros::ok()) {
+////			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+////		}
+//
+//		pause(10000);
+//		diagnostic_msgs::DiagnosticStatus status;
+//		comp_ptr->publishDiagnostic(status);
+//	}
+//
+//	void init() {
+//		ROS_INFO("IEDSim at Init");
+////		while (!boost::this_thread::interruption_requested() and ros::ok()) {
+////			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+////		}
+//
+//		pause(10000);
+//		RAISE("/iedsim/EndOfInit");
+//	}
+//
+//	void ready() {
+//		ROS_INFO("IEDSim at Ready");
+//		pause(10000);
+//	}
+//
+//	virtual ~AsyncTask() {
+//		run_thread.interrupt();
+//		run_thread.join();
+//		comp_ptr = NULL;
+//		processor_ptr = NULL;
+//	}
+//};
 
 AsyncTask* task_ptr;
 
@@ -117,18 +203,20 @@ void process_machine(cognitao::machine::Machine & machine,
 			string current_event_context = e_poped.context().str();
 			if (context_size > 1) {
 				std::string current_task = e_poped.context()[context_size - 2];
-				ROS_WARN_STREAM(" Current task: " << current_task);
-				ROS_INFO_STREAM(
-						" Current event context: " << current_event_context);
+//				ROS_WARN_STREAM(" Current task: " << current_task);
+//				ROS_INFO_STREAM(
+//						" Current event context: " << current_event_context);
+//				if (current_task == "off" || current_task == "init" || current_task == "ready")
+//					task_ptr->assign(current_event_context, current_task);
 				if (current_task == "off")
 					task_ptr->offTask();
 				DELETE(task_ptr);
 				if (current_task == "init")
-					task_ptr = new TaskInit(&component, &processor,
-							current_event_context);
+					task_ptr = (new TaskInit(&component, &processor,
+							current_event_context)) ->start();
 				if (current_task == "ready")
-					task_ptr = new TaskReady(&component, &processor,
-							current_event_context);
+					task_ptr = (new TaskReady(&component, &processor,
+							current_event_context)) ->start();
 			}
 		}
 	}
@@ -267,6 +355,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 	}
 
 	cout << endl << endl;
+//	task_ptr = new AsyncTask(&component, &processor);
 	cognitao::machine::Events p_events;
 	cognitao::machine::Machine current_machine =
 			ready_machine->machine->start_instance(context, p_events);
@@ -290,6 +379,8 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 		processor.send_no_pub(event);
 		process_machine(current_machine, processor, component);
 	}
+
+//	delete(task_ptr);
 
 	return;
 

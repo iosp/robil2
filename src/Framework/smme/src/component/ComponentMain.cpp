@@ -79,7 +79,6 @@ void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& 
 		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" rejected (error="<<acceptance.status<<")");
 	}
 	publishMissionAcceptance(acceptance);
-	ROS_INFO_STREAM("======= finished acceptance =======");
 }
 	
 

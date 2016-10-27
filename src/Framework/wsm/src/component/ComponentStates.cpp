@@ -305,14 +305,36 @@ protected:
 	ComponentMain* comp_ptr;
 	Processor * processor_ptr;
 	std::string context;
+	boost::mutex m;
 public:
-	AsyncTask(ComponentMain* comp, Processor * processor,
-			std::string current_context) :
-			comp_ptr(comp), processor_ptr(processor), context(current_context) {
-		run_thread = boost::thread(boost::bind(&AsyncTask::run, this));
+	AsyncTask(ComponentMain* comp, Processor * processor, std::string event_context) :
+			comp_ptr(comp), processor_ptr(processor),  context(event_context) {
+		boost::mutex::scoped_lock l(m);
 	}
 
-	virtual void run()=0;
+	AsyncTask* start(){
+		run_thread = boost::thread(boost::bind(&AsyncTask::start_run, this));
+		return this;
+	}
+
+	virtual void run() {
+		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+	}
+
+	void start_run() {
+		boost::mutex::scoped_lock l(m);
+		try
+		{
+			cout<<"[d][wsm::AsyncTask]running"<<endl;
+			this->run();
+		}
+		catch (boost::thread_interrupted& thi_ex) {
+			cout<<"[e][wsm::AsyncTask] thread interrupt signal"<<endl;
+		}
+		catch (...) {
+			cout<<"[e][wsm::AsyncTask] unknown exception"<<endl;
+		}
+	}
 
 	void pause(int millisec) {
 		int msI = (millisec / 100), msR = (millisec % 100);
@@ -341,9 +363,9 @@ public:
 	TaskInit(ComponentMain* comp, Processor * processor,
 			std::string current_context) :
 			AsyncTask(comp, processor, current_context) {
-	}
-	;
-	void run() {
+	};
+
+	virtual void run() {
 //		while (!boost::this_thread::interruption_requested() and ros::ok()
 //				and comp_ptr->receivedLocation == NULL) {
 //			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
@@ -365,8 +387,6 @@ public:
 
 		RAISE("/wsm/SensorConnected");
 	}
-	~TaskInit() {
-	}
 };
 
 class TaskReady: public AsyncTask {
@@ -375,12 +395,12 @@ public:
 			std::string current_context) :
 			AsyncTask(comp, processor, current_context) {
 	}
-	;
-	void run() {
+
+	virtual void run() {
 		ROS_INFO("WSM At Ready");
 
 		while (1) {
-			if (comp_ptr->isClosed() || !ros::ok()) /* checks whether the line is empty, or node failed */
+			if (comp_ptr->isClosed() || !ros::ok())
 				ROS_INFO("STOPPED");
 
 			while (comp_ptr->cur_mission == NULL) {
@@ -403,8 +423,6 @@ public:
 			}
 		}
 	}
-	~TaskReady() {
-	}
 };
 
 class TaskStandby: public AsyncTask {
@@ -413,8 +431,8 @@ public:
 			std::string current_context) :
 			AsyncTask(comp, processor, current_context) {
 	}
-	;
-	void run() {
+
+	virtual void run() {
 //		while (!boost::this_thread::interruption_requested() and ros::ok()) {
 //			boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 //		}
@@ -427,9 +445,120 @@ public:
 
 		RAISE("/wsm/Resume");
 	}
-	~TaskStandby() {
-	}
 };
+
+//class AsyncTask {
+//protected:
+//	boost::thread run_thread;
+//	ComponentMain* comp_ptr;
+//	Processor * processor_ptr;
+//	std::string context;
+//public:
+//	AsyncTask(ComponentMain* comp, Processor * processor) :
+//			comp_ptr(comp), processor_ptr(processor) {}
+//
+//	void assign(std::string current_context, std::string task) {
+//		run_thread.interrupt();
+//		run_thread.join();
+//
+//		context = current_context;
+//
+//		if (task == "off")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::off, this));
+//		if (task == "init")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::init, this));
+//		if (task == "ready")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::ready, this));
+//		if (task == "standby")
+//			run_thread = boost::thread(boost::bind(&AsyncTask::standby, this));
+//	}
+//
+//	void pause(int millisec) {
+//		int msI = (millisec / 100), msR = (millisec % 100);
+//		for (int si = 0; si < msI and not comp_ptr->isClosed(); si++)
+//			boost::this_thread::sleep(boost::posix_time::millisec(100));
+//		if (msR > 0 and not comp_ptr->isClosed())
+//			boost::this_thread::sleep(boost::posix_time::millisec(msR));
+//	}
+//
+//	void off() {
+////		diagnostic_msgs::DiagnosticStatus status;
+////		comp_ptr->publishDiagnostic(status);
+//		ROS_INFO("WSM OFF");
+//	}
+//
+//	void init() {
+////		while (!boost::this_thread::interruption_requested() and ros::ok()
+////				and comp_ptr->receivedLocation == NULL) {
+////			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+////		}
+//
+////		pause(10000);
+//		ROS_INFO("WSM at Init");
+//
+//		while (comp_ptr->receivedLocation == NULL)
+//			;
+//		comp_ptr->z_offset = comp_ptr->receivedLocation->pose.pose.position.z;
+//		if (comp_ptr->z_offset < 0) {
+//			comp_ptr->z_offset = fabs(comp_ptr->z_offset);
+//		} else {
+////			comp_ptr->z_offset = fabs(comp_ptr->z_offset);
+//		}
+////		ROS_INFO("Initial ground offset is: %g", comp_ptr->z_offset);
+//		comp_ptr->z_offset = 0;
+//
+//		RAISE("/wsm/SensorConnected");
+//	}
+//
+//	void ready() {
+//		ROS_INFO("WSM At Ready");
+//
+//		while (1) {
+//			if (comp_ptr->isClosed() || !ros::ok())
+//				ROS_INFO("STOPPED");
+//
+//			while (comp_ptr->cur_mission == NULL) {
+//				pause(10000);
+//				sleep(5);
+////				ROS_INFO("No new Task");
+//			}
+//
+//			while (comp_ptr->cur_mission->Get_status() == "active") {
+////				comp_ptr->cur_mission->debug();
+//				comp_ptr->cur_mission->publish_step_diag(1, 0);
+//				comp_ptr->cur_mission->execute_next_step();
+//				comp_ptr->cur_mission->Update_step();
+//			}
+//
+//			if (comp_ptr->cur_mission->Get_status() == "complete") {
+//				RAISE("/CompleteTask");
+//				ROS_INFO("Mission complete");
+//				DELETE(comp_ptr->cur_mission);
+//			}
+//		}
+//	}
+//
+//	void standby() {
+////		while (!boost::this_thread::interruption_requested() and ros::ok()) {
+////			boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+////		}
+//
+//		ROS_INFO("WSM at Standby");
+//		while (pause_time.get_pause()) {
+//			ROS_INFO("I'm in pause mode..");
+//			pause(1000);
+//		}
+//
+//		RAISE("/wsm/Resume");
+//	}
+//
+//	virtual ~AsyncTask() {
+//		run_thread.interrupt();
+//		run_thread.join();
+//		comp_ptr = NULL;
+//		processor_ptr = NULL;
+//	}
+//};
 
 AsyncTask* task_ptr;
 
@@ -450,21 +579,23 @@ void process_machine(cognitao::machine::Machine & machine,
 			string current_event_context = e_poped.context().str();
 			if (context_size > 1) {
 				std::string current_task = e_poped.context()[context_size - 2];
-				ROS_WARN_STREAM(" Current task: " << current_task);
-				ROS_INFO_STREAM(
-						" Current event context: " << current_event_context);
-				if (current_task == "off")
+//				ROS_WARN_STREAM(" Current task: " << current_task);
+//				ROS_INFO_STREAM(
+//						" Current event context: " << current_event_context);
+//				if (current_task == "off" || current_task == "init" || current_task == "ready" || current_task == "standby")
+//					task_ptr->assign(current_event_context, current_task);
+				if (task_ptr && current_task == "off")
 					task_ptr->offTask();
 				DELETE(task_ptr);
 				if (current_task == "init")
-					task_ptr = new TaskInit(&component, &processor,
-							current_event_context);
+					task_ptr = (new TaskInit(&component, &processor,
+							current_event_context))->start();
 				if (current_task == "ready")
-					task_ptr = new TaskReady(&component, &processor,
-							current_event_context);
+					task_ptr = (new TaskReady(&component, &processor,
+							current_event_context))->start();
 				if (current_task == "standby")
-					task_ptr = new TaskStandby(&component, &processor,
-							current_event_context); // TODO causes segmentation fault
+					task_ptr = (new TaskStandby(&component, &processor,
+							current_event_context))->start(); // TODO causes segmentation fault
 			}
 		}
 	}
@@ -520,6 +651,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 	}
 
 	cout << endl << endl;
+//	task_ptr = new AsyncTask(&component, &processor);
 	cognitao::machine::Events p_events;
 	cognitao::machine::Machine current_machine =
 			ready_machine->machine->start_instance(context, p_events);
@@ -544,6 +676,8 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 		processor.send_no_pub(event);
 		process_machine(current_machine, processor, component);
 	}
+
+//	delete(task_ptr);
 
 	return;
 

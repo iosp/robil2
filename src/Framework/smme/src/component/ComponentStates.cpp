@@ -35,14 +35,52 @@ protected:
 	boost::thread run_thread;
 	Processor * processor_ptr;
 	std::string context;
-
+	boost::mutex m;
 public:
-	SysTask(ComponentMain* comp, Processor * processor,
-			std::string current_context) : comp_ptr(comp),processor_ptr(processor),context(context) {
-		run_thread = boost::thread(boost::bind(&SysTask::run, this));
+	SysTask(ComponentMain* comp, Processor * processor, std::string event_context) :
+			comp_ptr(comp), processor_ptr(processor),  context(event_context) {
+		boost::mutex::scoped_lock l(m);
 	}
 
-	virtual void run() = 0;
+	SysTask* start(){
+		run_thread = boost::thread(boost::bind(&SysTask::start_run, this));
+		return this;
+	}
+
+	virtual void run() {
+		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+	}
+
+	void start_run() {
+		boost::mutex::scoped_lock l(m);
+		try
+		{
+			cout<<"[d][smme-glob::AsyncTask]running"<<endl;
+			this->run();
+		}
+		catch (boost::thread_interrupted& thi_ex) {
+			cout<<"[e][smme-glob::AsyncTask] thread interrupt signal"<<endl;
+		}
+		catch (...) {
+			cout<<"[e][smme-glob::AsyncTask] unknown exception"<<endl;
+		}
+	}
+
+//	void assign(std::string current_context, std::string task) {
+//		run_thread.interrupt();
+//		run_thread.join();
+//
+//		context = current_context;
+//
+//		if (task == "off")
+//			run_thread = boost::thread(boost::bind(&SysTask::off, this));
+//		if (task == "init")
+//			run_thread = boost::thread(boost::bind(&SysTask::init, this));
+//		if (task == "ready")
+//			run_thread = boost::thread(boost::bind(&SysTask::ready, this));
+//		if (task == "emergency")
+//			run_thread = boost::thread(boost::bind(&SysTask::emergency, this));
+//	}
 
 	void pause(int millisecs) {
 		int msI = (millisecs / 100), msR = (millisecs % 100);
@@ -53,6 +91,15 @@ public:
 	}
 
 	void offTask() {
+		pause(10000);
+	}
+
+	void init() {
+		//pause(10000);
+		RAISE("/EndOfCoreSystemInit");
+	}
+
+	void emergency() {
 		pause(10000);
 	}
 
@@ -68,10 +115,10 @@ class SysInitTask : public SysTask {
 public:
 	SysInitTask(ComponentMain* comp, Processor * processor,
 			std::string current_context) : SysTask(comp,processor,current_context) {
-		run_thread = boost::thread(boost::bind(&SysInitTask::run, this));
+//		run_thread = boost::thread(boost::bind(&SysInitTask::run, this));
 	}
 
-	void run() {
+	virtual void run() {
 		//pause(10000);
 		RAISE("/EndOfCoreSystemInit");
 	}
@@ -85,16 +132,17 @@ public:
 	SysReadyTask(ComponentMain* comp, Processor * processor,
 			std::string current_context) : SysTask(comp,processor,current_context) {
 		abl_m = new AblManager(comp_ptr);
-		run_thread = boost::thread(boost::bind(&SysReadyTask::run, this));
+//		run_thread = boost::thread(boost::bind(&SysReadyTask::run, this));
 	}
 
-	void run() {
+	virtual void run() {
+		ROS_INFO("SMME at Ready");
 		pause(10000);
 		abl_m->listen(comp_ptr->events());
 		EventTranslator(comp_ptr, comp_ptr->events());
 	}
 
-	~SysReadyTask() {
+	virtual ~SysReadyTask() {
 		delete abl_m;
 	}
 };
@@ -103,10 +151,10 @@ class SysEmergencyTask : public SysTask {
 public:
 	SysEmergencyTask(ComponentMain* comp, Processor * processor,
 			std::string current_context) : SysTask(comp,processor,current_context) {
-		run_thread = boost::thread(boost::bind(&SysEmergencyTask::run, this));
+//		run_thread = boost::thread(boost::bind(&SysEmergencyTask::run, this));
 	}
 
-	void run() {
+	virtual void run() {
 		pause(10000);
 	}
 };
@@ -223,8 +271,8 @@ void process_machine(cognitao::machine::Machine & machine,
 		Processor & processor, ComponentMain& component) {
 	while (processor.empty() == false) {
 		cognitao::machine::Event e_poped = processor.pop();
-		cout << "       PROCESS: " << e_poped.str() << endl;
-		;
+//		cout << "       PROCESS: " << e_poped.str() << endl;
+//		;
 		cognitao::machine::Events p_events;
 		machine = machine->process(e_poped, p_events);
 		processor.insert(p_events);
@@ -236,22 +284,24 @@ void process_machine(cognitao::machine::Machine & machine,
 			string current_event_context = e_poped.context().str();
 			if (context_size > 1) {
 				std::string current_task = e_poped.context()[context_size - 2];
-				ROS_WARN_STREAM(" Current state: " << current_task);
-				ROS_INFO_STREAM(
-						" Current event context: " << current_event_context);
-				if (current_task == "off")
+//				if (current_task == "off" || current_task == "init" || current_task == "ready" || current_task == "emergency")
+//					systask_ptr->assign(current_event_context, current_task);
+//				ROS_WARN_STREAM(" Current state: " << current_task);
+//				ROS_INFO_STREAM(
+//						" Current event context: " << current_event_context);
+				if (systask_ptr && current_task == "off")
 					systask_ptr->offTask();
 				DELETE(systask_ptr);
 				if (current_task == "init")
-					systask_ptr = new SysInitTask(&component, &processor,
-							current_event_context);
+					systask_ptr = (new SysInitTask(&component, &processor,
+							current_event_context))->start();
 				if (current_task == "ready")
-					systask_ptr = new SysReadyTask(&component, &processor,
-							current_event_context);
+					systask_ptr = (new SysReadyTask(&component, &processor,
+							current_event_context))->start();
 				if (current_task == "emergency")
-					systask_ptr = new SysEmergencyTask(&component, &processor,
-							current_event_context);
-				cout << "address: " << systask_ptr << endl;
+					systask_ptr = (new SysEmergencyTask(&component, &processor,
+							current_event_context))->start();
+//				cout << "address: " << systask_ptr << endl;
 			}
 		}
 	}
@@ -301,6 +351,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	}
 
 	cout << endl << endl;
+//	systask_ptr = new SysTask(&component, &processor);
 	cognitao::machine::Events p_events;
 	cognitao::machine::Machine current_machine =
 			ready_machine->machine->start_instance(context, p_events);
@@ -316,7 +367,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 //			cout << "event bus timeout" << endl;
 			continue;
 		}
-		cout << "GET: " << event << endl;
+//		cout << "GET: " << event << endl;
 //		if (event.context().str().find(context.str()) != 0) {
 //			cout << "\033[1;31m SKIP event from other node \033[0m\n";
 //			continue;
@@ -324,6 +375,8 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 		processor.send_no_pub(event);
 		process_machine(current_machine, processor, component);
 	}
+
+//	delete(systask_ptr);
 
 	return;
 
