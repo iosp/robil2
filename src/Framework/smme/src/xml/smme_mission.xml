@@ -5,7 +5,7 @@
 			<tasks>
 			
 				<task id="UNLOADED">
-					<reaction on_event="?/smme/MissionUnloaded/Stopped" target="STOP_MACHINE" />
+					<reaction on_event="?/smme/${MID}/MissionUnloaded/Stopped" target="STOP_MACHINE" />
 				</task>
 				
 				<task id="STOP_MACHINE" />
@@ -46,7 +46,7 @@
 					</machine>
 					<reaction on_event="?/smme/mission/${MID}/DeleteMission" target="UNLOADED" />
 					<reaction on_event="?/smme/mission/${MID}/Standby" target="UNLOADED" />
-					<reaction on_event="?/smme/mission/${MID}/ClearMissionBuffer" target="UNLOADED" />
+					<reaction on_event="?/smme/mission/ClearMissionBuffer" target="UNLOADED" />
 				</task>
 				
 			</tasks>

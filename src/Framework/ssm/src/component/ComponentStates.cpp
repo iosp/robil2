@@ -29,31 +29,31 @@ protected:
 	boost::mutex m;
 public:
 	AsyncTask(ComponentMain* comp, Processor * processor, std::string event_context) :
-			comp_ptr(comp), processor_ptr(processor),  context(event_context) {
-		boost::mutex::scoped_lock l(m);
-	}
+			comp_ptr(comp), processor_ptr(processor),  context(event_context) {}
 
 	AsyncTask* start(){
 		run_thread = boost::thread(boost::bind(&AsyncTask::start_run, this));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(20));
 		return this;
 	}
 
 	virtual void run() {
-		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
 	}
 
 	void start_run() {
 		boost::mutex::scoped_lock l(m);
 		try
 		{
-			cout<<"[d][ssm::AsyncTask]running"<<endl;
-			this->run();
+//			cout<<"[d][ssm::AsyncTask]running"<<endl;
+			run();
 		}
 		catch (boost::thread_interrupted& thi_ex) {
-			cout<<"[e][ssm::AsyncTask] thread interrupt signal"<<endl;
+//			cout<<"[e][ssm::AsyncTask] thread interrupt signal"<<endl;
 		}
 		catch (...) {
-			cout<<"[e][ssm::AsyncTask] unknown exception"<<endl;
+			ROS_ERROR("SSM::AsyncTask --- Unknown Exception");
+//			cout<<"[e][ssm::AsyncTask] unknown exception"<<endl;
 		}
 	}
 
@@ -88,9 +88,7 @@ class TaskInit: public AsyncTask {
 public:
 	TaskInit(ComponentMain* comp, Processor* processor,
 			std::string current_context) :
-			AsyncTask(comp, processor, current_context) {
-//		run_thread = boost::thread(boost::bind(&TaskInit::run, this));
-	}
+			AsyncTask(comp, processor, current_context) {}
 
 	virtual void run() {
 //		while (!boost::this_thread::interruption_requested() and ros::ok()) {
@@ -101,15 +99,15 @@ public:
 
 		RAISE("/ssm/EndOfInit");
 	}
+
+	virtual ~TaskInit() {}
 };
 
 class TaskReady: public AsyncTask {
 public:
 	TaskReady(ComponentMain* comp, Processor* processor,
 			std::string current_context) :
-			AsyncTask(comp, processor, current_context) {
-//		run_thread = boost::thread(boost::bind(&TaskReady::run, this));
-	}
+			AsyncTask(comp, processor, current_context) {}
 
 	virtual void run() {
 //		while (!boost::this_thread::interruption_requested() and ros::ok())
@@ -118,76 +116,9 @@ public:
 		pause(10000);
 		ROS_INFO("SSM at Ready");
 	}
-};
 
-//class AsyncTask {
-//protected:
-//	boost::thread run_thread;
-//	ComponentMain* comp_ptr;
-//	Processor* processor_ptr;
-//	std::string context;
-//public:
-//	AsyncTask(ComponentMain* comp, Processor * processor) :
-//			comp_ptr(comp), processor_ptr(processor) {}
-//
-//	void assign(std::string current_context, std::string task) {
-//		run_thread.interrupt();
-//		run_thread.join();
-//
-//		context = current_context;
-//
-//		if (task == "off")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::off, this));
-//		if (task == "init")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::init, this));
-//		if (task == "ready")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::ready, this));
-//	}
-//
-//	void pause(int millisec) {
-//		int msI = (millisec / 100), msR = (millisec % 100);
-//		for (int si = 0; si < msI and not comp_ptr->isClosed(); si++)
-//			boost::this_thread::sleep(boost::posix_time::millisec(100));
-//		if (msR > 0 and not comp_ptr->isClosed())
-//			boost::this_thread::sleep(boost::posix_time::millisec(msR));
-//	}
-//
-//	void off() {
-////		while (!boost::this_thread::interruption_requested() and ros::ok()) {
-////			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-////		}
-//
-//		pause(10000);
-//
-////		diagnostic_msgs::DiagnosticStatus status;
-////		comp_ptr->publishDiagnostic(status);
-//	}
-//
-//	void init() {
-////		while (!boost::this_thread::interruption_requested() and ros::ok()) {
-////			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-////		}
-//		pause(10000);
-//		ROS_INFO("SSM at Init");
-//
-//		RAISE("/ssm/EndOfInit");
-//	}
-//
-//	void ready() {
-////		while (!boost::this_thread::interruption_requested() and ros::ok())
-////			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-//
-//		pause(10000);
-//		ROS_INFO("SSM at Ready");
-//	}
-//
-//	virtual ~AsyncTask() {
-//		run_thread.interrupt();
-//		run_thread.join();
-//		comp_ptr = NULL;
-//		processor_ptr = NULL;
-//	}
-//};
+	virtual ~TaskReady() {}
+};
 
 AsyncTask* task_ptr;
 
@@ -216,12 +147,16 @@ void process_machine(cognitao::machine::Machine & machine,
 				if (task_ptr && current_task == "off")
 					task_ptr->offTask();
 				DELETE(task_ptr);
-				if (current_task == "init")
+				if (current_task == "init") {
 					task_ptr = (new TaskInit(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "ready")
+							current_event_context));
+					task_ptr->start();
+				}
+				if (current_task == "ready") {
 					task_ptr = (new TaskReady(&component, &processor,
-							current_event_context))->start();
+							current_event_context));
+					task_ptr->start();
+				}
 			}
 		}
 	}
@@ -335,7 +270,7 @@ void startComponent(ComponentMain* component) {
 			<< endl << "		<root>ssm</root>" << endl << "	</machines>"
 			<< endl << "</tao>" << endl;
 
-	cognitao::machine::Context context("ssm"); // TODO do  need some context?
+	cognitao::machine::Context context("ssm");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines;
 	try {

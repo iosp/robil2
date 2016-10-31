@@ -164,11 +164,12 @@ public:
 	}
 
 	virtual void run() {
-		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
 	}
 
 	AsyncTask* start(){
 		run_thread = boost::thread(boost::bind(&AsyncTask::start_run, this));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(20));
 		return this;
 	}
 
@@ -176,73 +177,20 @@ public:
 		boost::mutex::scoped_lock l(m);
 		try
 		{
-			cout<<"[d][lli::AsyncTask]running"<<endl;
-			this->run();
+//			cout<<"[d][lli::AsyncTask]running"<<endl;
+			run();
 		}
 		catch (boost::thread_interrupted& thi_ex) {
-			cout<<"[e][lli::AsyncTask] thread interrupt signal"<<endl;
+//			cout<<"[e][lli::AsyncTask] thread interrupt signal"<<endl;
 		}
 		catch (...) {
-			cout<<"[e][lli::AsyncTask] unknown exception"<<endl;
+			ROS_ERROR("LLI::AsyncTask --- Unknown Exception");
+//			cout<<"[e][lli::AsyncTask] unknown exception"<<endl;
 		}
 	}
-
-//	void assign(std::string current_context, std::string task) {
-//		run_thread.interrupt();
-//		run_thread.join();
-//
-//		context = current_context;
-//
-//		if (task == "off")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::off, this));
-//		if (task == "init")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::init, this));
-//		if (task == "ready")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::ready, this));
-//		if (task == "standby")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::standby, this));
-//	}
 
 	void offTask() {
 		comp_ptr->releaseDriverAndManipulator();
-	}
-
-	void init() {
-		ROS_INFO("LLI at Init");
-		int counter = 0;
-		comp_ptr->workerFunc();
-		ros::Duration oneSec(1.0);
-		oneSec.sleep();
-		while (comp_ptr->IsCLLIStillInInit()) {
-			if (counter > 10000)
-				break;
-			oneSec.sleep();
-			counter++;
-		}
-		if (counter > 10000) {
-			printf("LLI STOPPED WO INITIALIZATION COMPLETED\n");
-			RAISE("/lli/Shutdown");
-		}
-
-		RAISE("/lli/EndOfInit");
-	}
-
-	void ready() {
-		ROS_INFO("LLI at Ready");
-		if (!ros::ok()) {
-			ROS_INFO("LLI STOPPED");
-			RAISE("/lli/Shutdown");
-		}
-	}
-
-	void standby() {
-		ROS_INFO("LLI at Standby");
-		ros::Rate r(10);
-		comp_ptr->setReady();
-		comp_ptr->checkReady();
-		while (comp_ptr->StateNotReady())
-			comp_ptr->checkReady();
-		RAISE("/lli/Ready");
 	}
 
 	virtual ~AsyncTask() {
@@ -281,6 +229,8 @@ public:
 
 		RAISE("/lli/EndOfInit");
 	}
+
+	virtual ~TaskInit() {}
 };
 
 class TaskReady: public AsyncTask {
@@ -298,6 +248,8 @@ public:
 			RAISE("/lli/Shutdown");
 		}
 	}
+
+	virtual ~TaskReady() {}
 };
 
 class TaskStandby: public AsyncTask {
@@ -317,6 +269,8 @@ public:
 			comp_ptr->checkReady();
 		RAISE("/lli/Ready");
 	}
+
+	virtual ~TaskStandby() {}
 };
 
 AsyncTask* task_ptr;
@@ -346,15 +300,21 @@ void process_machine(cognitao::machine::Machine & machine,
 				if (current_task == "off")
 					task_ptr->offTask();
 				DELETE(task_ptr);
-				if (current_task == "init")
+				if (current_task == "init") {
 					task_ptr = (new TaskInit(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "ready")
+							current_event_context));
+					task_ptr->start();
+				}
+				if (current_task == "ready") {
 					task_ptr = (new TaskReady(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "standby")
+							current_event_context));
+					task_ptr->start();
+				}
+				if (current_task == "standby") {
 					task_ptr = (new TaskStandby(&component, &processor,
-							current_event_context))->start();
+							current_event_context));
+					task_ptr->start();
+				}
 			}
 		}
 	}

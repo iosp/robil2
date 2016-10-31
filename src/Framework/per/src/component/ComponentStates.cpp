@@ -36,25 +36,27 @@ public:
 
 	AsyncTask* start(){
 		run_thread = boost::thread(boost::bind(&AsyncTask::start_run, this));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(20));
 		return this;
 	}
 
 	virtual void run() {
-		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
 	}
 
 	void start_run() {
 		boost::mutex::scoped_lock l(m);
 		try
 		{
-			cout<<"[d][per::AsyncTask]running"<<endl;
-			this->run();
+//			cout<<"[d][per::AsyncTask]running"<<endl;
+			run();
 		}
 		catch (boost::thread_interrupted& thi_ex) {
-			cout<<"[e][per::AsyncTask] thread interrupt signal"<<endl;
+//			cout<<"[e][per::AsyncTask] thread interrupt signal"<<endl;
 		}
 		catch (...) {
-			cout<<"[e][per::AsyncTask] unknown exception"<<endl;
+			ROS_ERROR("PER::AsyncTask --- Unknown Exception");
+//			cout<<"[e][per::AsyncTask] unknown exception"<<endl;
 		}
 	}
 
@@ -103,6 +105,8 @@ public:
 
 		RAISE("/per/EndOfInit");
 	}
+
+	virtual ~TaskInit() {}
 };
 
 class TaskReady: public AsyncTask {
@@ -117,74 +121,9 @@ public:
 		pause(10000);
 		ROS_INFO("PER at Ready");
 	}
-};
 
-//class AsyncTask {
-//protected:
-//	boost::thread run_thread;
-//	ComponentMain* comp_ptr;
-//	Processor* processor_ptr;
-//	std::string context;
-//public:
-//	AsyncTask(ComponentMain* comp, Processor * processor) :
-//			comp_ptr(comp), processor_ptr(processor) {}
-//
-//	void assign(std::string current_context, std::string task) {
-//		run_thread.interrupt();
-//		run_thread.join();
-//
-//		context = current_context;
-//
-//		if (task == "off")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::off, this));
-//		if (task == "init")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::init, this));
-//		if (task == "ready")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::ready, this));
-//	}
-//
-//	void pause(int millisec) {
-//		int msI = (millisec / 100), msR = (millisec % 100);
-//		for (int si = 0; si < msI and not comp_ptr->isClosed(); si++)
-//			boost::this_thread::sleep(boost::posix_time::millisec(100));
-//		if (msR > 0 and not comp_ptr->isClosed())
-//			boost::this_thread::sleep(boost::posix_time::millisec(msR));
-//	}
-//
-//	void off() {
-////		while (!boost::this_thread::interruption_requested() and ros::ok()) {
-////			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-////		}
-//
-//		pause(10000);
-//		diagnostic_msgs::DiagnosticStatus status;
-//		comp_ptr->publishDiagnostic(status);
-//	}
-//
-//	void init() {
-////		while (!boost::this_thread::interruption_requested() and ros::ok()) {
-////			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-////		}
-//
-//		pause(10000);
-//
-//		ROS_INFO("PER at Init");
-//
-//		RAISE("/per/EndOfInit");
-//	}
-//
-//	void ready() {
-//		pause(10000);
-//		ROS_INFO("PER at Ready");
-//	}
-//
-//	virtual ~AsyncTask() {
-//		run_thread.interrupt();
-//		run_thread.join();
-//		comp_ptr = NULL;
-//		processor_ptr = NULL;
-//	}
-//};
+	virtual ~TaskReady() {}
+};
 
 AsyncTask* task_ptr;
 
@@ -213,12 +152,16 @@ void process_machine(cognitao::machine::Machine & machine,
 				if (task_ptr && current_task == "off")
 					task_ptr->offTask();
 				DELETE(task_ptr);
-				if (current_task == "init")
+				if (current_task == "init") {
 					task_ptr = (new TaskInit(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "ready")
+							current_event_context));
+					task_ptr->start();
+				}
+				if (current_task == "ready") {
 					task_ptr = (new TaskReady(&component, &processor,
-							current_event_context))->start();
+							current_event_context));
+					task_ptr->start();
+				}
 			}
 		}
 	}
@@ -324,7 +267,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 			<< "		<root>per</root>" << endl << "	</machines>" << endl
 			<< "</tao>" << endl;
 
-	cognitao::machine::Context context("per"); // TODO do we need some context?
+	cognitao::machine::Context context("per");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines;
 	try {

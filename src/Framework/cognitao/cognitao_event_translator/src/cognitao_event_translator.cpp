@@ -4,20 +4,29 @@
 
 ros::Publisher pub;
 
+bool isGlobalEvent(const std::string event)
+{
+	return event.find("ClearMissionBuffer") != std::string::npos;
+}
+
 void onStringEvent(const std_msgs::StringPtr & msg)
 {
 	std::string msg_data = msg->data;
 
 	events_bus::Msg_Event e;
-	e.event = "/smme" + msg_data;
 	e.stamp = ros::Time::now();
 	e.source = "/cognitao_event_translator";
+
+	if(not isGlobalEvent(msg_data))
+	{
+		e.event = "/smme" + msg_data;
+	}
 
 	pub.publish(e);
 }
 
-int main(int argc, char** argv) {
-
+int main(int argc, char** argv)
+{
 	ros::init(argc, argv, "cognitao_event_translator");
 	ros::NodeHandle nh("~");
 

@@ -41,42 +41,28 @@ public:
 
 	AsyncTask* start(){
 		run_thread = boost::thread(boost::bind(&AsyncTask::start_run, this));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(20));
 		return this;
 	}
 
 	virtual void run() {
-		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
 	}
 
 	void start_run() {
 		boost::mutex::scoped_lock l(m);
 		try
 		{
-			cout<<"[d][pp::AsyncTask]running"<<endl;
-			this->run();
+//			cout<<"[d][pp::AsyncTask]running"<<endl;
+			run();
 		}
 		catch (boost::thread_interrupted& thi_ex) {
-			cout<<"[e][pp::AsyncTask] thread interrupt signal"<<endl;
+//			cout<<"[e][pp::AsyncTask] thread interrupt signal"<<endl;
 		}
 		catch (...) {
-			cout<<"[e][pp::AsyncTask] unknown exception"<<endl;
+			ROS_ERROR("PP::AsyncTask --- Unknown Exception");
+//			cout<<"[e][pp::AsyncTask] unknown exception"<<endl;
 		}
-	}
-
-	void assign(std::string current_context, std::string task) {
-		run_thread.interrupt();
-		run_thread.join();
-
-		context = current_context;
-
-		if (task == "off")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::off, this));
-		if (task == "init")
-			run_thread = boost::thread(boost::bind(&AsyncTask::init, this));
-		if (task == "ready")
-			run_thread = boost::thread(boost::bind(&AsyncTask::ready, this));
-		if (task == "standby")
-			run_thread = boost::thread(boost::bind(&AsyncTask::standby, this));
 	}
 
 	void pause(int millisec) {
@@ -95,27 +81,6 @@ public:
 		pause(1000);
 //		diagnostic_msgs::DiagnosticStatus status;
 //		comp_ptr->publishDiagnostic(status);
-	}
-
-	void init() {
-//		while (!boost::this_thread::interruption_requested() and ros::ok()) {
-//			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-//		}
-		pause(1000);
-		ROS_INFO("PP at Init");
-		RAISE("/pp/EndOfInit");
-	}
-
-	void ready() {
-		ROS_INFO("PP at Ready");
-		comp_ptr->resume_navigation();
-		comp_ptr->rise_taskStarted();
-	}
-
-	void standby() {
-		ROS_INFO("PP at Standby");
-		comp_ptr->cancel_navigation();
-		comp_ptr->rise_taskPaused();
 	}
 
 	virtual ~AsyncTask() {
@@ -144,6 +109,8 @@ public:
 
 		RAISE("/pp/EndOfInit");
 	}
+
+	virtual ~TaskInit() {}
 };
 
 class TaskReady: public AsyncTask {
@@ -160,6 +127,8 @@ public:
 		comp_ptr->resume_navigation();
 		comp_ptr->rise_taskStarted();
 	}
+
+	virtual ~TaskReady() {}
 };
 
 class TaskStandby: public AsyncTask {
@@ -176,6 +145,8 @@ public:
 		comp_ptr->cancel_navigation();
 		comp_ptr->rise_taskPaused();
 	}
+
+	virtual ~TaskStandby() {}
 };
 
 AsyncTask* task_ptr;
@@ -205,23 +176,29 @@ void process_machine(cognitao::machine::Machine & machine,
 			string current_event_context = e_poped.context().str();
 			if (context_size > 1) {
 				std::string current_task = e_poped.context()[context_size - 2];
-//				ROS_WARN_STREAM(" Current task: " << current_task);
+//				ROS_WARN_STREAM(" Current PP task: " << current_task);
 //				ROS_INFO_STREAM(
-//						" Current event context: " << current_event_context);
+//						" Current PP event context: " << current_event_context);
 //				if (current_task == "off" || current_task == "init" || current_task == "ready" || current_task == "standby")
 //					task_ptr->assign(current_event_context, current_task);
 				if (task_ptr && current_task == "off")
 					task_ptr->offTask();
 				DELETE(task_ptr);
-				if (current_task == "init")
+				if (current_task == "init") {
 					task_ptr =  (new TaskInit(&component, &processor,
-							current_event_context)) ->start();
-				if (current_task == "ready")
+							current_event_context));
+					task_ptr->start();
+				}
+				if (current_task == "ready") {
 					task_ptr = (new TaskReady(&component, &processor,
-							current_event_context)) ->start();
-				if (current_task == "standby")
+							current_event_context));
+					task_ptr->start();
+				}
+				if (current_task == "standby") {
 					task_ptr = (new TaskStandby(&component, &processor,
-							current_event_context)) ->start();
+							current_event_context));
+					task_ptr->start();
+				}
 			}
 		}
 	}
@@ -357,7 +334,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 			<< "		<root>pp</root>" << endl << "	</machines>" << endl << "</tao>"
 			<< endl;
 
-	cognitao::machine::Context context("path_planer"); // TODO do  need some context?
+	cognitao::machine::Context context("path_planer");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::core::MachinesCollection machines;
 	try {

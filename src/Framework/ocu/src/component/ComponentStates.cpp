@@ -33,25 +33,27 @@ public:
 
 	AsyncTask* start(){
 		run_thread = boost::thread(boost::bind(&AsyncTask::start_run, this));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(20));
 		return this;
 	}
 
 	virtual void run() {
-		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
 	}
 
 	void start_run() {
 		boost::mutex::scoped_lock l(m);
 		try
 		{
-			cout<<"[d][ocu::AsyncTask]running"<<endl;
-			this->run();
+//			cout<<"[d][ocu::AsyncTask]running"<<endl;
+			run();
 		}
 		catch (boost::thread_interrupted& thi_ex) {
-			cout<<"[e][ocu::AsyncTask] thread interrupt signal"<<endl;
+//			cout<<"[e][ocu::AsyncTask] thread interrupt signal"<<endl;
 		}
 		catch (...) {
-			cout<<"[e][ocu::AsyncTask] unknown exception"<<endl;
+			ROS_ERROR("OCU::AsyncTask --- Unknown Exception");
+//			cout<<"[e][ocu::AsyncTask] unknown exception"<<endl;
 		}
 	}
 
@@ -63,20 +65,6 @@ public:
 			boost::this_thread::sleep(boost::posix_time::millisec(msR));
 	}
 
-//	void assign(std::string current_context, std::string task) {
-//		run_thread.interrupt();
-//		run_thread.join();
-//
-//		context = current_context;
-//
-//		if (task == "off")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::off, this));
-//		if (task == "init")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::init, this));
-//		if (task == "ready")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::ready, this));
-//	}
-
 	void offTask() {
 //		while (!boost::this_thread::interruption_requested() and ros::ok()) {
 //			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
@@ -85,21 +73,6 @@ public:
 		pause(10000);
 //		diagnostic_msgs::DiagnosticStatus status;
 //		comp_ptr->publishDiagnostic(status);
-	}
-
-	void init() {
-		ROS_INFO("OCU at Init");
-//		while (!boost::this_thread::interruption_requested() and ros::ok()) {
-//			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-//		}
-
-//		pause(10000);
-		RAISE("/ocu/EndOfInit");
-	}
-
-	void ready() {
-		ROS_INFO("OCU at Ready");
-		pause(10000);
 	}
 
 	virtual ~AsyncTask() {
@@ -127,6 +100,8 @@ public:
 //		pause(10000);
 		RAISE("/ocu/EndOfInit");
 	}
+
+	virtual ~TaskInit() {}
 };
 
 class TaskReady: public AsyncTask {
@@ -141,6 +116,8 @@ public:
 		ROS_INFO("OCU at Ready");
 		pause(10000);
 	}
+
+	virtual ~TaskReady() {}
 };
 
 AsyncTask* task_ptr;
@@ -170,12 +147,16 @@ void process_machine(cognitao::machine::Machine & machine,
 				if (task_ptr && current_task == "off")
 					task_ptr->offTask();
 				DELETE(task_ptr);
-				if (current_task == "init")
+				if (current_task == "init") {
 					task_ptr = (new TaskInit(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "ready")
+							current_event_context));
+					task_ptr->start();
+				}
+				if (current_task == "ready") {
 					task_ptr = (new TaskReady(&component, &processor,
-							current_event_context))->start();
+							current_event_context));
+					task_ptr->start();
+				}
 			}
 		}
 	}
@@ -284,7 +265,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 			<< "		<root>ocu</root>" << endl << "	</machines>" << endl
 			<< "</tao>" << endl;
 
-	cognitao::machine::Context context("ocu"); // TODO do  need some context?
+	cognitao::machine::Context context("ocu");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines;
 	try {

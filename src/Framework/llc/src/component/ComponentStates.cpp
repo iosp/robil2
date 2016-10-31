@@ -107,16 +107,15 @@ protected:
 	boost::mutex m;
 public:
 	AsyncTask(ComponentMain* comp, Processor * processor, std::string context) :
-			comp_ptr(comp), processor_ptr(processor), context(context) {
-		boost::mutex::scoped_lock l(m);
-	}
+			comp_ptr(comp), processor_ptr(processor), context(context) {}
 
 	virtual void run() {
-		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
 	}
 
 	AsyncTask* start(){
 		run_thread = boost::thread(boost::bind(&AsyncTask::start_run, this));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(20));
 		return this;
 	}
 
@@ -124,14 +123,15 @@ public:
 		boost::mutex::scoped_lock l(m);
 		try
 		{
-			cout<<"[d][llc::AsyncTask]running"<<endl;
-			this->run();
+//			cout<<"[d][llc::AsyncTask]running"<<endl;
+			run();
 		}
 		catch (boost::thread_interrupted& thi_ex) {
-			cout<<"[e][llc::AsyncTask] thread interrupt signal"<<endl;
+//			cout<<"[e][llc::AsyncTask] thread interrupt signal"<<endl;
 		}
 		catch (...) {
-			cout<<"[e][llc::AsyncTask] unknown exception"<<endl;
+			ROS_ERROR("LLC::AsyncTask --- Unknown Exception");
+//			cout<<"[e][llc::AsyncTask] unknown exception"<<endl;
 		}
 	}
 
@@ -143,253 +143,10 @@ public:
 			boost::this_thread::sleep(boost::posix_time::millisec(msR));
 	}
 
-//	void assign(std::string current_context, std::string task) {
-//		run_thread.interrupt();
-//		run_thread.join();
-//
-//		context = current_context;
-//
-//		if (task == "off")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::off, this));
-//		if (task == "init")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::init, this));
-//		if (task == "ready")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::ready, this));
-//		if (task == "standby")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::standby, this));
-//	}
-
 	void offTask() {
 		ROS_INFO("LLC OFF");
 		//diagnostic_msgs::DiagnosticStatus status;
 		//comp_ptr->publishDiagnostic(status);
-	}
-
-	void init() {
-		ROS_INFO("LLC at Init");
-//		while (!boost::this_thread::interruption_requested() and ros::ok()) {
-//		 boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-//		}
-
-//		pause(10000);
-		RAISE("/llc/EndOfInit");
-	}
-
-	void ready() {
-		ROS_INFO("LLC at Ready");
-
-		double integral[2] = { }; /* integration part */
-		double der[2] = { }; /* the derivative of the error */
-		double integral_limit[2] = { 1, -0.3 }; /* emergency stop */
-		double angular_filter[1024] = { };
-		double old_err = 0;
-		int E_stop = 1;
-		comp_ptr->t_flag = 0;
-
-#ifdef LLC_USE_LOCALIZATION
-
-		Kp = 0.12; Kd = 0.0; Ki = 0.1;
-		Kpz = -1.32; Kdz = 0.0; Kiz = -0.3;
-
-		geometry_msgs::Twist per_speed;
-		geometry_msgs::PoseWithCovarianceStamped per_location;
-
-#endif
-
-		config::LLC::pub::EffortsSt Steering_rate; /* steering rate  +- 1 */
-		config::LLC::pub::EffortsTh Throttle_rate; /* Throttle rate  +- 1 */
-		sensor_msgs::JointState Blade_pos;
-
-		geometry_msgs::TwistStamped cur_error; /* stores the current error signal */
-		geometry_msgs::TwistStamped old_error; /* stores the last error signal */
-		geometry_msgs::Twist t; /* used for co-ordinates transform */
-		ros::Subscriber link_to_platform;
-		ros::Subscriber link_to_comm_check;
-		ros::Publisher linear_error_publisher;
-		ros::Publisher angular_error_publisher;
-		ros::Publisher debug_publisher;
-		ros::NodeHandle n;
-		link_to_platform = n.subscribe("/Sahar/link_with_platform", 100,
-				hb_callback);
-		link_to_comm_check = n.subscribe("/llc_status", 100,
-				llc_status_callback);
-		linear_error_publisher = n.advertise<std_msgs::Float64>("/linear_error",
-				100);
-		angular_error_publisher = n.advertise<std_msgs::Float64>(
-				"/angular_error", 100);
-		debug_publisher = n.advertise<std_msgs::Float64>("/or_debug", 100);
-		comp_ptr->WPD_desired_speed.twist.linear.x = 0;
-		comp_ptr->WPD_desired_speed.twist.angular.z = 0;
-		comp_ptr->WSM_desired_speed.twist.linear.x = 0;
-		comp_ptr->WSM_desired_speed.twist.angular.z = 0;
-
-		/* PID loop */
-
-		while (!hb_time)
-			;
-
-		ROS_INFO("Connected with platform");
-		/*
-		 * TODO: Diagnostics about connection
-		 */
-
-		/*
-		 *  PID LOOP
-		 */
-
-		while ((ros::Time::now().toSec() - hb_time) < t_out) {
-			if (comp_ptr->isClosed() || !ros::ok()) { /* checks whether the line is empty, or node failed */
-				ROS_INFO("STOPPED");
-			}
-
-			/* get measurements and calculate error signal */
-
-#ifndef LLC_USE_LOCALIZATION
-
-			ros::ServiceClient gmscl = n.serviceClient<
-					gazebo_msgs::GetModelState>("/gazebo/get_model_state");
-			gazebo_msgs::GetModelState getmodelstate;
-			getmodelstate.request.model_name = "Sahar";
-			gmscl.call(getmodelstate);
-			geometry_msgs::PoseWithCovarianceStamped gigi;
-			gigi.pose.pose = getmodelstate.response.pose;
-			t = Translate(gigi, getmodelstate.response.twist);
-
-#else
-
-			per_location = comp_ptr->Per_pose;
-			per_speed = comp_ptr->Per_measured_speed;
-			t = Translate(per_location, per_speed);
-
-#endif
-
-			if (comp_ptr->WPD_desired_speed.twist.linear.x
-					|| comp_ptr->WPD_desired_speed.twist.angular.z) {
-				cur_error.twist.linear.x =
-						(comp_ptr->WPD_desired_speed.twist.linear.x)
-								- t.linear.x;
-				cur_error.twist.angular.z =
-						((comp_ptr->WPD_desired_speed.twist.angular.z)
-								- t.angular.z);
-			} else {
-				cur_error.twist.linear.x =
-						(comp_ptr->WSM_desired_speed.twist.linear.x)
-								- t.linear.x;
-				cur_error.twist.angular.z =
-						((comp_ptr->WSM_desired_speed.twist.angular.z)
-								- t.angular.z);
-			}
-			std_msgs::Float64 angular_error;
-			std_msgs::Float64 linear_error;
-			std_msgs::Float64 debug_f;
-			angular_error.data = cur_error.twist.angular.z;
-			linear_error.data = cur_error.twist.linear.x;
-
-			debug_f.data = comp_ptr->WPD_desired_speed.twist.linear.x;
-			linear_error_publisher.publish(linear_error);
-			angular_error_publisher.publish(angular_error);
-			debug_publisher.publish(debug_f);
-
-			Push_elm(angular_filter, 1024, cur_error.twist.angular.z);
-			//cur_error.twist.angular.z = _medianfilter(angular_filter,201);
-			cur_error.twist.angular.z = avg_filter(angular_filter, 1024.0);
-
-			cur_error.twist.linear.x = (1 - 0.125) * old_err
-					+ cur_error.twist.linear.x * (0.125);
-			old_err = cur_error.twist.linear.x;
-
-			double dt = 0.001;
-
-			/* calculate integral and derivatives */
-			integral[0] += ((cur_error.twist.linear.x) * dt);
-			der[0] =
-					((cur_error.twist.linear.x - old_error.twist.linear.x) / dt);
-			integral[1] += ((cur_error.twist.angular.z) * dt);
-			der[1] = ((cur_error.twist.angular.z - old_error.twist.angular.z)
-					/ dt);
-			for (int k = 0; k < 2; k++) {
-				if (integral[k] > integral_limit[k])
-					integral[k] = integral_limit[k];
-				else if (integral[k] < -integral_limit[k])
-					integral[k] = -integral_limit[k];
-			}
-
-			//Kpz=Kpz*(1+abs(t.linear.x));
-			//ROS_INFO("%f",Throttle_rate.data);
-
-			//Steering_rate.data = E_stop*(Kpz*cur_error.twist.angular.z + Kiz*integral[1] - Kdz*der[1]) ;
-
-			Throttle_rate.data = (Kp * cur_error.twist.linear.x
-					+ Ki * integral[0] + Kd * der[0]) * k_emrg;
-			Steering_rate.data = (Kpz * cur_error.twist.angular.z + Kdz * der[1]
-					+ Kiz * integral[1]) * k_emrg;
-
-			/*/or controlers test
-			 if(comp_ptr->WPD_desired_speed.twist.angular.z>0){
-			 Steering_rate.data = E_stop*(Kpz*(cur_error.twist.angular.z+0.2) + Kiz*integral[1] - Kdz*der[1]) ;
-			 }
-			 if(comp_ptr->WPD_desired_speed.twist.angular.z<0){
-			 Steering_rate.data = E_stop*(Kpz*(cur_error.twist.angular.z-0.2) + Kiz*integral[1] - Kdz*der[1]) ;
-			 }
-			 if(comp_ptr->WPD_desired_speed.twist.angular.z==0){
-
-			 }
-			 */
-
-			/*
-			 // stops (or's test)
-			 if((comp_ptr->WPD_desired_speed.twist.linear.x==0 && comp_ptr->WPD_desired_speed.twist.angular.z==0)|| !(comp_ptr->WPD_desired_speed.twist.linear.x || comp_ptr->WPD_desired_speed.twist.angular.z )){
-			 Throttle_rate.data = 0;
-			 Steering_rate.data = 0;
-			 }
-			 */
-			/* publish */
-			comp_ptr->publishEffortsTh(Throttle_rate);
-			comp_ptr->publishEffortsSt(Steering_rate);
-
-			/* WSM blade controller */
-
-			if (comp_ptr->t_flag) {
-
-				Blade_pos.name.clear();
-				Blade_pos.name = comp_ptr->Blade_angle.name;
-				Blade_pos.position.clear();
-				for (int i = 0; i < comp_ptr->Blade_angle.position.size(); i++)
-					Blade_pos.position.push_back(
-							comp_ptr->Blade_angle.position[i]);
-				comp_ptr->publishEffortsJn(Blade_pos);
-				comp_ptr->t_flag = 0;
-			}
-
-			/* calibrate the error */
-			old_error.twist.angular.z = cur_error.twist.angular.z;
-			old_error.twist.linear.x = cur_error.twist.linear.x;
-
-			if (!E_stop)
-				break;
-			pause(10); /* wait dt time to recalculate error */
-
-			//usleep(100000);
-		}
-		ROS_INFO("cannot connect with platform");
-		/*
-		 * TODO: break bond diagnostics
-		 */
-		// END PID loop
-	}
-
-	void standby() {
-		ROS_INFO("LLC at Standby");
-//		while (!boost::this_thread::interruption_requested() and ros::ok()) {
-//		 boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-//		}
-
-//		pause(10000);
-//		cognitao::bus::Event ev_bus_event(
-//				cognitao::bus::Event::name_t("/llc/Activation"),
-//				cognitao::bus::Event::channel_t(""),
-//				cognitao::bus::Event::context_t(context));
-//		processor_ptr->bus_events << ev_bus_event;
 	}
 
 	virtual ~AsyncTask() {
@@ -404,9 +161,7 @@ class TaskInit: public AsyncTask {
 public:
 	TaskInit(ComponentMain* comp, Processor* processor,
 			std::string current_context) :
-			AsyncTask(comp, processor, current_context) {
-//		run_thread = boost::thread(boost::bind(&TaskInit::run, this));
-	}
+			AsyncTask(comp, processor, current_context) {}
 
 	virtual void run() {
 		ROS_INFO("LLC at Init");
@@ -417,15 +172,15 @@ public:
 //		pause(10000);
 		RAISE("/llc/EndOfInit");
 	}
+
+	virtual ~TaskInit() {}
 };
 
 class TaskReady: public AsyncTask {
 public:
 	TaskReady(ComponentMain* comp, Processor* processor,
 			std::string current_context) :
-			AsyncTask(comp, processor, current_context) {
-//		run_thread = boost::thread(boost::bind(&TaskReady::run, this));
-	}
+			AsyncTask(comp, processor, current_context) {}
 
 	virtual void run() {
 		ROS_INFO("LLC at Ready");
@@ -629,15 +384,15 @@ public:
 		 */
 		// END PID loop
 	}
+
+	virtual ~TaskReady() {}
 };
 
 class TaskStandby: public AsyncTask {
 public:
 	TaskStandby(ComponentMain* comp, Processor* processor,
 			std::string current_context) :
-			AsyncTask(comp, processor, current_context) {
-//		run_thread = boost::thread(boost::bind(&TaskStandby::run, this));
-	}
+			AsyncTask(comp, processor, current_context) {}
 
 	virtual void run() {
 		ROS_INFO("LLC at Standby");
@@ -652,6 +407,8 @@ public:
 //				cognitao::bus::Event::context_t(context));
 //		processor_ptr->bus_events << ev_bus_event;
 	}
+
+	virtual ~TaskStandby() {}
 };
 
 
@@ -680,15 +437,21 @@ void process_machine(cognitao::machine::Machine & machine,
 //				ROS_INFO_STREAM(" Current event context: " << current_event_context);
 				if (current_task == "off")
 					task_ptr->offTask();
-				if (current_task == "init")
+				if (current_task == "init") {
 					task_ptr = (new TaskInit(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "ready")
+							current_event_context));
+					task_ptr->start();
+				}
+				if (current_task == "ready") {
 					task_ptr = (new TaskReady(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "standby")
+							current_event_context));
+					task_ptr->start();
+				}
+				if (current_task == "standby") {
 					task_ptr = (new TaskStandby(&component, &processor,
-							current_event_context))->start();
+							current_event_context));
+					task_ptr->start();
+				}
 			}
 		}
 	}
@@ -1005,7 +768,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 			<< "		<root>llc</root>" << endl << "	</machines>" << endl
 			<< "</tao>" << endl;
 
-	cognitao::machine::Context context("llc"); // TODO do  need some context?
+	cognitao::machine::Context context("llc");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::core::MachinesCollection machines;
 	try {

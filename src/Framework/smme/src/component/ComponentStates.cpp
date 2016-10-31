@@ -44,43 +44,29 @@ public:
 
 	SysTask* start(){
 		run_thread = boost::thread(boost::bind(&SysTask::start_run, this));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(20));
 		return this;
 	}
 
 	virtual void run() {
-		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
 	}
 
 	void start_run() {
 		boost::mutex::scoped_lock l(m);
 		try
 		{
-			cout<<"[d][smme-glob::AsyncTask]running"<<endl;
-			this->run();
+//			cout<<"[d][smme-glob::AsyncTask]running"<<endl;
+			run();
 		}
 		catch (boost::thread_interrupted& thi_ex) {
-			cout<<"[e][smme-glob::AsyncTask] thread interrupt signal"<<endl;
+//			cout<<"[e][smme-glob::AsyncTask] thread interrupt signal"<<endl;
 		}
 		catch (...) {
-			cout<<"[e][smme-glob::AsyncTask] unknown exception"<<endl;
+			ROS_ERROR("SMME::SysTask --- Unknown Exception");
+//			cout<<"[e][smme-glob::AsyncTask] unknown exception"<<endl;
 		}
 	}
-
-//	void assign(std::string current_context, std::string task) {
-//		run_thread.interrupt();
-//		run_thread.join();
-//
-//		context = current_context;
-//
-//		if (task == "off")
-//			run_thread = boost::thread(boost::bind(&SysTask::off, this));
-//		if (task == "init")
-//			run_thread = boost::thread(boost::bind(&SysTask::init, this));
-//		if (task == "ready")
-//			run_thread = boost::thread(boost::bind(&SysTask::ready, this));
-//		if (task == "emergency")
-//			run_thread = boost::thread(boost::bind(&SysTask::emergency, this));
-//	}
 
 	void pause(int millisecs) {
 		int msI = (millisecs / 100), msR = (millisecs % 100);
@@ -91,15 +77,6 @@ public:
 	}
 
 	void offTask() {
-		pause(10000);
-	}
-
-	void init() {
-		//pause(10000);
-		RAISE("/EndOfCoreSystemInit");
-	}
-
-	void emergency() {
 		pause(10000);
 	}
 
@@ -120,8 +97,11 @@ public:
 
 	virtual void run() {
 		//pause(10000);
+		ROS_INFO("SMME INIT");
 		RAISE("/EndOfCoreSystemInit");
 	}
+
+	virtual ~SysInitTask() {}
 };
 
 class SysReadyTask : public SysTask {
@@ -157,6 +137,8 @@ public:
 	virtual void run() {
 		pause(10000);
 	}
+
+	virtual ~SysEmergencyTask()	{}
 };
 
 //FSM(smme_ON)
@@ -271,7 +253,7 @@ void process_machine(cognitao::machine::Machine & machine,
 		Processor & processor, ComponentMain& component) {
 	while (processor.empty() == false) {
 		cognitao::machine::Event e_poped = processor.pop();
-//		cout << "       PROCESS: " << e_poped.str() << endl;
+		cout << "       PROCESS: " << e_poped.str() << endl;
 //		;
 		cognitao::machine::Events p_events;
 		machine = machine->process(e_poped, p_events);
@@ -292,15 +274,21 @@ void process_machine(cognitao::machine::Machine & machine,
 				if (systask_ptr && current_task == "off")
 					systask_ptr->offTask();
 				DELETE(systask_ptr);
-				if (current_task == "init")
+				if (current_task == "init") {
 					systask_ptr = (new SysInitTask(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "ready")
+							current_event_context));
+					systask_ptr->start();
+				}
+				if (current_task == "ready") {
 					systask_ptr = (new SysReadyTask(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "emergency")
+							current_event_context));
+					systask_ptr->start();
+				}
+				if (current_task == "emergency") {
 					systask_ptr = (new SysEmergencyTask(&component, &processor,
-							current_event_context))->start();
+							current_event_context));
+					systask_ptr->start();
+				}
 //				cout << "address: " << systask_ptr << endl;
 			}
 		}
@@ -322,7 +310,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 			<< endl << "		<root>smme</root>" << endl << "	</machines>" << endl
 			<< "</tao>" << endl;
 
-	cognitao::machine::Context context("smme"); // TODO do  need some context?
+	cognitao::machine::Context context("smme");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines;
 	try {

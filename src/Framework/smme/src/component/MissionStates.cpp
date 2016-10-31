@@ -23,7 +23,7 @@ using namespace std;
 //	std::string str()const{return "";}
 //};
 
-#define MID_PREF(X) string("/mission/")+X
+#define MID_PREF(X) string("/smme/mission/")+X
 #define DELETE(X) if(X){delete X; X=NULL;}
 #define EVENT(X) \
 		cognitao::bus::Event( \
@@ -188,47 +188,28 @@ public:
 
 	AsyncMission* start(){
 		run_thread = boost::thread(boost::bind(&AsyncMission::start_run, this));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(20));
 		return this;
 	}
 
 	virtual void run() {
-		cout<<"[e] PURE VIRTUAL: "<<context<<endl;
+		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
 	}
 
 	void start_run() {
 		boost::mutex::scoped_lock l(m);
 		try
 		{
-			cout<<"[d][smme-mission::AsyncTask]running"<<endl;
-
-			this->run();
+//			cout<<"[d][smme-mission::AsyncTask]running"<<endl;
+			run();
 		}
 		catch (boost::thread_interrupted& thi_ex) {
-			cout<<"[e][smme-mission::AsyncTask] thread interrupt signal"<<endl;
+//			cout<<"[e][smme-mission::AsyncTask] thread interrupt signal"<<endl;
 		}
 		catch (...) {
-			cout<<"[e][smme-mission::AsyncTask] unknown exception"<<endl;
+			ROS_ERROR("SMME::AsyncMission --- Unknown Exception");
+//			cout<<"[e][smme-mission::AsyncTask] unknown exception"<<endl;
 		}
-	}
-
-	void assign(std::string current_context, std::string task) {
-		run_thread.interrupt();
-		run_thread.join();
-
-		context = current_context;
-
-		if (task == "spooling")
-			run_thread = boost::thread(boost::bind(&AsyncMission::spooling, this));
-		if (task == "paused")
-			run_thread = boost::thread(boost::bind(&AsyncMission::paused, this));
-		if (task == "aborted")
-			run_thread = boost::thread(boost::bind(&AsyncMission::aborted, this));
-		if (task == "finished")
-			run_thread = boost::thread(boost::bind(&AsyncMission::finished, this));
-//		if (task == "pending")
-//			run_thread = boost::thread(boost::bind(&AsyncMission::pending, this));
-//		if (task == "unloaded")
-//			run_thread = boost::thread(boost::bind(&AsyncMission::unloaded, this));
 	}
 
 	void pause(int millisecs) {
@@ -237,55 +218,6 @@ public:
 			boost::this_thread::sleep(boost::posix_time::millisec(100));
 		if (msR > 0 and not comp_ptr->events()->is_closed())
 			boost::this_thread::sleep(boost::posix_time::millisec(msR));
-	}
-
-	void spooling() {
-		MID
-
-		RAISE(MID_PREF(mid) + "/StartTask");
-		RAISE(MID_PREF(mid) + "/ResumeTask");
-
-		MM->change_mission(mid);
-		MM->mission_state("spooling");
-		while(comp_ptr->events()->is_closed()==false and ros::ok()){
-			cognitao::bus::Event e = comp_ptr->events()->waitEvent();
-			extend_events_names(e, MID_PREF(mid), comp_ptr->events());
-			if(e == cognitao::bus::Event(MID_PREF(mid)+"/CompleteTask") or e == cognitao::bus::Event(MID_PREF(mid)+"/StopTask")){
-				std::string ex = MID_PREF(mid)+"/CompleteTask";
-				ROS_INFO("Event %s detected. got next or complete mission", ex.c_str());
-				if(MM->next_task()){
-					this_thread::sleep(milliseconds(100));
-					RAISE(MID_PREF(mid) + "/StartTask");
-				}else{
-					RAISE(MID_PREF(mid) + "/CompleteMission");
-				}
-			}
-		}
-	}
-
-	void paused() {
-		MID
-		RAISE(MID_PREF(mid) + "/StopTask");
-
-		MM->mission_state("paused");
-		while(comp_ptr->events()->is_closed()==false and ros::ok()){
-			cognitao::bus::Event e = comp_ptr->events()->waitEvent();
-			//extend_events_names(e, MID_PREF(mid), comp_ptr->events());
-		}
-	}
-
-	void aborted() {
-		MID
-		RAISE(MID_PREF(mid) + "/StopTask");
-
-		MM->mission_state("aborted");
-	}
-
-	void finished() {
-		MID
-		RAISE(MID_PREF(mid) + "/StopTask");
-
-		MM->mission_state("finished");
 	}
 
 	void onPending() {
@@ -341,6 +273,8 @@ public:
 			}
 		}
 	}
+
+	virtual ~AsyncMissionSpooling() {}
 };
 
 class AsyncMissionPaused : public AsyncMission {
@@ -360,6 +294,8 @@ public:
 			//extend_events_names(e, MID_PREF(mid), comp_ptr->events());
 		}
 	}
+
+	virtual ~AsyncMissionPaused() {}
 };
 
 class AsyncMissionAborted : public AsyncMission {
@@ -375,6 +311,8 @@ public:
 
 		MM->mission_state("aborted");
 	}
+
+	virtual ~AsyncMissionAborted() {}
 };
 
 class AsyncMissionFinished : public AsyncMission {
@@ -390,6 +328,8 @@ public:
 
 		MM->mission_state("finished");
 	}
+
+	virtual ~AsyncMissionFinished() {}
 };
 
 //TaskResult state_MissionUnloaded(string id, const CallContext& context, EventQueue& events){
@@ -473,7 +413,7 @@ void process_mission(cognitao::machine::Machine & machine,
 		Processor & processor, ComponentMain& component) {
 	while (processor.empty() == false) {
 		cognitao::machine::Event e_poped = processor.pop();
-//		cout << "       PROCESS: " << e_poped.str() << endl;
+		cout << "       PROCESS_MISSION: " << e_poped.str() << endl;
 //		;
 		cognitao::machine::Events p_events;
 		machine = machine->process(e_poped, p_events);
@@ -500,18 +440,26 @@ void process_mission(cognitao::machine::Machine & machine,
 				if (mission_ptr && current_task == "pending")
 					mission_ptr->onPending();
 				DELETE(mission_ptr);
-				if (current_task == "spooling")
+				if (current_task == "spooling") {
 					mission_ptr = (new AsyncMissionSpooling(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "paused")
+							current_event_context));
+					mission_ptr->start();
+				}
+				if (current_task == "paused") {
 					mission_ptr = (new AsyncMissionPaused(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "aborted")
+							current_event_context));
+					mission_ptr->start();
+				}
+				if (current_task == "aborted") {
 					mission_ptr = (new AsyncMissionAborted(&component, &processor,
-							current_event_context))->start();
-				if (current_task == "finished")
+							current_event_context));
+					mission_ptr->start();
+				}
+				if (current_task == "finished") {
 					mission_ptr = (new AsyncMissionFinished(&component, &processor,
-							current_event_context))->start();
+							current_event_context));
+					mission_ptr->start();
+				}
 			}
 		}
 	}
@@ -532,7 +480,7 @@ void MissionMachine::startMission(ComponentMain* component, std::string mission_
 			<< endl << "		<root>mission</root>" << endl << "	</machines>" << endl
 			<< "</tao>" << endl;
 
-	cognitao::machine::Context context("smme"); // TODO do  need some context?
+	cognitao::machine::Context context("smme/mission");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines;
 	try {
