@@ -403,7 +403,7 @@ void HeightMap::calculateTypes(Vec3D position, Rotation myRot)
     for(int i = 1; i < _width-1; i++)
         for(int j = 1; j < _height-1; j++)
         {
-            double height = calc_height(i,j, 2);
+            double height = calc_height(i,j, _dynamic->convolution_size);
             if (height > _dynamic->obstacle_threshold)
                 _types[j*_width+i] = TYPE_OBSTACLE;
             else if(height == HEIGHT_UNKNOWN)
