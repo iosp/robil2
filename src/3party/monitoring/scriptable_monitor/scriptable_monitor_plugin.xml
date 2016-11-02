@@ -1,7 +1,0 @@
-<library path="lib/libscriptable_monitor" >
-  <class name="scriptable_monitor" type="diagnostic_aggregator::ScriptableMonitor" base_class_type="diagnostic_aggregator::Analyzer">
-    <description>
-      ScriptableMonitor: python monitor scripts
-    </description>
-  </class>
-</library>
