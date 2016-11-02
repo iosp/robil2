@@ -522,7 +522,21 @@
 	<dynamics/>
     </axis>
 </joint>
-
+		<joint name='supporter_joint2' type='revolute'>
+			<pose>1.04 0 -0.122 0 0 0</pose>
+			<child>supporter</child>
+			<parent>body</parent>
+			<axis>
+				<xyz>0 1 0</xyz>
+				<limit>
+					<lower>-0.5</lower>
+					<upper>1.5</upper>
+					<effort>1e+06</effort>
+					<velocity>100</velocity>
+				</limit>
+				<!--<dynamics><friction>1</friction></dynamics>-->
+			</axis>
+		</joint>
 
 
 <link name='back_left_wheel'>

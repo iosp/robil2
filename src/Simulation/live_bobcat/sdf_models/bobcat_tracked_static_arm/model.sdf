@@ -456,7 +456,7 @@
       <pose>-1.35 0.655 0.31 3.14159265358979 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
-        <mass>0.1</mass>
+        <mass>12.5</mass>
         <inertia>
           <ixx>0.01</ixx>
           <ixy>-0</ixy>
@@ -517,7 +517,7 @@
       <pose>-1.35 -0.66 0.31 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
-        <mass>0.1</mass>
+        <mass>12.5</mass>
         <inertia>
           <ixx>0.01</ixx>
           <ixy>-0</ixy>
