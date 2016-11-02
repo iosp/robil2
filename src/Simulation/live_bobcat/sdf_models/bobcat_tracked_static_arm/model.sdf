@@ -1012,7 +1012,10 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
+
+    
     <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so"/>
+
 
     <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
       <robotNamespace>/Sahar</robotNamespace>
@@ -1020,5 +1023,211 @@
       <updateRate>50.0</updateRate>
       <alwaysOn>true</alwaysOn>
     </plugin>
+
+<!-- IPON Sensor--> <!---->
+    <include>
+      <uri>model://IPON</uri>
+      <pose>-0.550 -0.155 2.000 0.000 0.0007 0.000</pose>
+      <name>IPON</name>
+    </include>
+    <joint name='ipon_joint' type='revolute'>
+      <child>IPON::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>    
+       
+
+<!-- IBEO Sensor --> <!---->
+    <include>
+      <uri>model://IBEO</uri>
+      <pose>-0.240 0.015 1.8172 0.000 0.2507 0.107</pose>
+      <name>IBEO</name>
+    </include>
+    <joint name='ibeo_joint' type='revolute'>
+      <child>IBEO::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+
+<!-- CAM Sensors --> <!---->
+    <include>
+      <uri>model://FLEA3_L</uri>
+      <pose>-0.3 0.25 2.02 0 0 0</pose>
+      <name>left_flea3</name>
+    </include>
+    <joint name='left_flea3_joint' type='revolute'>
+      <child>left_flea3::camera_link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    
+    <include>
+      <uri>model://FLEA3_R</uri>
+      <pose>-0.3 -0.25 2.02 0 0 0</pose>
+      <name>right_flea3</name>
+    </include>    
+    <joint name='right_flea3_joint' type='revolute'>
+      <child>right_flea3::camera_link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+
+
+
+<!-- SICK Sensors --><!--
+    <include>
+      <uri>model://SICK</uri>
+      <pose>-0.2187 0.85 0.631 0 0 1.57</pose>
+      <name>left_sick</name>
+    </include>
+    <joint name='left_sick_joint' type='revolute'>
+      <child>left_sick::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    
+    <include> 
+      <uri>model://SICK</uri>
+      <pose>-0.2187 -0.85 0.631 0 0 -1.57</pose>
+      <name>right_sick</name>
+    </include>
+    <joint name='right_sick_joint' type='revolute'>
+      <child>right_sick::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+-->
+
+<!--  Wire Sensors --><!--
+    <include>
+      <uri>model://wire_sensor</uri>
+      <pose>-1.42 0.56 1.05 -1.6 2.3 0</pose>
+      <name>arm_wire_sensor</name>
+    </include> 
+    <joint name='arm_wire_sensor_joint' type='revolute'>
+      <child>arm_wire_sensor::link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+    <include>
+      <uri>model://wire_sensor_mount</uri>
+      <pose>-1.31 0.56 1.28 -1.6 0 0</pose>
+      <name>arm_wire_sensor_mount</name>
+    </include>    
+    <joint name='arm_wire_sensor_mount_joint' type='revolute'>
+      <child>arm_wire_sensor_mount::link</child>
+      <parent>main_arm</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+    <plugin name="arm_wire_sensor_plugin" filename="libwire_sensor.so">
+      <sensor_name>Sahar::arm_wire_sensor::link</sensor_name>
+      <mount_name>Sahar::arm_wire_sensor_mount::link</mount_name>
+      <noise>0.1</noise>
+    </plugin>    
+    
+        
+    <include>
+      <uri>model://wire_sensor_mount</uri>
+      <pose>0.59 0.3 0.52 0 -1 0</pose>
+      <name>blade_wire_sensor_mount</name>
+    </include> 
+    <joint name='blade_wire_sensor_mount_joint' type='revolute'>
+      <child>blade_wire_sensor_mount::link</child>
+      <parent>loader</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+    <include>
+      <uri>model://wire_sensor</uri>
+      <pose>0.3 0.3 0.85 0 -0.83 3.14</pose>
+      <name>blade_wire_sensor</name>
+    </include>    
+    <joint name='blade_wire_sensor_joint' type='revolute'>
+      <child>blade_wire_sensor::link</child>
+      <parent>main_arm</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    
+    <plugin name="blade_wire_sensor_plugin" filename="libwire_sensor.so">
+      <sensor_name>Sahar::blade_wire_sensor::link</sensor_name>
+      <mount_name>Sahar::blade_wire_sensor_mount::link</mount_name>
+      <noise>0.1</noise>
+    </plugin>
+-->
+
   </model>
 </sdf>
