@@ -1,0 +1,9 @@
+string name
+string type
+string source
+float64 interval
+string fail_type
+time last_execution
+string[] validations
+string[] topics
+string[] functions
