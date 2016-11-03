@@ -552,6 +552,7 @@
       <child>cogwheel_right</child>
       <parent>body</parent>
       <axis>
+      <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -618,6 +619,7 @@
       <child>front_left_wheel</child>
       <parent>body</parent>
       <axis>
+      <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>

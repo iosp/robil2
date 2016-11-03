@@ -491,6 +491,7 @@
       <child>cogwheel_left</child>
       <parent>body</parent>
       <axis>
+       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -552,6 +553,7 @@
       <child>cogwheel_right</child>
       <parent>body</parent>
       <axis>
+      <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -1004,7 +1006,7 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
-    <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so"/>
+    <!--<plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so"/>-->
 
     <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
       <robotNamespace>/Sahar</robotNamespace>
