@@ -386,7 +386,7 @@
     <joint name='back_left_wheel_joint' type='revolute'>
       <child>back_left_wheel</child>
       <parent>body</parent>
-      <axis>
+      <axis>       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -440,7 +440,7 @@
     <joint name='back_right_wheel_joint' type='revolute'>
       <child>back_right_wheel</child>
       <parent>body</parent>
-      <axis>
+      <axis>       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -491,6 +491,7 @@
       <child>cogwheel_left</child>
       <parent>body</parent>
       <axis>
+      <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -618,8 +619,7 @@
     <joint name='front_left_wheel_joint' type='revolute'>
       <child>front_left_wheel</child>
       <parent>body</parent>
-      <axis>
-      <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -673,7 +673,7 @@
     <joint name='front_right_wheel_joint' type='revolute'>
       <child>front_right_wheel</child>
       <parent>body</parent>
-      <axis>
+      <axis>       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -726,7 +726,7 @@
     <joint name='roller_back_right_joint' type='revolute'>
       <child>roller_back_right</child>
       <parent>body</parent>
-      <axis>
+      <axis>       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -780,7 +780,7 @@
     <joint name='roller_mid_right_joint' type='revolute'>
       <child>roller_mid_right</child>
       <parent>body</parent>
-      <axis>
+      <axis>       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -834,7 +834,7 @@
     <joint name='roller_front_right_joint' type='revolute'>
       <child>roller_front_right</child>
       <parent>body</parent>
-      <axis>
+      <axis>       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -888,7 +888,7 @@
     <joint name='roller_back_left_joint' type='revolute'>
       <child>roller_back_left</child>
       <parent>body</parent>
-      <axis>
+      <axis>       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -942,7 +942,7 @@
     <joint name='roller_mid_left_joint' type='revolute'>
       <child>roller_mid_left</child>
       <parent>body</parent>
-      <axis>
+      <axis>       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -996,7 +996,7 @@
     <joint name='roller_front_left_joint' type='revolute'>
       <child>roller_front_left</child>
       <parent>body</parent>
-      <axis>
+      <axis>       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
