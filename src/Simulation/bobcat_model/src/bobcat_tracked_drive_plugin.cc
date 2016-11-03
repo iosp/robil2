@@ -1,5 +1,5 @@
 // Written By : Daniel Meltz
-#define MY_GAZEBO_VER 2
+#define MY_GAZEBO_VER 5
 // If the plugin is not defined then define it
 #ifndef _BOBTANK_DRIVE_PLUGIN_HH_
 #define _BOBTANK_DRIVE_PLUGIN_HH_
@@ -44,10 +44,10 @@
 // Maximum time delays
 #define command_MAX_DELAY 0.3
 
-#define WHEEL_EFFORT_LIMIT 10000
+#define WHEEL_EFFORT_LIMIT 1000
 
 #define WHEELS_BASE 0.95
-#define STEERING_FRICTION_COMPENSATION 2; // compensate the the daliure of reaching the angular velocity
+#define STEERING_FRICTION_COMPENSATION 3; // compensate for the faliure of reaching the angular velocity
 
 #define WHEEL_DIAMETER 0.4
 #define ROLLER_DIAMETER 0.2
@@ -85,6 +85,8 @@ namespace gazebo
       this->roller_back_left = this->model->GetJoint("roller_back_left_joint");
       this->roller_mid_left = this->model->GetJoint("roller_mid_left_joint");
       this->roller_front_left = this->model->GetJoint("roller_front_left_joint");
+      this->cogwheel_right = this->model->GetJoint("cogwheel_right_joint");
+      this->cogwheel_left = this->model->GetJoint("cogwheel_left_joint");
       
       // Starting Timers
       Linear_command_timer.Start();
@@ -179,7 +181,7 @@ namespace gazebo
 
     public: void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
       {
-          controll_P = config.Wheel_conntrol_P;
+          control_P = config.Wheel_conntrol_P;
           controll_I = config.Wheel_conntrol_I;
           controll_D = config.Wheel_conntrol_D;
 
@@ -261,21 +263,22 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 
         double error = ref_omega - wheel_omega;
 
-        double effort_command = (controll_P * error);
+        double effort_command = (control_P * error);
 
         if(effort_command > WHEEL_EFFORT_LIMIT) effort_command = WHEEL_EFFORT_LIMIT;
         if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
+        if(wheel_joint==this->cogwheel_right||wheel_joint==this->cogwheel_left) effort_command=effort_command*0.01;
 
 
 //        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
 
-        #if MY_GAZEBO_VER >= 5 
-                wheel_joint->SetVelocity(0,ref_omega);
-        #else
+        // #if MY_GAZEBO_VER >= 6
+                // wheel_joint->SetVelocity(0,ref_omega);
+        // #else
                 wheel_joint->SetForce(0,effort_command);
-        #endif
+        // #endif
 
     }
 
@@ -307,6 +310,10 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
         wheel_controller(this->roller_back_left, roller_left_omega_ref);
         wheel_controller(this->roller_mid_left, roller_left_omega_ref);
         wheel_controller(this->roller_front_left, roller_left_omega_ref);
+        // wheel_joint->SetVelocity(0,ref_omega);
+        wheel_controller(this->cogwheel_right  , right_wheels_omega_ref);
+        wheel_controller(this->cogwheel_left  , left_wheels_omega_ref);
+        
     }
 
 
@@ -364,6 +371,9 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
      private: physics::JointPtr roller_back_left;
      private: physics::JointPtr roller_mid_left;
      private: physics::JointPtr roller_front_left;
+     private: physics::JointPtr cogwheel_left;
+     private: physics::JointPtr cogwheel_right;
+
 
 
 
@@ -405,7 +415,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 
 
      private: dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
-     private: double controll_P, controll_I ,controll_D;		// PID constants
+     private: double control_P, controll_I ,controll_D;		// PID constants
      private: double command_lN, command_aN;   // command noise factors
 
      std::default_random_engine generator;
