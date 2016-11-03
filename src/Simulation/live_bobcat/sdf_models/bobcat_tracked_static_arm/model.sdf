@@ -426,7 +426,6 @@
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
-              <fdir/>
             </ode>
           </friction>
         </surface>
@@ -604,7 +603,6 @@
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
-              <fdir/>
             </ode>
           </friction>
         </surface>
@@ -712,7 +710,6 @@
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
-              <fdir/>
             </ode>
           </friction>
         </surface>
@@ -767,7 +764,6 @@
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
-              <fdir/>
             </ode>
           </friction>
         </surface>
@@ -822,7 +818,6 @@
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
-              <fdir/>
             </ode>
           </friction>
         </surface>
@@ -877,7 +872,6 @@
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
-              <fdir/>
             </ode>
           </friction>
         </surface>
@@ -932,7 +926,6 @@
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
-              <fdir/>
             </ode>
           </friction>
         </surface>
@@ -987,7 +980,6 @@
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
-              <fdir/>
             </ode>
           </friction>
         </surface>
