@@ -1,5 +1,5 @@
 // Written By : Daniel Meltz
-
+#define MY_GAZEBO_VER 2
 // If the plugin is not defined then define it
 #ifndef _BOBTANK_DRIVE_PLUGIN_HH_
 #define _BOBTANK_DRIVE_PLUGIN_HH_
@@ -44,10 +44,10 @@
 // Maximum time delays
 #define command_MAX_DELAY 0.3
 
-#define WHEEL_EFFORT_LIMIT 100000
+#define WHEEL_EFFORT_LIMIT 1000
 
 #define WHEELS_BASE 0.95
-#define STEERING_FRICTION_COMPENSATION 2; // compensate the the daliure of reaching the angular velosity
+#define STEERING_FRICTION_COMPENSATION 3; // compensate for the faliure of reaching the angular velocity
 
 #define WHEEL_DIAMETER 0.4
 #define ROLLER_DIAMETER 0.2
@@ -56,7 +56,7 @@
 #define LINEAR_COMMAND_FILTER_ARRY_SIZE 750
 #define ANGULAR_COMMAND_FILTER_ARRY_SIZE 500
 
-#define MY_GAZEBO_VER 2
+
 namespace gazebo
 {
   
@@ -85,6 +85,8 @@ namespace gazebo
       this->roller_back_left = this->model->GetJoint("roller_back_left_joint");
       this->roller_mid_left = this->model->GetJoint("roller_mid_left_joint");
       this->roller_front_left = this->model->GetJoint("roller_front_left_joint");
+      this->cogwheel_right = this->model->GetJoint("cogwheel_right_joint");
+      this->cogwheel_left = this->model->GetJoint("cogwheel_left_joint");
       
       // Starting Timers
       Linear_command_timer.Start();
@@ -133,14 +135,14 @@ namespace gazebo
       // note that we will pass in a sequence of iterators pointing to the beginning of each grid
       double Throttle_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
 
-      double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.04,     0.00,    0.40,     0.70,      1.00};
+      double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
 
                                          //r=-1.00    r=-0.70   r=-0.40   r=0.00   r=0.40     r=0.70    r=1.00
       double Linear_vell_values_array[] = { -1.20,    -1.30,    -1.40,    -1.50,    -1.40,    -1.30,    -1.20,    //t=-1.00
                                             -0.65,    -0.70,    -0.75,    -0.80,    -0.75,    -0.70,    -0.65,    //t=-0.70
                                             -0.14,    -0.16,    -0.23,    -0.20,    -0.18,    -0.16,    -0.14,    //t=-0.40
                                              0.40,     0.17,     0.00,     0.00,     0.00,     0.17,     0.40,    //t=0.00
-                                             0.14,     0.16,     0.23,     0.20,     0.18,     0.16,     0.14,    //t=0.40
+                                             0.14,     0.16,     0.23,     0.20,     0.23,     0.16,     0.14,    //t=0.40
                                              0.65,     0.70,     0.75,     0.80,     0.75,     0.70,     0.65,    //t=0.70
                                              1.20,     1.30,     1.40,     1.50,     1.40,     1.30,     1.20};   //t=1.00
 
@@ -179,7 +181,7 @@ namespace gazebo
 
     public: void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
       {
-          controll_P = config.Wheel_conntrol_P;
+          control_P = config.Wheel_conntrol_P;
           controll_I = config.Wheel_conntrol_I;
           controll_D = config.Wheel_conntrol_D;
 
@@ -261,21 +263,22 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 
         double error = ref_omega - wheel_omega;
 
-        double effort_command = (controll_P * error);
+        double effort_command = (control_P * error);
 
         if(effort_command > WHEEL_EFFORT_LIMIT) effort_command = WHEEL_EFFORT_LIMIT;
         if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
+        if(wheel_joint==this->cogwheel_right||wheel_joint==this->cogwheel_left) effort_command=effort_command*0.01;
 
 
 //        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
 
-        #if( MY_GAZEBO_VER >= 5  )
-                wheel_joint->SetVelocity(0,ref_omega);
-        #else
+        // #if MY_GAZEBO_VER >= 6
+                // wheel_joint->SetVelocity(0,ref_omega);
+        // #else
                 wheel_joint->SetForce(0,effort_command);
-        #endif
+        // #endif
 
     }
 
@@ -307,6 +310,10 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
         wheel_controller(this->roller_back_left, roller_left_omega_ref);
         wheel_controller(this->roller_mid_left, roller_left_omega_ref);
         wheel_controller(this->roller_front_left, roller_left_omega_ref);
+        // wheel_joint->SetVelocity(0,ref_omega);
+        wheel_controller(this->cogwheel_right  , right_wheels_omega_ref);
+        wheel_controller(this->cogwheel_left  , left_wheels_omega_ref);
+        
     }
 
 
@@ -320,7 +327,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Angular_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
-        #if( MY_GAZEBO_VER >= 5 )
+        #if  MY_GAZEBO_VER >= 5 
            Angular_command_timer.Reset();
         #endif
            Angular_command_timer.Start();
@@ -340,7 +347,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Linear_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
-	#if( MY_GAZEBO_VER >= 5 )
+	#if  MY_GAZEBO_VER >= 5 
            Linear_command_timer.Reset();
         #endif
            Linear_command_timer.Start();
@@ -364,6 +371,9 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
      private: physics::JointPtr roller_back_left;
      private: physics::JointPtr roller_mid_left;
      private: physics::JointPtr roller_front_left;
+     private: physics::JointPtr cogwheel_left;
+     private: physics::JointPtr cogwheel_right;
+
 
 
 
@@ -405,7 +415,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 
 
      private: dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
-     private: double controll_P, controll_I ,controll_D;		// PID constants
+     private: double control_P, controll_I ,controll_D;		// PID constants
      private: double command_lN, command_aN;   // command noise factors
 
      std::default_random_engine generator;
