@@ -15,6 +15,12 @@ using namespace std;
 #include "EventTranslator.h"
 
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define RESET(X,Y) if(current_task == X) { \
+					ROS_WARN_STREAM(" Current SMME task: " << current_task); \
+					DELETE(systask_ptr) \
+					systask_ptr = new Y; \
+					systask_ptr->start(); \
+					continue;}
 #define EVENT(X) \
 		cognitao::bus::Event( \
 				cognitao::bus::Event::name_t(X), \
@@ -253,7 +259,7 @@ void process_machine(cognitao::machine::Machine & machine,
 		Processor & processor, ComponentMain& component) {
 	while (processor.empty() == false) {
 		cognitao::machine::Event e_poped = processor.pop();
-		cout << "       PROCESS: " << e_poped.str() << endl;
+//		cout << "       PROCESS: " << e_poped.str() << endl;
 //		;
 		cognitao::machine::Events p_events;
 		machine = machine->process(e_poped, p_events);
@@ -273,23 +279,9 @@ void process_machine(cognitao::machine::Machine & machine,
 //						" Current event context: " << current_event_context);
 				if (systask_ptr && current_task == "off")
 					systask_ptr->offTask();
-				DELETE(systask_ptr);
-				if (current_task == "init") {
-					systask_ptr = (new SysInitTask(&component, &processor,
-							current_event_context));
-					systask_ptr->start();
-				}
-				if (current_task == "ready") {
-					systask_ptr = (new SysReadyTask(&component, &processor,
-							current_event_context));
-					systask_ptr->start();
-				}
-				if (current_task == "emergency") {
-					systask_ptr = (new SysEmergencyTask(&component, &processor,
-							current_event_context));
-					systask_ptr->start();
-				}
-//				cout << "address: " << systask_ptr << endl;
+				RESET("init", SysInitTask(&component, &processor, current_event_context))
+				RESET("ready", SysReadyTask(&component, &processor, current_event_context))
+				RESET("emergency", SysEmergencyTask(&component, &processor, current_event_context))
 			}
 		}
 	}

@@ -19,6 +19,12 @@ using namespace std;
 #include "WsmTask.h"
 
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define RESET(X,Y) if(current_task == X) { \
+					ROS_WARN_STREAM(" Current WSM task: " << current_task); \
+					DELETE(task_ptr) \
+					task_ptr = new Y; \
+					task_ptr->start(); \
+					continue;}
 #define EVENT(X) \
 		cognitao::bus::Event( \
 				cognitao::bus::Event::name_t(X), \
@@ -385,6 +391,7 @@ public:
 		comp_ptr->z_offset = 0;
 
 		RAISE("/wsm/SensorConnected");
+//		RAISE("/SensorConnected");
 	}
 
 	virtual ~TaskInit() {}
@@ -417,7 +424,8 @@ public:
 			}
 
 			if (comp_ptr->cur_mission->Get_status() == "complete") {
-				RAISE("/CompleteTask");
+//				comp_ptr->rise_taskCompleted();
+				processor_ptr->bus_events << cognitao::bus::Event("/CompleteTask");
 				ROS_INFO("Mission complete");
 				DELETE(comp_ptr->cur_mission);
 			}
@@ -445,6 +453,7 @@ public:
 		}
 
 		RAISE("/wsm/Resume");
+//		RAISE("/Resume");
 	}
 
 	virtual ~TaskStandby() {}
@@ -469,30 +478,15 @@ void process_machine(cognitao::machine::Machine & machine,
 			string current_event_context = e_poped.context().str();
 			if (context_size > 1) {
 				std::string current_task = e_poped.context()[context_size - 2];
-//				ROS_WARN_STREAM(" Current task: " << current_task);
 //				ROS_INFO_STREAM(
 //						" Current event context: " << current_event_context);
 //				if (current_task == "off" || current_task == "init" || current_task == "ready" || current_task == "standby")
 //					task_ptr->assign(current_event_context, current_task);
 				if (task_ptr && current_task == "off")
 					task_ptr->offTask();
-				DELETE(task_ptr);
-				if (current_task == "init") {
-					task_ptr = (new TaskInit(&component, &processor,
-							current_event_context));
-					task_ptr->start();
-				}
-				if (current_task == "ready") {
-					task_ptr = (new TaskReady(&component, &processor,
-							current_event_context));
-					task_ptr->start();
-				}
-				if (current_task == "standby") {
-					task_ptr = (new TaskStandby(&component, &processor,
-							current_event_context));
-					task_ptr->start();
-
-				}
+				RESET("init", TaskInit(&component, &processor, current_event_context))
+				RESET("ready", TaskReady(&component, &processor, current_event_context))
+				RESET("standby", TaskStandby(&component, &processor, current_event_context))
 			}
 		}
 

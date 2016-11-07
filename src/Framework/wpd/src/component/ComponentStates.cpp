@@ -7,6 +7,12 @@
 #include "TwistRetranslator.h"
 
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define RESET(X,Y) if(current_task == X) { \
+					ROS_WARN_STREAM(" Current WPD task: " << current_task); \
+					DELETE(task_ptr) \
+					task_ptr = new Y; \
+					task_ptr->start(); \
+					continue;}
 #define EVENT(X) \
 		cognitao::bus::Event( \
 				cognitao::bus::Event::name_t(X), \
@@ -182,21 +188,9 @@ void process_machine(cognitao::machine::Machine & machine,
 //					task_ptr->assign(current_event_context, current_task);
 				if (task_ptr && current_task == "off")
 					task_ptr->offTask();
-				DELETE(task_ptr);
-				if (current_task == "init") {
-					task_ptr = (new TaskInit(&component, &processor,
-							current_event_context));
-					task_ptr->start();
-				}
-				if (current_task == "ready") {
-					task_ptr = (new TaskReady(&component, &processor,
-							current_event_context));
-					task_ptr->start();
-				}
-				if (current_task == "standby") {
-					task_ptr = (new TaskStandby(&component, &processor, current_event_context));
-					task_ptr->start();
-				}
+				RESET("init", TaskInit(&component, &processor, current_event_context))
+				RESET("ready", TaskReady(&component, &processor, current_event_context))
+				RESET("standby", TaskStandby(&component, &processor, current_event_context))
 			}
 		}
 	}

@@ -5,7 +5,7 @@
 			<tasks>
 			
 				<task id="UNLOADED">
-					<reaction on_event="?/smme/${MID}/MissionUnloaded/Stopped" target="STOP_MACHINE" />
+					<reaction on_event="?/smme/mission/${MID}/MissionUnloaded/Stopped" target="STOP_MACHINE" />
 				</task>
 				
 				<task id="STOP_MACHINE" />

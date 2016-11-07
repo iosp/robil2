@@ -149,3 +149,99 @@ void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
 	_roscomm->publishDiagnostic(header, _report);
 }
+
+//void ComponentMain::rise_taskStarted()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/StartTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}
+//
+//void ComponentMain::rise_taskPaused()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/PauseTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}
+//
+//void ComponentMain::rise_taskResumed()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/ResumeTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}
+//
+//void ComponentMain::rise_taskStopped()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/StopTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}
+//
+//void ComponentMain::rise_taskAborted()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/AbortTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}
+//
+//void ComponentMain::rise_taskCompleted()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/CompleteTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}

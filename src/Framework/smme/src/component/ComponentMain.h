@@ -25,6 +25,7 @@ class ComponentMain {
 	boost::thread_group threads;
 	cognitao::bus::EventQueue* _events;
 	LocationSet<geometry_msgs::Point> knownIEDObjects;
+	boost::mutex _m;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -46,5 +47,12 @@ public:
 
 	void set_events(cognitao::bus::EventQueue* e){ _events = e; }
 	cognitao::bus::EventQueue* events()const{ return _events; }
+
+//	void rise_taskStarted();
+//	void rise_taskPaused();
+//	void rise_taskResumed();
+//	void rise_taskStopped();
+//	void rise_taskAborted();
+//	void rise_taskCompleted();
 };
 #endif /* COMPONENTMAIN_H_ */

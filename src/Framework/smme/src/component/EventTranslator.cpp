@@ -26,7 +26,7 @@ void EventTranslator(ComponentMain* comp, cognitao::bus::EventQueue* events)
 			SEND("/llc/Resume");
 		}
 		ON_EVENT("/IEDDetected"){
-			SEND("/PauseMission");
+			SEND("/smme/mission/./PauseMission");
 		}
 
 

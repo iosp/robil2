@@ -26,12 +26,20 @@ using namespace std;
 
 #define MID_PREF(X) string("/smme/mission/")+X
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define RESET(X,Y) if(current_task == X) { \
+					ROS_WARN_STREAM(" Current task: " << current_task); \
+					DELETE(task_ptr) \
+					task_ptr = new Y; \
+					task_ptr->start(); \
+					continue;}
 #define EVENT(X) \
 		cognitao::bus::Event( \
 				cognitao::bus::Event::name_t(X), \
 				cognitao::bus::Event::channel_t(""), \
 				cognitao::bus::Event::context_t(context))
 #define RAISE(X) processor_ptr->bus_events << EVENT(X)
+//#define RAISE_NO_CONTEXT(X) processor_ptr->bus_events << cognitao::bus::Event( \
+//																cognitao::bus::Event::name_t(X))
 #define MISSION_ID MID_PREF(FSM_CONTEXT.parameters<TaskParams>().mission_id)
 
 class AsyncTask {
@@ -58,7 +66,15 @@ public:
 	}
 
 	virtual void run() {
-		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
+		ROS_INFO("SMME task at Pending.");
+		MID
+		MissionManager::MissionID cmid = MM->get_current_mission().mid;
+		MM->change_mission(mid);
+		MM->task_state("pending");
+		MM->change_mission(cmid);
+		is_active = false;
+		activation_thread.interrupt();
+		activation_thread.join();
 	}
 
 	void start_run() {
@@ -85,15 +101,6 @@ public:
 			boost::this_thread::sleep(boost::posix_time::millisec(msR));
 	}
 
-	void pending() {
-		MID
-		MissionManager::MissionID cmid = MM->get_current_mission().mid;
-		MM->change_mission(mid);
-		MM->task_state("pending");
-		MM->change_mission(cmid);
-		is_active = false;
-	}
-
 	void active() {
 		is_active = true;
 		while(comp_ptr->events()->is_closed()==false and ros::ok()){
@@ -105,8 +112,6 @@ public:
 	}
 
 	virtual ~AsyncTask() {
-		activation_thread.interrupt();
-		activation_thread.join();
 		run_thread.interrupt();
 		run_thread.join();
 		comp_ptr = NULL;
@@ -122,13 +127,15 @@ public:
 	}
 
 	virtual void run() {
+		ROS_INFO("SMME task at Spooling.");
 		if(!is_active) activation_thread = boost::thread(boost::bind(&AsyncTask::active, this));
 		MID
 		MM->task_state("spooling");
 		if(MM->task_type()==MissionManager::TT_Navigation){
 			MissionManager::NavTask task = MM->get_nav_task();
 			config::SMME::pub::GlobalPath path = extract_path(task);
-			RAISE("/pp/StartTask");
+//			RAISE("/pp/StartTask");
+			RAISE("/pp/Resume");
 			this_thread::sleep(milliseconds(500));
 			comp_ptr->publishGlobalPath(path);
 		}else
@@ -140,10 +147,10 @@ public:
 		}else
 		if(MM->task_type()==MissionManager::TT_Unknown){
 			ROS_ERROR("smme: Active task type is unknown");
-			RAISE("/smme/AbortTask");
+			RAISE("/smme/mission/" + mid + "/AbortTask");
 		}else{
 			ROS_ERROR("smme: Error in task type detector");
-			RAISE("/smme/AbortTask");
+			RAISE("/smme/mission/" + mid + "/AbortTask");
 		}
 	}
 
@@ -157,6 +164,7 @@ public:
 //		run_thread = boost::thread(boost::bind(&AsyncTaskPaused::run, this));
 	}
 	virtual void run() {
+		ROS_INFO("SMME task at Paused.");
 		if(!is_active) activation_thread = boost::thread(boost::bind(&AsyncTask::active, this));
 		MM->task_state("paused");
 		if(MM->task_type()==MissionManager::TT_Navigation) {
@@ -178,6 +186,7 @@ public:
 	}
 
 	virtual void run () {
+		ROS_INFO("SMME task at Aborted.");
 		if(!is_active) activation_thread = boost::thread(boost::bind(&AsyncTask::active, this));
 		MID
 		RAISE(mid + "/AbortMission");
@@ -202,6 +211,7 @@ public:
 	}
 
 	virtual void run () {
+		ROS_INFO("SMME task at Finished.");
 		if(!is_active) activation_thread = boost::thread(boost::bind(&AsyncTask::active, this));
 		MM->task_state("finished");
 		if(MM->task_type()==MissionManager::TT_Navigation) {
@@ -432,7 +442,7 @@ void process_task(cognitao::machine::Machine & machine,
 		Processor & processor, ComponentMain& component) {
 	while (processor.empty() == false) {
 		cognitao::machine::Event e_poped = processor.pop();
-		cout << "       PROCESS_TASK: " << e_poped.str() << endl;
+//		cout << "       PROCESS_TASK: " << e_poped.str() << endl;
 //		;
 		cognitao::machine::Events p_events;
 		machine = machine->process(e_poped, p_events);
@@ -453,30 +463,12 @@ void process_task(cognitao::machine::Machine & machine,
 //				ROS_WARN_STREAM(" Current task: " << current_task);
 //				ROS_INFO_STREAM(
 //						" Current event context: " << current_event_context);
-				if (task_ptr && current_task == "pending") {
-					task_ptr->pending();
-				}
-				DELETE(task_ptr);
-				if (current_task == "spooling") {
-					task_ptr = (new AsyncTaskSpooling(&component, &processor,
-							current_event_context));
-					task_ptr->start();
-				}
-				if (current_task == "paused") {
-					task_ptr = (new AsyncTaskPaused(&component, &processor,
-							current_event_context));
-					task_ptr->start();
-				}
-				if (current_task == "aborted") {
-					task_ptr = (new AsyncTaskAborted(&component, &processor,
-							current_event_context));
-					task_ptr->start();
-				}
-				if (current_task == "finished") {
-					task_ptr = (new AsyncTaskFinished(&component, &processor,
-							current_event_context));
-					task_ptr->start();
-				}
+				RESET("pending", AsyncTask(&component, &processor, current_event_context))
+				RESET("unloaded", AsyncTask(&component, &processor, current_event_context))
+				RESET("spooling", AsyncTaskSpooling(&component, &processor,	current_event_context))
+				RESET("paused", AsyncTaskPaused(&component, &processor,	current_event_context))
+				RESET("aborted", AsyncTaskAborted(&component, &processor,	current_event_context))
+				RESET("finished", AsyncTaskFinished(&component, &processor,	current_event_context))
 			}
 		}
 	}
@@ -497,7 +489,7 @@ void TaskMachine::startTask(ComponentMain* component, std::string mission_id){
 			<< endl << "		<root>task</root>" << endl << "	</machines>" << endl
 			<< "</tao>" << endl;
 
-	cognitao::machine::Context context("smme/task");
+	cognitao::machine::Context context("smme/mission");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines;
 	try {

@@ -25,6 +25,12 @@ using namespace std;
 
 #define MID_PREF(X) string("/smme/mission/")+X
 #define DELETE(X) if(X){delete X; X=NULL;}
+#define RESET(X,Y) if(current_task == X) { \
+					ROS_WARN_STREAM(" Current mission: " << current_task); \
+					DELETE(mission_ptr) \
+					mission_ptr = new Y; \
+					mission_ptr->start(); \
+					continue;}
 #define EVENT(X) \
 		cognitao::bus::Event( \
 				cognitao::bus::Event::name_t(X), \
@@ -150,7 +156,10 @@ bool extend_events_names(cognitao::bus::Event& e, std::string mid_pref, cognitao
 		if(e == cognitao::bus::Event(NAME)){\
 			std::string ex=mid_pref+NAME;\
 			ROS_INFO("Extend event: "NAME" to %s",ex.c_str());\
-			events->rise(cognitao::bus::Event(mid_pref+NAME));\
+			events->rise(cognitao::bus::Event( \
+							cognitao::bus::Event::name_t(mid_pref+NAME), \
+							cognitao::bus::Event::channel_t(""), \
+							cognitao::bus::Event::context_t("smme"))); \
 			return true;\
 		}
 		//----------- TASK GLOBAL EVENT -------------
@@ -193,7 +202,12 @@ public:
 	}
 
 	virtual void run() {
-		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
+		ROS_INFO("SMME mission at Pending.");
+		MID
+		MissionManager::MissionID cmid = MM->get_current_mission().mid;
+		MM->change_mission(mid);
+		MM->mission_state("pending");
+		MM->change_mission(cmid);
 	}
 
 	void start_run() {
@@ -220,21 +234,6 @@ public:
 			boost::this_thread::sleep(boost::posix_time::millisec(msR));
 	}
 
-	void onPending() {
-		MID
-		MissionManager::MissionID cmid = MM->get_current_mission().mid;
-		MM->change_mission(mid);
-		MM->mission_state("pending");
-		MM->change_mission(cmid);
-	}
-
-	void onUnloaded() {
-		MID
-		MM->remove(mid);
-
-		RAISE(MID_PREF(mid) + "/Stopped");
-	}
-
 	virtual ~AsyncMission() {
 		run_thread.interrupt();
 		run_thread.join();
@@ -251,6 +250,7 @@ public:
 	}
 
 	virtual void run() {
+		ROS_INFO("SMME mission at Spooling.");
 		MID
 
 		RAISE(MID_PREF(mid) + "/StartTask");
@@ -285,8 +285,9 @@ public:
 	}
 
 	virtual void run() {
+		ROS_INFO("SMME mission at Paused.");
 		MID
-		RAISE(MID_PREF(mid) + "/StopTask");
+		RAISE(MID_PREF(mid) + "/PauseTask");
 
 		MM->mission_state("paused");
 		while(comp_ptr->events()->is_closed()==false and ros::ok()){
@@ -306,8 +307,9 @@ public:
 	}
 
 	virtual void run() {
+		ROS_INFO("SMME mission at Aborted.");
 		MID
-		RAISE(MID_PREF(mid) + "/StopTask");
+		RAISE(MID_PREF(mid) + "/AbortTask");
 
 		MM->mission_state("aborted");
 	}
@@ -323,13 +325,32 @@ public:
 	}
 
 	virtual void run() {
+		ROS_INFO("SMME mission at Finished.");
+		MID
+		RAISE(MID_PREF(mid) + "/CompleteTask");
+
+		MM->mission_state("finished");
+	}
+
+	virtual ~AsyncMissionFinished() {}
+};
+
+class AsyncMissionUnloaded : public AsyncMission {
+public:
+	AsyncMissionUnloaded(ComponentMain* comp, Processor * processor,
+			std::string current_context) : AsyncMission(comp,processor,current_context) {
+//		run_thread = boost::thread(boost::bind(&AsyncMissionFinished::run, this));
+	}
+
+	virtual void run() {
+		ROS_INFO("SMME mission at Unloaded.");
 		MID
 		RAISE(MID_PREF(mid) + "/StopTask");
 
 		MM->mission_state("finished");
 	}
 
-	virtual ~AsyncMissionFinished() {}
+	virtual ~AsyncMissionUnloaded() {}
 };
 
 //TaskResult state_MissionUnloaded(string id, const CallContext& context, EventQueue& events){
@@ -413,7 +434,7 @@ void process_mission(cognitao::machine::Machine & machine,
 		Processor & processor, ComponentMain& component) {
 	while (processor.empty() == false) {
 		cognitao::machine::Event e_poped = processor.pop();
-		cout << "       PROCESS_MISSION: " << e_poped.str() << endl;
+//		cout << "       PROCESS_MISSION: " << e_poped.str() << endl;
 //		;
 		cognitao::machine::Events p_events;
 		machine = machine->process(e_poped, p_events);
@@ -435,31 +456,12 @@ void process_mission(cognitao::machine::Machine & machine,
 //				ROS_WARN_STREAM(" Current mission: " << current_task);
 //				ROS_INFO_STREAM(
 //						" Current event context: " << current_event_context);
-				if (mission_ptr && current_task == "unloaded")
-					mission_ptr->onUnloaded();
-				if (mission_ptr && current_task == "pending")
-					mission_ptr->onPending();
-				DELETE(mission_ptr);
-				if (current_task == "spooling") {
-					mission_ptr = (new AsyncMissionSpooling(&component, &processor,
-							current_event_context));
-					mission_ptr->start();
-				}
-				if (current_task == "paused") {
-					mission_ptr = (new AsyncMissionPaused(&component, &processor,
-							current_event_context));
-					mission_ptr->start();
-				}
-				if (current_task == "aborted") {
-					mission_ptr = (new AsyncMissionAborted(&component, &processor,
-							current_event_context));
-					mission_ptr->start();
-				}
-				if (current_task == "finished") {
-					mission_ptr = (new AsyncMissionFinished(&component, &processor,
-							current_event_context));
-					mission_ptr->start();
-				}
+				RESET("pending", AsyncMission(&component, &processor, current_event_context))
+				RESET("spooling", AsyncMissionSpooling(&component, &processor, current_event_context))
+				RESET("paused", AsyncMissionPaused(&component, &processor, current_event_context))
+				RESET("aborted", AsyncMissionAborted(&component, &processor, current_event_context))
+				RESET("finished", AsyncMissionFinished(&component, &processor, current_event_context))
+				RESET("unloaded", AsyncMissionUnloaded(&component, &processor, current_event_context))
 			}
 		}
 	}
