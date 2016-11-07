@@ -240,7 +240,7 @@ double calcDiferencial_angularError(double currError)
   return result;
 }
 
-void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
+void cb_LocVelocityUpdate(geometry_msgs::TwistStamped msg)
 {
   LocVelLinearX = msg.twist.linear.x;
   LocVelLinearY = msg.twist.linear.y;
@@ -318,10 +318,10 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	ros::NodeHandle n;
 
-        Throttle_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Throttle", 100);
-        Steering_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Steering", 100);
+        Throttle_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Throttle", 50);
+        Steering_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Steering", 50);
 
-        ros::Subscriber locVel= n.subscribe("/LOC/Velocity" , 10, cb_LocVelpcityUpdate);
+        ros::Subscriber locVel= n.subscribe("/LOC/Velocity" , 10, cb_LocVelocityUpdate);
         ros::Subscriber locPose= n.subscribe("/LOC/Pose" , 10, cb_currentYaw);
         ros::Subscriber wpdSpeed = n.subscribe("/WPD/Speed" , 10, cb_WpdSpeed);
 

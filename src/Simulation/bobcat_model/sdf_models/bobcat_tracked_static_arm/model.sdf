@@ -62,7 +62,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/cabin.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/cabin_col.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -92,26 +92,6 @@
           </script>
         </material>
       </visual>
-      <collision name='body_collision_supporter_hinge'>
-        <pose>-0.31547 0 0.68593 1.5708 -5.55112e-17 1.5708</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/supporter_hinge.STL</uri>
-          </mesh>
-        </geometry>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-            </ode>
-          </friction>
-        </surface>
-      </collision>
       <visual name='body_visual_supporter_hinge'>
         <pose>-0.31547 0 0.68593 1.5708 -5.55112e-17 1.5708</pose>
         <geometry>
@@ -227,7 +207,7 @@
         </material>
       </visual>
       <collision name='loader_collision'>
-        <pose>0.34384 0 0.1465 0 0 0</pose>
+        <pose>0.34384 0 0.1465 0 -0.25 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
@@ -247,7 +227,7 @@
         </surface>
       </collision>
       <visual name='loader_visual'>
-        <pose>0.34384 0 0.1465 0 0 0</pose>
+        <pose>0.34384 0 0.1465 0 -0.25 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
@@ -266,7 +246,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/brackets.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/brackets_col.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -301,7 +281,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/supporter.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/supporter_col.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -326,7 +306,7 @@
         </geometry>
         <material>
           <script>
-            <name>Gazebo/GreyTransparent</name>
+            <name>Gazebo/Grey</name>
             <uri>__default__</uri>
           </script>
         </material>
