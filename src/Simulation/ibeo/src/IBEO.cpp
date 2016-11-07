@@ -10,7 +10,7 @@
  */
 #include "../include/IBEO.h"
 #ifndef USE_GPU
-#define USE_GPU 0
+#define USE_GPU 1
 
 using namespace gazebo;
 using namespace std;
