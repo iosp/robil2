@@ -1,9 +1,0 @@
-IBEO to ROS package
-===================
-
-This package takes in the data from an LD-MRS SICK sensor and parses it into a ROS topic.
-the topic is:
-/SENSORS/IBEO/2
-
-for more information visit our wiki:
-http://robil.org/trac_robil/wiki/IBEO

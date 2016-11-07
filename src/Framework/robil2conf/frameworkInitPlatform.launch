@@ -3,7 +3,7 @@
 
 	<!-- include file="$(find robil2conf)/frameworkInitParsers.launch" / -->
         <!-- == GENERAL ===== -->
-	<include file="$(find robil2conf)/parametersLoad.launch" />
+	<!--include file="$(find robil2conf)/parametersLoad.launch" /-->
 	<include file="$(find robil2tf)/launch/robilTFpublisher.launch" />
 	<!-- ================ -->
         <!-- == MONITORING == -->
