@@ -1,5 +1,5 @@
 // Written By : Daniel Meltz
-
+#define MY_GAZEBO_VER 2
 // If the plugin is not defined then define it
 #ifndef _BOBTANK_DRIVE_PLUGIN_HH_
 #define _BOBTANK_DRIVE_PLUGIN_HH_
@@ -50,7 +50,7 @@
 #define WHEEL_DIAMETER 0.270
 #define PI 3.14159265359
 
-#define MY_GAZEBO_VER 2
+
 
 
 namespace gazebo

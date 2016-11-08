@@ -1,5 +1,5 @@
 // Written By : Daniel Meltz
-
+#define MY_GAZEBO_VER 2
 // If the plugin is not defined then define it
 #ifndef _BOBTANK_DRIVE_PLUGIN_HH_
 #define _BOBTANK_DRIVE_PLUGIN_HH_
@@ -73,8 +73,8 @@ namespace gazebo
     {
       //std::cout << "GAZEBO_VERSION = [" << GAZEBO_VERSION << "]"<<std::endl; 
       //float gazebo_ver = std::stof(GAZEBO_VERSION);
-      //std::cout << "GAZEBO_MAJOR_VERSION = [" << GAZEBO_MAJOR_VERSION  << "]"<<std::endl; 
-      //if (GAZEBO_MAJOR_VERSION > 2.0) std::cout << "GADOL"<<std::endl; 
+      //std::cout << "MY_GAZEBO_VER = [" << MY_GAZEBO_VER  << "]"<<std::endl; 
+      //if (MY_GAZEBO_VER > 2.0) std::cout << "GADOL"<<std::endl; 
       //else std::cout << "NOT GADOL"<<std::endl; 
       // Store the pointer to the model
       this->model = _model;
@@ -132,14 +132,14 @@ namespace gazebo
       // note that we will pass in a sequence of iterators pointing to the beginning of each grid
       double Throttle_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
 
-      double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.04,     0.00,    0.40,     0.70,      1.00};
+      double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
 
                                          //r=-1.00    r=-0.70   r=-0.40   r=0.00   r=0.40     r=0.70    r=1.00
       double Linear_vell_values_array[] = { -1.20,    -1.30,    -1.40,    -1.50,    -1.40,    -1.30,    -1.20,    //t=-1.00
                                             -0.65,    -0.70,    -0.75,    -0.80,    -0.75,    -0.70,    -0.65,    //t=-0.70
                                             -0.14,    -0.16,    -0.23,    -0.20,    -0.18,    -0.16,    -0.14,    //t=-0.40
                                              0.40,     0.17,     0.00,     0.00,     0.00,     0.17,     0.40,    //t=0.00
-                                             0.14,     0.16,     0.23,     0.20,     0.18,     0.16,     0.14,    //t=0.40
+                                             0.14,     0.16,     0.23,     0.20,     0.23,     0.16,     0.14,    //t=0.40
                                              0.65,     0.70,     0.75,     0.80,     0.75,     0.70,     0.65,    //t=0.70
                                              1.20,     1.30,     1.40,     1.50,     1.40,     1.30,     1.20};   //t=1.00
 
@@ -270,7 +270,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
 
-#if GAZEBO_MAJOR_VERSION >= 5  
+#if MY_GAZEBO_VER >= 5  
                 wheel_joint->SetVelocity(0,ref_omega);
 #else
                 wheel_joint->SetForce(0,effort_command);
@@ -310,7 +310,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Angular_command = msg->data;   }
 
         // Reseting timer every time LLC publishes message
-#if GAZEBO_MAJOR_VERSION >= 5 
+#if MY_GAZEBO_VER >= 5 
            Angular_command_timer.Reset();
 #endif
            Angular_command_timer.Start();
@@ -330,7 +330,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Linear_command = msg->data;   }
 
         // Reseting timer every time LLC publishes message
-#if GAZEBO_MAJOR_VERSION >= 5
+#if MY_GAZEBO_VER >= 5
            Linear_command_timer.Reset();
 #endif
            Linear_command_timer.Start();
