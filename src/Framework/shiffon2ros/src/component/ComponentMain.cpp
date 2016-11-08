@@ -39,8 +39,7 @@ ComponentMain::ComponentMain(int argc,char** argv)
 
 	_pub_GPSPose=ros::Publisher(_nh.advertise<sensor_msgs::NavSatFix>("/SENSORS/GPS",10));
 	_pub_INS=ros::Publisher(_nh.advertise<sensor_msgs::Imu>("/SENSORS/INS",10));
-	_pub_GpsSpeed=ros::Publisher(_nh.advertise<robil_msgs::GpsSpeed>("/SENSORS/GPS/Speed",10));
-	_pub_GpsSpeedVec=ros::Publisher(_nh.advertise<sensor_msgs::NavSatFix>("/SENSORS/GPS/SpeedVec",10));
+	_pub_GpsSpeed=ros::Publisher(_nh.advertise<sensor_msgs::NavSatFix>("/SENSORS/GPS/Speed",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 //	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
     //Replace the thread group with a simple pthread because there is a SIGEV otherwise
@@ -155,23 +154,15 @@ void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 	GpsSpeed_msg.speed = sqrt(East_vel*East_vel + North_vel*North_vel + Down_vel*Down_vel);
 	GpsSpeed_msg.header.stamp = ros::Time::now();
 */
-	publishGpsSpeed(GpsSpeed_msg);
 
 	config::SHIFFON2ROS::pub::GPS GpsSpeedVec_msg;
 	GpsSpeedVec_msg.latitude  = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
 	GpsSpeedVec_msg.longitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
 	GpsSpeedVec_msg.altitude  = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
 	GpsSpeedVec_msg.header.stamp = ros::Time::now();
-	_pub_GpsSpeedVec.publish(GpsSpeedVec_msg);
+	_pub_GpsSpeed.publish(GpsSpeedVec_msg);
 
 }
-
-void ComponentMain::publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg)
-{
-	_pub_GpsSpeed.publish(msg);
-}
-	
-
 
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	//static tf::TransformBroadcaster br;

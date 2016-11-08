@@ -28,7 +28,6 @@ class ComponentMain {
 		ros::Publisher  _pub_GPSPose;
 		ros::Publisher  _pub_INS;
 		ros::Publisher  _pub_GpsSpeed;
-		ros::Publisher  _pub_GpsSpeedVec;
 
 		string IPADDR;
 

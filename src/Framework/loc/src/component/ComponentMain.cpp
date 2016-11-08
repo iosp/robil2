@@ -27,7 +27,7 @@ ComponentMain::ComponentMain(int argc,char** argv)	: _inited(init(argc, argv))
 	_sub_PositionUpdate=ros::Subscriber(_nh.subscribe("/OCU/PositionUpdate", 10, &ComponentMain::handlePositionUpdate,this));
 	_sub_GPS=ros::Subscriber(_nh.subscribe("/SENSORS/GPS", 10, &ComponentMain::handleGPS,this));
 	_sub_INS=ros::Subscriber(_nh.subscribe("/SENSORS/INS", 10, &ComponentMain::handleINS,this));
-	_sub_GpsSpeed=ros::Subscriber(_nh.subscribe("/SENSORS/GPS/SpeedVec", 10, &ComponentMain::handleGpsSpeed,this));
+	_sub_GpsSpeed=ros::Subscriber(_nh.subscribe("/SENSORS/GPS/Speed", 10, &ComponentMain::handleGpsSpeed,this));
 	_pub_Location=ros::Publisher(_nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/LOC/Pose",10));
 	_pub_PerVelocity=ros::Publisher(_nh.advertise<geometry_msgs::TwistStamped>("/LOC/Velocity",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
