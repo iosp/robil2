@@ -1,5 +1,5 @@
 // Written By : Daniel Meltz
-#define MY_GAZEBO_VER 2
+
 // If the plugin is not defined then define it
 #ifndef _BOBTANK_DRIVE_PLUGIN_HH_
 #define _BOBTANK_DRIVE_PLUGIN_HH_
@@ -274,11 +274,11 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
 
-        // #if MY_GAZEBO_VER >= 6
-                // wheel_joint->SetVelocity(0,ref_omega);
-        // #else
-                wheel_joint->SetForce(0,effort_command);
-        // #endif
+// #if GAZEBO_MAJOR_VERSION >= 5
+        // wheel_joint->SetVelocity(0,ref_omega);
+// #else
+          wheel_joint->SetForce(0,effort_command);
+// #endif
 
     }
 
@@ -327,9 +327,9 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Angular_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
-        #if  MY_GAZEBO_VER >= 5 
+#if  GAZEBO_MAJOR_VERSION >= 5 
            Angular_command_timer.Reset();
-        #endif
+#endif
            Angular_command_timer.Start();
 
 
@@ -347,9 +347,9 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Linear_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
-	#if  MY_GAZEBO_VER >= 5 
+#if  GAZEBO_MAJOR_VERSION >= 5 
            Linear_command_timer.Reset();
-        #endif
+#endif
            Linear_command_timer.Start();
 
       Linear_command_mutex.unlock();
