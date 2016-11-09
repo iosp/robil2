@@ -70,6 +70,9 @@ namespace gazebo
     /// \param[in] _sdf A pointer to the plugin's SDF element.
   public: void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
+	std::cout << "GAZEBO_MAJOR_VERSION = [" << GAZEBO_MAJOR_VERSION  << "]"<<std::endl; 
+        if (GAZEBO_MAJOR_VERSION > 2.0) std::cout << "GADOL"<<std::endl; 
+        else std::cout << "NOT GADOL"<<std::endl; 
 
       // Store the pointer to the model
       this->model = _model;
@@ -274,11 +277,11 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
 
-// #if GAZEBO_MAJOR_VERSION >= 5
-        // wheel_joint->SetVelocity(0,ref_omega);
-// #else
+#if GAZEBO_MAJOR_VERSION >= 5
+          wheel_joint->SetVelocity(0,ref_omega);
+#else
           wheel_joint->SetForce(0,effort_command);
-// #endif
+#endif
 
     }
 
