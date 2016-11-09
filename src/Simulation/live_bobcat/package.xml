@@ -41,13 +41,11 @@
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>gazebo_sick_gpu</build_depend>
-  <build_depend>gazebo_ibeo_gpu</build_depend>
   <build_depend>bobcat</build_depend>
 <build_depend>roscpp</build_depend>
 <build_depend>tf</build_depend>
 <build_depend>gazebo_ros</build_depend>
   <run_depend>bobcat</run_depend>
-  <run_depend>gazebo_ibeo_gpu</run_depend>
   <run_depend>gazebo_sick_gpu</run_depend>
 <run_depend>roscpp</run_depend>
 <run_depend>tf</run_depend>
