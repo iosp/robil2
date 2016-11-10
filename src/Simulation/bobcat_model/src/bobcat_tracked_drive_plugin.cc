@@ -1,4 +1,5 @@
 // Written By : Daniel Meltz
+#define MY_GAZEBO_VER 5
 
 // If the plugin is not defined then define it
 #ifndef _BOBTANK_DRIVE_PLUGIN_HH_
@@ -47,7 +48,7 @@
 #define WHEEL_EFFORT_LIMIT 1000
 
 #define WHEELS_BASE 0.95
-#define STEERING_FRICTION_COMPENSATION 3; // compensate for the faliure of reaching the angular velocity
+#define STEERING_FRICTION_COMPENSATION 2.5; // compensate for the faliure of reaching the angular velocity
 
 #define WHEEL_DIAMETER 0.4
 #define ROLLER_DIAMETER 0.2
@@ -70,7 +71,7 @@ namespace gazebo
     /// \param[in] _sdf A pointer to the plugin's SDF element.
   public: void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
-
+      std::cout << "MY_GAZEBO_VER = [" << GAZEBO_MAJOR_VERSION  << "]"<<std::endl; 
       // Store the pointer to the model
       this->model = _model;
 
@@ -137,17 +138,17 @@ namespace gazebo
 
       double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
 
-                                         //r=-1.00    r=-0.70   r=-0.40   r=0.00   r=0.40     r=0.70    r=1.00
-      double Linear_vell_values_array[] = { -1.20,    -1.30,    -1.40,    -1.50,    -1.40,    -1.30,    -1.20,    //t=-1.00
+                                         //s=-1.00    s=-0.70   s=-0.40   s=0.00   s=0.40     s=0.70    s=1.00
+      double Linear_vel_values_array[] = { -1.20,    -1.30,    -1.40,    -1.50,    -1.40,    -1.30,    -1.20,    //t=-1.00
                                             -0.65,    -0.70,    -0.75,    -0.80,    -0.75,    -0.70,    -0.65,    //t=-0.70
-                                            -0.14,    -0.16,    -0.23,    -0.20,    -0.18,    -0.16,    -0.14,    //t=-0.40
+                                            -0.14,    -0.16,    -0.18,    -0.20,    -0.18,    -0.16,    -0.14,    //t=-0.40
                                              0.40,     0.17,     0.00,     0.00,     0.00,     0.17,     0.40,    //t=0.00
-                                             0.14,     0.16,     0.23,     0.20,     0.23,     0.16,     0.14,    //t=0.40
+                                             0.14,     0.16,     0.18,     0.20,     0.18,     0.16,     0.14,    //t=0.40
                                              0.65,     0.70,     0.75,     0.80,     0.75,     0.70,     0.65,    //t=0.70
                                              1.20,     1.30,     1.40,     1.50,     1.40,     1.30,     1.20};   //t=1.00
 
-                                         //r=-1.00    r=-0.70   r=-0.40   r=0.00    r=0.40    r=0.70    r=1.00
-      double Angular_vell_values_array[] = { 1.40,     0.42,     0.18,     0.00,    -0.18,    -0.42,    -1.40,    //t=-1.00
+                                         //s=-1.00    s=-0.70   s=-0.40   s=0.00    s=0.40    s=0.70    s=1.00
+      double Angular_vel_values_array[] = { 1.40,     0.42,     0.18,     0.00,    -0.18,    -0.42,    -1.40,    //t=-1.00
                                              1.36,     0.38,     0.14,     0.00,    -0.14,    -0.38,    -1.36,    //t=-0.70
                                              1.32,     0.34,     0.10,     0.00,    -0.10,    -0.34,    -1.32,    //t=-0.40
                                             -1.22,    -0.24,     0.00,     0.00,     0.00,     0.24,     1.22,    //t=0.00
@@ -158,8 +159,8 @@ namespace gazebo
 
       std::vector<double> Throttle_commands(Throttle_commands_array, Throttle_commands_array+ sizeof(Throttle_commands_array)/sizeof(double));
       std::vector<double> Sttering_commands(Sttering_commands_array, Sttering_commands_array+ sizeof(Sttering_commands_array)/sizeof(double));
-      std::vector<double> Linear_vell_values(Linear_vell_values_array, Linear_vell_values_array+ sizeof(Linear_vell_values_array)/sizeof(double));
-      std::vector<double> Angular_vell_values(Angular_vell_values_array, Angular_vell_values_array+ sizeof(Angular_vell_values_array)/sizeof(double));
+      std::vector<double> Linear_vel_values(Linear_vel_values_array, Linear_vel_values_array+ sizeof(Linear_vel_values_array)/sizeof(double));
+      std::vector<double> Angular_vel_values(Angular_vel_values_array, Angular_vel_values_array+ sizeof(Angular_vel_values_array)/sizeof(double));
 
 
       std::vector< std::vector<double>::iterator > grid_iter_list;
@@ -175,16 +176,21 @@ namespace gazebo
       int num_elements = grid_sizes[0] * grid_sizes[1];
 
       // construct the interpolator. the last two arguments are pointers to the underlying data
-      Linear_vel_interp  =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vell_values.data(), Linear_vell_values.data() + num_elements);
-      Angular_vel_interp =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vell_values.data(), Angular_vell_values.data() + num_elements);
+      Linear_vel_interp  =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vel_values.data(), Linear_vel_values.data() + num_elements);
+      Angular_vel_interp =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vel_values.data(), Angular_vel_values.data() + num_elements);
       }
 
     public: void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
       {
           control_P = config.Wheel_conntrol_P;
-          controll_I = config.Wheel_conntrol_I;
-          controll_D = config.Wheel_conntrol_D;
-
+          control_I = config.Wheel_conntrol_I;
+          control_D = config.Wheel_conntrol_D;
+          Damping = config.Damping;
+          Power=config.Power;
+          MinAngMult=config.MinAngMult;
+          MaxAngMult=config.MaxAngMult;
+          MinAngPowerMult=config.MinAngPowerMult;
+          MaxAngPowerMult=config.MaxAngPowerMult;
           command_lN = config.Command_Linear_Noise;
           command_aN = config.Command_Angular_Noise;
       }
@@ -244,17 +250,17 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
         //printf("Linear_command = %f,  Angular_command = %f --->  Linear_vel_interp  = %f  \n", args[0], args[1],  Linear_vel_interp->interp(args.begin()) );
         //printf("Linear_command = %f,  Angular_command = %f --->  Angular_vel_interp = %f \n", args[0], args[1],  Angular_vel_interp->interp(args.begin()) );
 
-        double Linear_nominal_vell = Linear_vel_interp->interp(args.begin());
-        double Angular_nominal_vell = Angular_vel_interp->interp(args.begin());
+        double Linear_nominal_vel = Linear_vel_interp->interp(args.begin());
+        double Angular_nominal_vel = Angular_vel_interp->interp(args.begin());
 
-        double Linear_vell = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index , Linear_nominal_vell);
-        double Angular_vell = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index , Angular_nominal_vell);
+        double Linear_vel = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index , Linear_nominal_vel);
+        double Angular_vel = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index , Angular_nominal_vel);
 
         double LinearNoise  = command_lN * (*Linear_Noise_dist)(generator);  //((std::rand() % 100)-50)/50;
         double AngularNoise = command_aN * (*Angular_Noise_dist)(generator); //((std::rand() % 100)-50)/50;
 
-        Linear_ref_vel  =  (1 + LinearNoise)  * Linear_vell;
-        Angular_ref_vel =  (1 + AngularNoise) * Angular_vell;
+        Linear_ref_vel  =  (1 + LinearNoise)  * Linear_vel;
+        Angular_ref_vel =  (1 + AngularNoise) * Angular_vel;
     }
 
     private: void wheel_controller(physics::JointPtr wheel_joint, double ref_omega)
@@ -263,7 +269,8 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 
         double error = ref_omega - wheel_omega;
 
-        double effort_command = (control_P * error);
+        double effort_command = (Power*((1.22*MinAngMult-(MinAngPowerMult-MaxAngPowerMult)*fabs(Angular_ref_vel))/1.22) * error);
+        //  double effort_command = (control_P * error);
 
         if(effort_command > WHEEL_EFFORT_LIMIT) effort_command = WHEEL_EFFORT_LIMIT;
         if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
@@ -274,22 +281,25 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
 
-// #if GAZEBO_MAJOR_VERSION >= 5
-        // wheel_joint->SetVelocity(0,ref_omega);
-// #else
-          wheel_joint->SetForce(0,effort_command);
-// #endif
+
+        #if GAZEBO_MAJOR_VERSION >= 6
+                wheel_joint->SetVelocity(0,ref_omega);
+        #else
+                wheel_joint->SetForce(0,effort_command);
+        #endif
 
     }
 
 
   private: void apply_efforts()
     {
-
-        //std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
-
-        float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel * WHEELS_BASE/2)*STEERING_FRICTION_COMPENSATION;
-        float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * WHEELS_BASE/2)*STEERING_FRICTION_COMPENSATION;
+        
+        std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
+        
+        // float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel* WHEELS_BASE/2) ;
+        // float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * WHEELS_BASE/2) ;
+        float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel* ((1.22*MinAngMult-(MinAngMult-MaxAngMult)*fabs(Angular_ref_vel))/1.22) * WHEELS_BASE/2) ;
+        float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel* ((1.22*MinAngMult-(MinAngMult-MaxAngMult)*fabs(Angular_ref_vel))/1.22) * WHEELS_BASE/2) ;
 
         //std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
 
@@ -327,7 +337,9 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Angular_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
+
 #if  GAZEBO_MAJOR_VERSION >= 5 
+
            Angular_command_timer.Reset();
 #endif
            Angular_command_timer.Start();
@@ -347,7 +359,9 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else                    { Linear_command = msg->data;   }
 
           // Reseting timer every time LLC publishes message
+
 #if  GAZEBO_MAJOR_VERSION >= 5 
+
            Linear_command_timer.Reset();
 #endif
            Linear_command_timer.Start();
@@ -415,7 +429,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 
 
      private: dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
-     private: double control_P, controll_I ,controll_D;		// PID constants
+     private: double control_P, control_I ,control_D, Damping, Power,MinAngMult,MaxAngMult ,MinAngPowerMult,MaxAngPowerMult;	// PID constants and dynamic configuration constants
      private: double command_lN, command_aN;   // command noise factors
 
      std::default_random_engine generator;

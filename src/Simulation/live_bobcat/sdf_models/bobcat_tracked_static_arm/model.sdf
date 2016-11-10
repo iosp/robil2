@@ -62,7 +62,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/cabin.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/cabin_col.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -92,26 +92,6 @@
           </script>
         </material>
       </visual>
-      <collision name='body_collision_supporter_hinge'>
-        <pose>-0.31547 0 0.68593 1.5708 -5.55112e-17 1.5708</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/supporter_hinge.STL</uri>
-          </mesh>
-        </geometry>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-            </ode>
-          </friction>
-        </surface>
-      </collision>
       <visual name='body_visual_supporter_hinge'>
         <pose>-0.31547 0 0.68593 1.5708 -5.55112e-17 1.5708</pose>
         <geometry>
@@ -227,7 +207,7 @@
         </material>
       </visual>
       <collision name='loader_collision'>
-        <pose>0.34384 0 0.1465 0 0 0</pose>
+        <pose>0.34384 0 0.1465 0 -0.25 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
@@ -247,7 +227,7 @@
         </surface>
       </collision>
       <visual name='loader_visual'>
-        <pose>0.34384 0 0.1465 0 0 0</pose>
+        <pose>0.34384 0 0.1465 0 -0.25 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
@@ -266,7 +246,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/brackets.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/brackets_col.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -301,7 +281,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/supporter.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/supporter_col.STL</uri>
           </mesh>
         </geometry>
         <surface>
@@ -326,7 +306,7 @@
         </geometry>
         <material>
           <script>
-            <name>Gazebo/GreyTransparent</name>
+            <name>Gazebo/Grey</name>
             <uri>__default__</uri>
           </script>
         </material>
@@ -386,7 +366,7 @@
     <joint name='back_left_wheel_joint' type='revolute'>
       <child>back_left_wheel</child>
       <parent>body</parent>
-      <axis>       <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -440,7 +420,7 @@
     <joint name='back_right_wheel_joint' type='revolute'>
       <child>back_right_wheel</child>
       <parent>body</parent>
-      <axis>       <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -619,7 +599,7 @@
     <joint name='front_left_wheel_joint' type='revolute'>
       <child>front_left_wheel</child>
       <parent>body</parent>
-      <axis>       <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -673,7 +653,7 @@
     <joint name='front_right_wheel_joint' type='revolute'>
       <child>front_right_wheel</child>
       <parent>body</parent>
-      <axis>       <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -726,7 +706,7 @@
     <joint name='roller_back_right_joint' type='revolute'>
       <child>roller_back_right</child>
       <parent>body</parent>
-      <axis>       <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -780,7 +760,7 @@
     <joint name='roller_mid_right_joint' type='revolute'>
       <child>roller_mid_right</child>
       <parent>body</parent>
-      <axis>       <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -834,7 +814,7 @@
     <joint name='roller_front_right_joint' type='revolute'>
       <child>roller_front_right</child>
       <parent>body</parent>
-      <axis>       <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -888,7 +868,7 @@
     <joint name='roller_back_left_joint' type='revolute'>
       <child>roller_back_left</child>
       <parent>body</parent>
-      <axis>       <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -942,7 +922,7 @@
     <joint name='roller_mid_left_joint' type='revolute'>
       <child>roller_mid_left</child>
       <parent>body</parent>
-      <axis>       <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>
@@ -996,7 +976,7 @@
     <joint name='roller_front_left_joint' type='revolute'>
       <child>roller_front_left</child>
       <parent>body</parent>
-      <axis>       <dynamics><damping>0.01</damping></dynamics>
+      <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
         <limit>
           <lower>-1e+32</lower>

@@ -9,7 +9,7 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
-  <arg name="robot_models" default="$(find live_bobcat)/sdf_models"/>
+  <arg name="robot_models" default="$(find bobcat_model)/sdf_models"/>
   <arg name="world_models" default="$(find gazebo_objects)/models"/>
 
   
