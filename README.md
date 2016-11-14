@@ -9,15 +9,16 @@ There are two fully checked models:
    - but with a static arm.
 
 Relevant launch files:
-   roslaunch live_bobcat bobcat_static_arm_empty_world.launch
-   roslaunch live_bobcat bobcat_static_arm_stair_world.launch 
-   roslaunch live_bobcat bobcat_static_arm_TestWorld.launch
-   roslaunch live_bobcat bobcat_static_arm_TestWorld4.launch
-
-   roslaunch live_bobcat bobcat_tracked_static_arm_empty_world.launch
-   roslaunch live_bobcat bobcat_tracked_static_arm_stair_world.launch 
-   roslaunch live_bobcat bobcat_tracked_static_arm_TestWorld.launch
-   roslaunch live_bobcat bobcat_tracked_static_arm_TestWorld4.launch
+   * For wheels:
+      * roslaunch live_bobcat bobcat_static_arm_empty_world.launch
+      * roslaunch live_bobcat bobcat_static_arm_stair_world.launch 
+      * roslaunch live_bobcat bobcat_static_arm_TestWorld.launch
+      * roslaunch live_bobcat bobcat_static_arm_TestWorld4.launch
+   * For tracked model:
+      * roslaunch live_bobcat bobcat_tracked_static_arm_empty_world.launch
+      * roslaunch live_bobcat bobcat_tracked_static_arm_stair_world.launch 
+      * roslaunch live_bobcat bobcat_tracked_static_arm_TestWorld.launch
+      * roslaunch live_bobcat bobcat_tracked_static_arm_TestWorld4.launch
 
 ******************************************************************
 Starting tag: https://github.com/iosp/robil2/releases/tag/Wheels_Stable_Model:
