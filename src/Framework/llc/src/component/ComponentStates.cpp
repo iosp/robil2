@@ -444,15 +444,6 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 		processor.send_no_pub(event);
 		process_machine(current_machine, processor, component);
 	}
-	ROS_INFO("cannot connect with platform");
-	/*
-	 * TODO: break bond diagnostics
-	 */
-	// END PID loop
-	return TaskResult::SUCCESS();
-}
-
-//	delete(task_ptr);
 
 	return;
 

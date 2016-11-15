@@ -63,9 +63,9 @@ public:
 		//			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
 		//		}
 
-				pause(10000);
-				diagnostic_msgs::DiagnosticStatus status;
-				comp_ptr->publishDiagnostic(status);
+		pause(10000);
+		diagnostic_msgs::DiagnosticStatus status;
+		comp_ptr->publishDiagnostic(status);
 	}
 
 	void pause(int millisec) {
@@ -76,15 +76,6 @@ public:
 			boost::this_thread::sleep(boost::posix_time::millisec(msR));
 	}
 
-	void offTask() {
-//		while (!boost::this_thread::interruption_requested() and ros::ok()) {
-//			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-//		}
-
-		pause(10000);
-		diagnostic_msgs::DiagnosticStatus status;
-		comp_ptr->publishDiagnostic(status);
-	}
 
 	virtual ~AsyncTask() {
 		run_thread.interrupt();

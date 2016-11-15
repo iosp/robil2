@@ -8,7 +8,7 @@
 #include "HeartBeatMonitor.h"
 #include <ros/ros.h>
 #include <diagnostic_msgs/DiagnosticArray.h>
-#include <std_msgs/String.h>;
+#include <std_msgs/String.h>
 #include <sstream>
 
 boost::mutex mtx;

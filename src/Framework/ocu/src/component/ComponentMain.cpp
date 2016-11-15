@@ -36,6 +36,11 @@ ComponentMain::ComponentMain(int argc,char** argv) : _inited(init(argc,argv)), _
 
 ComponentMain::~ComponentMain() {}
 
+bool ComponentMain::init(int argc,char** argv){
+	ros::init(argc,argv,"OCU_node");
+	return true;
+}
+
 void ComponentMain::handleIEDLocation(const config::OCU::sub::IEDLocation& msg)
 {
 //	std::cout<< "OCU say:" << msg << std::endl;

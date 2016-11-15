@@ -21,7 +21,6 @@ using namespace std;
 				cognitao::bus::Event::context_t(C))
 #define RAISE(X,C) processor_ptr->bus_events << EVENT(X,C)
 #define MISSION_ID MID_PREF(FSM_CONTEXT.parameters<MissionParams>().mission_id)
-#define MM comp->mission_manager()
 
 bool extend_events_names(cognitao::bus::Event& e, std::string mid_pref, cognitao::bus::EventQueue* events){
 #		define EXTEND(NAME) \

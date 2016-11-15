@@ -76,8 +76,6 @@ ComponentMain::~ComponentMain() {
 	}
 #endif
 
-ComponentMain::~ComponentMain() {
-	//if(_roscomm) delete _roscomm; _roscomm=0;
 }
 
 bool ComponentMain::init(int argc,char** argv){
@@ -157,7 +155,7 @@ void ComponentMain::publishINS(config::SHIFFON2ROS::pub::INS& msg) {
 }
 
 void ComponentMain::publishINS2(std_msgs::Float64& msg) {
-	_roscomm->publishINS2(msg);
+	_pub_INS.publish(msg);;
 }
 
 void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
@@ -235,7 +233,6 @@ void ComponentMain::heartbeat(){
 	   // boost::this_thread::sleep(stop_time);
 	}
 }
-*/
 
 void *ComponentMain::callHeartbeat(void * pParam)
 {

@@ -8,9 +8,16 @@
 #include "ComponentMain.h"
 //#include "lliCtrlManager.h"
 #include <pthread.h>
-
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+#include "ParameterHandler.h"
+#include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
+#define TEST_HEARTBEAT
 #include <boost/thread.hpp>
-
 
 ComponentMain::ComponentMain(int argc,char** argv) : _inited(init(argc,argv)), _events(0)
 {
