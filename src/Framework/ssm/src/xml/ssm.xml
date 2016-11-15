@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="ssm" type="ftt">
+			<tasks>
+
+				<task id="OFF">
+					<reaction on_event="?/ssm/Activation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="ssm_ON" type="ftt">
+						<tasks>
+
+							<task id="INIT">
+								<reaction on_event="?/ssm/EndOfInit" target="READY" />
+							</task>           
+							
+							<task id="READY" />
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/ssm/Shutdown" target="OFF" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>ON</start>
+			</ftt>
+		</machine>
+		<root>ssm</root>
+	</machines>
+</tao>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="iedsim" type="ftt">
+			<tasks>
+
+				<task id="OFF">
+					<reaction on_event="?/iedsim/Activation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="iedsim_ON" type="ftt">
+						<tasks>
+
+							<task id="INIT">
+								<reaction on_event="?/iedsim/EndOfInit" target="READY" />
+							</task>           
+							
+							<task id="READY" />       
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/iedsim/Shutdown" target="OFF" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>ON</start>
+			</ftt>
+		</machine>
+		<root>iedsim</root>
+	</machines>
+</tao>

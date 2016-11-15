@@ -7,6 +7,12 @@ project(robil2conf)
 find_package(catkin REQUIRED COMPONENTS 
     roscpp 
     robil_msgs
+    cognitao_io
+    cognitao
+    events_bus
+    cognitao_event_bus_converter
+    cognitao_v2
+    
     
     eigen_conversions angles kdl_conversions tf_conversions
 )

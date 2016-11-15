@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="task" type="ftt">
+			<tasks>
+
+				<task id="PENDING">
+					<reaction on_event="?/smme/task/${TID}/StartTask" target="ACTIVE" />
+				</task>    
+       
+				<task id="ACTIVE">
+					<machine id="task_active" type="ftt">
+						<tasks>
+
+							<task id="SPOOLING">
+								<reaction on_event="?/smme/task/${TID}/CompleteTask" target="FINISHED" />
+								<reaction on_event="?/smme/task/${TID}/AbortTask" target="ABORTED" />
+								<reaction on_event="?/smme/task/${TID}/PauseTask" target="PAUSED" />
+							</task>           
+							
+							<task id="PAUSED"> 
+								<reaction on_event="?/smme/task/${TID}/CompleteTask" target="FINISHED" />
+								<reaction on_event="?/smme/task/${TID}/AbortTask" target="ABORTED" />
+								<reaction on_event="?/smme/task/${TID}/ResumeTask" target="SPOOLING" />
+							</task>    
+
+							<task id="ABORTED"> 
+								<reaction on_event="?/smme/task/${TID}/StartTask" target="SPOOLING" />
+							</task>  
+
+							<task id="FINISHED"> 
+								<reaction on_event="?/smme/task/${TID}/StartTask" target="SPOOLING" />
+							</task>  
+						</tasks>
+						<ftt>
+							<start>SPOOLING</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/smme/${TID}/StopTask" target="PENDING" />
+					<reaction on_event="?/smme/${TID}/RestartTask" target="ACTIVE" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>PENDING</start>
+			</ftt>
+		</machine>
+		<root>task</root>
+	</machines>
+</tao>

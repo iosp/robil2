@@ -11,9 +11,9 @@
 #include "ComponentMain.h"
 #include "PathRecorder.h"
 
-namespace decision_making{
-class EventQueue;
-}
+//namespace decision_making{
+//class EventQueue;
+//}
 
 class AblManager {
 	ComponentMain* component;
@@ -40,7 +40,7 @@ class AblManager {
 public:
 	AblManager(ComponentMain* comp);
 	virtual ~AblManager();
-	void listen(decision_making::EventQueue* events);
+	void listen(cognitao::bus::EventQueue* events);
 
 protected:
 	bool is_abl_event(std::string event_name)const;

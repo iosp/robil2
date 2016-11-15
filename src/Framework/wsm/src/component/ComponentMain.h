@@ -10,12 +10,16 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+<<<<<<< HEAD
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
 #include <ParameterTypes.h>
+=======
+#include <cognitao_v2/cognitao_v2.h>
+>>>>>>> origin/moving_to_new_cognitao
 
 #include <boost/thread.hpp>
 
@@ -23,6 +27,7 @@ class WsmTask;
 class RosComm;
 
 class ComponentMain {
+<<<<<<< HEAD
 	 bool _inited;
 
 	  ros::NodeHandle _nh;
@@ -40,6 +45,11 @@ class ComponentMain {
 	//	ros::Publisher _Map_pub;
 
 	  bool init(int argc,char** argv);
+=======
+	RosComm* _roscomm;
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
+>>>>>>> origin/moving_to_new_cognitao
 public:
 	WsmTask* cur_mission;
 	config::WSM::sub::WorkSeqData * receivedWorkSeqData;
@@ -67,7 +77,17 @@ public:
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+<<<<<<< HEAD
 	void heartbeat();
+=======
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
+	bool isClosed();
+	cognitao::bus::RosEventQueue* events(){return _events;}
+>>>>>>> origin/moving_to_new_cognitao
 };
 
 #endif /* COMPONENTMAIN_H_ */

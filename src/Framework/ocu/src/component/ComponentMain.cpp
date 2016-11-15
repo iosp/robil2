@@ -20,6 +20,7 @@
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
+<<<<<<< HEAD
 	_sub_IEDLocation=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","IEDLocation","sub"), 10, &ComponentMain::handleIEDLocation,this));
 	_sub_MissionAcceptance=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","MissionAcceptance","sub"), 10, &ComponentMain::handleMissionAcceptance,this));
 	_sub_LocalPath=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"OCU","LocalPath","sub"), 10, &ComponentMain::handleLocalPath,this));
@@ -35,6 +36,10 @@ ComponentMain::ComponentMain(int argc,char** argv)
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 
+=======
+	_roscomm = new RosComm(this,argc, argv);
+	_events = 0;
+>>>>>>> origin/moving_to_new_cognitao
 }
 ComponentMain::~ComponentMain() {
 
@@ -151,4 +156,32 @@ void ComponentMain::heartbeat(){
 		_pub.publish(msg);
 	    boost::this_thread::sleep(stop_time);
 	}
+}
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsAborted"));
+}
+bool ComponentMain::isClosed() {
+	return _events->is_closed();
 }

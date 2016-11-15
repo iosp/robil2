@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+
+	<subs>
+
+		<sub id="mission_machine">
+			<args>
+				<arg MNAME="1" />
+			</args>
+
+			<block>
+ 				<machine id="${MNAME}" type="ftt">
+					<tasks>
+						<task id="ACTIVE">
+
+ 							<machine id="mission_active_${MNAME}" type="ftt">
+								<tasks>
+									<task id="ABORTED">
+										<reaction on_event="?/smme/mission/${MNAME}/StartMission" target="SPOOLING"/>
+									</task>
+									<task id="FINISHED">
+										<reaction on_event="?/smme/mission/${MNAME}/StartMission" target="SPOOLING"/>
+									</task>
+									<task id="PAUSED">
+										<reaction on_event="?/smme/mission/${MNAME}/CompleteMission" target="FINISHED"/>
+										<reaction on_event="?/smme/mission/${MNAME}/AbortMission" target="ABORTED"/>
+										<reaction on_event="?/smme/mission/${MNAME}/ResumeMission" target="SPOOLING"/>
+									</task>
+									<task id="SPOOLING">
+										<reaction on_event="?/smme/mission/${MNAME}/CompleteMission" target="FINISHED"/>
+										<reaction on_event="?/smme/mission/${MNAME}/AbortMission" target="ABORTED"/>
+										<reaction on_event="?/smme/mission/${MNAME}/PauseMission" target="PAUSED"/>
+									</task>
+								</tasks>
+								<ftt>
+									<start>SPOOLING</start>
+								</ftt>
+							</machine>
+
+							<reaction on_event="?/smme/mission/${MNAME}/DeleteMission" target="UNLOADED"/>
+							<reaction on_event="?/smme/mission/${MNAME}/Standby" target="UNLOADED"/>
+							<reaction on_event="?/smme/mission/ClearMissionBuffer" target="UNLOADED"/>
+						</task>
+						<task id="pending">
+							<reaction on_event="?/smme/ClearMissionBuffer" target="UNLOADED"/>
+							<reaction on_event="?/smme/mission/${MNAME}/DeleteMission" target="UNLOADED"/>
+							<reaction on_event="?/smme/mission/${MNAME}/StartMission" target="ACTIVE"/>
+						</task>
+						<task id="STOP_MACHINE"/>
+						<task id="UNLOADED">
+							<reaction on_event="?/smme/mission/${MNAME}/MissionUnloaded/Stopped" target="STOP_MACHINE"/>
+						</task>
+					</tasks>
+					<ftt>
+						<start>pending</start>
+					</ftt>
+				</machine>
+
+			</block>
+
+		</sub>
+
+	</subs>
+
+
+	<machines>
+		
+		<machine id="mission" type="ftt">
+			<tasks>
+				<task id="smme_mission">
+					<sub id="mission_machine" MNAME="1" />
+
+					<sub id="mission_machine" MNAME="2" />
+
+					<sub id="mission_machine" MNAME="3" />
+				</task>
+			</tasks>
+			<ftt>
+				<start>smme_mission</start>
+			</ftt>
+		</machine>
+
+		<root>mission</root>
+		
+	</machines>
+</tao>

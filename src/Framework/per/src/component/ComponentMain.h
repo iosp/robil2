@@ -17,6 +17,7 @@
 #include <vector>
 #include <dynamic_reconfigure/server.h>
 #include <per/configConfig.h>
+<<<<<<< HEAD
 
 #include <ros/ros.h>
 #include <string>       // std::string
@@ -24,6 +25,9 @@
 #include <sstream>
 #include <boost/thread.hpp>
 
+=======
+#include <cognitao_v2/cognitao_v2.h>
+>>>>>>> origin/moving_to_new_cognitao
 using namespace std;
 // using namespace per;
 using namespace cv;
@@ -32,6 +36,7 @@ using namespace cv;
 class HeightMap;
 
 class ComponentMain {
+<<<<<<< HEAD
 	bool _inited;
 	  ros::NodeHandle _nh;
 	  ros::Publisher _pub_diagnostic;
@@ -63,6 +68,11 @@ class ComponentMain {
         ros::Publisher _pub_tMap;
 
 	  bool init(int argc,char** argv);
+=======
+	RosComm* _roscomm;
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
+>>>>>>> origin/moving_to_new_cognitao
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -95,7 +105,17 @@ public:
     void configCallback(per::configConfig &config, uint32_t level);
     void handleSensorIBEOandINS(const sensor_msgs::ImuConstPtr& msgINS, const robil_msgs::MultiLaserScanConstPtr& msgIBEO);
 	void setVisualize(char);
+<<<<<<< HEAD
 	void heartbeat();
+=======
+	
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
+	bool isClosed();
+>>>>>>> origin/moving_to_new_cognitao
 
 	/**
 	 * Walrus Changes:

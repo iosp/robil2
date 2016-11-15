@@ -1,4 +1,3 @@
-
 /*
  * ComponentMain.cpp
  *
@@ -20,6 +19,7 @@
 
 #include "MoveBase.h"
 
+<<<<<<< HEAD
 ComponentMain::ComponentMain(int argc,char** argv): _inited(init(argc, argv))
 {
 	_sub_LocalPath=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WPD","LocalPath","sub"), 10, &ComponentMain::handleLocalPath,this));
@@ -29,9 +29,15 @@ ComponentMain::ComponentMain(int argc,char** argv): _inited(init(argc, argv))
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 
+=======
+ComponentMain::ComponentMain(int argc, char** argv) {
+	_roscomm = new RosComm(this, argc, argv);
+>>>>>>> origin/moving_to_new_cognitao
 	_move_base = new MoveBase(this);
+	_events = 0;
 }
 ComponentMain::~ComponentMain() {
+<<<<<<< HEAD
 
 	if(_move_base) delete _move_base; _move_base=0;
 }
@@ -43,22 +49,29 @@ bool ComponentMain::init(int argc,char** argv){
 
 void ComponentMain::handleLocalPath(const config::WPD::sub::LocalPath& msg)
 {
+=======
+	if (_roscomm)
+		delete _roscomm;
+	_roscomm = 0;
+	if (_move_base)
+		delete _move_base;
+	_move_base = 0;
+}
+
+void ComponentMain::handleLocalPath(const config::WPD::sub::LocalPath& msg) {
+>>>>>>> origin/moving_to_new_cognitao
 	//std::cout<< "WPD say:" << msg << std::endl;
 }
-	
 
-void ComponentMain::handleMiniMap(const config::WPD::sub::MiniMap& msg)
-{
+void ComponentMain::handleMiniMap(const config::WPD::sub::MiniMap& msg) {
 	//std::cout<< "WPD say:" << msg << std::endl;
 }
-	
 
-void ComponentMain::handleLocation(const config::WPD::sub::Location& msg)
-{
+void ComponentMain::handleLocation(const config::WPD::sub::Location& msg) {
 	_move_base->on_position_update(msg);
 }
-	
 
+<<<<<<< HEAD
 void ComponentMain::publishWPDVelocity(config::WPD::pub::WPDVelocity& msg)
 {
 	_pub_WPDVelocity.publish(msg);
@@ -101,4 +114,60 @@ void ComponentMain::heartbeat(){
 		_pub.publish(msg);
 	    boost::this_thread::sleep(stop_time);
 	}
+=======
+void ComponentMain::publishWPDVelocity(config::WPD::pub::WPDVelocity& msg) {
+	_roscomm->publishWPDVelocity(msg);
+}
+
+void ComponentMain::publishTransform(const tf::Transform& _tf,
+		std::string srcFrame, std::string distFrame) {
+	_roscomm->publishTransform(_tf, srcFrame, distFrame);
+}
+tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame,
+		std::string distFrame) {
+	return _roscomm->getLastTrasform(srcFrame, distFrame);
+}
+void ComponentMain::publishDiagnostic(
+		const diagnostic_msgs::DiagnosticStatus& _report) {
+	_roscomm->publishDiagnostic(_report);
+}
+void ComponentMain::publishDiagnostic(const std_msgs::Header& header,
+		const diagnostic_msgs::DiagnosticStatus& _report) {
+	_roscomm->publishDiagnostic(header, _report);
+>>>>>>> origin/moving_to_new_cognitao
+}
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events) {
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/TaskIsPaused"));
+}
+bool ComponentMain::isClosed() {
+//	ROS_INFO_STREAM("events = " << _events);
+//	if(_events != NULL)
+		return _events->is_closed();
+//	return false;
 }

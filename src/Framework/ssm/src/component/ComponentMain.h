@@ -10,6 +10,7 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+<<<<<<< HEAD
 #include <ros/ros.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
@@ -28,6 +29,15 @@ class ComponentMain {
 
 
 	  bool init(int argc,char** argv);
+=======
+#include <cognitao_v2/cognitao_v2.h>
+
+class RosComm;
+class ComponentMain {
+	RosComm* _roscomm;
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
+>>>>>>> origin/moving_to_new_cognitao
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -39,6 +49,16 @@ public:
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
+<<<<<<< HEAD
 	void heartbeat();
+=======
+
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
+	bool isClosed();
+>>>>>>> origin/moving_to_new_cognitao
 };
 #endif /* COMPONENTMAIN_H_ */

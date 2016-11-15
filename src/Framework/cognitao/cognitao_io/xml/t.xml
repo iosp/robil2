@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+    <machines>
+    	<machine id="listen_try" type="ftt">
+	        <tasks> 
+    			<!--  -->
+                <task id="try1">
+                   <!-- <reaction on_event="?__/ok" target="try2" /> -->
+                </task> 
+                <!-- <task id="try2">
+                   <reaction on_event="?__/ok" target="try1" />
+                </task>  -->            
+	        </tasks>
+	        <ftt>
+	            <start>try1</start>
+	        </ftt>
+    	</machine>
+	    <root>listen_try</root>
+    </machines>
+</tao>
+

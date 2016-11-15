@@ -8,7 +8,7 @@
 #include "ComponentMain.h"
 #include "MissionManager.h"
 #include "ComponentStates.h"
-#include <decision_making/ROSTask.h>
+//#include <decision_making/ROSTask.h>
 #include <tf/transform_listener.h>
 
 #include <ros/ros.h>
@@ -129,7 +129,7 @@ void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& ms
 			if(location_global.point not_in knownIEDObjects){
 				std:stringstream buff;
 				check_if_not_contains(location_global.point, knownIEDObjects, buff);
-				if(events()) events()->raiseEvent("/IEDDetected");
+				if(events()) events()->rise(cognitao::bus::Event("/IEDDetected"));
 				knownIEDObjects.insert(location_global.point);
 				ROS_INFO_STREAM("SMME: new IED object detected: its global pose is "<<location_global.point.x<<", "<<location_global.point.y<<", "<<location_global.point.z);
 				ROS_INFO_STREAM("SMME: new IED object detected: ... \n"<<buff.str());
@@ -198,3 +198,99 @@ void ComponentMain::heartbeat(){
 		    boost::this_thread::sleep(stop_time);
 		}
 }
+
+//void ComponentMain::rise_taskStarted()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/StartTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}
+//
+//void ComponentMain::rise_taskPaused()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/PauseTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}
+//
+//void ComponentMain::rise_taskResumed()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/ResumeTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}
+//
+//void ComponentMain::rise_taskStopped()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/StopTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}
+//
+//void ComponentMain::rise_taskAborted()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/AbortTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}
+//
+//void ComponentMain::rise_taskCompleted()
+//{
+//	boost::mutex::scoped_lock l(_m);
+//	if(_events)
+//	{
+//		cognitao::bus::Event e(
+//				cognitao::bus::Event::name_t(
+//						"/smme/mission/" + _mission_manager->current_mission
+//								+ "/CompleteTask"),
+//				cognitao::bus::Event::channel_t(""),
+//				cognitao::bus::Event::context_t("smme"));
+//		_events->rise(e);
+//		cout << "RISING: " << e.name() << endl;
+//	}
+//}

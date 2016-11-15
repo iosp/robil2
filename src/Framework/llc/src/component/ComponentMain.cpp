@@ -22,6 +22,7 @@
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
+<<<<<<< HEAD
 	_sub_WPDVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","WPDVelocity","sub"), 10, &ComponentMain::handleWPDVelocity,this));
 	_sub_WSMVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","WSMVelocity","sub"), 10, &ComponentMain::handleWSMVelocity,this));
 	_sub_BladePositionCommand=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","BladePositionCommand","sub"), 10, &ComponentMain::handleBladePositionCommand,this));
@@ -39,6 +40,10 @@ ComponentMain::ComponentMain(int argc,char** argv)
 		_myHeartbeatThread = (pthread_t) NULL;
 		pthread_create(&_myHeartbeatThread, NULL, &callHeartbeat, this);
 #endif
+=======
+	_roscomm = new RosComm(this,argc, argv);
+	_events = 0;
+>>>>>>> origin/moving_to_new_cognitao
 }
 
 ComponentMain::~ComponentMain() {
@@ -142,6 +147,7 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 		_pub_diagnostic.publish(msg);
 }
 
+<<<<<<< HEAD
 void ComponentMain::heartbeat(){
 	//using namespace boost::posix_time;
 	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);
@@ -165,4 +171,33 @@ void * ComponentMain::callHeartbeat(void * pParam)
 
 	myHandle->heartbeat();
 
+=======
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsAborted"));
+}
+
+bool ComponentMain::isClosed() {
+	return _events->is_closed();
+>>>>>>> origin/moving_to_new_cognitao
 }

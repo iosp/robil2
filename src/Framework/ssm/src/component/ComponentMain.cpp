@@ -91,3 +91,35 @@ void ComponentMain::heartbeat(){
 		    boost::this_thread::sleep(stop_time);
 		}
 }
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events) {
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/TaskIsPaused"));
+}
+bool ComponentMain::isClosed() {
+	return _events->is_closed();
+}

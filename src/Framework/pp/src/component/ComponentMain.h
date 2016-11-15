@@ -15,14 +15,24 @@
 #include <sstream>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+<<<<<<< HEAD
 #include <boost/thread.hpp>
 
 class MoveBase;
 namespace decision_making{ class EventQueue; }
 
+=======
+#include <cognitao_v2/cognitao_v2.h>
+
+
+class RosComm;
+class MoveBase;
+//namespace decision_making{ class EventQueue; }
+>>>>>>> origin/moving_to_new_cognitao
 class ComponentMain {
 	MoveBase* _move_base;
-	decision_making::EventQueue* _events;
+	cognitao::bus::RosEventQueue* _events;
+//	decision_making::EventQueue* _events;
 	boost::mutex _mt;
 	 bool _inited;
 	  ComponentMain   * _comp;
@@ -49,7 +59,7 @@ public:
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 
-	void set_events(decision_making::EventQueue* events);
+	void set_events(cognitao::bus::RosEventQueue* events);
 	void rise_taskFinished();
 	void rise_taskAborted();
 	void rise_taskStarted();
@@ -58,7 +68,11 @@ public:
 	void cancel_navigation();
 	void pause_navigation();
 	void resume_navigation();
+<<<<<<< HEAD
 
 	void heartbeat();
+=======
+	bool isClosed();
+>>>>>>> origin/moving_to_new_cognitao
 };
 #endif /* COMPONENTMAIN_H_ */
