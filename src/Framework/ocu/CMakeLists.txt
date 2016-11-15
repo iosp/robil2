@@ -29,18 +29,13 @@ include_directories(
   ${cognitao_v2_INCLUDE_DIRS}
 )
 
-## Declare a cpp library
-add_library(ocu_rosComm
-  src/roscomm/RosComm.cpp
-)
 add_library(ocu_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
 )
 add_executable(ocu_node src/main.cpp)
-target_link_libraries(ocu_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
 target_link_libraries(ocu_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
-target_link_libraries(ocu_node ocu_compMain ocu_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2
+target_link_libraries(ocu_node ocu_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2
 )
 
 install(PROGRAMS

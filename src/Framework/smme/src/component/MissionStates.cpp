@@ -328,7 +328,7 @@ public:
 	virtual void run() {
 		ROS_INFO("SMME mission at Finished.");
 		MID
-		RAISE(mid + "/CompleteTask", T_PREF(""));
+		RAISE(mid + "/CompleteTask", T_PREF);
 
 		MM->mission_state("finished");
 	}
@@ -346,7 +346,7 @@ public:
 	virtual void run() {
 		ROS_INFO("SMME mission at Unloaded.");
 		MID
-		RAISE(mid + "/StopTask", T_PREF(""));
+		RAISE(mid + "/StopTask", T_PREF);
 
 		MM->mission_state("finished");
 	}

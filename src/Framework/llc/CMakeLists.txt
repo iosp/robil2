@@ -34,20 +34,16 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake
   ${cognitao_v2_INCLUDE_DIRS})
-## Declare a cpp library
-add_library(llc_rosComm  src/roscomm/RosComm.cpp
-)
+
 add_library(llc_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
 )
 
-
 add_executable(llc_node src/main.cpp)
 add_executable(llc_checkup src/comm_check.cpp)
-target_link_libraries(llc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
 target_link_libraries(llc_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
-target_link_libraries(llc_node  llc_compMain llc_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
+target_link_libraries(llc_node  llc_compMain ${catkin_LIBRARIES} ${Boost_LIBRARIES} cognitao_v2)
 target_link_libraries(llc_checkup  ${catkin_LIBRARIES} cognitao_v2)
 
 #add_executable(llc_server cfg/nodes/server.cpp)

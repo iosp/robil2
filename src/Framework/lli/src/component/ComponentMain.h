@@ -17,9 +17,10 @@
 #include <pthread.h>
 #include "../QinetiQ_IO/LLICtrl.h"
 #include <cognitao_v2/cognitao_v2.h>
+#include <ros/ros.h>
+#include <iostream>     // std::cout
+#include <sstream>
 
-
-class RosComm;
 typedef enum {
 	State_Off = 0, State_Init, State_Standby, State_Wait_Response, State_Ready
 } CS_STATE;
@@ -43,6 +44,7 @@ public:
 	//Thread Function for LLI Ctrl for QinetiQ
 	void lliCtrlLoop();
 	static void * callPThread(void *pThis);
+	static void *callHeartbeat(void *pThis);
 	//This method is called when the state of the component is switching to State_Init
 	void workerFunc();
 
@@ -58,6 +60,8 @@ public:
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header,
 			const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishConnectedToPlatform(std_msgs::Bool& msg);
+	void heartbeat();
 
 	void setReady();
 	void setNotReady();
@@ -76,8 +80,17 @@ public:
 	void rise_taskPaused();
 
 private:
-	RosComm* _roscomm;
+    bool _inited;
+    ros::NodeHandle _nh;
+    ros::Publisher _pub_diagnostic;
+    boost::thread_group _maintains;
+    ros::Subscriber _sub_EffortsTh;
+    ros::Subscriber _sub_EffortsSt;
+    ros::Subscriber _sub_EffortsJn;
+    ros::Publisher _pub_connected_to_platform;
+    bool init(int argc,char** argv);
 	boost::thread* _driver_thread;
+	pthread_t _myHeartbeatThread;
 	CLLI_Ctrl *_clli;
 	static ComponentMain *_this;
 	pthread_t _mythread;

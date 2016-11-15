@@ -19,15 +19,47 @@
 #include <per/configConfig.h>
 #include <cognitao_v2/cognitao_v2.h>
 using namespace std;
-// using namespace per;
+#include <ros/ros.h>
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+#include <boost/thread.hpp>
 using namespace cv;
 
 
 class HeightMap;
 
-class RosComm;
 class ComponentMain {
-	RosComm* _roscomm;
+	bool _inited;
+	ros::NodeHandle _nh;
+	ros::Publisher _pub_diagnostic;
+	boost::thread_group _maintains;
+	ros::Subscriber _sub_Location;
+	ros::Subscriber _sub_PerVelocity;
+	ros::Subscriber _sub_SensorINS;
+	ros::Subscriber _sub_SensorGPS;
+	ros::Subscriber _sub_SensorCamL;
+	ros::Subscriber _sub_SensorCamR;
+	ros::Subscriber _sub_SensorWire;
+	ros::Subscriber _sub_SensorSICK1;
+	ros::Subscriber _sub_SensorSICK2;
+	ros::Subscriber _sub_SensorIBEO;
+	ros::Subscriber _sub_EffortsTh;
+	ros::Subscriber _sub_EffortsSt;
+	ros::Subscriber _sub_EffortsJn;
+	ros::Subscriber _sub_GpsSpeed;
+	ros::Publisher  _pub_GPS;
+	ros::Publisher  _pub_INS;
+	ros::Publisher  _pub_BladePosition;
+	ros::Publisher  _pub_Map;
+	ros::Publisher  _pub_MiniMap;
+	ros::Publisher  _pub_VOOdometry;
+	ros::Publisher  _pub_GpsSpeed;
+    ros::Publisher  _pub_PC;
+    ros::Publisher  _pub_PC_world;
+    ros::Publisher _pub_hMap;
+    ros::Publisher _pub_tMap;
+    bool init(int argc,char** argv);
 	cognitao::bus::RosEventQueue* _events;
 	boost::mutex _mt;
 public:
@@ -51,16 +83,18 @@ public:
 	void publishBladePosition(config::PER::pub::BladePosition& msg);
 	void publishMap(config::PER::pub::Map& msg);
 	void publishMiniMap(config::PER::pub::MiniMap& msg);
+    void publishDebug(sensor_msgs::ImagePtr hmsg, sensor_msgs::ImagePtr tmsg);
 	void publishVOOdometry(config::PER::pub::VOOdometry& msg);
 	void publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg);
 	void handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
     void configCallback(per::configConfig &config, uint32_t level);
-	
+    void handleSensorIBEOandINS(const sensor_msgs::ImuConstPtr& msgINS, const robil_msgs::MultiLaserScanConstPtr& msgIBEO);
 	void setVisualize(char);
+	void heartbeat();
 	
 	void set_events(cognitao::bus::RosEventQueue* events);
 	void rise_taskFinished();
@@ -78,9 +112,6 @@ private:
       sensor_msgs::Imu _imuData;
       sensor_msgs::NavSatFix _gpsData;
       HeightMap* height_map;
-
-      
-      
-  
+      bool _should_pub;
 };
 #endif /* COMPONENTMAIN_H_ */

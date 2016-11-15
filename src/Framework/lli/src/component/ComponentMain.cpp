@@ -13,37 +13,55 @@
 #include <boost/thread.hpp>
 
 
-ComponentMain::ComponentMain(int argc,char** argv)
+ComponentMain::ComponentMain(int argc,char** argv) : _inited(init(argc,argv)), _events(0)
 {
-	_roscomm = new RosComm(this,argc, argv);
+	_sub_EffortsTh=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLI","EffortsTh","sub"), 10, &ComponentMain::handleEffortsTh,this));
+	_sub_EffortsSt=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLI","EffortsSt","sub"), 10, &ComponentMain::handleEffortsSt,this));
+	_sub_EffortsJn=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLI","EffortsJn","sub"), 10, &ComponentMain::handleEffortsSt,this));
+
+	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
+	_pub_connected_to_platform=ros::Publisher(_nh.advertise<std_msgs::Bool>(fetchParam(&_nh,"LLI","ConnectedToPlatform","pub"),100));
+	//_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
+    //Replace the thread group with a simple pthread because there is a SIGEV otherwise
+	// and I didn't find the reason.
+	// With pthread, it seems to work.
+
+	_myHeartbeatThread = (pthread_t) NULL;
+
+   // _maintains=NULL;
     _clli = (CLLI_Ctrl *) NULL;
     is_ready = false;
     SetState(State_Off);
 	//ComponentMain::_this = this;
 
 
-   // _driver_thread = new boost::thread(&ComponentMain::lliCtrlLoop);
 
-    _driver_thread = (boost::thread *) NULL;
     _mythread = (pthread_t)NULL;
-
-
 
 //
 	//ros::Timer timer = nh.createTimer(ros::Duration(0.01), TimerCallback);
-    _events = 0;
 }
 
 ComponentMain::~ComponentMain() {
-	if(_roscomm) delete _roscomm;
-	_roscomm=0;
+
 	if(_clli) delete _clli;
 	_clli=0;
 	if (_mythread) {
 		std::cout<< "destructor _mythread" << std::endl;
 		pthread_cancel(_mythread);
-		_mythread = 0;
+		_mythread = (pthread_t)NULL;
 	}
+#ifdef TEST_HEARTBEAT
+	if (_myHeartbeatThread) {
+		pthread_cancel(_myHeartbeatThread);
+		_myHeartbeatThread = (pthread_t)NULL;
+	}
+#endif
+}
+
+bool ComponentMain::init(int argc,char** argv){
+	ros::init(argc,argv,"LLI_node");
+	return true;
 }
 
 void ComponentMain::setNotReady(){
@@ -122,14 +140,16 @@ void ComponentMain::releaseDriverAndManipulator()
 void ComponentMain::workerFunc()
 {
 
-  //_driver_thread = new boost::thread(boost::bind(&ComponentMain::lliCtrlLoop, this));
     SetState(State_Init);
 	pthread_t t;
 
 	pthread_create(&_mythread, NULL, &callPThread, this);
 
-//	pthread_join(_mythread, NULL);
-  //The thread dealing with QinetiQ has exited for some reason.
+#ifdef TEST_HEARTBEAT
+	pthread_create(&_myHeartbeatThread, NULL, &callHeartbeat, this);
+	//_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
+#endif
+
 
 }
 
@@ -180,16 +200,30 @@ void ComponentMain::handleEffortsJn(const config::LLI::sub::EffortsJn& msg)
 	
 
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
-	_roscomm->publishTransform(_tf, srcFrame, distFrame);
+	static tf::TransformBroadcaster br;
+	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));
 }
 tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::string distFrame){
-	return _roscomm->getLastTrasform(srcFrame, distFrame);
+	tf::StampedTransform _tf;
+		static tf::TransformListener listener;
+		try {
+		    listener.waitForTransform(distFrame, srcFrame, ros::Time(0), ros::Duration(10.0) );
+		    listener.lookupTransform(distFrame, srcFrame, ros::Time(0), _tf);
+		} catch (tf::TransformException& ex) {
+		    ROS_ERROR("%s",ex.what());
+		}
+		return _tf;
 }
 void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report){
-	_roscomm->publishDiagnostic(_report);
+	diagnostic_msgs::DiagnosticArray msg;
+	msg.status.push_back(_report);
+	_pub_diagnostic.publish(msg);
 }
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
-	_roscomm->publishDiagnostic(header, _report);
+	diagnostic_msgs::DiagnosticArray msg;
+	msg.header = header;
+	msg.status.push_back(_report);
+	_pub_diagnostic.publish(msg);
 }
 
 void * ComponentMain::callPThread(void * pParam)
@@ -236,6 +270,32 @@ void ComponentMain::lliCtrlLoop()
 							break;
 
 	   	}
+
+}
+
+void ComponentMain::heartbeat(){
+	using namespace boost::posix_time;
+	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);
+	double hz = HEARTBEAT_FREQUENCY;
+	double cycle = (1/hz);
+	ros::Duration oneSec(cycle);
+//	ros::Duration oneSec(1.0);
+
+	while(ros::ok()){
+		//boost::system_time stop_time = boost::get_system_time() + milliseconds((1/hz)*1000);
+		std_msgs::String msg;
+		msg.data = "LLI";
+		_pub.publish(msg);
+		oneSec.sleep();
+		//boost::this_thread::sleep(stop_time);
+	}
+}
+
+void * ComponentMain::callHeartbeat(void * pParam)
+{
+	ComponentMain *myHandle = (ComponentMain *) (pParam);
+
+	myHandle->heartbeat();
 
 }
 

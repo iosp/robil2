@@ -1,10 +1,6 @@
 #include <iostream>
 #include <ros/ros.h>
-//#include <decision_making/SynchCout.h>
-//#include <decision_making/BT.h>
-//#include <decision_making/FSM.h>
-//#include <decision_making/ROSTask.h>
-//#include <decision_making/DecisionMaking.h>
+
 using namespace std;
 
 #include "ComponentStates.h"
@@ -50,33 +46,14 @@ public:
 		boost::mutex::scoped_lock l(m);
 		try
 		{
-//			cout<<"[d][shiffon2ros::AsyncTask]running"<<endl;
 			run();
 		}
 		catch (boost::thread_interrupted& thi_ex) {
-//			cout<<"[e][shiffon2ros::AsyncTask] thread interrupt signal"<<endl;
 		}
 		catch (...) {
 			ROS_ERROR("shiffon2ros::AsyncTask --- Unknown Exception");
-//			cout<<"[e][shiffon2ros::AsyncTask] unknown exception"<<endl;
 		}
 	}
-
-//	void assign(std::string current_context, std::string task) {
-//		run_thread.interrupt();
-//		run_thread.join();
-//
-//		context = current_context;
-//
-//		if (task == "off")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::off, this));
-//		if (task == "init")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::init, this));
-//		if (task == "ready")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::ready, this));
-//		if (task == "standby")
-//			run_thread = boost::thread(boost::bind(&AsyncTask::standby, this));
-//	}
 
 	void pause(int millisec) {
 		int msI = (millisec / 100), msR = (millisec % 100);
@@ -84,10 +61,6 @@ public:
 			boost::this_thread::sleep(boost::posix_time::millisec(100));
 		if (msR > 0 and not comp_ptr->isClosed())
 			boost::this_thread::sleep(boost::posix_time::millisec(msR));
-	}
-
-	void offTask() {
-		pause(10000);
 	}
 
 	virtual ~AsyncTask() {
@@ -131,10 +104,12 @@ public:
 
 	virtual void run() {
 		ROS_INFO("shiffon2ros at Ready");
+		ros::Rate IPON_rate(100);
 		while (ros::ok()) {
 			comp_ptr->ReadAndPub_ShiphonGPS();
 			comp_ptr->ReadAndPub_ShiphonINS();
 			comp_ptr->ReadAndPub_ShiphonGpsSpeed();
+			IPON_rate.sleep();
 		}
 	}
 
@@ -189,120 +164,6 @@ void process_machine(cognitao::machine::Machine & machine,
 		}
 	}
 }
-
-//class Params: public CallContextParameters{
-//public:
-//	ComponentMain* comp;
-//	Params(ComponentMain* comp):comp(comp){}
-//	std::string str()const{return "";}
-//};
-
-//// ============== WRITE FSM HERE ========================= /////
-//FSM(shiffon2ros_ON)
-//{
-//	FSM_STATES
-//	{
-//		INIT,
-//		READY,
-//		STANDBY
-//	}
-//	FSM_START(INIT);
-//	FSM_BGN
-//	{
-//		FSM_STATE(INIT)
-//		{
-//			FSM_CALL_TASK(INIT)
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
-//			}
-//		}
-//		FSM_STATE(READY)
-//		{
-//			FSM_CALL_TASK(READY)
-//			FSM_TRANSITIONS{
-//				FSM_ON_EVENT("/shiffon2ros/Standby", FSM_NEXT(STANDBY));
-//			}
-//		}
-//		FSM_STATE(STANDBY)
-//		{
-//			FSM_CALL_TASK(STANDBY)
-//			FSM_TRANSITIONS{
-//				FSM_ON_EVENT("/shiffon2ros/Resume", FSM_NEXT(READY));
-//			}
-//		}
-//
-//	}
-//	FSM_END
-//}
-//
-//FSM(shiffon2ros)
-//{
-//	FSM_STATES
-//	{
-//		OFF,
-//		ON
-//	}
-//	FSM_START(ON);
-//	FSM_BGN
-//	{
-//		FSM_STATE(OFF)
-//		{
-//			FSM_CALL_TASK(OFF)
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-//				FSM_ON_EVENT("/shiffon2ros/Activation", FSM_NEXT(ON));
-//			}
-//		}
-//		FSM_STATE(ON)
-//		{
-//			FSM_CALL_FSM(shiffon2ros_ON)
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-//				FSM_ON_EVENT("/shiffon2ros/Shutdown", FSM_NEXT(OFF));
-//			}
-//		}
-//	}
-//	FSM_END
-//}
-//
-//TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
-//	PAUSE(10000);
-//	return TaskResult::SUCCESS();
-//}
-//
-//TaskResult state_INIT(string id, const CallContext& context,
-//		EventQueue& events) {
-//	ROS_INFO("shiffon2ros Init !!");
-//
-//	COMPONENT->InitShiphonConection();
-//	PAUSE(300);
-//
-//	Event e("EndOfInit");
-//	events.raiseEvent(e);
-//	return TaskResult::SUCCESS();
-//}
-//
-//TaskResult state_READY(string id, const CallContext& context,
-//		EventQueue& events) {
-//	ROS_INFO("shiffon2ros Ready !!");
-//
-//	while (ros::ok()) {
-//		COMPONENT->ReadAndPub_ShiphonGPS();
-//		COMPONENT->ReadAndPub_ShiphonINS();
-//		COMPONENT->ReadAndPub_ShiphonGpsSpeed();
-//	}
-//
-//	return TaskResult::SUCCESS();
-//}
-//
-//TaskResult state_STANDBY(string id, const CallContext& context,
-//		EventQueue& events) {
-//	PAUSE(10000);
-//	return TaskResult::SUCCESS();
-//}
 
 void runComponent(int argc, char** argv, ComponentMain& component) {
 
