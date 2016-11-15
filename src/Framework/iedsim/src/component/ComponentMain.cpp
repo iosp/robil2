@@ -78,13 +78,6 @@ tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::s
 	}
 	return _tf;
 }
-void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report)
-{
-	diagnostic_msgs::DiagnosticArray msg;
-	msg.header = header;
-	msg.status.push_back(_report);
-	_pub_diagnostic.publish(msg);
-}
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
 	diagnostic_msgs::DiagnosticArray msg;
 	msg.header = header;
