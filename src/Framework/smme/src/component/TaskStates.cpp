@@ -24,7 +24,8 @@ using namespace std;
 //	std::string str()const{return "";}
 //};
 
-#define MID_PREF(X) string("/smme/mission/")+X
+#define M_PREF string("smme/mission")
+#define T_PREF string("smme/task")
 #define DELETE(X) if(X){delete X; X=NULL;}
 #define RESET(X,Y) if(current_task == X) { \
 					ROS_WARN_STREAM(" Current task: " << current_task); \
@@ -32,12 +33,12 @@ using namespace std;
 					task_ptr = new Y; \
 					task_ptr->start(); \
 					continue;}
-#define EVENT(X) \
+#define EVENT(X,C) \
 		cognitao::bus::Event( \
 				cognitao::bus::Event::name_t(X), \
 				cognitao::bus::Event::channel_t(""), \
-				cognitao::bus::Event::context_t(context))
-#define RAISE(X) processor_ptr->bus_events << EVENT(X)
+				cognitao::bus::Event::context_t(C))
+#define RAISE(X,C) processor_ptr->bus_events << EVENT(X,C)
 //#define RAISE_NO_CONTEXT(X) processor_ptr->bus_events << cognitao::bus::Event( \
 //																cognitao::bus::Event::name_t(X))
 #define MISSION_ID MID_PREF(FSM_CONTEXT.parameters<TaskParams>().mission_id)
@@ -107,8 +108,8 @@ public:
 			this_thread::sleep(milliseconds(100));
 		}
 		ROS_INFO("active out of loop");
-		if(MM->task_type()==MissionManager::TT_Navigation) RAISE("/pp/Standby");
-		else RAISE("/wsm/Standby");
+		if(MM->task_type()==MissionManager::TT_Navigation) RAISE("Standby", "pp");
+		else RAISE("Standby", "wsm");
 	}
 
 	virtual ~AsyncTask() {
@@ -135,22 +136,22 @@ public:
 			MissionManager::NavTask task = MM->get_nav_task();
 			config::SMME::pub::GlobalPath path = extract_path(task);
 //			RAISE("/pp/StartTask");
-			RAISE("/pp/Resume");
+			RAISE("Resume", "pp");
 			this_thread::sleep(milliseconds(500));
 			comp_ptr->publishGlobalPath(path);
 		}else
 		if(MM->task_type()==MissionManager::TT_Manipulator){
 			MissionManager::ManTask task = MM->get_man_task();
-			RAISE("/wsm/Resume");
+			RAISE("Resume", "wsm");
 			this_thread::sleep(milliseconds(500));
 			comp_ptr->publishWorkSeqData(task);
 		}else
 		if(MM->task_type()==MissionManager::TT_Unknown){
 			ROS_ERROR("smme: Active task type is unknown");
-			RAISE("/smme/mission/" + mid + "/AbortTask");
+			RAISE(mid + "/AbortTask", T_PREF);
 		}else{
 			ROS_ERROR("smme: Error in task type detector");
-			RAISE("/smme/mission/" + mid + "/AbortTask");
+			RAISE(mid + "/AbortTask", T_PREF);
 		}
 	}
 
@@ -168,10 +169,10 @@ public:
 		if(!is_active) activation_thread = boost::thread(boost::bind(&AsyncTask::active, this));
 		MM->task_state("paused");
 		if(MM->task_type()==MissionManager::TT_Navigation) {
-			RAISE("/pp/Standby");
+			RAISE("Standby", "pp");
 		}
 		else {
-			RAISE("/wsm/Standby");
+			RAISE("Standby", "wsm");
 		}
 	}
 
@@ -189,14 +190,14 @@ public:
 		ROS_INFO("SMME task at Aborted.");
 		if(!is_active) activation_thread = boost::thread(boost::bind(&AsyncTask::active, this));
 		MID
-		RAISE(mid + "/AbortMission");
+		RAISE(mid + "/AbortMission", M_PREF);
 
 		MM->task_state("aborted");
 		if(MM->task_type()==MissionManager::TT_Navigation) {
-			RAISE("/pp/Standby");
+			RAISE("Standby", "pp");
 		}
 		else {
-			RAISE("/wsm/Standby");
+			RAISE("Standby", "wsm");
 		}
 	}
 
@@ -215,10 +216,10 @@ public:
 		if(!is_active) activation_thread = boost::thread(boost::bind(&AsyncTask::active, this));
 		MM->task_state("finished");
 		if(MM->task_type()==MissionManager::TT_Navigation) {
-			RAISE("/pp/Standby");
+			RAISE("Standby", "pp");
 		}
 		else {
-			RAISE("/wsm/Standby");
+			RAISE("Standby", "wsm");
 		}
 	//	if( MM->next_task() ){
 	//		RAISE("restart");
@@ -477,8 +478,9 @@ void process_task(cognitao::machine::Machine & machine,
 void TaskMachine::startTask(ComponentMain* component, std::string mission_id){
 
 	ros::NodeHandle node;
-	cognitao::bus::RosEventQueue events(node, NULL, 1000,
-			"/robil/event_bus/events");
+//	cognitao::bus::RosEventQueue events(node, NULL, 1000,
+//			"/robil/event_bus/events");
+	cognitao::bus::RosEventQueue events(node, NULL, 1000);
 
 	component->set_events(&events);
 
@@ -489,7 +491,7 @@ void TaskMachine::startTask(ComponentMain* component, std::string mission_id){
 			<< endl << "		<root>task</root>" << endl << "	</machines>" << endl
 			<< "</tao>" << endl;
 
-	cognitao::machine::Context context("smme/mission");
+	cognitao::machine::Context context("smme/task");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines;
 	try {

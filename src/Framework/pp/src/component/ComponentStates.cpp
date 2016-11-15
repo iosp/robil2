@@ -52,7 +52,13 @@ public:
 	}
 
 	virtual void run() {
-		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
+		//		while (!boost::this_thread::interruption_requested() and ros::ok()) {
+		//			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+		//		}
+
+				pause(1000);
+		//		diagnostic_msgs::DiagnosticStatus status;
+		//		comp_ptr->publishDiagnostic(status);
 	}
 
 	void start_run() {
@@ -189,8 +195,7 @@ void process_machine(cognitao::machine::Machine & machine,
 //						" Current PP event context: " << current_event_context);
 //				if (current_task == "off" || current_task == "init" || current_task == "ready" || current_task == "standby")
 //					task_ptr->assign(current_event_context, current_task);
-				if (task_ptr && current_task == "off")
-					task_ptr->offTask();
+				RESET("off", AsyncTask(&component, &processor, current_event_context))
 				RESET("init", TaskInit(&component, &processor, current_event_context))
 				RESET("ready", TaskReady(&component, &processor, current_event_context))
 				RESET("standby", TaskStandby(&component, &processor, current_event_context))
@@ -317,8 +322,9 @@ void process_machine(cognitao::machine::Machine & machine,
 void runComponent(int argc, char** argv, ComponentMain& component) {
 
 	ros::NodeHandle node;
-	cognitao::bus::RosEventQueue events(node, NULL, 1000,
-			"/robil/event_bus/events");
+//	cognitao::bus::RosEventQueue events(node, NULL, 1000,
+//			"/robil/event_bus/events");
+	cognitao::bus::RosEventQueue events(node, NULL, 1000);
 
 	component.set_events(&events);
 

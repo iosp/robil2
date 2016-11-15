@@ -5,7 +5,7 @@
 			<tasks>
 
 				<task id="PENDING">
-					<reaction on_event="?/smme/mission/${TID}/StartTask" target="ACTIVE" />
+					<reaction on_event="?/smme/task/${TID}/StartTask" target="ACTIVE" />
 				</task>    
        
 				<task id="ACTIVE">
@@ -13,23 +13,23 @@
 						<tasks>
 
 							<task id="SPOOLING">
-								<reaction on_event="?/smme/mission/${TID}/CompleteTask" target="FINISHED" />
-								<reaction on_event="?/smme/mission/${TID}/AbortTask" target="ABORTED" />
-								<reaction on_event="?/smme/mission/${TID}/PauseTask" target="PAUSED" />
+								<reaction on_event="?/smme/task/${TID}/CompleteTask" target="FINISHED" />
+								<reaction on_event="?/smme/task/${TID}/AbortTask" target="ABORTED" />
+								<reaction on_event="?/smme/task/${TID}/PauseTask" target="PAUSED" />
 							</task>           
 							
 							<task id="PAUSED"> 
-								<reaction on_event="?/smme/mission/${TID}/CompleteTask" target="FINISHED" />
-								<reaction on_event="?/smme/mission/${TID}/AbortTask" target="ABORTED" />
-								<reaction on_event="?/smme/mission/${TID}/ResumeTask" target="SPOOLING" />
+								<reaction on_event="?/smme/task/${TID}/CompleteTask" target="FINISHED" />
+								<reaction on_event="?/smme/task/${TID}/AbortTask" target="ABORTED" />
+								<reaction on_event="?/smme/task/${TID}/ResumeTask" target="SPOOLING" />
 							</task>    
 
 							<task id="ABORTED"> 
-								<reaction on_event="?/smme/mission/${TID}/StartTask" target="SPOOLING" />
+								<reaction on_event="?/smme/task/${TID}/StartTask" target="SPOOLING" />
 							</task>  
 
 							<task id="FINISHED"> 
-								<reaction on_event="?/smme/mission/${TID}/StartTask" target="SPOOLING" />
+								<reaction on_event="?/smme/task/${TID}/StartTask" target="SPOOLING" />
 							</task>  
 						</tasks>
 						<ftt>

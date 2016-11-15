@@ -323,7 +323,9 @@ public:
 	}
 
 	virtual void run() {
-		ROS_INFO_STREAM(context << " ::::::: PURE VIRTUAL");
+		//		diagnostic_msgs::DiagnosticStatus status;
+		//		comp_ptr->publishDiagnostic(status);
+				ROS_INFO("WSM OFF");
 	}
 
 	void start_run() {
@@ -482,8 +484,7 @@ void process_machine(cognitao::machine::Machine & machine,
 //						" Current event context: " << current_event_context);
 //				if (current_task == "off" || current_task == "init" || current_task == "ready" || current_task == "standby")
 //					task_ptr->assign(current_event_context, current_task);
-				if (task_ptr && current_task == "off")
-					task_ptr->offTask();
+				RESET("off", AsyncTask(&component, &processor, current_event_context))
 				RESET("init", TaskInit(&component, &processor, current_event_context))
 				RESET("ready", TaskReady(&component, &processor, current_event_context))
 				RESET("standby", TaskStandby(&component, &processor, current_event_context))
@@ -502,8 +503,9 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 			"/Sahar/joint_states", 100, &JointStatesCallback);
 //	ros::Subscriber PauseMission = node.subscribe<std_msgs::String>("/decision_making/events" , 100 , &pauseCallback);
 
-	cognitao::bus::RosEventQueue events(node, NULL, 1000,
-			"/robil/event_bus/events");
+//	cognitao::bus::RosEventQueue events(node, NULL, 1000,
+//			"/robil/event_bus/events");
+	cognitao::bus::RosEventQueue events(node, NULL, 1000);
 
 	component.set_events(&events);
 

@@ -55,7 +55,7 @@ public:
 	}
 
 	virtual void run() {
-		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
+		pause(10000);
 	}
 
 	void start_run() {
@@ -277,8 +277,7 @@ void process_machine(cognitao::machine::Machine & machine,
 //				ROS_WARN_STREAM(" Current state: " << current_task);
 //				ROS_INFO_STREAM(
 //						" Current event context: " << current_event_context);
-				if (systask_ptr && current_task == "off")
-					systask_ptr->offTask();
+				RESET("off", SysTask(&component, &processor, current_event_context))
 				RESET("init", SysInitTask(&component, &processor, current_event_context))
 				RESET("ready", SysReadyTask(&component, &processor, current_event_context))
 				RESET("emergency", SysEmergencyTask(&component, &processor, current_event_context))
@@ -290,8 +289,9 @@ void process_machine(cognitao::machine::Machine & machine,
 void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros::NodeHandle node;
-	cognitao::bus::RosEventQueue events(node, NULL, 1000,
-			"/robil/event_bus/events");
+//	cognitao::bus::RosEventQueue events(node, NULL, 1000,
+//			"/robil/event_bus/events");
+	cognitao::bus::RosEventQueue events(node, NULL, 1000);
 
 	component.set_events(&events);
 

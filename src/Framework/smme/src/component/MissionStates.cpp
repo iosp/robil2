@@ -23,7 +23,8 @@ using namespace std;
 //	std::string str()const{return "";}
 //};
 
-#define MID_PREF(X) string("/smme/mission/")+X
+#define M_PREF string("smme/mission")
+#define T_PREF string("smme/task")
 #define DELETE(X) if(X){delete X; X=NULL;}
 #define RESET(X,Y) if(current_task == X) { \
 					ROS_WARN_STREAM(" Current mission: " << current_task); \
@@ -31,12 +32,12 @@ using namespace std;
 					mission_ptr = new Y; \
 					mission_ptr->start(); \
 					continue;}
-#define EVENT(X) \
+#define EVENT(E,C) \
 		cognitao::bus::Event( \
-				cognitao::bus::Event::name_t(X), \
+				cognitao::bus::Event::name_t(E), \
 				cognitao::bus::Event::channel_t(""), \
-				cognitao::bus::Event::context_t(context))
-#define RAISE(X) processor_ptr->bus_events << EVENT(X)
+				cognitao::bus::Event::context_t(C))
+#define RAISE(X,C) processor_ptr->bus_events << EVENT(X,C)
 #define MISSION_ID MID_PREF(FSM_CONTEXT.parameters<MissionParams>().mission_id)
 
 //FSM(MissionActive)
@@ -159,7 +160,7 @@ bool extend_events_names(cognitao::bus::Event& e, std::string mid_pref, cognitao
 			events->rise(cognitao::bus::Event( \
 							cognitao::bus::Event::name_t(mid_pref+NAME), \
 							cognitao::bus::Event::channel_t(""), \
-							cognitao::bus::Event::context_t("smme"))); \
+							cognitao::bus::Event::context_t("smme/task"))); \
 			return true;\
 		}
 		//----------- TASK GLOBAL EVENT -------------
@@ -253,22 +254,22 @@ public:
 		ROS_INFO("SMME mission at Spooling.");
 		MID
 
-		RAISE(MID_PREF(mid) + "/StartTask");
-		RAISE(MID_PREF(mid) + "/ResumeTask");
+		RAISE(mid + "/StartTask", T_PREF);
+		RAISE(mid + "/ResumeTask", T_PREF);
 
 		MM->change_mission(mid);
 		MM->mission_state("spooling");
 		while(comp_ptr->events()->is_closed()==false and ros::ok()){
 			cognitao::bus::Event e = comp_ptr->events()->waitEvent();
-			extend_events_names(e, MID_PREF(mid), comp_ptr->events());
-			if(e == cognitao::bus::Event(MID_PREF(mid)+"/CompleteTask") or e == cognitao::bus::Event(MID_PREF(mid)+"/StopTask")){
-				std::string ex = MID_PREF(mid)+"/CompleteTask";
+			extend_events_names(e, mid, comp_ptr->events());
+			if(e == cognitao::bus::Event(mid + "/CompleteTask") or e == cognitao::bus::Event(mid +"/StopTask")){
+				std::string ex = mid + "/CompleteTask";
 				ROS_INFO("Event %s detected. got next or complete mission", ex.c_str());
 				if(MM->next_task()){
 					this_thread::sleep(milliseconds(100));
-					RAISE(MID_PREF(mid) + "/StartTask");
+					RAISE(mid + "/StartTask", T_PREF);
 				}else{
-					RAISE(MID_PREF(mid) + "/CompleteMission");
+					RAISE(mid + "/CompleteMission", M_PREF);
 				}
 			}
 		}
@@ -287,7 +288,7 @@ public:
 	virtual void run() {
 		ROS_INFO("SMME mission at Paused.");
 		MID
-		RAISE(MID_PREF(mid) + "/PauseTask");
+		RAISE(mid + "/PauseTask", T_PREF);
 
 		MM->mission_state("paused");
 		while(comp_ptr->events()->is_closed()==false and ros::ok()){
@@ -309,7 +310,7 @@ public:
 	virtual void run() {
 		ROS_INFO("SMME mission at Aborted.");
 		MID
-		RAISE(MID_PREF(mid) + "/AbortTask");
+		RAISE(mid + "/AbortTask", T_PREF);
 
 		MM->mission_state("aborted");
 	}
@@ -327,7 +328,7 @@ public:
 	virtual void run() {
 		ROS_INFO("SMME mission at Finished.");
 		MID
-		RAISE(MID_PREF(mid) + "/CompleteTask");
+		RAISE(mid + "/CompleteTask", T_PREF(""));
 
 		MM->mission_state("finished");
 	}
@@ -345,7 +346,7 @@ public:
 	virtual void run() {
 		ROS_INFO("SMME mission at Unloaded.");
 		MID
-		RAISE(MID_PREF(mid) + "/StopTask");
+		RAISE(mid + "/StopTask", T_PREF(""));
 
 		MM->mission_state("finished");
 	}
@@ -470,8 +471,9 @@ void process_mission(cognitao::machine::Machine & machine,
 void MissionMachine::startMission(ComponentMain* component, std::string mission_id){
 
 	ros::NodeHandle node;
-	cognitao::bus::RosEventQueue events(node, NULL, 1000,
-			"/robil/event_bus/events");
+//	cognitao::bus::RosEventQueue events(node, NULL, 1000,
+//			"/robil/event_bus/events");
+	cognitao::bus::RosEventQueue events(node, NULL, 1000);
 
 	component->set_events(&events);
 

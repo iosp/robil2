@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	ros::NodeHandle nh("~");
 
 	ros::Subscriber sub = nh.subscribe("/decision_making/events", 10, onStringEvent);
-	pub = nh.advertise<events_bus::Msg_Event>("/robil/event_bus/events",10);
+	pub = nh.advertise<events_bus::Msg_Event>("/events",10);
 
 	ros::Rate r(30);
 

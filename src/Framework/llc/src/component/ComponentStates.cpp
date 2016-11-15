@@ -116,7 +116,9 @@ public:
 			comp_ptr(comp), processor_ptr(processor), context(context) {}
 
 	virtual void run() {
-		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
+		ROS_INFO("LLC OFF");
+		//diagnostic_msgs::DiagnosticStatus status;
+		//comp_ptr->publishDiagnostic(status);
 	}
 
 	AsyncTask* start(){
@@ -441,8 +443,7 @@ void process_machine(cognitao::machine::Machine & machine,
 //					task_ptr->assign(current_event_context, current_task);
 //				ROS_WARN_STREAM(" Current task: " << current_task);
 //				ROS_INFO_STREAM(" Current event context: " << current_event_context);
-				if (current_task == "off")
-					task_ptr->offTask();
+				RESET("off", AsyncTask(&component, &processor, current_event_context))
 				RESET("init", TaskInit(&component, &processor, current_event_context))
 				RESET("ready", TaskReady(&component, &processor, current_event_context))
 				RESET("standby", TaskStandby(&component, &processor, current_event_context))
@@ -750,8 +751,9 @@ void process_machine(cognitao::machine::Machine & machine,
 void runComponent(int argc, char** argv, ComponentMain& component) {
 
 	ros::NodeHandle node;
-	cognitao::bus::RosEventQueue events(node, NULL, 1000,
-			"/robil/event_bus/events");
+//	cognitao::bus::RosEventQueue events(node, NULL, 1000,
+//			"/robil/event_bus/events");
+	cognitao::bus::RosEventQueue events(node, NULL, 1000);
 
 	component.set_events(&events);
 

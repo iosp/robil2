@@ -38,11 +38,12 @@ public:
 
 	AsyncTask* start(){
 		run_thread = boost::thread(boost::bind(&AsyncTask::start_run, this));
+//		boost::this_thread::sleep(boost::posix_time::milliseconds(20));
 		return this;
 	}
 
 	virtual void run() {
-		std::cout << context << " ::::::: PURE VIRTUAL" << std::endl;
+		pause(10000);
 	}
 
 	void start_run() {
@@ -180,8 +181,7 @@ void process_machine(cognitao::machine::Machine & machine,
 //				ROS_WARN_STREAM(" Current task: " << current_task);
 //				ROS_INFO_STREAM(
 //						" Current event context: " << current_event_context);
-				if (task_ptr && current_task == "off")
-					task_ptr->offTask();
+				RESET("off", AsyncTask(&component, &processor, current_event_context))
 				RESET("init", TaskInit(&component, &processor, current_event_context))
 				RESET("ready", TaskReady(&component, &processor, current_event_context))
 				RESET("standby", TaskStandby(&component, &processor, current_event_context))
@@ -307,8 +307,9 @@ void process_machine(cognitao::machine::Machine & machine,
 void runComponent(int argc, char** argv, ComponentMain& component) {
 
 	ros::NodeHandle node;
-	cognitao::bus::RosEventQueue events(node, NULL, 1000,
-			"/robil/event_bus/events");
+//	cognitao::bus::RosEventQueue events(node, NULL, 1000,
+//			"/robil/event_bus/events");
+	cognitao::bus::RosEventQueue events(node, NULL, 1000);
 	component.set_events(&events);
 
 	std::stringstream mission_description_stream;
