@@ -376,34 +376,85 @@ void Morphology_Operations( int, void* )
 {
 }
 
-double HeightMap::calc_height(int x, int y, int radius)
+std::vector<int> getConvolution(string str, int size)
+{
+    std::vector<int> vect, conv;
+
+    std::stringstream ss(str);
+
+    int i;
+
+    while (ss >> i)
+    {
+        vect.push_back(i);
+
+        if (ss.peek() == ',')
+            ss.ignore();
+    }
+    if (!size%2)
+        size--;
+    if (vect.size() != size)
+        vect.assign(size, 1);
+    conv.assign(size*size, 1);
+    int mid = vect.size() / 2;
+    for (int i = 0; i < vect.size(); i++)
+    {
+        for (int j = 0; j < vect.size(); j++)
+        {
+            if (i > mid)
+            {
+                if (i > j && j > vect.size() - i - 1)
+                    conv.at(i * vect.size() + j) = vect.at(i);
+                else
+                    conv.at(i * vect.size() + j) = vect.at(j);
+            }
+            else if (i < mid)
+            {
+                if (i < j && j < vect.size() - i - 1)
+                    conv.at(i * vect.size() + j) = vect.at(i);
+                else
+                    conv.at(i * vect.size() + j) = vect.at(j);
+            }
+            else
+                conv.at(i * vect.size() + j) = vect.at(j);
+        }
+
+    }
+
+    return conv;
+}
+
+double HeightMap::calc_height(int x, int y, std::vector<int> conv)
 {
     if (_at(x, y) == HEIGHT_UNKNOWN)
         return HEIGHT_UNKNOWN;
     double height = 0;
     int counter = 0;
+    int radius = (int)sqrt(conv.size());
     for (int i = x - radius; i <= x + radius; i++)
         for (int j = y - radius; j <= y + radius; j++)
         {
+            double mul = 1;
             if (i < 0 || i > _width || j < 0 || j > _height || _at(i, j) == HEIGHT_UNKNOWN)
-            {
-                counter++;
                 continue;
-            }
-            height += _at(i, j);
+            if (i == x && j == y)
+                mul = 2;
+            counter += mul;
+            height += mul * _at(i, j);
         }
-    height /= (pow( 2 * radius + 1, 2) - counter);
+    height /= (1.0 * counter);
     return height;
 }
 
-void HeightMap::calculateTypes(Vec3D position, Rotation myRot)
+void HeightMap::calculateTypes()//Vec3D position, Rotation myRot)
 {
     int mul;
+    std::vector<int> conv = getConvolution(_dynamic->convolution_type, _dynamic->convolution_size);
     const int road_thresh = 5;
     for(int i = 1; i < _width-1; i++)
         for(int j = 1; j < _height-1; j++)
         {
-            double height = calc_height(i,j, _dynamic->convolution_size);
+            double height = calc_height(i,j,conv);
             if (height > _dynamic->obstacle_threshold)
                 _types[j*_width+i] = TYPE_OBSTACLE;
             else if(height == HEIGHT_UNKNOWN)
