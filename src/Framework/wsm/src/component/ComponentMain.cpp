@@ -19,7 +19,7 @@
 #include <tf/transform_listener.h>
 
 ComponentMain::ComponentMain(int argc,char** argv)
-: _inited(init(argc, argv))
+: _inited(init(argc, argv)), _events(0)
 {
 _sub_WorkSeqData=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","WorkSeqData","sub"), 10, &ComponentMain::handleWorkSeqData,this));
 _sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","BladePosition","sub"), 10, &ComponentMain::handleBladePosition,this));
@@ -44,7 +44,6 @@ _plp_monitor=ros::Publisher(_nh.advertise<std_msgs::Header>("/monitor/task_time"
     this->recivedMap = NULL;
     this->ground_heigth = 0 ;
     this->z_offset = 0;
-    _events = 0;
 }
 ComponentMain::~ComponentMain() {
 	if(cur_mission) delete cur_mission;

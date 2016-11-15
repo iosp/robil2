@@ -1,3 +1,4 @@
+
 /*
  * ComponentMain.h
  *
@@ -10,42 +11,29 @@
 #include <ParameterTypes.h>
 #include <tf/tf.h>
 #include "../Shiphon_IO/Shiphon_IO.h"
-<<<<<<< HEAD
-=======
-#include "../roscomm/RosComm.h"
-#include <cognitao_v2/cognitao_v2.h>
->>>>>>> origin/moving_to_new_cognitao
-
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
 #include <boost/thread.hpp>
+#include <cognitao_v2/cognitao_v2.h>
 
 class ComponentMain {
-<<<<<<< HEAD
 	bool _inited;
-	  ros::NodeHandle _nh;
-	  ros::Publisher _pub_diagnostic;
-	  boost::thread_group _maintains;
-
-		ros::Publisher  _pub_GPSPose;
-		ros::Publisher  _pub_INS;
-		ros::Publisher  _pub_GpsSpeed;
-		ros::Publisher  _pub_GpsSpeedVec;
-
-		string IPADDR;
-
-	  bool init(int argc,char** argv);
+	ros::NodeHandle _nh;
+	ros::Publisher _pub_diagnostic;
+	boost::thread_group _maintains;
+	ros::Publisher  _pub_GPSPose;
+	ros::Publisher  _pub_INS;
+	ros::Publisher  _pub_GpsSpeed;
+	ros::Publisher  _pub_GpsSpeedVec;
+	string IPADDR;
+	bool init(int argc,char** argv);
 	Shiphon_Ctrl * 	_shiphonCtrl;
 	pthread_t _myHeartbeatThread;
-=======
-	RosComm* _roscomm;
-	Shiphon_Ctrl * _shiphonCtrl;
 	cognitao::bus::RosEventQueue* _events;
 	boost::mutex _mt;
->>>>>>> origin/moving_to_new_cognitao
 public:
 	ComponentMain(int argc, char** argv);
 	virtual ~ComponentMain();
@@ -54,16 +42,8 @@ public:
 	void publishINS(config::SHIFFON2ROS::pub::INS& msg);
 	void publishINS2(std_msgs::Float64& msg);
 	void publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg);
-	void publishGpsSpeed2(std_msgs::Float64& msg);
-<<<<<<< HEAD
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
-=======
-	void publishTransform(const tf::Transform& _tf, std::string srcFrame,
-			std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame,
-			std::string distFrame);
->>>>>>> origin/moving_to_new_cognitao
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header,
 			const diagnostic_msgs::DiagnosticStatus& _report);
@@ -74,7 +54,6 @@ public:
 	void ReadAndPub_ShiphonGpsSpeed();
 	void heartbeat();
 	static void *callHeartbeat(void *pThis);
-
 	void set_events(cognitao::bus::RosEventQueue* events);
 	void rise_taskFinished();
 	void rise_taskAborted();

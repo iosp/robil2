@@ -21,7 +21,6 @@
 #include <sstream>
 
 class MissionManager;
-//namespace decision_making{ class EventQueue; }
 
 class ComponentMain {
 	bool _inited;
