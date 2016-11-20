@@ -8,7 +8,29 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
-#include <ParameterTypes.h>
+//#include <ParameterTypes.h>
+
+#ifndef COMPONENT
+#define COMPONENT context.parameters<Params>().comp
+#endif
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
+
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <sensor_msgs/NavSatStatus.h>
+#include <std_msgs/Float64.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <robil_msgs/GpsSpeed.h>
+
+
+
 #include <tf/tf.h>
 #include "../Shiphon_IO/Shiphon_IO.h"
 
@@ -18,6 +40,7 @@
 #include <iostream>     // std::cout
 #include <sstream>
 #include <boost/thread.hpp>
+
 
 class ComponentMain {
 	bool _inited;
@@ -38,11 +61,8 @@ public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 
-	void publishGPS(config::SHIFFON2ROS::pub::GPS& msg);
-	void publishINS(config::SHIFFON2ROS::pub::INS& msg);
-	void publishINS2(std_msgs::Float64& msg);
-	void publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg);
-	void publishGpsSpeed2(std_msgs::Float64& msg);
+	void publishGPS(sensor_msgs::NavSatFix& msg);
+	void publishINS(sensor_msgs::Imu& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);

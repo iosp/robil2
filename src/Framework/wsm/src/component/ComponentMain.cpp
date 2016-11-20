@@ -54,7 +54,7 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
+void ComponentMain::handleWorkSeqData(const robil_msgs::AssignManipulatorTask& msg)
 {
 	if(this->cur_mission != NULL)
 	{
@@ -86,40 +86,40 @@ void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
 	}
 }
 	
-void ComponentMain::handleBladePosition(const config::WSM::sub::BladePosition& msg)
+void ComponentMain::handleBladePosition(const sensor_msgs::JointState& msg)
 {
 	if(this->receivedBladePosition != NULL)
 		delete this->receivedBladePosition;
-	this->receivedBladePosition = new config::WSM::sub::BladePosition(msg);
+	this->receivedBladePosition = new sensor_msgs::JointState(msg);
 	//std::cout<< "WSM say:" << msg << std::endl;
 }
 
-void ComponentMain::handleLocation(const config::LLC::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 
 	if(this->receivedLocation != NULL)
 		delete this->receivedLocation;
-	this->receivedLocation = new config::LLC::sub::Location(msg);
+	this->receivedLocation = new geometry_msgs::PoseWithCovarianceStamped(msg);
 	//std::cout<< "LLC say:" << msg.pose.pose.position.x << std::endl;
 }
 
-void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
+void ComponentMain::handlePerVelocity(const geometry_msgs::TwistStamped& msg)
 {
 
 	if(this->receivedPerVelocity != NULL)
 		delete this->receivedPerVelocity;
-	this->receivedPerVelocity = new config::LLC::sub::PerVelocity(msg);
+	this->receivedPerVelocity = new geometry_msgs::TwistStamped(msg);
 
 //	std::cout<< "LLC say:" << msg << std::endl;
 }
 
-void ComponentMain::handleMiniMapWSM(const config::WSM::sub::MiniMap& msg)
+void ComponentMain::handleMiniMapWSM(const robil_msgs::Map& msg)
 {
 
 	if(this->recivedMap != NULL){
 		delete this->recivedMap ;
 	}
-		this->recivedMap = new config::WSM::sub::MiniMap(msg);
+		this->recivedMap = new robil_msgs::Map(msg);
 
 			//double max = 0 ;
 	//	for(int i = 12 ; i < 18 ; i++)
@@ -150,12 +150,12 @@ void ComponentMain::publish_m(const std_msgs::Float64 &msg)
 	_roscomm->publish_m(msg);
 }
 */
-void ComponentMain::publishWSMVelocity(config::WSM::pub::WSMVelocity& msg)
+void ComponentMain::publishWSMVelocity(geometry_msgs::TwistStamped& msg)
 {
 	_pub_WSMVelocity.publish(msg);
 }
 	
-void ComponentMain::publishBladePositionCommand(config::WSM::pub::BladePositionCommand& msg)
+void ComponentMain::publishBladePositionCommand(sensor_msgs::JointState& msg)
 {
 	_pub_BladePositionCommand.publish(msg);
 }
