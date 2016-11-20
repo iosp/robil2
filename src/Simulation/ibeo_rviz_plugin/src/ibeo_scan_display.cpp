@@ -38,7 +38,7 @@
 #include "rviz/ogre_helpers/point_cloud.h"
 #include "rviz/properties/int_property.h"
 #include "rviz/validate_floats.h"
-#include "gazebo_ibeo_gpu/MultiLaserScan.h"
+#include "ibeo/MultiLaserScan.h"
 #include "ibeo_scan_display.h"
 #include "sensor_msgs/LaserScan.h"
 #include <string.h>
@@ -80,7 +80,7 @@ void IBEOScanDisplay::updateQueueSize()
   tf_filter_->setQueueSize( (uint32_t) queue_size_property_->getInt() );
 }
 
-void IBEOScanDisplay::processMessage( const gazebo_ibeo_gpu::MultiLaserScanConstPtr& scan )
+void IBEOScanDisplay::processMessage( const ibeo::MultiLaserScanConstPtr& scan )
 {
   sensor_msgs::PointCloudPtr cloud( new sensor_msgs::PointCloud );
 

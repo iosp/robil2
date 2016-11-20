@@ -169,6 +169,7 @@ private:
       sensor_msgs::NavSatFix _gpsData;
       HeightMap* height_map;
       bool _should_pub;
+      std_msgs::Header _should_pub_timeout;
 
       
       

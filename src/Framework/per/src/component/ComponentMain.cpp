@@ -91,16 +91,19 @@ void ComponentMain::handlePerVelocity(const geometry_msgs::TwistStamped& msg)
 void ComponentMain::handleSensorINS(const /*config::PER::sub::SensorINS*/sensor_msgs::Imu& msg)
 {
     _imuData = msg;
-    tf::Quaternion q(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w);
-    tf::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-    double acc2 = msg.linear_acceleration.x * msg.linear_acceleration.x + msg.linear_acceleration.y * msg.linear_acceleration.y;
-//    cout << msg.angular_velocity << endl;
-    if (abs(pitch) > _dyn_conf.pitch_filter)
-        _should_pub = true;
+    double pitch = msg.linear_acceleration.x * msg.linear_acceleration.x + msg.linear_acceleration.y * msg.linear_acceleration.y;
+
+    if (sqrt(pitch) / 10.0 > _dyn_conf.pitch_filter)
+    {
+        _should_pub = false;
+        _should_pub_timeout.stamp = ros::Time::now();
+    }
     else
-        _should_pub = true;
+    {
+        if (!_should_pub)
+            if (ros::Time::now().toSec() - _should_pub_timeout.stamp.toSec() > _dyn_conf.pitch_filter_timeout)
+                _should_pub = true;
+    }
 
 //    cout << "got INS\n";
 //    config::PER::pub::INS msg2;

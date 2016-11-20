@@ -9,6 +9,8 @@
  * Author: Daniel Meltz
  */
 #include "../include/IBEO.h"
+#ifndef USE_GPU
+#define USE_GPU 1
 
 using namespace gazebo;
 using namespace std;
@@ -101,11 +103,21 @@ namespace gazebo
 			gzthrow(error);
 			return;
       	  }
-	      _sensorB1 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB1);
-	      _sensorB2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB2);
-	      _sensorT1 = boost::static_pointer_cast<sensors::GpuRaySensor>(sensorT1);
-	      _sensorT2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorT2);
-
+#ifdef USE_GPU
+          {
+              _sensorB1 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB1);
+              _sensorB2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB2);
+              _sensorT1 = boost::static_pointer_cast<sensors::GpuRaySensor>(sensorT1);
+              _sensorT2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorT2);
+          }
+#else
+	  {
+		  _sensorB1 = boost::dynamic_pointer_cast<sensors::RaySensor>(sensorB1);
+		  _sensorB2 = boost::dynamic_pointer_cast<sensors::RaySensor>(sensorB2);
+		  _sensorT1 = boost::static_pointer_cast<sensors::RaySensor>(sensorT1);
+		  _sensorT2 = boost::dynamic_pointer_cast<sensors::RaySensor>(sensorT2);
+	  }
+#endif
 	      if(!_sensorB1 || !_sensorB2 || !_sensorT1 || !_sensorT2)
     	  {
 			string error = "IBEO Sensor Model \"" + _model->GetName() + "\" found that it's sensors arent of class GpuRaySensor. You must be really messed up\n";
@@ -590,8 +602,12 @@ namespace gazebo
 
     bool flag_fillMsg;
 
+#ifdef USE_GPU
     sensors::GpuRaySensorPtr 		_sensorT1, _sensorT2, _sensorB1, _sensorB2;
-    
+#else
+    sensors::RaySensorPtr 		_sensorT1, _sensorT2, _sensorB1, _sensorB2;
+#endif
+
     ros::NodeHandle		_nodeHandle;
     ros::Publisher 		_publisher;
     ros::Publisher _marker_pub;
@@ -652,3 +668,4 @@ namespace gazebo
 GZ_REGISTER_MODEL_PLUGIN(IBEO)
 }
 
+#endif

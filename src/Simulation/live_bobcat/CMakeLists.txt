@@ -25,7 +25,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES live_bobcat
   CATKIN_DEPENDS 
-       roscpp tf gazebo_ros bobcat gazebo_ibeo_gpu gazebo_sick_gpu
+       roscpp tf gazebo_ros bobcat gazebo_sick_gpu
 #  DEPENDS system_lib
 )
 
