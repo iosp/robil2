@@ -55,7 +55,7 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg)
+void ComponentMain::handleWPDVelocity(const geometry_msgs::TwistStamped& msg)
 {
 	this->WPD_desired_speed.twist.linear.x = msg.twist.linear.x ;
 	this->WPD_desired_speed.twist.angular.z = msg.twist.angular.z ;
@@ -64,7 +64,7 @@ void ComponentMain::handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg)
 
 }
 	
-void ComponentMain::handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg)
+void ComponentMain::handleWSMVelocity(const geometry_msgs::TwistStamped& msg)
 {
 
 	this->WSM_desired_speed.twist.linear.x = msg.twist.linear.x ;
@@ -74,21 +74,21 @@ void ComponentMain::handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg)
 }
 	
 
-void ComponentMain::handleBladePositionCommand(const config::LLC::sub::BladePositionCommand& msg)
+void ComponentMain::handleBladePositionCommand(const sensor_msgs::JointState& msg)
 {
 	this->t_flag = 1 ;
 	this->Blade_angle = msg ;
 	//std::cout<< "Got blade command:" << msg << std::endl;
 }
 	
-void ComponentMain::handleLocation(const config::LLC::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 	this->Per_pose = msg ;
 	//std::cout<< "LLC say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
+void ComponentMain::handlePerVelocity(const geometry_msgs::TwistStamped& msg)
 {
 
 	this->Per_measured_speed.linear.x = msg.twist.linear.x ;
@@ -98,13 +98,13 @@ void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
 }
 	
 
-void ComponentMain::publishEffortsTh(config::LLC::pub::EffortsTh& msg)
+void ComponentMain::publishEffortsTh(std_msgs::Float64& msg)
 {
 	_pub_EffortsTh.publish(msg);
 }
 	
 
-void ComponentMain::publishEffortsSt(config::LLC::pub::EffortsSt& msg)
+void ComponentMain::publishEffortsSt(std_msgs::Float64& msg)
 {
 	_pub_EffortsSt.publish(msg);
 }
