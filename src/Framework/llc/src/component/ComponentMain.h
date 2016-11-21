@@ -12,7 +12,7 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include <ParameterTypes.h>
+//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <boost/thread.hpp>
 
