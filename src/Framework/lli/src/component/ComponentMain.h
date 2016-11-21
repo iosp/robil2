@@ -28,7 +28,6 @@
 #include <std_msgs/Bool.h>
 #include <diagnostic_msgs/DiagnosticArray.h>
 
-
 #ifndef COMPONENT
 #define COMPONENT context.parameters<Params>().comp
 #endif

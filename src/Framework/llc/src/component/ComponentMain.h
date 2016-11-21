@@ -22,7 +22,6 @@
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/TwistStamped.h>
 
-
 #ifndef HEARTBEAT_FREQUANCY
 #define HEARTBEAT_FREQUANCY 2 //Hz
 #endif
