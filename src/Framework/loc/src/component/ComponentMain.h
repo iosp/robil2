@@ -14,13 +14,21 @@
 #include <sstream>
 
 #include <std_msgs/String.h>
-#include <ParameterTypes.h>
+//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include "ekf_class.h"
 #include "noiseless_estimator.h"
 #include <boost/thread.hpp>
 #include <dynamic_reconfigure/server.h>
 #include <loc/configConfig.h>
+
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <geometry_msgs/TwistStamped.h>
 
 //class ComponentMain;
 class ComponentMain {
@@ -42,15 +50,15 @@ public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
     static void performEstimation();
-	void handlePositionUpdate(const config::LOC::sub::PositionUpdate& msg);
+        void handlePositionUpdate(const geometry_msgs::PoseStamped& msg);
 	void setSteeringInput(double msg);
 	void setThrottleInput(double msg);
-	void handleGPS(const config::LOC::sub::GPS& msg);
-	void handleINS(const config::LOC::sub::INS& msg);
-	void handleVOOdometry(const config::LOC::sub::VOOdometry& msg);
+	void handleGPS(const sensor_msgs::NavSatFix& msg);
+	void handleINS(const sensor_msgs::Imu& msg);
+	void handleVOOdometry(const nav_msgs::Odometry& msg);
     void handleGpsSpeed(const sensor_msgs::NavSatFix& msg);
-	void publishLocation(config::LOC::pub::Location& msg);
-	void publishPerVelocity(config::LOC::pub::PerVelocity& msg);
+        void publishLocation(geometry_msgs::PoseWithCovarianceStamped& msg);
+        void publishPerVelocity(geometry_msgs::TwistStamped& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
