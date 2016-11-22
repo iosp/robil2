@@ -409,10 +409,10 @@
     <parent>body</parent>
     <axis>
 	<xyz>0 1 0</xyz>
-	<limit>
-	  <lower>-1e+16</lower>
-	  <upper>1e+16</upper>
-	</limit>
+	
+	  
+	  
+	
 	<dynamics/>
     </axis>
 </joint>
@@ -478,10 +478,10 @@
     <parent>body</parent>
     <axis>
 	<xyz>0 1 0</xyz>
-	<limit>
-	    <lower>-1e+16</lower>
-	    <upper>1e+16</upper>
-	</limit>
+	
+	    
+	    
+	
 	<dynamics/>
     </axis>
 </joint>
@@ -547,10 +547,10 @@
     <parent>body</parent>
     <axis>
 	<xyz>0 1 0</xyz>
-	  <limit>
-	    <lower>-1e+16</lower>
-	    <upper>1e+16</upper>
-	  </limit>
+	  
+	    
+	    
+	  
 	<dynamics/>
     </axis>
 </joint>
@@ -619,10 +619,10 @@
 <parent>body</parent>
 <axis>
 <xyz>0 1 0</xyz>
-<limit>
-<lower>-1e+16</lower>
-<upper>1e+16</upper>
-</limit>
+
+
+
+
 <dynamics/>
 </axis>
 </joint>
@@ -651,10 +651,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>    
@@ -671,10 +671,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>                                                                                                                                                                                        
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -691,10 +691,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -709,10 +709,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -731,10 +731,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -749,10 +749,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -769,10 +769,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -787,10 +787,10 @@
       <parent>main_arm</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -812,10 +812,10 @@
       <parent>loader</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -830,10 +830,10 @@
       <parent>main_arm</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>

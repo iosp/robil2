@@ -368,10 +368,10 @@
       <parent>body</parent>
       <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -422,10 +422,10 @@
       <parent>body</parent>
       <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -473,10 +473,10 @@
       <axis>
       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -535,10 +535,10 @@
       <axis>
       <dynamics><damping>0.01</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -601,10 +601,10 @@
       <parent>body</parent>
       <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -655,10 +655,10 @@
       <parent>body</parent>
       <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
     </joint>
@@ -708,10 +708,10 @@
       <parent>body</parent>
       <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -762,10 +762,10 @@
       <parent>body</parent>
       <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -816,10 +816,10 @@
       <parent>body</parent>
       <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -870,10 +870,10 @@
       <parent>body</parent>
       <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -924,10 +924,10 @@
       <parent>body</parent>
       <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -978,10 +978,10 @@
       <parent>body</parent>
       <axis>       <dynamics><damping>0.5</damping></dynamics>
         <xyz>0 1 0</xyz>
-        <limit>
-          <lower>-1e+32</lower>
-          <upper>1e+32</upper>
-        </limit>
+        
+          
+          
+        
         <!--<dynamics><friction>1</friction></dynamics>-->
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
@@ -1009,10 +1009,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>    
@@ -1029,10 +1029,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -1049,10 +1049,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -1067,10 +1067,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -1089,10 +1089,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -1107,10 +1107,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -1127,10 +1127,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -1145,10 +1145,10 @@
       <parent>main_arm</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -1170,10 +1170,10 @@
       <parent>loader</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>
@@ -1188,10 +1188,10 @@
       <parent>main_arm</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        <limit>
+        
           <lower>0</lower>
           <upper>0</upper>
-        </limit>
+        
         <dynamics/>
       </axis>
     </joint>

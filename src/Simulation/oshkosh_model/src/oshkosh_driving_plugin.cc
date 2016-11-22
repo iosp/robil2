@@ -1,12 +1,6 @@
-// Written By : Daniel Meltz, Adapted for the tracked model by: Yossi Cohen.
+// Written By : Daniel Meltz
 #define MY_GAZEBO_VER 5
-
 // If the plugin is not defined then define it
-#ifndef _BOBTANK_DRIVE_PLUGIN_HH_
-#define _BOBTANK_DRIVE_PLUGIN_HH_
-
-
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -22,6 +16,7 @@
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/math/gzmath.hh>
 #include <gazebo/gazebo_config.h>
+
 
 // ROS Communication
 #include "ros/ros.h"
@@ -45,67 +40,61 @@
 // Maximum time delays
 #define command_MAX_DELAY 0.3
 
-#define WHEEL_EFFORT_LIMIT 1000
+#define WHEEL_EFFORT_LIMIT 100000
 
 #define WHEELS_BASE 0.95
-#define STEERING_FRICTION_COMPENSATION 2.5; // compensate for the faliure of reaching the angular velocity
+#define STEERING_FRICTION_COMPENSATION 2; // compensate the the daliure of reaching the angular velosity
 
-#define WHEEL_DIAMETER 0.4
-#define ROLLER_DIAMETER 0.2
+#define WHEEL_DIAMETER 0.77
 #define PI 3.14159265359
 
 #define LINEAR_COMMAND_FILTER_ARRY_SIZE 750
 #define ANGULAR_COMMAND_FILTER_ARRY_SIZE 500
 
+//#define MY_GAZEBO_VER 5
 
 namespace gazebo
 {
   
-  class bobtankDrivePlugin : public ModelPlugin
+  class oshkoshDrivingPlugin : public ModelPlugin
   {
     ///  Constructor
-    public: bobtankDrivePlugin() {}
+    public: oshkoshDrivingPlugin() {}
 
     /// The load function is called by Gazebo when the plugin is inserted into simulation
     /// \param[in] _model A pointer to the model that this plugin is attached to.
     /// \param[in] _sdf A pointer to the plugin's SDF element.
   public: void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
-      std::cout << "MY_GAZEBO_VER = [" << GAZEBO_MAJOR_VERSION  << "]"<<std::endl; 
+      //std::cout << "GAZEBO_VERSION = [" << GAZEBO_VERSION << "]"<<std::endl; 
+      //float gazebo_ver = std::stof(GAZEBO_VERSION);
+      std::cout << "My major GAZEBO VER = [" << GAZEBO_MAJOR_VERSION  << "]"<<std::endl; 
+      //if (GAZEBO_MAJOR_VERSION > 2.0) std::cout << "GADOL"<<std::endl; 
+      //else std::cout << "NOT GADOL"<<std::endl; 
       // Store the pointer to the model
       this->model = _model;
 
       // Store the pointers to the joints
-      this->back_left_joint = this->model->GetJoint("back_left_wheel_joint");
-      this->back_right_joint = this->model->GetJoint("back_right_wheel_joint");
-      this->front_left_joint = this->model->GetJoint("front_left_wheel_joint");
-      this->front_right_joint = this->model->GetJoint("front_right_wheel_joint");
-      this->roller_back_right = this->model->GetJoint("roller_back_right_joint");
-      this->roller_mid_right = this->model->GetJoint("roller_mid_right_joint");
-      this->roller_front_right = this->model->GetJoint("roller_front_right_joint");
-      this->roller_back_left = this->model->GetJoint("roller_back_left_joint");
-      this->roller_mid_left = this->model->GetJoint("roller_mid_left_joint");
-      this->roller_front_left = this->model->GetJoint("roller_front_left_joint");
-      this->cogwheel_right = this->model->GetJoint("cogwheel_right_joint");
-      this->cogwheel_left = this->model->GetJoint("cogwheel_left_joint");
+      this->back_left_joint   = this->model->GetJoint("left_wheel_1");
+
       
       // Starting Timers
       Linear_command_timer.Start();
       Angular_command_timer.Start();
 
-      this->Ros_nh = new ros::NodeHandle("bobtankDrivePlugin_node");
+      this->Ros_nh = new ros::NodeHandle("oshkoshDrivingPlugin_node");
 
       // Subscribe to the topic, and register a callback
-      Steering_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Steering" , 1000, &bobtankDrivePlugin::On_Angular_command, this);
-      Velocity_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Throttle" , 1000, &bobtankDrivePlugin::On_Linear_command, this);
+      Steering_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Steering" , 1000, &oshkoshDrivingPlugin::On_Angular_command, this);
+      Velocity_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Throttle" , 1000, &oshkoshDrivingPlugin::On_Linear_command, this);
       
       platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform" , 100);
 
       // Listen to the update event. This event is broadcast every simulation iteration. 
-      this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&bobtankDrivePlugin::OnUpdate, this, _1));
+      this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&oshkoshDrivingPlugin::OnUpdate, this, _1));
 
       this->model_reconfiguration_server = new dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> (*(this->Ros_nh));
-      this->model_reconfiguration_server->setCallback(boost::bind(&bobtankDrivePlugin::dynamic_Reconfiguration_callback, this, _1, _2));
+      this->model_reconfiguration_server->setCallback(boost::bind(&oshkoshDrivingPlugin::dynamic_Reconfiguration_callback, this, _1, _2));
 
       /* initialize random seed: */
       srand (time(NULL));
@@ -138,8 +127,8 @@ namespace gazebo
 
       double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
 
-                                         //s=-1.00    s=-0.70   s=-0.40   s=0.00   s=0.40     s=0.70    s=1.00
-      double Linear_vel_values_array[] = { -1.20,    -1.30,    -1.40,    -1.50,    -1.40,    -1.30,    -1.20,    //t=-1.00
+                                         //r=-1.00    r=-0.70   r=-0.40   r=0.00   r=0.40     r=0.70    r=1.00
+      double Linear_vell_values_array[] = { -1.20,    -1.30,    -1.40,    -1.50,    -1.40,    -1.30,    -1.20,    //t=-1.00
                                             -0.65,    -0.70,    -0.75,    -0.80,    -0.75,    -0.70,    -0.65,    //t=-0.70
                                             -0.14,    -0.16,    -0.18,    -0.20,    -0.18,    -0.16,    -0.14,    //t=-0.40
                                              0.40,     0.17,     0.00,     0.00,     0.00,     0.17,     0.40,    //t=0.00
@@ -147,8 +136,8 @@ namespace gazebo
                                              0.65,     0.70,     0.75,     0.80,     0.75,     0.70,     0.65,    //t=0.70
                                              1.20,     1.30,     1.40,     1.50,     1.40,     1.30,     1.20};   //t=1.00
 
-                                         //s=-1.00    s=-0.70   s=-0.40   s=0.00    s=0.40    s=0.70    s=1.00
-      double Angular_vel_values_array[] = { 1.40,     0.42,     0.18,     0.00,    -0.18,    -0.42,    -1.40,    //t=-1.00
+                                         //r=-1.00    r=-0.70   r=-0.40   r=0.00    r=0.40    r=0.70    r=1.00
+      double Angular_vell_values_array[] = { 1.40,     0.42,     0.18,     0.00,    -0.18,    -0.42,    -1.40,    //t=-1.00
                                              1.36,     0.38,     0.14,     0.00,    -0.14,    -0.38,    -1.36,    //t=-0.70
                                              1.32,     0.34,     0.10,     0.00,    -0.10,    -0.34,    -1.32,    //t=-0.40
                                             -1.22,    -0.24,     0.00,     0.00,     0.00,     0.24,     1.22,    //t=0.00
@@ -159,8 +148,8 @@ namespace gazebo
 
       std::vector<double> Throttle_commands(Throttle_commands_array, Throttle_commands_array+ sizeof(Throttle_commands_array)/sizeof(double));
       std::vector<double> Sttering_commands(Sttering_commands_array, Sttering_commands_array+ sizeof(Sttering_commands_array)/sizeof(double));
-      std::vector<double> Linear_vel_values(Linear_vel_values_array, Linear_vel_values_array+ sizeof(Linear_vel_values_array)/sizeof(double));
-      std::vector<double> Angular_vel_values(Angular_vel_values_array, Angular_vel_values_array+ sizeof(Angular_vel_values_array)/sizeof(double));
+      std::vector<double> Linear_vell_values(Linear_vell_values_array, Linear_vell_values_array+ sizeof(Linear_vell_values_array)/sizeof(double));
+      std::vector<double> Angular_vell_values(Angular_vell_values_array, Angular_vell_values_array+ sizeof(Angular_vell_values_array)/sizeof(double));
 
 
       std::vector< std::vector<double>::iterator > grid_iter_list;
@@ -176,21 +165,16 @@ namespace gazebo
       int num_elements = grid_sizes[0] * grid_sizes[1];
 
       // construct the interpolator. the last two arguments are pointers to the underlying data
-      Linear_vel_interp  =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vel_values.data(), Linear_vel_values.data() + num_elements);
-      Angular_vel_interp =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vel_values.data(), Angular_vel_values.data() + num_elements);
+      Linear_vel_interp  =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vell_values.data(), Linear_vell_values.data() + num_elements);
+      Angular_vel_interp =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vell_values.data(), Angular_vell_values.data() + num_elements);
       }
 
     public: void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
       {
-          control_P = config.Wheel_conntrol_P;
-          control_I = config.Wheel_conntrol_I;
-          control_D = config.Wheel_conntrol_D;
-          Damping = config.Damping;
-          Power=config.Power;
-          MinAngMult=config.MinAngMult;
-          MaxAngMult=config.MaxAngMult;
-          MinAngPowerMult=config.MinAngPowerMult;
-          MaxAngPowerMult=config.MaxAngPowerMult;
+          controll_P = config.Wheel_conntrol_P;
+          controll_I = config.Wheel_conntrol_I;
+          controll_D = config.Wheel_conntrol_D;
+
           command_lN = config.Command_Linear_Noise;
           command_aN = config.Command_Angular_Noise;
       }
@@ -250,17 +234,17 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
         //printf("Linear_command = %f,  Angular_command = %f --->  Linear_vel_interp  = %f  \n", args[0], args[1],  Linear_vel_interp->interp(args.begin()) );
         //printf("Linear_command = %f,  Angular_command = %f --->  Angular_vel_interp = %f \n", args[0], args[1],  Angular_vel_interp->interp(args.begin()) );
 
-        double Linear_nominal_vel = Linear_vel_interp->interp(args.begin());
-        double Angular_nominal_vel = Angular_vel_interp->interp(args.begin());
+        double Linear_nominal_vell = Linear_vel_interp->interp(args.begin());
+        double Angular_nominal_vell = Angular_vel_interp->interp(args.begin());
 
-        double Linear_vel = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index , Linear_nominal_vel);
-        double Angular_vel = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index , Angular_nominal_vel);
+        double Linear_vell = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index , Linear_nominal_vell);
+        double Angular_vell = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index , Angular_nominal_vell);
 
         double LinearNoise  = command_lN * (*Linear_Noise_dist)(generator);  //((std::rand() % 100)-50)/50;
         double AngularNoise = command_aN * (*Angular_Noise_dist)(generator); //((std::rand() % 100)-50)/50;
 
-        Linear_ref_vel  =  (1 + LinearNoise)  * Linear_vel;
-        Angular_ref_vel =  (1 + AngularNoise) * Angular_vel;
+        Linear_ref_vel  =  (1 + LinearNoise)  * Linear_vell;
+        Angular_ref_vel =  (1 + AngularNoise) * Angular_vell;
     }
 
     private: void wheel_controller(physics::JointPtr wheel_joint, double ref_omega)
@@ -269,61 +253,43 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 
         double error = ref_omega - wheel_omega;
 
-        double effort_command = (Power*((1.4*MinAngPowerMult-(MinAngPowerMult-MaxAngPowerMult)*fabs(Angular_ref_vel))/1.4) * error);
-        //  double effort_command = (control_P * error);
+        double effort_command = (controll_P * error);
 
         if(effort_command > WHEEL_EFFORT_LIMIT) effort_command = WHEEL_EFFORT_LIMIT;
         if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
-        if(wheel_joint==this->cogwheel_right||wheel_joint==this->cogwheel_left) effort_command=effort_command*0.01;
 
 
 //        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
 //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
 
 
-
-        #if GAZEBO_MAJOR_VERSION >= 6
+#if GAZEBO_MAJOR_VERSION >= 5  
                 wheel_joint->SetVelocity(0,ref_omega);
-        #else
+#else
                 wheel_joint->SetForce(0,effort_command);
-        #endif
-
+#endif        
     }
 
 
   private: void apply_efforts()
     {
-        
-        std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
-        
-        // float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel* WHEELS_BASE/2) ;
-        // float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * WHEELS_BASE/2) ;
-        float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel* ((1.22*MinAngMult-(MinAngMult-MaxAngMult)*fabs(Angular_ref_vel))/1.22) * WHEELS_BASE/2) ;
-        float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel* ((1.22*MinAngMult-(MinAngMult-MaxAngMult)*fabs(Angular_ref_vel))/1.22) * WHEELS_BASE/2) ;
+
+        //std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
+
+        float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel * WHEELS_BASE/2)*STEERING_FRICTION_COMPENSATION;
+        float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * WHEELS_BASE/2)*STEERING_FRICTION_COMPENSATION;
 
         //std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
 
-        float right_wheels_omega_ref = right_side_vel / (0.5 * WHEEL_DIAMETER);
+        float rigth_wheels_omega_ref = right_side_vel / (0.5 * WHEEL_DIAMETER);
         float left_wheels_omega_ref = left_side_vel / (0.5 * WHEEL_DIAMETER);
-        float roller_right_omega_ref=right_side_vel / (0.5 * ROLLER_DIAMETER);
-        float roller_left_omega_ref=left_side_vel / (0.5 * ROLLER_DIAMETER);
 
-        //std::cout << " right_wheels_omega_ref = " << right_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
+        //std::cout << " rigth_wheels_omega_ref = " << rigth_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
 
-        wheel_controller(this->front_right_joint, right_wheels_omega_ref);
-        wheel_controller(this->back_right_joint , right_wheels_omega_ref);
+        wheel_controller(this->front_right_joint, rigth_wheels_omega_ref);
+        wheel_controller(this->back_right_joint , rigth_wheels_omega_ref);
         wheel_controller(this->front_left_joint , left_wheels_omega_ref);
         wheel_controller(this->back_left_joint  , left_wheels_omega_ref);
-        wheel_controller(this->roller_back_right, roller_right_omega_ref);
-        wheel_controller(this->roller_mid_right, roller_right_omega_ref);
-        wheel_controller(this->roller_front_right, roller_right_omega_ref);
-        wheel_controller(this->roller_back_left, roller_left_omega_ref);
-        wheel_controller(this->roller_mid_left, roller_left_omega_ref);
-        wheel_controller(this->roller_front_left, roller_left_omega_ref);
-        // wheel_joint->SetVelocity(0,ref_omega);
-        wheel_controller(this->cogwheel_right  , right_wheels_omega_ref);
-        wheel_controller(this->cogwheel_left  , left_wheels_omega_ref);
-        
     }
 
 
@@ -336,10 +302,8 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else if(msg->data < -1) { Angular_command = -1;          }
           else                    { Angular_command = msg->data;   }
 
-          // Reseting timer every time LLC publishes message
-
-#if  GAZEBO_MAJOR_VERSION >= 5 
-
+        // Reseting timer every time LLC publishes message
+#if GAZEBO_MAJOR_VERSION >= 5 
            Angular_command_timer.Reset();
 #endif
            Angular_command_timer.Start();
@@ -358,10 +322,8 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
           else if(msg->data < -1) { Linear_command = -1;          }
           else                    { Linear_command = msg->data;   }
 
-          // Reseting timer every time LLC publishes message
-
-#if  GAZEBO_MAJOR_VERSION >= 5 
-
+        // Reseting timer every time LLC publishes message
+#if GAZEBO_MAJOR_VERSION >= 5
            Linear_command_timer.Reset();
 #endif
            Linear_command_timer.Start();
@@ -369,6 +331,8 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
       Linear_command_mutex.unlock();
     }
 
+
+     private: float gazebo_ver;
 
      // Defining private Pointer to model
      private: physics::ModelPtr model;
@@ -379,15 +343,6 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
      private: physics::JointPtr back_right_joint;
      private: physics::JointPtr front_left_joint;
      private: physics::JointPtr front_right_joint;
-     private: physics::JointPtr roller_back_right;
-     private: physics::JointPtr roller_mid_right;
-     private: physics::JointPtr roller_front_right;
-     private: physics::JointPtr roller_back_left;
-     private: physics::JointPtr roller_mid_left;
-     private: physics::JointPtr roller_front_left;
-     private: physics::JointPtr cogwheel_left;
-     private: physics::JointPtr cogwheel_right;
-
 
 
 
@@ -429,7 +384,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
 
 
      private: dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
-     private: double control_P, control_I ,control_D, Damping, Power,MinAngMult,MaxAngMult ,MinAngPowerMult,MaxAngPowerMult;	// PID constants and dynamic configuration constants
+     private: double controll_P, controll_I ,controll_D;		// PID constants
      private: double command_lN, command_aN;   // command noise factors
 
      std::default_random_engine generator;
@@ -443,6 +398,6 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
   };
 
   // Tell Gazebo about this plugin, so that Gazebo can call Load on this plugin.
-  GZ_REGISTER_MODEL_PLUGIN(bobtankDrivePlugin)
+  GZ_REGISTER_MODEL_PLUGIN(oshkoshDrivingPlugin)
 }
 #endif
