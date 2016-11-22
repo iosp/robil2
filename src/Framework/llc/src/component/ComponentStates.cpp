@@ -136,8 +136,6 @@ void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
 
   LocVelAngularZ = msg.twist.angular.z;
 
-  currentVelocity = 0;
-
   double V_normal = sqrt((LocVelLinearX * LocVelLinearX) + (LocVelLinearY * LocVelLinearY));
   if (V_normal > 0.01)
     {

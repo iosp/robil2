@@ -18,10 +18,10 @@
 
 ComponentMain::ComponentMain(int argc,char** argv): _inited(init(argc, argv)), _events(0)
 {
-	_sub_LocalPath=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WPD","LocalPath","sub"), 10, &ComponentMain::handleLocalPath,this));
-	_sub_MiniMap=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WPD","MiniMap","sub"), 10, &ComponentMain::handleMiniMap,this));
-	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WPD","Location","sub"), 10, &ComponentMain::handleLocation,this));
-	_pub_WPDVelocity=ros::Publisher(_nh.advertise<config::WPD::pub::WPDVelocity>(fetchParam(&_nh,"WPD","WPDVelocity","pub"),10));
+	_sub_LocalPath=ros::Subscriber(_nh.subscribe("/PP/Path", 10, &ComponentMain::handleLocalPath,this));
+	_sub_MiniMap=ros::Subscriber(_nh.subscribe("/PER/MiniMap", 10, &ComponentMain::handleMiniMap,this));
+	_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+	_pub_WPDVelocity=ros::Publisher(_nh.advertise<geometry_msgs::TwistStamped>("/WPD/Speed",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 

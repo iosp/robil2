@@ -11,8 +11,8 @@
 
 
 PathRecorder::PathRecorder() {
-	s_location = ros::Subscriber(node.subscribe(fetchParam(&node,"SMME","Location","sub"), 10, &PathRecorder::on_new_location,this));
-	p_plan=ros::Publisher(node.advertise<config::SMME::pub::GlobalPath>(fetchParam(&node,"SMME","GlobalPath","pub"),10));
+	s_location = ros::Subscriber(node.subscribe("/LOC/Pose", 10, &PathRecorder::on_new_location,this));
+	p_plan=ros::Publisher(node.advertise<robil_msgs::Path>("/SMME/GlobalPath",10));
 	record = false;
 }
 

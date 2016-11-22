@@ -31,7 +31,7 @@
 #define RVIZ_IBEO_SCAN_DISPLAY_H
 
 #include <sensor_msgs/LaserScan.h>
-#include "gazebo_ibeo_gpu/MultiLaserScan.h"
+#include "ibeo/MultiLaserScan.h"
 
 #include "rviz/message_filter_display.h"
 

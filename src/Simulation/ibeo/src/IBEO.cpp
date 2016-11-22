@@ -9,6 +9,8 @@
  * Author: Daniel Meltz
  */
 #include "../include/IBEO.h"
+#ifndef USE_GPU
+#define USE_GPU 1
 
 using namespace gazebo;
 using namespace std;
@@ -101,11 +103,21 @@ namespace gazebo
 			gzthrow(error);
 			return;
       	  }
-	      _sensorB1 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB1);
-	      _sensorB2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB2);
-	      _sensorT1 = boost::static_pointer_cast<sensors::GpuRaySensor>(sensorT1);
-	      _sensorT2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorT2);
-
+#ifdef USE_GPU
+          {
+              _sensorB1 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB1);
+              _sensorB2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB2);
+              _sensorT1 = boost::static_pointer_cast<sensors::GpuRaySensor>(sensorT1);
+              _sensorT2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorT2);
+          }
+#else
+	  {
+		  _sensorB1 = boost::dynamic_pointer_cast<sensors::RaySensor>(sensorB1);
+		  _sensorB2 = boost::dynamic_pointer_cast<sensors::RaySensor>(sensorB2);
+		  _sensorT1 = boost::static_pointer_cast<sensors::RaySensor>(sensorT1);
+		  _sensorT2 = boost::dynamic_pointer_cast<sensors::RaySensor>(sensorT2);
+	  }
+#endif
 	      if(!_sensorB1 || !_sensorB2 || !_sensorT1 || !_sensorT2)
     	  {
 			string error = "IBEO Sensor Model \"" + _model->GetName() + "\" found that it's sensors arent of class GpuRaySensor. You must be really messed up\n";
@@ -166,7 +178,6 @@ namespace gazebo
 		  initSocket();
 
 		  _tcpSenderThread=boost::thread(&IBEO::sendThreadMethod,this);
-		  _tcpRestartThread=boost::thread(&IBEO::responseThreadMethhod,this);
 		  _controlThread=boost::thread(&IBEO::controlThread,this);
 
 	      vecToSend = new (std::vector<std::pair<common::Time, char[10000]> *>);
@@ -195,88 +206,65 @@ namespace gazebo
 		}
 	}
 
-	// This tread is used for situation where the parser on the side of the Robot, before transit to receiving data state performs sequence of seting parameters of the sensor
+	// This thread is used for situation where the parser on the side of the Robot, before transit to receiving data state performs sequence of seting parameters of the sensor
 	// we ignore the parameters that the parser requires and only replay with (false) acknowledge messages
 	void responseThreadMethhod()
 	{
-		char buffer[500];
-		while(true)
-		{
-			if(!client_connected || newsockfd < 0)
-				continue;
-			int n = 0;
-			int rv = poll(&ufds[0], 1, -1);
-			if(rv == -1)
-				ROS_INFO("IBEO: error in poll() at responseThreadMethhod()");
-			if(ufds[0].revents & POLLIN)
-			{
-				bzero(buffer, 500);
-				n = recv(newsockfd, buffer, sizeof(ibeoScanDataHeader), 0);
-				unsigned int sizeOfData = 0;
-				memcpy(&sizeOfData, buffer+8, 4);
-				sizeOfData = littleEndianToBig<unsigned int>(sizeOfData);
-				n += recv(newsockfd, &buffer[sizeof(ibeoScanDataHeader)], sizeOfData, 0);
-			}
-			else
-				continue;
+	  char buffer[500];
+	  unsigned int sizeOfData;
+	  while(client_connected && newsockfd >= 0)
+	  {
 
-			if(strlen(buffer) == 0 || n < 0)
-			{
-				continue;
-			}
+	    int n = 0;
+	    int rv = poll(&ufds[0], 1, -1);
+	    if(rv == -1)
+	      ROS_INFO("IBEO: error in poll() at responseThreadMethhod()");
+	    if(ufds[0].revents & POLLIN)
+	    {
+	      bzero(buffer, 500);
+	      n = recv(newsockfd, buffer, sizeof(ibeoScanDataHeader), 0);
+	      sizeOfData = 0;
+	      memcpy(&sizeOfData, buffer+8, 4);
+	      sizeOfData = littleEndianToBig<unsigned int>(sizeOfData);
+	      n += recv(newsockfd, &buffer[sizeof(ibeoScanDataHeader)], sizeOfData, 0);
+	    }
+	    else
+	    {
+	      continue;
+	    }
 
-			int magicWord = 0;
-			memcpy(&magicWord, buffer, 4);
-			if (magicWord != littleEndianToBig<int>(0xaffec0c2))
-				continue;
+	    if(strlen(buffer) == 0 || n < 0)
+	    {
+	      continue;
+	    }
 
-//			initMsgWasSend = false;
-			// there is 7 states in the sickldrs parser, we want to transit all of them to the StartMeasure state we forcefully send StartMeasure msg
-		    ReplayMSG repaly;
-		    repaly.Header.MagicWord = littleEndianToBig<int>(0xaffec0c2);
-		    repaly.Header.SizePreviousMessage = 0;
-		    repaly.Header.SizeCurrentMessage=littleEndianToBig<unsigned int>(sizeof(ReplayMSG) - sizeof(ibeoScanDataHeader) );
-		    repaly.Header.Reserved = 0;
-		    repaly.Header.DeviceID = 0;
-  		    repaly.Header.DataType = littleEndianToBig<unsigned short>(0x2020);
-	  	    repaly.Header.time_up = 0;	// NTP64
-		    repaly.Header.time_down = 0;  // NTP64
-		  	memcpy(buffer+24, &repaly.commandID, 2); //copy the command id from the received msg
+	    int magicWord = 0;
+	    memcpy(&magicWord, buffer, 4);
+	    if (magicWord != littleEndianToBig<int>(0xaffec0c2))
+	    {
+	      continue;
+	    }
 
-			n = 0;
-			for(int j = 0 ; j < 7 ; j++)
-			{
-				int rv = poll(&ufds[1], 1, -1);
-				if(rv == -1)
-					ROS_INFO("IBEO: error in poll() at sendThreadMethod()");
-				if(ufds[1].revents & POLLOUT)
-				{
-					n = sendto(newsockfd,&repaly,sizeof(ReplayMSG),0,(sockaddr *)&cli_addr,clilen);
-				}
-			}
 
-//			initMsgWasSend = true;
-			//ignore the next setparams messages from the parser
-			sleep(1);
-			for(int j = 0 ; j < 5 ; j++)
-			{
-				if(!client_connected || newsockfd < 0)
-					continue;
-				int n = 0;
-				int rv = poll(&ufds[0], 1, -1);
-				if(rv == -1)
-					ROS_INFO("IBEO: error in poll() at responseThreadMethhod()");
-				if(ufds[0].revents & POLLIN)
-				{
-					bzero(buffer, 500);
-					n = recv(newsockfd, buffer, sizeof(ibeoScanDataHeader), 0);
-					unsigned int sizeOfData = 0;
-					memcpy(&sizeOfData, buffer+8, 4);
-					sizeOfData = littleEndianToBig<unsigned int>(sizeOfData);
-					n += recv(newsockfd, &buffer[sizeof(ibeoScanDataHeader)], sizeOfData, 0);
-				}
-			}
-		}
+            ReplayMSG replay;
+            replay.Header.MagicWord = littleEndianToBig<int>(0xaffec0c2);
+            replay.Header.SizePreviousMessage = sizeOfData;//0; // littleEndianToBig was done after filling the value
+            replay.Header.SizeCurrentMessage=littleEndianToBig<unsigned int>(sizeof(ReplayMSG) - sizeof(ibeoScanDataHeader) );
+            replay.Header.Reserved = 0;
+            replay.Header.DeviceID = 0;
+            replay.Header.DataType = littleEndianToBig<unsigned short>(0x2020);
+            replay.Header.time_up = 0;    // NTP64
+            replay.Header.time_down = 0;  // NTP64
+            memcpy(buffer+24, &replay.commandID, 2); //copy the command id from the received msg
+
+	    int second_rv = poll(&ufds[1], 1, -1);
+	    if(second_rv == -1)
+		ROS_INFO("IBEO: error in poll() at sendThreadMethod()");
+	    if(ufds[1].revents & POLLOUT)
+	    {
+	      n = sendto(newsockfd,&replay,sizeof(ReplayMSG),0,(sockaddr *)&cli_addr,clilen);
+	    }
+	  }
 	}
 
 	void checkSocket(int sockfdToCheck)
@@ -410,8 +398,10 @@ namespace gazebo
       		  ufds[0].events = POLLIN;//recv
       		  ufds[1].fd = newsockfd;
       		  ufds[1].events = POLLOUT;//send
-      		  client_connected=true;
+                  client_connected = true;
       		  ROS_INFO("ibeo client connected");
+
+                  _tcpRestartThread=boost::thread(&IBEO::responseThreadMethhod,this);
       	  }
       	  return true;
     }
@@ -612,8 +602,12 @@ namespace gazebo
 
     bool flag_fillMsg;
 
+#ifdef USE_GPU
     sensors::GpuRaySensorPtr 		_sensorT1, _sensorT2, _sensorB1, _sensorB2;
-    
+#else
+    sensors::RaySensorPtr 		_sensorT1, _sensorT2, _sensorB1, _sensorB2;
+#endif
+
     ros::NodeHandle		_nodeHandle;
     ros::Publisher 		_publisher;
     ros::Publisher _marker_pub;
@@ -674,3 +668,4 @@ namespace gazebo
 GZ_REGISTER_MODEL_PLUGIN(IBEO)
 }
 
+#endif

@@ -14,20 +14,20 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include "ParameterHandler.h"
+//#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv)), _events(0)
 {
-_sub_WorkSeqData=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","WorkSeqData","sub"), 10, &ComponentMain::handleWorkSeqData,this));
-_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","BladePosition","sub"), 10, &ComponentMain::handleBladePosition,this));
-_sub_MiniMapWSM=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","MiniMap","sub"), 10, &ComponentMain::handleMiniMapWSM,this));
-_pub_WSMVelocity=ros::Publisher(_nh.advertise<config::WSM::pub::WSMVelocity>(fetchParam(&_nh,"WSM","WSMVelocity","pub"),10));
-_pub_BladePositionCommand=ros::Publisher(_nh.advertise<config::WSM::pub::BladePositionCommand>(fetchParam(&_nh,"WSM","BladePositionCommand","pub"),10));
-_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","Location","sub"), 10, &ComponentMain::handleLocation,this));
-_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","PerVelocity","sub"), 10, &ComponentMain::handlePerVelocity,this));
+_sub_WorkSeqData=ros::Subscriber(_nh.subscribe("/SMME/WSM/Task", 10, &ComponentMain::handleWorkSeqData,this));
+_sub_BladePosition=ros::Subscriber(_nh.subscribe("/PER/BladPosition", 10, &ComponentMain::handleBladePosition,this));
+_sub_MiniMapWSM=ros::Subscriber(_nh.subscribe("/PER/MiniMap", 10, &ComponentMain::handleMiniMapWSM,this));
+_pub_WSMVelocity=ros::Publisher(_nh.advertise<geometry_msgs::TwistStamped>("/WSM/Speed",10));
+_pub_BladePositionCommand=ros::Publisher(_nh.advertise<sensor_msgs::JointState>("/WSM/BladePosition",10));
+_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+_sub_PerVelocity=ros::Subscriber(_nh.subscribe("/LOC/Velocity", 10, &ComponentMain::handlePerVelocity,this));
 _pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 _maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 _plp_monitor=ros::Publisher(_nh.advertise<std_msgs::Header>("/monitor/task_time",100));
