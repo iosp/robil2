@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+
+
+
+	<includes>
+		<include file="/home/dan/workspace/cognitao/src/cognitao/cognitao_io/xml/vs1.xml" />
+		<include file="vs2.xml" />
+	</includes>
+
+	<subs>
+		<sub id="S2">
+			<args>
+				<arg TASK_NAME="task_witout_name" />
+			</args>
+			<block>
+                	<task id="${TASK_NAME}">
+                	</task> 
+			</block>
+		</sub>
+	</subs>
+	
+	
+    <machines>
+    	<machine id="M1" type="ftt">
+			<tasks> 
+				<sub id="S2" TASK_NAME="my_task" />
+	        </tasks>
+	        <ftt>
+	            <start>task1</start>
+	        </ftt>
+    	</machine>
+	    <root>M1</root>
+    </machines>
+</tao>

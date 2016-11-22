@@ -28,7 +28,7 @@ const double   			_epsilon_E6 = 1E6;
 const double   			_epsilon_E3 = 1E3;
 
 
-#pragma pack (1)
+#pragma pack (push, 1)
 
 using namespace std;
 
@@ -324,5 +324,5 @@ private:
       int 					Periodic_1Hz_Message_CONVERT_TO_PH(PHS_PERIODIC1HZMESSAGE* phsPtr, unsigned char* intfPtr);
 
 };
-
+#pragma pack (pop)
 #endif

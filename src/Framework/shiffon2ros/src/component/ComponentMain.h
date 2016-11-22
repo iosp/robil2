@@ -18,6 +18,7 @@
 #include <iostream>     // std::cout
 #include <sstream>
 #include <boost/thread.hpp>
+#include <cognitao_v2/cognitao_v2.h>
 
 class ComponentMain {
 	bool _inited;
@@ -34,6 +35,8 @@ class ComponentMain {
 	  bool init(int argc,char** argv);
 	Shiphon_Ctrl * 	_shiphonCtrl;
 	pthread_t _myHeartbeatThread;
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -54,6 +57,12 @@ public:
 	void ReadAndPub_ShiphonGpsSpeed();
 	void heartbeat();
 	static void *callHeartbeat(void *pThis);
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
+	bool isClosed();
 
 };
 #endif /* COMPONENTMAIN_H_ */

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tao>
+	<path>
+		<folder>.</folder>
+		<folder>/home/dan/workspace/test1/tao_xml</folder>
+		<folder>${rospack:pp}/src</folder>
+	</path>
+	<args>
+		<arg X="123" />
+		<arg id="Y">
+			Wow!!!
+		</arg>
+	</args>
+	<subs>
+		<sub id="1">
+			<args>
+				<arg X="1" />
+				<arg id="Y">2</arg>
+			</args>
+			<block>
+				Line1 : ${arg:X}
+				Line2 : ${arg:Y}
+			</block>
+		</sub>
+		<sub id="2">
+			<args>
+				<arg X="3" />
+				<arg id="Y">4</arg>
+			</args>
+			<block>
+				Line1 : ${arg:X}
+				Line2 : ${arg:Y}
+			</block>
+		</sub>
+	</subs>
+	<machine>
+		<states>
+			<state id="${arg:X}">
+				TEST
+				<include file="s1.xml">
+					<!-- <arg X="Wow!!" /> -->
+					<arg id="X">
+						<H1>HELLO</H1>
+					</arg>
+				</include>
+			</state>
+			<if X="1235">
+				<block id="b1">
+					<state>
+						TEST ${arg:Y} TEST
+					</state>
+				</block>
+			</if>
+			
+				<block id="b1" />
+			
+		</states>
+	</machine>
+</tao>

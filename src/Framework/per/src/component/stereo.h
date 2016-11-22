@@ -70,13 +70,13 @@ Mat filterDisparity(Mat img)
   return img;
 }
 
-
-boost::mutex mutex;
+// TODO Had to change from "mutex" to "m" because of ambiguity.
+boost::mutex m;
 
 void ProjectDepthImage(HeightMap* map, Mat img, Vec3D myRight, Vec3D myFront, Vec3D myUp, Vec3D myPos, Mat lanes)
 {
 //   return;
-  mutex.lock();
+  m.lock();
   static const double fov = 0.6981317; //45 deg to each side
   double min=100, max=-100;
   double sin_fov = sin(fov);
@@ -121,7 +121,7 @@ void ProjectDepthImage(HeightMap* map, Mat img, Vec3D myRight, Vec3D myFront, Ve
 //   if(!emptyLanes)
 //     imshow("after", lanes);
 //     waitKey(1);
-  mutex.unlock();
+  m.unlock();
 }
 
 Mat handleStereo(Mat left, Mat right)

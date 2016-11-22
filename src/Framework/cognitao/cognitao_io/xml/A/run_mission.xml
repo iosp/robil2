@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="run_mission" type="ftt">
+			<tasks>
+				<!-- -->
+				<task id="wait_for_mission">
+					<reaction on_event="?__/ok" target="parse_mission" />
+				</task>
+				<task id="parse_mission">
+					<reaction on_event="?__/ok" target="execute_mission" />
+					<reaction on_event="?__/fail" target="wait_for_mission" />
+				</task>
+				<task id="execute_mission">
+					<reaction on_event="?__/finish" target="end" />
+				</task>
+				<task id="end"></task>
+			</tasks>
+			<ftt>
+				<start>wait_for_mission</start>
+				<success>
+					<task>end</task>
+				</success>
+			</ftt>
+		</machine>
+		<root>run_mission</root>
+	</machines>
+</tao>

@@ -23,7 +23,7 @@
 #include "ShareUtil.h"
 // #include "Share_QueryPerformanceTime.h"
 
-#pragma pack (1)
+#pragma pack (push, 1)
 
 using namespace std;
 
@@ -209,6 +209,8 @@ private:
 	unsigned short	JausRealToUShort (short realVal, short lowerLimit, short upperLimit);
 
 };
+
+#pragma pack (pop)
 
 
 #endif

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="system_client" type="ftt">
+			<tasks>
+				<!-- -->
+				<task id="connect">
+					<reaction on_event="?__/ok" target="listen" />
+					<reaction on_event="?__/fail" target="wait" />
+				</task>
+				<task id="listen">
+					<machine id="MachineID"
+						file="/home/dan/workspace/cognitao/src/cognitao/cognitao_io/xml/A/listen_try.xml">
+					</machine>
+					<machine id="status" type="ftt">
+						<tasks>
+							<task id="client_status">
+								<!-- <reaction on_event="?__/ok" target="listen" /> -->
+								<!-- <reaction on_event="?__/fail" target="connect" /> -->
+							</task>
+							<!-- <task id="try3"> <reaction on_event="?__/ok" target="try4" /> 
+								</task> <task id="try4"> <reaction on_event="?__/ok" target="try3" /> </task> -->
+						</tasks>
+						<ftt>
+							<start>client_status</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?__/ok" target="disconnect" />
+					<reaction on_event="?__/fail" target="connect" />
+				</task>
+				<task id="wait">
+					<reaction on_event="?__/ok" target="connect" />
+				</task>
+				<task id="disconnect">
+					<reaction on_event="?__/ok" target="connect" />
+					<reaction on_event="?__/finish" target="end" />
+				</task>
+				<task id="end"></task>
+			</tasks>
+			<ftt>
+				<start>connect</start>
+				<success>
+					<task>end</task>
+				</success>
+			</ftt>
+		</machine>
+		<root>system_client</root>
+	</machines>
+</tao>

@@ -10,36 +10,33 @@
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+#include <cognitao_v2/cognitao_v2.h>
 #include <ros/ros.h>
-#include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include <ParameterTypes.h>
-
 #include <boost/thread.hpp>
 
 class WsmTask;
-class RosComm;
 
 class ComponentMain {
-	 bool _inited;
-
-	  ros::NodeHandle _nh;
-	  ros::Publisher _pub_diagnostic;
-	  boost::thread_group _maintains;
-		ros::Subscriber _sub_WorkSeqData;
-		ros::Subscriber _sub_BladePosition;
-		ros::Publisher  _pub_WSMVelocity;
-		ros::Publisher  _pub_BladePositionCommand;
-		ros::Subscriber _sub_Location;
-		ros::Subscriber _sub_PerVelocity;
-		ros::Subscriber _sub_MiniMapWSM;
-		ros::Publisher _plp_monitor;
+	bool _inited;
+	ros::NodeHandle _nh;
+	ros::Publisher _pub_diagnostic;
+	boost::thread_group _maintains;
+	ros::Subscriber _sub_WorkSeqData;
+	ros::Subscriber _sub_BladePosition;
+	ros::Publisher  _pub_WSMVelocity;
+	ros::Publisher  _pub_BladePositionCommand;
+	ros::Subscriber _sub_Location;
+	ros::Subscriber _sub_PerVelocity;
+	ros::Subscriber _sub_MiniMapWSM;
+	ros::Publisher _plp_monitor;
 	//	ros::Publisher _blade_h;
 	//	ros::Publisher _Map_pub;
-
-	  bool init(int argc,char** argv);
+	bool init(int argc,char** argv);
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
 public:
 	WsmTask* cur_mission;
 	config::WSM::sub::WorkSeqData * receivedWorkSeqData;
@@ -68,6 +65,13 @@ public:
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 	void heartbeat();
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
+	bool isClosed();
+	cognitao::bus::RosEventQueue* events(){return _events;}
 };
 
 #endif /* COMPONENTMAIN_H_ */

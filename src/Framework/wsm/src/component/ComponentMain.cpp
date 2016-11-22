@@ -19,7 +19,7 @@
 #include <tf/transform_listener.h>
 
 ComponentMain::ComponentMain(int argc,char** argv)
-: _inited(init(argc, argv))
+: _inited(init(argc, argv)), _events(0)
 {
 _sub_WorkSeqData=ros::Subscriber(_nh.subscribe("/SMME/WSM/Task", 10, &ComponentMain::handleWorkSeqData,this));
 _sub_BladePosition=ros::Subscriber(_nh.subscribe("/PER/BladPosition", 10, &ComponentMain::handleBladePosition,this));
@@ -197,4 +197,36 @@ void ComponentMain::heartbeat(){
 		_pub.publish(msg);
 	    boost::this_thread::sleep(stop_time);
 	}
+}
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events) {
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused() {
+	boost::mutex::scoped_lock l(_mt);
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/TaskIsPaused"));
+}
+bool ComponentMain::isClosed() {
+	return _events->is_closed();
 }

@@ -1,0 +1,11 @@
+-I/usr/include/qt4
+-I/usr/include/qt4/QtGui
+-I/usr/include/qt4/QtCore
+-DROS_BUILD_SHARED_LIBS=1
+-DROS_PACKAGE_NAME="scriptable_monitor_rqt"
+-DROSCONSOLE_BACKEND_LOG4CXX
+-DQT_GUI_LIB
+-DQT_CORE_LIB
+-o
+/home/assaf/workspaces/robil_workspace/robil2/src/3party/monitoring/scriptable_monitor_rqt/include/scriptable_monitor_rqt/moc_scriptable_monitor_rqt.cxx
+/home/assaf/workspaces/robil_workspace/robil2/src/3party/monitoring/scriptable_monitor_rqt/include/scriptable_monitor_rqt/scriptable_monitor_rqt.h

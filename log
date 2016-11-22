@@ -1,0 +1,912 @@
+... logging to /home/assaf/.ros/log/f45d7bc6-9f66-11e6-bf15-fcaa1467bad9/roslaunch-assaf-26781.log
+Checking log directory for disk usage. This may take awhile.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/home/assaf/workspaces/robil_workspace/robil2/src/Framework/robil2conf/frameworkInit.launch
+[1mstarted roslaunch server http://assaf:40289/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /IEDSIM_pub_IEDLocation: /IED/Location
+ * /IEDSIM_sub_CustomIED: OCU
+ * /IEDSIM_sub_Location: LOC
+ * /LLC_pub_EffortsJn: /LLC/EFFORTS/Joints
+ * /LLC_pub_EffortsSt: /LLC/EFFORTS/Stee...
+ * /LLC_pub_EffortsTh: /LLC/EFFORTS/Thro...
+ * /LLC_sub_BladePositionCommand: WSM
+ * /LLC_sub_Location: LOC
+ * /LLC_sub_PerVelocity: LOC
+ * /LLC_sub_WPDVelocity: WPD
+ * /LLC_sub_WSMVelocity: WSM
+ * /LLI_sub_EffortsJn: LLC
+ * /LLI_sub_EffortsSt: LLC
+ * /LLI_sub_EffortsTh: LLC
+ * /LOC_pub_Location: /LOC/Pose
+ * /LOC_pub_PerVelocity: /LOC/Velocity
+ * /LOC_sub_GPS: PER
+ * /LOC_sub_INS: PER
+ * /LOC_sub_PerGpsSpeed: PER
+ * /LOC_sub_PositionUpdate: OCU
+ * /LOC_sub_VOOdometry: PER
+ * /OCU_pub_AssignManTask: /OCU/SMME/Manipul...
+ * /OCU_pub_AssignMission: /OCU/SMME/Mission...
+ * /OCU_pub_AssignNavTask: /OCU/SMME/Navigat...
+ * /OCU_pub_CustomIED: /OCU/IED/Location
+ * /OCU_pub_PositionUpdate: /OCU/PositionUpdate
+ * /OCU_sub_BladePosition: PER
+ * /OCU_sub_IEDLocation: IEDSIM
+ * /OCU_sub_LocalPath: PP
+ * /OCU_sub_Location: LOC
+ * /OCU_sub_Map: PER
+ * /OCU_sub_MissionAcceptance: SMME
+ * /OCU_sub_PerVelocity: LOC
+ * /PER_pub_BladePosition: /PER/BladPosition
+ * /PER_pub_GPS: /PER/GPS
+ * /PER_pub_INS: /PER/INS
+ * /PER_pub_Map: /PER/Map
+ * /PER_pub_MiniMap: /PER/MiniMap
+ * /PER_pub_PerGpsSpeed: /PER/GPS/Speed
+ * /PER_pub_VOOdometry: /PER/VOOdometry
+ * /PER_sub_EffortsJn: LLC
+ * /PER_sub_EffortsSt: LLC
+ * /PER_sub_EffortsTh: LLC
+ * /PER_sub_Location: LOC
+ * /PER_sub_PerVelocity: LOC
+ * /PER_sub_SensorCamL: SENSORS
+ * /PER_sub_SensorCamR: SENSORS
+ * /PER_sub_SensorGPS: SENSORS
+ * /PER_sub_SensorGpsSpeed: SENSORS
+ * /PER_sub_SensorIBEO: SENSORS
+ * /PER_sub_SensorINS: SENSORS
+ * /PER_sub_SensorSICK1: SENSORS
+ * /PER_sub_SensorSICK2: SENSORS
+ * /PER_sub_SensorWire: SENSORS
+ * /PLATFORM_sub_EffortsJn: LLC
+ * /PLATFORM_sub_EffortsSt: LLC
+ * /PLATFORM_sub_EffortsTh: LLC
+ * /PP_pub_LocalPath: /PP/Path
+ * /PP_sub_BladePosition: PER
+ * /PP_sub_GlobalPath: SMME
+ * /PP_sub_Location: LOC
+ * /PP_sub_Map: PER
+ * /SENSORS_pub_SensorCamL: /SENSORS/CAM/L
+ * /SENSORS_pub_SensorCamR: /SENSORS/CAM/R
+ * /SENSORS_pub_SensorGPS: /SENSORS/GPS
+ * /SENSORS_pub_SensorGpsSpeed: /SENSORS/GPS/Speed
+ * /SENSORS_pub_SensorIBEO: /SENSORS/IBEO/1
+ * /SENSORS_pub_SensorINS: /SENSORS/INS
+ * /SENSORS_pub_SensorSICK1: /SENSORS/SICK/1
+ * /SENSORS_pub_SensorSICK2: /SENSORS/SICK/2
+ * /SENSORS_pub_SensorWire: /SENSORS/WIRE
+ * /SHIFFON2ROS_pub_GPS: /SENSORS/GPS
+ * /SHIFFON2ROS_pub_GpsSpeed: /SENSORS/GPS/Speed
+ * /SHIFFON2ROS_pub_INS: /SENSORS/INS
+ * /SMME_pub_GlobalPath: /SMME/GlobalPath
+ * /SMME_pub_MissionAcceptance: /SMME/OCU/Mission...
+ * /SMME_pub_WorkSeqData: /SMME/WSM/Task
+ * /SMME_sub_AssignManTask: OCU
+ * /SMME_sub_AssignMission: OCU
+ * /SMME_sub_AssignNavTask: OCU
+ * /SMME_sub_BladePosition: PER
+ * /SMME_sub_Location: LOC
+ * /SSM_sub_BladePosition: PER
+ * /SSM_sub_Location: LOC
+ * /SSM_sub_PerVelocity: LOC
+ * /WPD_pub_WPDVelocity: /WPD/Speed
+ * /WPD_sub_LocalPath: PP
+ * /WPD_sub_Location: LOC
+ * /WPD_sub_MiniMap: PER
+ * /WSM_pub_BladePositionCommand: /WSM/BladePosition
+ * /WSM_pub_WSMVelocity: /WSM/Speed
+ * /WSM_sub_BladePosition: PER
+ * /WSM_sub_MiniMap: PER
+ * /WSM_sub_WorkSeqData: SMME
+ * /move_base/TrajectoryPlannerROS/acc_lim_th: 2.5
+ * /move_base/TrajectoryPlannerROS/acc_lim_x: 2.5
+ * /move_base/TrajectoryPlannerROS/angular_sim_granularity: 0.05
+ * /move_base/TrajectoryPlannerROS/dwa: False
+ * /move_base/TrajectoryPlannerROS/escape_vel: -0.4
+ * /move_base/TrajectoryPlannerROS/holonomic_robot: False
+ * /move_base/TrajectoryPlannerROS/max_rotational_vel: 1
+ * /move_base/TrajectoryPlannerROS/max_vel_theta: 1
+ * /move_base/TrajectoryPlannerROS/max_vel_x: 0.8
+ * /move_base/TrajectoryPlannerROS/min_in_place_vel_theta: 0.1
+ * /move_base/TrajectoryPlannerROS/min_vel_theta: -1
+ * /move_base/TrajectoryPlannerROS/min_vel_x: 0.1
+ * /move_base/TrajectoryPlannerROS/sim_granularity: 0.02
+ * /move_base/TrajectoryPlannerROS/sim_time: 15.0
+ * /move_base/TrajectoryPlannerROS/xy_goal_tolerance: 1.0
+ * /move_base/TrajectoryPlannerROS/yaw_goal_tolerance: 3.12
+ * /move_base/clearing_rotation_allowed: False
+ * /move_base/controller_frequency: 5.0
+ * /move_base/global_costmap/cloud_scan_sensor/clearing: False
+ * /move_base/global_costmap/cloud_scan_sensor/data_type: PointCloud
+ * /move_base/global_costmap/cloud_scan_sensor/marking: True
+ * /move_base/global_costmap/cloud_scan_sensor/max_obstacle_height: 30
+ * /move_base/global_costmap/cloud_scan_sensor/min_obstacle_height: -30
+ * /move_base/global_costmap/cloud_scan_sensor/sensor_frame: base_link
+ * /move_base/global_costmap/cloud_scan_sensor/topic: map_cloud
+ * /move_base/global_costmap/cost_scaling_factor: 0.2
+ * /move_base/global_costmap/footprint: [[2.75, 1.6], [-1...
+ * /move_base/global_costmap/global_frame: /map
+ * /move_base/global_costmap/height: 300
+ * /move_base/global_costmap/inflation_radius: 8.0
+ * /move_base/global_costmap/laser_scan_sensor/clearing: True
+ * /move_base/global_costmap/laser_scan_sensor/data_type: LaserScan
+ * /move_base/global_costmap/laser_scan_sensor/marking: False
+ * /move_base/global_costmap/laser_scan_sensor/max_obstacle_height: 30
+ * /move_base/global_costmap/laser_scan_sensor/min_obstacle_height: -30
+ * /move_base/global_costmap/laser_scan_sensor/sensor_frame: base_link
+ * /move_base/global_costmap/laser_scan_sensor/topic: costmap_clear_fak...
+ * /move_base/global_costmap/max_obstacle_height: 30
+ * /move_base/global_costmap/observation_sources: cloud_scan_sensor...
+ * /move_base/global_costmap/obstacle_range: 50.0
+ * /move_base/global_costmap/origin_x: -150
+ * /move_base/global_costmap/origin_y: -150
+ * /move_base/global_costmap/publish_frequency: 1.0
+ * /move_base/global_costmap/publish_voxel_map: False
+ * /move_base/global_costmap/raytrace_range: 30.0
+ * /move_base/global_costmap/resolution: 0.6
+ * /move_base/global_costmap/robot_base_frame: /base_link
+ * /move_base/global_costmap/rolling_window: True
+ * /move_base/global_costmap/static_map: False
+ * /move_base/global_costmap/transform_tolerance: 10
+ * /move_base/global_costmap/update_frequency: 1.0
+ * /move_base/global_costmap/width: 300
+ * /move_base/local_costmap/cloud_scan_sensor/clearing: False
+ * /move_base/local_costmap/cloud_scan_sensor/data_type: PointCloud
+ * /move_base/local_costmap/cloud_scan_sensor/marking: True
+ * /move_base/local_costmap/cloud_scan_sensor/max_obstacle_height: 30
+ * /move_base/local_costmap/cloud_scan_sensor/min_obstacle_height: -30
+ * /move_base/local_costmap/cloud_scan_sensor/sensor_frame: base_link
+ * /move_base/local_costmap/cloud_scan_sensor/topic: map_cloud
+ * /move_base/local_costmap/cost_scaling_factor: 0.2
+ * /move_base/local_costmap/footprint: [[2.75, 1.6], [-1...
+ * /move_base/local_costmap/global_frame: /map
+ * /move_base/local_costmap/height: 15
+ * /move_base/local_costmap/inflation_radius: 8.0
+ * /move_base/local_costmap/laser_scan_sensor/clearing: True
+ * /move_base/local_costmap/laser_scan_sensor/data_type: LaserScan
+ * /move_base/local_costmap/laser_scan_sensor/marking: False
+ * /move_base/local_costmap/laser_scan_sensor/max_obstacle_height: 30
+ * /move_base/local_costmap/laser_scan_sensor/min_obstacle_height: -30
+ * /move_base/local_costmap/laser_scan_sensor/sensor_frame: base_link
+ * /move_base/local_costmap/laser_scan_sensor/topic: costmap_clear_fak...
+ * /move_base/local_costmap/max_obstacle_height: 30
+ * /move_base/local_costmap/observation_sources: cloud_scan_sensor...
+ * /move_base/local_costmap/obstacle_range: 50.0
+ * /move_base/local_costmap/publish_frequency: 5.0
+ * /move_base/local_costmap/raytrace_range: 30.0
+ * /move_base/local_costmap/resolution: 0.15
+ * /move_base/local_costmap/robot_base_frame: /base_link
+ * /move_base/local_costmap/rolling_window: True
+ * /move_base/local_costmap/static_map: False
+ * /move_base/l**************************************
+**************************************
+**  Run-time licensing for BIU Labs **
+**          by CogniTeam            **
+**************************************
+**************************************
+**************************************
+**************************************
+**  Run-time licensing for BIU Labs **
+**          by CogniTeam            **
+**************************************
+**************************************
+number of measurements for GPS: 100
+number of measurements for IMU: 100
+setting properties
+**************************************
+**************************************
+**  Run-time licensing for BIU Labs **
+**          by CogniTeam            **
+**************************************
+**************************************
+**************************************
+**************************************
+**  Run-time licensing for BIU Labs **
+**          by CogniTeam            **
+**************************************
+**************************************
+**************************************
+**************************************
+**  Run-time licensing for BIU Labs **
+**          by CogniTeam            **
+**************************************
+**************************************
+**************************************
+**************************************
+**  Run-time licensing for BIU Labs **
+**          by CogniTeam            **
+**************************************
+**************************************
+**************************************
+**************************************
+**  Run-time licensing for BIU Labs **
+**          by CogniTeam            **
+**************************************
+**************************************
+**************************************
+**************************************
+**  Run-time licensing for BIU Labs **
+**          by CogniTeam            **
+**************************************
+**************************************
+**************************************
+**************************************
+**  Run-time licensing for BIU Labs **
+**          by CogniTeam            **
+**************************************
+**************************************
+[0m[ INFO] [1477917523.429644128]: LOC: Performing calibration with 32727 measurements.
+ Try not to move vehicle![0m
+number of measurements for GPS: 32727
+[0m[ INFO] [1477917522.427579222]: Connect to /robil/event_bus/events: ...[0m
+[0m[ INFO] [1477917523.435535599]: Connect to  /robil/event_bus/events: Done[0m
+Warning Cann't find path tag in tao [/iedsim:2:1,40]
+Warning Cann't find includes tag in tao [/iedsim:2:1,40]
+Warning Cann't find args tag in tao [/iedsim:2:1,40]
+Warning Cann't find subs tag in tao [/iedsim:2:1,40]
+Warning Cann't find path tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/iedsim/src/xml/iedsim.xml:2:1,40]
+Warning Cann't find includes tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/iedsim/src/xml/iedsim.xml:2:1,40]
+Warning Cann't find args tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/iedsim/src/xml/iedsim.xml:2:1,40]
+Warning Cann't find subs tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/iedsim/src/xml/iedsim.xml:2:1,40]
+===== iedsim is not created =======
+===== iedsim_ON is not created =======
+ Build FTT machine from token node iedsim machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/iedsim/src/xml/iedsim.xml:4:9,60]
+Task task OFF for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = OFF
+[BUILDER] .... behavior= OFF
+[BUILDER] .... create simple task OFF, OFF
+   task OFF has been defined
+Task task ON for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = ON
+[BUILDER] .... behavior= ON
+[BUILDER] .... create machine task ON, ON
+   task ON has been defined
+Task task OFF for build
+Task task ON for build
+Ftt initialization information: ftt
+ Build FTT machine from token node iedsim_ON machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/iedsim/src/xml/iedsim.xml:12:21,234]
+Task task INIT for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = INIT
+[BUILDER] .... behavior= INIT
+[BUILDER] .... create simple task INIT, INIT
+   task INIT has been defined
+Task task READY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = READY
+[BUILDER] .... behavior= READY
+[BUILDER] .... create simple task READY, READY
+   task READY has been defined
+Task task INIT for build
+Task task READY for build
+Ftt initialization information: ftt
+
+
+[MACHINE EXECUTION] machine iedsim_ON ???? INIT   0
+[MACHINE EXECUTION] machine iedsim ???? ON   0
+[0m[ INFO] [1477917522.490121553]: Mission manager created[0m
+[0m[ INFO] [1477917522.490269433]: Connect to /robil/event_bus/events: ...[0m
+[0m[ INFO] [1477917523.496760121]: Connect to  /robil/event_bus/events: Done[0m
+Warning Cann't find path tag in tao [/smme:2:1,40]
+Warning Cann't find includes tag in tao [/smme:2:1,40]
+Warning Cann't find args tag in tao [/smme:2:1,40]
+Warning Cann't find subs tag in tao [/smme:2:1,40]
+Warning Cann't find path tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/smme/src/xml/smme.xml:2:1,40]
+Warning Cann't find includes tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/smme/src/xml/smme.xml:2:1,40]
+Warning Cann't find args tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/smme/src/xml/smme.xml:2:1,40]
+Warning Cann't find subs tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/smme/src/xml/smme.xml:2:1,40]
+===== smme is not created =======
+===== smme_ON is not created =======
+ Build FTT machine from token node smme machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/smme/src/xml/smme.xml:4:9,60]
+Task task OFF for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = OFF
+[BUILDER] .... behavior= OFF
+[BUILDER] .... create simple task OFF, OFF
+   task OFF has been defined
+Task task ON for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = ON
+[BUILDER] .... behavior= ON
+[BUILDER] .... create machine task ON, ON
+   task ON has been defined
+Task task OFF for build
+Task task ON for build
+Ftt initialization information: ftt
+ Build FTT machine from token node smme_ON machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/smme/src/xml/smme.xml:12:21,236]
+Task task INIT for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = INIT
+[BUILDER] .... behavior= INIT
+[BUILDER] .... create simple task INIT, INIT
+   task INIT has been defined
+Task task READY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = READY
+[BUILDER] .... behavior= READY
+[BUILDER] .... create simple task READY, READY
+   task READY has been defined
+Task task EMERGENCY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = EMERGENCY
+[BUILDER] .... behavior= EMERGENCY
+[BUILDER] .... create simple task EMERGENCY, EMERGENCY
+   task EMERGENCY has been defined
+Task task INIT for build
+Task task READY for build
+Task task EMERGENCY for build
+Ftt initialization information: ftt
+
+
+[MACHINE EXECUTION] machine smme_ON ???? INIT   0
+[MACHINE EXECUTION] machine smme ???? ON   0
+[0m[ INFO] [1477917522.516450742]: Connect to /robil/event_bus/events: ...[0m
+[0m[ INFO] [1477917523.522473930]: Connect to  /robil/event_bus/events: Done[0m
+Warning Cann't find path tag in tao [/path_planer:2:1,40]
+Warning Cann't find includes tag in tao [/path_planer:2:1,40]
+Warning Cann't find args tag in tao [/path_planer:2:1,40]
+Warning Cann't find subs tag in tao [/path_planer:2:1,40]
+Warning Cann't find path tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/pp/src/xml/pp.xml:2:1,40]
+Warning Cann't find includes tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/pp/src/xml/pp.xml:2:1,40]
+Warning Cann't find args tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/pp/src/xml/pp.xml:2:1,40]
+Warning Cann't find subs tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/pp/src/xml/pp.xml:2:1,40]
+===== pp is not created =======
+===== pp_ON is not created =======
+===== pp_WORK is not created =======
+ Build FTT machine from token node pp machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/pp/src/xml/pp.xml:4:9,60]
+Task task OFF for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = OFF
+[BUILDER] .... behavior= OFF
+[BUILDER] .... create simple task OFF, OFF
+   task OFF has been defined
+Task task ON for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = ON
+[BUILDER] .... behavior= ON
+[BUILDER] .... create machine task ON, ON
+   task ON has been defined
+Task task OFF for build
+Task task ON for build
+Ftt initialization information: ftt
+ Build FTT machine from token node pp_ON machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/pp/src/xml/pp.xml:12:21,226]
+Task task INIT for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = INIT
+[BUILDER] .... behavior= INIT
+[BUILDER] .... create simple task INIT, INIT
+   task INIT has been defined
+Task task WORK for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = WORK
+[BUILDER] .... behavior= WORK
+[BUILDER] .... create machine task WORK, WORK
+   task WORK has been defined
+Task task INIT for build
+Task task WORK for build
+Ftt initialization information: ftt
+ Build FTT machine from token node pp_WORK machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/pp/src/xml/pp.xml:20:33,424]
+Task task STANDBY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = STANDBY
+[BUILDER] .... behavior= STANDBY
+[BUILDER] .... create simple task STANDBY, STANDBY
+   task STANDBY has been defined
+Task task READY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = READY
+[BUILDER] .... behavior= READY
+[BUILDER] .... create simple task READY, READY
+   task READY has been defined
+Task task STANDBY for build
+Task task READY for build
+Ftt initialization information: ftt
+
+
+[MACHINE EXECUTION] machine pp_ON ???? INIT   0
+[MACHINE EXECUTION] machine pp ???? ON   0
+[0m[ INFO] [1477917522.585496698]: Connect to /robil/event_bus/events: ...[0m
+[0m[ INFO] [1477917523.589903963]: Connect to  /robil/event_bus/events: Done[0m
+Warning Cann't find path tag in tao [/ssm:2:1,40]
+Warning Cann't find includes tag in tao [/ssm:2:1,40]
+Warning Cann't find args tag in tao [/ssm:2:1,40]
+Warning Cann't find subs tag in tao [/ssm:2:1,40]
+Warning Cann't find path tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ssm/src/xml/ssm.xml:2:1,40]
+Warning Cann't find includes tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ssm/src/xml/ssm.xml:2:1,40]
+Warning Cann't find args tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ssm/src/xml/ssm.xml:2:1,40]
+Warning Cann't find subs tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ssm/src/xml/ssm.xml:2:1,40]
+===== ssm is not created =======
+===== ssm_ON is not created =======
+ Build FTT machine from token node ssm machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ssm/src/xml/ssm.xml:4:9,60]
+Task task OFF for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = OFF
+[BUILDER] .... behavior= OFF
+[BUILDER] .... create simple task OFF, OFF
+   task OFF has been defined
+Task task ON for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = ON
+[BUILDER] .... behavior= ON
+[BUILDER] .... create machine task ON, ON
+   task ON has been defined
+Task task OFF for build
+Task task ON for build
+Ftt initialization information: ftt
+ Build FTT machine from token node ssm_ON machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ssm/src/xml/ssm.xml:12:21,228]
+Task task INIT for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = INIT
+[BUILDER] .... behavior= INIT
+[BUILDER] .... create simple task INIT, INIT
+   task INIT has been defined
+Task task READY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = READY
+[BUILDER] .... behavior= READY
+[BUILDER] .... create simple task READY, READY
+   task READY has been defined
+Task task INIT for build
+Task task READY for build
+Ftt initialization information: ftt
+
+
+[MACHINE EXECUTION] machine ssm_ON ???? INIT   0
+[MACHINE EXECUTION] machine ssm ???? ON   0
+[0m[ INFO] [1477917522.604017863]: Connect to /robil/event_bus/events: ...[0m
+[0m[ INFO] [1477917523.606469762]: Connect to  /robil/event_bus/events: Done[0m
+Warning Cann't find path tag in tao [/wsm:2:1,40]
+Warning Cann't find includes tag in tao [/wsm:2:1,40]
+Warning Cann't find args tag in tao [/wsm:2:1,40]
+Warning Cann't find subs tag in tao [/wsm:2:1,40]
+Warning Cann't find path tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wsm/src/xml/wsm.xml:2:1,40]
+Warning Cann't find includes tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wsm/src/xml/wsm.xml:2:1,40]
+Warning Cann't find args tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wsm/src/xml/wsm.xml:2:1,40]
+Warning Cann't find subs tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wsm/src/xml/wsm.xml:2:1,40]
+===== wsm is not created =======
+===== wsm_ON is not created =======
+===== wsm_WORK is not created =======
+ Build FTT machine from token node wsm machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wsm/src/xml/wsm.xml:4:9,60]
+Task task OFF for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = OFF
+[BUILDER] .... behavior= OFF
+[BUILDER] .... create simple task OFF, OFF
+   task OFF has been defined
+Task task ON for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = ON
+[BUILDER] .... behavior= ON
+[BUILDER] .... create machine task ON, ON
+   task ON has been defined
+Task task OFF for build
+Task task ON for build
+Ftt initialization information: ftt
+ Build FTT machine from token node wsm_ON machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wsm/src/xml/wsm.xml:12:21,228]
+Task task INIT for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = INIT
+[BUILDER] .... behavior= INIT
+[BUILDER] .... create simple task INIT, INIT
+   task INIT has been defined
+Task task WORK for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = WORK
+[BUILDER] .... behavior= WORK
+[BUILDER] .... create machine task WORK, WORK
+   task WORK has been defined
+Task task INIT for build
+Task task WORK for build
+Ftt initialization information: ftt
+ Build FTT machine from token node wsm_WORK machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wsm/src/xml/wsm.xml:20:33,434]
+Task task STANDBY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = STANDBY
+[BUILDER] .... behavior= STANDBY
+[BUILDER] .... create simple task STANDBY, STANDBY
+   task STANDBY has been defined
+Task task READY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = READY
+[BUILDER] .... behavior= READY
+[BUILDER] .... create simple task READY, READY
+   task READY has been defined
+Task task STANDBY for build
+Task task READY for build
+Ftt initialization information: ftt
+
+
+[MACHINE EXECUTION] machine wsm_ON ???? INIT   0
+[MACHINE EXECUTION] machine wsm ???? ON   0
+[0m[ INFO] [1477917523.621574963]: WSM at Init[0m
+[0m[ INFO] [1477917523.731085619]: WSM at Init[0m
+[0m[ INFO] [1477917523.751618742]: WSM at Init[0m
+[0m[ INFO] [1477917523.772077016]: WSM at Init[0m
+[0m[ INFO] [1477917523.792518660]: WSM at Init[0m
+[MACHINE EXECUTION] machine wsm_WORK ???? STANDBY   0
+[0m[ INFO] [1477917523.145513933]: Connect to /robil/event_bus/events: ...[0m
+[0m[ INFO] [1477917524.148418338]: Connect to  /robil/event_bus/events: Done[0m
+Warning Cann't find path tag in tao [/per:2:1,40]
+Warning Cann't find includes tag in tao [/per:2:1,40]
+Warning Cann't find args tag in tao [/per:2:1,40]
+Warning Cann't find subs tag in tao [/per:2:1,40]
+Warning Cann't find path tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/per/src/xml/per.xml:2:1,40]
+Warning Cann't find includes tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/per/src/xml/per.xml:2:1,40]
+Warning Cann't find args tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/per/src/xml/per.xml:2:1,40]
+Warning Cann't find subs tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/per/src/xml/per.xml:2:1,40]
+===== per is not created =======
+===== per_ON is not created =======
+ Build FTT machine from token node per machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/per/src/xml/per.xml:4:9,60]
+Task task OFF for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = OFF
+[BUILDER] .... behavior= OFF
+[BUILDER] .... create simple task OFF, OFF
+   task OFF has been defined
+Task task ON for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = ON
+[BUILDER] .... behavior= ON
+[BUILDER] .... create machine task ON, ON
+   task ON has been defined
+Task task OFF for build
+Task task ON for build
+Ftt initialization information: ftt
+ Build FTT machine from token node per_ON machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/per/src/xml/per.xml:11:21,227]
+Task task INIT for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = INIT
+[BUILDER] .... behavior= INIT
+[BUILDER] .... create simple task INIT, INIT
+   task INIT has been defined
+Task task READY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = READY
+[BUILDER] .... behavior= READY
+[BUILDER] .... create simple task READY, READY
+   task READY has been defined
+Task task INIT for build
+Task task READY for build
+Ftt initialization information: ftt
+
+
+[MACHINE EXECUTION] machine per_ON ???? INIT   0
+[MACHINE EXECUTION] machine per ???? ON   0
+[0m[ INFO] [1477917523.475166641]: Connect to /robil/event_bus/events: ...[0m
+[0m[ INFO] [1477917524.484522482]: Connect to  /robil/event_bus/events: Done[0m
+Warning Cann't find path tag in tao [/llc:2:1,40]
+Warning Cann't find includes tag in tao [/llc:2:1,40]
+Warning Cann't find args tag in tao [/llc:2:1,40]
+Warning Cann't find subs tag in tao [/llc:2:1,40]
+[0m[ INFO] [1477917523.484605964]: Connect to /robil/event_bus/events: ...[0m
+[0m[ INFO] [1477917523.731642741]: Start TF structure sender(20Hz): world->map(->odom->base_link->base_link_center|->laser)[0m
+[0m[ INFO] [1477917524.489375774]: Connect to  /robil/event_bus/events: Done[0m
+Warning Cann't find path tag in tao [/way_point_driver:2:1,40]
+Warning Cann't find includes tag in tao [/way_point_driver:2:1,40]
+Warning Cann't find args tag in tao [/way_point_driver:2:1,40]
+Warning Cann't find subs tag in tao [/way_point_driver:2:1,40]
+[0m[ INFO] [1477917523.487912843]: Connect to /robil/event_bus/events: ...[0m
+[0m[ INFO] [1477917524.491524036]: Connect to  /robil/event_bus/events: Done[0m
+Warning Cann't find path tag in tao [/ocu:2:1,40]
+Warning Cann't find includes tag in tao [/ocu:2:1,40]
+Warning Cann't find args tag in tao [/ocu:2:1,40]
+Warning Cann't find subs tag in tao [/ocu:2:1,40]
+Warning Cann't find path tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/llc/src/xml/llc.xml:2:1,40]
+Warning Cann't find includes tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/llc/src/xml/llc.xml:2:1,40]
+Warning Cann't find args tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/llc/src/xml/llc.xml:2:1,40]
+Warning Cann't find subs tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/llc/src/xml/llc.xml:2:1,40]
+===== llc is not created =======
+===== llc_ON is not created =======
+ Build FTT machine from token node llc machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/llc/src/xml/llc.xml:4:9,60]
+Task task OFF for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = OFF
+[BUILDER] .... behavior= OFF
+[BUILDER] .... create simple task OFF, OFF
+   task OFF has been defined
+Task task ON for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = ON
+[BUILDER] .... behavior= ON
+[BUILDER] .... create machine task ON, ON
+   task ON has been defined
+Task task OFF for build
+Task task ON for build
+Ftt initialization information: ftt
+ Build FTT machine from token node llc_ON machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/llc/src/xml/llc.xml:12:21,228]
+Task task INIT for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = INIT
+[BUILDER] .... behavior= INIT
+[BUILDER] .... create simple task INIT, INIT
+   task INIT has been defined
+Task task READY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = READY
+[BUILDER] .... behavior= READY
+[BUILDER] .... create simple task READY, READY
+   task READY has been defined
+Task task STANDBY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = STANDBY
+[BUILDER] .... behavior= STANDBY
+[BUILDER] .... create simple task STANDBY, STANDBY
+   task STANDBY has been defined
+Task task INIT for build
+Task task READY for build
+Task task STANDBY for build
+Ftt initialization information: ftt
+
+
+[MACHINE EXECUTION] machine llc_ON ???? INIT   0
+[MACHINE EXECUTION] machine llc ???? ON   0
+Warning Cann't find path tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ocu/src/xml/ocu.xml:2:1,40]
+Warning Cann't find includes tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ocu/src/xml/ocu.xml:2:1,40]
+Warning Cann't find args tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ocu/src/xml/ocu.xml:2:1,40]
+Warning Cann't find subs tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ocu/src/xml/ocu.xml:2:1,40]
+Warning Cann't find path tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wpd/src/xml/wpd.xml:2:1,40]
+Warning Cann't find includes tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wpd/src/xml/wpd.xml:2:1,40]
+Warning Cann't find args tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wpd/src/xml/wpd.xml:2:1,40]
+Warning Cann't find subs tag in tao [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wpd/src/xml/wpd.xml:2:1,40]
+===== ocu is not created =======
+===== ocu_ON is not created =======
+ Build FTT machine from token node ocu machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ocu/src/xml/ocu.xml:4:9,60]
+Task task OFF for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = OFF
+[BUILDER] .... behavior= OFF
+[BUILDER] .... create simple task OFF, OFF
+   task OFF has been defined
+Task task ON for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = ON
+[BUILDER] .... behavior= ON
+[BUILDER] .... create machine task ON, ON
+   task ON has been defined
+Task task OFF for build
+Task task ON for build
+Ftt initialization information: ftt
+ Build FTT machine from token node ocu_ON machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/ocu/src/xml/ocu.xml:12:21,228]
+Task task INIT for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = INIT
+[BUILDER] .... behavior= INIT
+[BUILDER] .... create simple task INIT, INIT
+   task INIT has been defined
+Task task READY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = READY
+[BUILDER] .... behavior= READY
+[BUILDER] .... create simple task READY, READY
+   task READY has been defined
+Task task INIT for build
+Task task READY for build
+Ftt initialization information: ftt
+
+
+===== wpd is not created =======
+===== wpd_ON is not created =======
+===== wpd_WORK is not created =======
+ Build FTT machine from token node wpd machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wpd/src/xml/wpd.xml:4:9,60]
+Task task OFF for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = OFF
+[BUILDER] .... behavior= OFF
+[BUILDER] .... create simple task OFF, OFF
+   task OFF has been defined
+Task task ON for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = ON
+[BUILDER] .... behavior= ON
+[BUILDER] .... create machine task ON, ON
+   task ON has been defined
+Task task OFF for build
+Task task ON for build
+Ftt initialization information: ftt
+ Build FTT machine from token node wpd_ON machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wpd/src/xml/wpd.xml:12:21,228]
+Task task INIT for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = INIT
+[BUILDER] .... behavior= INIT
+[BUILDER] .... create simple task INIT, INIT
+[MACHINE EXECUTION] machine ocu_ON ???? INIT   0
+   task INIT has been defined
+Task task WORK for init
+[BUILDER] create machine task ...
+[BUILDER] .... id = WORK
+[BUILDER] .... behavior= WORK
+[BUILDER] .... create machine task WORK, WORK
+   task WORK has been defined
+Task task INIT for build
+Task task WORK for build
+Ftt initialization information: ftt
+ Build FTT machine from token node wpd_WORK machine [home/assaf/workspaces/robil_workspace/robil2/src/Framework/wpd/src/xml/wpd.xml:20:33,428]
+Task task STANDBY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = STANDBY
+[BUILDER] .... behavior= STANDBY
+[BUILDER] .... create simple task STANDBY, STANDBY
+   task STANDBY has been defined
+Task task READY for init
+[BUILDER] create simple task ...
+[BUILDER] .... id = READY
+[BUILDER] .... behavior= READY
+[BUILDER] .... create simple task READY, READY
+   task READY has been defined
+Task task STANDBY for build
+[MACHINE EXECUTION] machine ocu ???? ON   0
+Task task READY for build
+Ftt initialization information: ftt
+
+
+[MACHINE EXECUTION] machine wpd_ON ???? INIT   0
+[MACHINE EXECUTION] machine wpd ???? ON   0
+[0m[ INFO] [1477917524.510136351]: WPD at Standby[0m
+[0m[ INFO] [1477917524.552800950]: WPD at Init[0m
+[0m[ INFO] [1477917524.573226767]: WPD at Init[0m
+[0m[ INFO] [1477917524.593667317]: WPD at Init[0m
+[0m[ INFO] [1477917524.614189091]: WPD at Init[0m
+[MACHINE EXECUTION] machine wpd_WORK ???? STANDBY   0
+[0m[ INFO] [1477917522.415541701]: LLC_checkup init[0m
+Localization says: bye bye!!
+Thread has stopped. No estimation is published to LOC!!!!
+EKF says: bye bye!!
+[0m[ INFO] [1477917524.041802458]: Loading from pre-hydro parameter style[0m
+[0m[ INFO] [1477917524.056253125]: Using plugin "obstacle_layer"[0m
+[0m[ INFO] [1477917524.080934042]:     Subscribed to Topics: cloud_scan_sensor laser_scan_sensor[0m
+[0m[ INFO] [1477917524.103018116]: Using plugin "inflation_layer"[0m
+[0m[ INFO] [1477917524.156243190]: Loading from pre-hydro parameter style[0m
+[0m[ INFO] [1477917524.170988429]: Using plugin "obstacle_layer"[0m
+[0m[ INFO] [1477917524.194640486]:     Subscribed to Topics: cloud_scan_sensor laser_scan_sensor[0m
+[0m[ INFO] [1477917524.216414538]: Using plugin "inflation_layer"[0m
+[0m[ INFO] [1477917524.265057026]: Created local_planner base_local_planner/TrajectoryPlannerROS[0m
+[33m[ WARN] [1477917524.268345631]: /move_base/TrajectoryPlannerROS/acc_lim_th should be acc_lim_theta, this param will be removed in J-turtle[0m
+[0m[ INFO] [1477917524.272009193]: Sim period is set to 0.20[0m
+[33m[ WARN] [1477917524.275281663]: Trajectory Rollout planner initialized with param meter_scoring not set. Set it to true to make your settins robust against changes of costmap resolution.[0m
+[0m[ INFO] [1477917525.276743072]: Recovery behavior will clear layer obstacles[0m
+[0m[ INFO] [1477917525.308984372]: Recovery behavior will clear layer obstacles[0m
+[0m[ INFO] [1477917524.509355239]: OCU at Ready[0m
+[0m[ INFO] [1477917524.529664717]: OCU at Init[0m
+[0m[ INFO] [1477917524.550113374]: OCU at Init[0m
+[0m[ INFO] [1477917524.570525845]: OCU at Init[0m
+[0m[ INFO] [1477917524.590919996]: OCU at Init[0m
+[0m[ INFO] [1477917524.612250000]: OCU at Ready[0m
+[0m[ INFO] [1477917524.632729107]: OCU at Ready[0m
+terminate called after throwing an instance of 'boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::lock_error> >'
+  what():  boost: mutex unlock failed in pthread_mutex_unlock: Invalid argument
+[0m[ INFO] [1477917523.452031875]: IEDSim at Init[0m
+[0m[ INFO] [1477917523.511393336]: IEDSim at Init[0m
+[0m[ INFO] [1477917523.539436905]: IEDSim at Init[0m
+[0m[ INFO] [1477917523.605037693]: IEDSim at Init[0m
+[0m[ INFO] [1477917523.625901705]: IEDSim at Init[0m
+[0m[ INFO] [1477917523.835948764]: IEDSim at Ready[0m
+[0m[ INFO] [1477917524.165599504]: IEDSim at Init[0m
+[0m[ INFO] [1477917524.503103545]: IEDSim at Init[0m
+[0m[ INFO] [1477917524.523716707]: IEDSim at Init[0m
+[0m[ INFO] [1477917524.544415607]: IEDSim at Init[0m
+[0m[ INFO] [1477917524.612895870]: IEDSim at Ready[0m
+[0m[ INFO] [1477917524.633728907]: IEDSim at Ready[0m
+[0m[ INFO] [1477917523.511727462]: SMME INIT[0m
+[0m[ INFO] [1477917523.532194446]: SMME INIT[0m
+[0m[ INFO] [1477917523.552692031]: SMME INIT[0m
+[0m[ INFO] [1477917523.604914630]: SMME INIT[0m
+[0m[ INFO] [1477917523.625371241]: SMME INIT[0m
+[0m[ INFO] [1477917523.839797339]: SMME at Ready[0m
+[0m[ INFO] [1477917524.165777330]: SMME INIT[0m
+[0m[ INFO] [1477917524.503149409]: SMME INIT[0m
+[0m[ INFO] [1477917524.523773803]: SMME INIT[0m
+[0m[ INFO] [1477917524.544057078]: SMME INIT[0m
+[0m[ INFO] [1477917524.616662401]: SMME at Ready[0m
+[0m[ INFO] [1477917524.644449621]: SMME at Ready[0m
+[0m[ INFO] [1477917523.814551099]: PP at Standby[0m
+[33m[ WARN] [1477917523.814575866]: Navigation is canceled[0m
+[0m[ INFO] [1477917523.814621602]: Navigation: navigation is deactivated. The driver is stopped and each new Global Path will rejected up to activation.[0m
+[0m[ INFO] [1477917523.835918387]: PP at Ready[0m
+[33m[ WARN] [1477917523.836029346]: Navigation is resumed[0m
+[0m[ INFO] [1477917523.836108013]: Navigation: navigation is active. you can send Global Path.[0m
+[0m[ INFO] [1477917523.836152461]: Navigation:   the previous path is deleted[0m
+[0m[ INFO] [1477917524.268479856]: Navigation: move base: warning: /move_base/TrajectoryPlannerROS/acc_lim_th should be acc_lim_theta, this param will be removed in J-turtle; POSE[goal=(0,0), loc=(0,0)][0m
+[0m[ INFO] [1477917524.612049980]: PP at Ready[0m
+[33m[ WARN] [1477917524.612072605]: Navigation is resumed[0m
+[0m[ INFO] [1477917524.612100853]: Navigation: navigation is active. you can send Global Path.[0m
+[0m[ INFO] [1477917524.612337457]: Navigation:   the previous path is deleted[0m
+[0m[ INFO] [1477917524.632630773]: PP at Ready[0m
+[33m[ WARN] [1477917524.632652018]: Navigation is resumed[0m
+[0m[ INFO] [1477917524.632667619]: Navigation: navigation is active. you can send Global Path.[0m
+[0m[ INFO] [1477917524.632818957]: Navigation:   the previous path is deleted[0m
+[0m[ INFO] [1477917524.653001649]: PP at Standby[0m
+[33m[ WARN] [1477917524.653023016]: Navigation is canceled[0m
+[0m[ INFO] [1477917524.653041671]: Navigation: navigation is deactivated. The driver is stopped and each new Global Path will rejected up to activation.[0m
+[0m[ INFO] [1477917523.814717531]: WSM at Standby[0m
+[0m[ INFO] [1477917523.836319748]: WSM At Ready[0m
+[0m[ INFO] [1477917524.165743571]: WSM at Init[0m
+[0m[ INFO] [1477917524.503554985]: WSM at Init[0m
+[0m[ INFO] [1477917524.524353817]: WSM at Init[0m
+[0m[ INFO] [1477917524.544980966]: WSM at Init[0m
+[0m[ INFO] [1477917524.612217272]: WSM At Ready[0m
+[0m[ INFO] [1477917524.632852227]: WSM At Ready[0m
+[0m[ INFO] [1477917524.654126607]: WSM at Standby[0m
+[0m[ INFO] [1477917524.504658057]: LLC at Standby[0m
+[0m[ INFO] [1477917524.524981778]: LLC at Ready[0m
+[0m[ INFO] [1477917524.545554967]: LLC at Init[0m
+[0m[ INFO] [1477917524.565983278]: LLC at Init[0m
+[0m[ INFO] [1477917524.586419442]: LLC at Init[0m
+[0m[ INFO] [1477917524.606938703]: LLC at Init[0m
+[0m[ INFO] [1477917524.628665609]: LLC at Ready[0m
+[0m[ INFO] [1477917524.649033229]: LLC at Ready[0m
+[0m[ INFO] [1477917524.669601560]: LLC at Standby[0m
+[0m[ INFO] [1477917524.680959271]: WPD at Standby[0m
+ocal_costmap/transform_tolerance: 10
+ * /move_base/local_costmap/update_frequency: 5.0
+ * /move_base/local_costmap/width: 15
+ * /move_base/recovery_behavior_enabled: False
+ * /rosdistro: indigo
+ * /rosversion: 1.11.20
+
+NODES
+  /
+    cognitao_event_translator (cognitao_event_translator/cognitao_event_translator)
+    iedsim_node (iedsim/iedsim_node)
+    llc_checkup (llc/llc_checkup)
+    llc_node (llc/llc_node)
+    loc_node (loc/loc_node)
+    move_base (move_base/move_base)
+    ocu_node (ocu/ocu_node)
+    per_node (per/per_node)
+    pp_node (pp/pp_node)
+    smme_node (smme/smme_node)
+    ssm_fsm_states_tracker_node (ssm/ssm_fsm_states_tracker_node)
+    ssm_heartbeat_monitor_node (ssm/ssm_heartbeat_monitor_node)
+    ssm_node (ssm/ssm_node)
+    wpd_node (wpd/wpd_node)
+    wsm_node (wsm/wsm_node)
+
+auto-starting new master
+[1mprocess[master]: started with pid [26793][0m
+[1mROS_MASTER_URI=http://localhost:11311[0m
+]2;/home/assaf/workspaces/robil_workspace/robil2/src/Framework/robil2conf/frameworkInit.launch http://localhost:11311
+[1msetting /run_id to f45d7bc6-9f66-11e6-bf15-fcaa1467bad9[0m
+[1mprocess[rosout-1]: started with pid [26806][0m
+started core service [/rosout]
+[1mprocess[ssm_fsm_states_tracker_node-2]: started with pid [26823][0m
+[1mprocess[ssm_heartbeat_monitor_node-3]: started with pid [26824][0m
+[1mprocess[ssm_node-4]: started with pid [26826][0m
+[1mprocess[iedsim_node-5]: started with pid [26837][0m
+[1mprocess[per_node-6]: started with pid [26853][0m
+[1mprocess[loc_node-7]: started with pid [26866][0m
+[1mprocess[smme_node-8]: started with pid [26872][0m
+[1mprocess[wsm_node-9]: started with pid [26881][0m
+[1mprocess[ocu_node-10]: started with pid [26886][0m
+[1mprocess[cognitao_event_translator-11]: started with pid [26903][0m
+[1mprocess[move_base-12]: started with pid [26908][0m
+[1mprocess[pp_node-13]: started with pid [26927][0m
+[1mprocess[wpd_node-14]: started with pid [26943][0m
+[1mprocess[llc_node-15]: started with pid [26952][0m
+[1mprocess[llc_checkup-16]: started with pid [26966][0m
+[llc_checkup-16] killing on exit
+[llc_node-15] killing on exit
+[wpd_node-14] killing on exit
+[pp_node-13] killing on exit
+[move_base-12] killing on exit
+[ocu_node-10] killing on exit
+[wsm_node-9] killing on exit
+[cognitao_event_translator-11] killing on exit
+[smme_node-8] killing on exit
+[loc_node-7] killing on exit
+[per_node-6] killing on exit
+[iedsim_node-5] killing on exit
+[ssm_node-4] killing on exit
+[ssm_heartbeat_monitor_node-3] killing on exit
+[ssm_fsm_states_tracker_node-2] killing on exit
+[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

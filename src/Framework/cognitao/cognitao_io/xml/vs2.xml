@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<path>
+		<folder>/home/dan/workspace/cognitao/src/cognitao/cognitao_io/xml/</folder>
+	</path>
+	<subs>
+		<sub id="S2">
+			<args>
+				<arg TASK_NAME="task_witout_name" />
+			</args>
+			<block>
+                	<task id="${TASK_NAME}_super">
+                	</task> 
+			</block>
+		</sub>
+	</subs>
+</tao>

@@ -27,7 +27,7 @@ const double PI_2_DEG = 180; //
 
 
 ComponentMain::ComponentMain(int argc,char** argv)
-: _inited(init(argc, argv))
+: _inited(init(argc, argv)), _events(0)
 {
 	if ( argc == 2 )
 	{

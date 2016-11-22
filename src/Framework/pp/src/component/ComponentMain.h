@@ -7,7 +7,6 @@
  */
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
-
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <string>       // std::string
@@ -15,27 +14,26 @@
 #include <sstream>
 #include <ParameterTypes.h>
 #include <tf/tf.h>
+#include <cognitao_v2/cognitao_v2.h>
 #include <boost/thread.hpp>
 
 class MoveBase;
-namespace decision_making{ class EventQueue; }
 
 class ComponentMain {
+	bool _inited;
+	ComponentMain   * _comp;
+	ros::NodeHandle _nh;
+	ros::Publisher _pub_diagnostic;
+	boost::thread_group _maintains;
+	ros::Subscriber _sub_GlobalPath;
+	ros::Subscriber _sub_BladePosition;
+	ros::Subscriber _sub_Map;
+	ros::Subscriber _sub_Location;
+	ros::Publisher  _pub_LocalPath;
+	bool init(int argc,char** argv);
 	MoveBase* _move_base;
-	decision_making::EventQueue* _events;
+	cognitao::bus::RosEventQueue* _events;
 	boost::mutex _mt;
-	 bool _inited;
-	  ComponentMain   * _comp;
-	  ros::NodeHandle _nh;
-	  ros::Publisher _pub_diagnostic;
-	  boost::thread_group _maintains;
-		ros::Subscriber _sub_GlobalPath;
-		ros::Subscriber _sub_BladePosition;
-		ros::Subscriber _sub_Map;
-		ros::Subscriber _sub_Location;
-		ros::Publisher  _pub_LocalPath;
-
-	  bool init(int argc,char** argv);
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -48,8 +46,8 @@ public:
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
-
-	void set_events(decision_making::EventQueue* events);
+	void heartbeat();
+	void set_events(cognitao::bus::RosEventQueue* events);
 	void rise_taskFinished();
 	void rise_taskAborted();
 	void rise_taskStarted();
@@ -58,7 +56,6 @@ public:
 	void cancel_navigation();
 	void pause_navigation();
 	void resume_navigation();
-
-	void heartbeat();
+	bool isClosed();
 };
 #endif /* COMPONENTMAIN_H_ */

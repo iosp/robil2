@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="llc" type="ftt">
+			<tasks>
+
+				<task id="OFF">
+					<reaction on_event="?/llc/Activation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="llc_ON" type="ftt">
+						<tasks>
+
+							<task id="INIT">
+								<reaction on_event="?/llc/EndOfInit" target="READY" />
+							</task>           
+							
+							<task id="READY"> 
+								<reaction on_event="?/llc/Standby" target="STANDBY" />
+							</task> 
+							
+							<task id="STANDBY"> 
+								<reaction on_event="?/llc/Resume" target="READY" />
+							</task> 
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/llc/Shutdown" target="OFF" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>ON</start>
+			</ftt>
+		</machine>
+		<root>llc</root>
+	</machines>
+</tao>
