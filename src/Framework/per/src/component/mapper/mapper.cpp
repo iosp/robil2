@@ -141,7 +141,7 @@ void Mapper::setLanes(Mat lanes)
 }
 
 /** Until Here**/
-void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher pcpubworld, ros::Publisher pcpub)
+void Mapper::handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pcpubworld, ros::Publisher pcpub)
 {
     if(!loc_received) return;
     //return;
@@ -208,7 +208,7 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher 
     lock.unlock();
 }
 
-void Mapper::handleSickL(const config::PER::sub::SensorSICK1& msg)
+void Mapper::handleSickL(const sensor_msgs::LaserScan& msg)
 {
     if(!loc_received) return;
     lock.lock();
@@ -231,7 +231,7 @@ void Mapper::handleSickL(const config::PER::sub::SensorSICK1& msg)
     lock.unlock();
 }
 
-void Mapper::handleSickR(const config::PER::sub::SensorSICK2& msg)
+void Mapper::handleSickR(const sensor_msgs::LaserScan& msg)
 {
     if(!loc_received) return;
     lock.lock();
@@ -256,7 +256,7 @@ void Mapper::handleSickR(const config::PER::sub::SensorSICK2& msg)
     lock.unlock();
 }
 
-void Mapper::handleLocation(const config::PER::sub::Location& msg)
+void Mapper::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
     lock.lock();
     geometry_msgs::Pose pose = msg.pose.pose;
@@ -275,7 +275,7 @@ void Mapper::handleLocation(const config::PER::sub::Location& msg)
 
 }
 
-void Mapper::handleCamR(const config::PER::sub::SensorCamR& msg)
+void Mapper::handleCamR(const sensor_msgs::Image& msg)
 {
     lock.lock();
     camR = true;
@@ -297,7 +297,7 @@ void Mapper::handleCamR(const config::PER::sub::SensorCamR& msg)
     lock.unlock();
 }
 
-void Mapper::handleCamL(const config::PER::sub::SensorCamL& msg)
+void Mapper::handleCamL(const sensor_msgs::Image& msg)
 {
     lock.lock();
     camL = true;
@@ -320,7 +320,7 @@ void Mapper::handleCamL(const config::PER::sub::SensorCamL& msg)
 
 void Mapper::publishMap()
 {
-    config::PER::pub::Map msg;
+    robil_msgs::Map msg;
     static int seq = 0;
     msg.header.seq = seq++;
     msg.header.stamp.sec = ros::Time::now().sec;
@@ -358,7 +358,7 @@ void Mapper::publishMap()
 
 void Mapper::publishMiniMap()
 {
-    config::PER::pub::Map msg;
+    robil_msgs::Map msg;
     static int seq = 0;
 
     msg.header.seq = seq++;
