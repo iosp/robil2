@@ -3,7 +3,7 @@
 <!--Suspension setup-->
 <link name="suspension_left_1">
   <pose>3.09659 0 -0.55525 0 0 0</pose>
-  <inertial>
+  <inertial><pose>0 1 0 0 0 0</pose>
     <inertia>
       <ixx>0.01</ixx>
       <ixy>0.0</ixy>
@@ -12,7 +12,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>100</mass>
+    <mass>50</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 3.14159265359</pose>
@@ -32,19 +32,19 @@
   <axis>
     <limit>
       <lower>-0.8</lower>
-      <upper>0.01</upper>
+      <upper>0.08</upper>
     </limit>
     <xyz>1 0 0</xyz>
     <dynamics>
-      <spring_stiffness>60001</spring_stiffness>
+      <spring_stiffness>20001</spring_stiffness>
       <spring_reference>-0.1</spring_reference>
-      <damping>2501</damping>
+      <damping>1001</damping>
     </dynamics>
   </axis>
 </joint>
 <link name="suspension_left_2">
   <pose>1.30729 0 -0.55525 0 0 0</pose>
-  <inertial>
+  <inertial><pose>0 1 0 0 0 0</pose>
     <inertia>
       <ixx>0.01</ixx>
       <ixy>0.0</ixy>
@@ -53,7 +53,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>100</mass>
+    <mass>50</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 3.14159265359</pose>
@@ -73,19 +73,19 @@
   <axis>
     <limit>
       <lower>-0.8</lower>
-      <upper>0.01</upper>
+      <upper>0.08</upper>
     </limit>
     <xyz>1 0 0</xyz>
     <dynamics>
-      <spring_stiffness>60001</spring_stiffness>
+      <spring_stiffness>20001</spring_stiffness>
       <spring_reference>-0.1</spring_reference>
-      <damping>2501</damping>
+      <damping>1001</damping>
     </dynamics>
   </axis>
 </joint>
 <link name="suspension_left_3">
   <pose>-3.42202 0 -0.55525 0 0 0</pose>
-  <inertial>
+  <inertial><pose>0 1 0 0 0 0</pose>
     <inertia>
       <ixx>0.01</ixx>
       <ixy>0.0</ixy>
@@ -94,7 +94,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>100</mass>
+    <mass>50</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 3.14159265359</pose>
@@ -114,19 +114,19 @@
   <axis>
     <limit>
       <lower>-0.8</lower>
-      <upper>0.01</upper>
+      <upper>0.08</upper>
     </limit>
     <xyz>1 0 0</xyz>
     <dynamics>
-      <spring_stiffness>60001</spring_stiffness>
+      <spring_stiffness>20001</spring_stiffness>
       <spring_reference>-0.1</spring_reference>
-      <damping>2501</damping>
+      <damping>1001</damping>
     </dynamics>
   </axis>
 </joint>
 <link name="suspension_left_4">
   <pose>-5.21133 0 -0.55525 0 0 0</pose>
-  <inertial>
+  <inertial><pose>0 0 0 0 0 0</pose>
     <inertia>
       <ixx>0.01</ixx>
       <ixy>0.0</ixy>
@@ -135,7 +135,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>100</mass>
+    <mass>50</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 3.14159265359</pose>
@@ -155,19 +155,19 @@
   <axis>
     <limit>
       <lower>-0.8</lower>
-      <upper>0.01</upper>
+      <upper>0.08</upper>
     </limit>
     <xyz>1 0 0</xyz>
     <dynamics>
-      <spring_stiffness>60001</spring_stiffness>
+      <spring_stiffness>20001</spring_stiffness>
       <spring_reference>-0.1</spring_reference>
-      <damping>2501</damping>
+      <damping>1001</damping>
     </dynamics>
   </axis>
 </joint>
 <link name="suspension_right_1">
   <pose>3.09659 -0 -0.55525 0 0 0</pose>
-  <inertial>
+  <inertial><pose>0 1 0 0 0 0</pose>
     <inertia>
       <ixx>0.01</ixx>
       <ixy>0.0</ixy>
@@ -176,7 +176,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>100</mass>
+    <mass>50</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 0</pose>
@@ -196,20 +196,22 @@
   <axis>
     <limit>
       <lower>-0.8</lower>
-      <upper>0.01</upper>
+      <upper>0.08</upper>
     </limit>
     <xyz>-1 0 0</xyz>
     <dynamics>
-      <spring_stiffness>60001</spring_stiffness>
+      <spring_stiffness>20001</spring_stiffness>
       <spring_reference>-0.1</spring_reference>
-      <damping>2501</damping>
+      <damping>1001</damping>
     </dynamics>
   </axis>
 </joint>
 <link name="suspension_right_2">
   <pose>1.30729 -0 -0.55525 0 0 0</pose>
-  <inertial>
+  <inertial><pose>0 1 0 0 0 0</pose>
+  
     <inertia>
+
       <ixx>0.01</ixx>
       <ixy>0.0</ixy>
       <ixz>0.0</ixz>
@@ -217,7 +219,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>100</mass>
+    <mass>50</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 0</pose>
@@ -237,19 +239,19 @@
   <axis>
     <limit>
       <lower>-0.8</lower>
-      <upper>0.01</upper>
+      <upper>0.08</upper>
     </limit>
     <xyz>-1 0 0</xyz>
     <dynamics>
-      <spring_stiffness>60001</spring_stiffness>
+      <spring_stiffness>20001</spring_stiffness>
       <spring_reference>-0.1</spring_reference>
-      <damping>2501</damping>
+      <damping>1001</damping>
     </dynamics>
   </axis>
 </joint>
 <link name="suspension_right_3">
   <pose>-3.42202 -0 -0.55525 0 0 0</pose>
-  <inertial>
+  <inertial><pose>0 1 0 0 0 0</pose>
     <inertia>
       <ixx>0.01</ixx>
       <ixy>0.0</ixy>
@@ -258,7 +260,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>100</mass>
+    <mass>50</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 0</pose>
@@ -278,19 +280,19 @@
   <axis>
     <limit>
       <lower>-0.8</lower>
-      <upper>0.01</upper>
+      <upper>0.08</upper>
     </limit>
     <xyz>-1 0 0</xyz>
     <dynamics>
-      <spring_stiffness>60001</spring_stiffness>
+      <spring_stiffness>20001</spring_stiffness>
       <spring_reference>-0.1</spring_reference>
-      <damping>2501</damping>
+      <damping>1001</damping>
     </dynamics>
   </axis>
 </joint>
 <link name="suspension_right_4">
   <pose>-5.21133 -0 -0.55525 0 0 0</pose>
-  <inertial>
+  <inertial><pose>0 1 0 0 0 0</pose>
     <inertia>
       <ixx>0.01</ixx>
       <ixy>0.0</ixy>
@@ -299,7 +301,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>100</mass>
+    <mass>50</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 0</pose>
@@ -319,13 +321,13 @@
   <axis>
     <limit>
       <lower>-0.8</lower>
-      <upper>0.01</upper>
+      <upper>0.08</upper>
     </limit>
     <xyz>-1 0 0</xyz>
     <dynamics>
-      <spring_stiffness>60001</spring_stiffness>
+      <spring_stiffness>20001</spring_stiffness>
       <spring_reference>-0.1</spring_reference>
-      <damping>2501</damping>
+      <damping>1001</damping>
     </dynamics>
   </axis>
 </joint>

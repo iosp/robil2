@@ -19,7 +19,7 @@ find_package(Boost REQUIRED COMPONENTS
 
 find_package(gazebo REQUIRED)
 
-
+generate_dynamic_reconfigure_options(cfg/oshkosh_model.cfg)  
 
 
 link_directories(${GAZEBO_LIBRARY_DIRS})
@@ -34,7 +34,11 @@ catkin_package(
   #dynamic_reconfigure
 )
 
+
 include_directories(  ${catkin_INCLUDE_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 
+add_library(oshkosh_driving_plugin SHARED src/oshkosh_driving_plugin.cc)
+target_link_libraries(oshkosh_driving_plugin ${catkin_LIBRARIES}  ${Boost_LIBRARIES} )
+add_dependencies(oshkosh_driving_plugin ${PROJECT_NAME}_gencfg)

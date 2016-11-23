@@ -28,13 +28,9 @@
 
 // Dynamic Configuration
 #include <dynamic_reconfigure/server.h>
-#include <bobcat_model/bobcat_modelConfig.h>
+#include <oshkosh_model/oshkosh_modelConfig.h>
 #include <boost/bind.hpp> // Boost Bind
 
-
-// Interpolation
-#include <ctime>
-#include "linterp.h"
 
 
 // Maximum time delays
@@ -42,15 +38,15 @@
 
 #define WHEEL_EFFORT_LIMIT 100000
 
-#define WHEELS_BASE 0.95
+#define WHEELS_BASE 2.2
 #define STEERING_FRICTION_COMPENSATION 2; // compensate the the daliure of reaching the angular velosity
 
-#define WHEEL_DIAMETER 0.77
+#define WHEEL_DIAMETER 1.56
 #define PI 3.14159265359
 
 #define LINEAR_COMMAND_FILTER_ARRY_SIZE 750
 #define ANGULAR_COMMAND_FILTER_ARRY_SIZE 500
-
+#define EnginePower 1000
 //#define MY_GAZEBO_VER 5
 
 namespace gazebo
@@ -69,14 +65,24 @@ namespace gazebo
       //std::cout << "GAZEBO_VERSION = [" << GAZEBO_VERSION << "]"<<std::endl; 
       //float gazebo_ver = std::stof(GAZEBO_VERSION);
       std::cout << "My major GAZEBO VER = [" << GAZEBO_MAJOR_VERSION  << "]"<<std::endl; 
-      //if (GAZEBO_MAJOR_VERSION > 2.0) std::cout << "GADOL"<<std::endl; 
+      //if (GAZEBO_MAJOR_VERSION > 2.0) std::cout << "GADOL"<<std::endl;c 
       //else std::cout << "NOT GADOL"<<std::endl; 
       // Store the pointer to the model
       this->model = _model;
 
       // Store the pointers to the joints
-      this->back_left_joint   = this->model->GetJoint("left_wheel_1");
-
+      this->left_wheel_1 = this->model->GetJoint("left_wheel_1");
+      this->left_wheel_2 = this->model->GetJoint("left_wheel_2");
+      this->left_wheel_3 = this->model->GetJoint("left_wheel_3");
+      this->left_wheel_4 = this->model->GetJoint("left_wheel_4");
+      this->right_wheel_1 = this->model->GetJoint("right_wheel_1");
+      this->right_wheel_2 = this->model->GetJoint("right_wheel_2");
+      this->right_wheel_3 = this->model->GetJoint("right_wheel_3");
+      this->right_wheel_4 = this->model->GetJoint("right_wheel_4");
+      this->streer_joint_left_1 = this->model->GetJoint("steering_joint_left_1");
+      this->streer_joint_left_2 = this->model->GetJoint("steering_joint_left_2");
+      this->streer_joint_right_1 = this->model->GetJoint("steering_joint_right_1");
+      this->streer_joint_right_2 = this->model->GetJoint("steering_joint_right_2");
       
       // Starting Timers
       Linear_command_timer.Start();
@@ -92,89 +98,28 @@ namespace gazebo
 
       // Listen to the update event. This event is broadcast every simulation iteration. 
       this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&oshkoshDrivingPlugin::OnUpdate, this, _1));
+      std::cout << "Setting up dynamic config"<<std::endl;
 
-      this->model_reconfiguration_server = new dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> (*(this->Ros_nh));
+      this->model_reconfiguration_server = new dynamic_reconfigure::Server<oshkosh_model::oshkosh_modelConfig> (*(this->Ros_nh));
       this->model_reconfiguration_server->setCallback(boost::bind(&oshkoshDrivingPlugin::dynamic_Reconfiguration_callback, this, _1, _2));
-
+      std::cout << "dynamic configuration is set up"<<std::endl;
       /* initialize random seed: */
-      srand (time(NULL));
-      this->Linear_Noise_dist = new std::normal_distribution<double>(0,1);
-      this->Angular_Noise_dist = new std::normal_distribution<double>(0,1);
-
-      calibration_data_setup();
-
-      Linear_command_sum = 0;
-      Angular_command_sum = 0;
-      Linear_command_index = 0;
-      Angular_command_index = 0;
-      for (int i=0 ; i<LINEAR_COMMAND_FILTER_ARRY_SIZE ; i++)
-          {
-          Linear_command_array[i] = 0;
-          }
-
-      for (int i=0 ; i<ANGULAR_COMMAND_FILTER_ARRY_SIZE ; i++)
-          {
-          Angular_command_array[i] = 0;
-          }
-
+      // srand (time(NULL));
+      // this->Linear_Noise_dist = new std::normal_distribution<double>(0,1);
+      // this->Angular_Noise_dist = new std::normal_distribution<double>(0,1);
+      Steering_Request = 0;
+      Linear_command = 0;
+      std::cout << "Driving Plugin Loaded"<<std::endl; 
       }
 
-   void calibration_data_setup()
-    {
-      // construct the grid in each dimension.
-      // note that we will pass in a sequence of iterators pointing to the beginning of each grid
-      double Throttle_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
-
-      double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
-
-                                         //r=-1.00    r=-0.70   r=-0.40   r=0.00   r=0.40     r=0.70    r=1.00
-      double Linear_vell_values_array[] = { -1.20,    -1.30,    -1.40,    -1.50,    -1.40,    -1.30,    -1.20,    //t=-1.00
-                                            -0.65,    -0.70,    -0.75,    -0.80,    -0.75,    -0.70,    -0.65,    //t=-0.70
-                                            -0.14,    -0.16,    -0.18,    -0.20,    -0.18,    -0.16,    -0.14,    //t=-0.40
-                                             0.40,     0.17,     0.00,     0.00,     0.00,     0.17,     0.40,    //t=0.00
-                                             0.14,     0.16,     0.18,     0.20,     0.18,     0.16,     0.14,    //t=0.40
-                                             0.65,     0.70,     0.75,     0.80,     0.75,     0.70,     0.65,    //t=0.70
-                                             1.20,     1.30,     1.40,     1.50,     1.40,     1.30,     1.20};   //t=1.00
-
-                                         //r=-1.00    r=-0.70   r=-0.40   r=0.00    r=0.40    r=0.70    r=1.00
-      double Angular_vell_values_array[] = { 1.40,     0.42,     0.18,     0.00,    -0.18,    -0.42,    -1.40,    //t=-1.00
-                                             1.36,     0.38,     0.14,     0.00,    -0.14,    -0.38,    -1.36,    //t=-0.70
-                                             1.32,     0.34,     0.10,     0.00,    -0.10,    -0.34,    -1.32,    //t=-0.40
-                                            -1.22,    -0.24,     0.00,     0.00,     0.00,     0.24,     1.22,    //t=0.00
-                                            -1.32,    -0.34,    -0.10,     0.00,     0.10,     0.34,     1.32,    //t=0.40
-                                            -1.36,    -0.38,    -0.14,     0.00,     0.14,     0.38,     1.36,    //t=0.70
-                                            -1.40,    -0.42,    -0.18,     0.00,     0.18,     0.42,     1.40};   //t=1.00
-
-
-      std::vector<double> Throttle_commands(Throttle_commands_array, Throttle_commands_array+ sizeof(Throttle_commands_array)/sizeof(double));
-      std::vector<double> Sttering_commands(Sttering_commands_array, Sttering_commands_array+ sizeof(Sttering_commands_array)/sizeof(double));
-      std::vector<double> Linear_vell_values(Linear_vell_values_array, Linear_vell_values_array+ sizeof(Linear_vell_values_array)/sizeof(double));
-      std::vector<double> Angular_vell_values(Angular_vell_values_array, Angular_vell_values_array+ sizeof(Angular_vell_values_array)/sizeof(double));
-
-
-      std::vector< std::vector<double>::iterator > grid_iter_list;
-      grid_iter_list.push_back(Throttle_commands.begin());
-      grid_iter_list.push_back(Sttering_commands.begin());
-
-      // the size of the grid in each dimension
-      array<int,2> grid_sizes;
-      grid_sizes[0] = Throttle_commands.size();
-      grid_sizes[1] = Sttering_commands.size();
-
-      // total number of elements
-      int num_elements = grid_sizes[0] * grid_sizes[1];
-
-      // construct the interpolator. the last two arguments are pointers to the underlying data
-      Linear_vel_interp  =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vell_values.data(), Linear_vell_values.data() + num_elements);
-      Angular_vel_interp =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vell_values.data(), Angular_vell_values.data() + num_elements);
-      }
-
-    public: void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
+    public: void dynamic_Reconfiguration_callback(oshkosh_model::oshkosh_modelConfig &config, uint32_t level)
       {
-          controll_P = config.Wheel_conntrol_P;
-          controll_I = config.Wheel_conntrol_I;
-          controll_D = config.Wheel_conntrol_D;
-
+          control_P = config.Wheel_conntrol_P;
+          control_I = config.Wheel_conntrol_I;
+          control_D = config.Wheel_conntrol_D;
+          Steering_multiplier=config.Steering;
+          damping=config.Damping;
+          power=config.Power;
           command_lN = config.Command_Linear_Noise;
           command_aN = config.Command_Angular_Noise;
       }
@@ -182,7 +127,7 @@ namespace gazebo
     // Called by the world update start event, This function is the event that will be called every update
     public: void OnUpdate(const common::UpdateInfo & /*_info*/)  // we are not using the pointer to the info so its commanted as an option
     {
-
+          // std::cout << "update function started"<<std::endl; 
            // std::cout << "command_timer = " << command_timer.GetElapsed().Float() << std::endl;
 
             // Applying effort to the wheels , brakes if no message income
@@ -195,101 +140,61 @@ namespace gazebo
             if (Angular_command_timer.GetElapsed().Float()> command_MAX_DELAY)
             {
                 // Brakes
-                   Angular_command = 0;
+                   Steering_Request = 0;
             }
-
-              update_ref_vels();
+            // std::cout << "Applying efforts"<<std::endl; 
               apply_efforts();
-
+              // std::cout << "Applied"<<std::endl;
               std_msgs::Bool connection;
               connection.data = true;
               platform_hb_pub_.publish(connection);
     }
-
-
-double command_fillter(double prev_commands_array[], int array_size, double& commmand_sum, int &command_index , double command)
-   {
-        commmand_sum -= prev_commands_array[command_index];
-        commmand_sum += command;
-
-        prev_commands_array[command_index] = command;
-
-        if( ++command_index == array_size)
-            command_index = 0;
-
-        double filtered_command = commmand_sum/array_size;
-
-        return(filtered_command);
-   }
-
-
-    private: void update_ref_vels() // float linear_command, float angular_command)
+    double WheelThrottle=0;
+    private: void wheel_controller(physics::JointPtr wheel_joint, double Throttle)
     {
-        Linear_command_mutex.lock();
-        Angular_command_mutex.lock();
-            array<double,2> args = {Linear_command, Angular_command};
-        Linear_command_mutex.unlock();
-        Angular_command_mutex.unlock();
-
-        //printf("Linear_command = %f,  Angular_command = %f --->  Linear_vel_interp  = %f  \n", args[0], args[1],  Linear_vel_interp->interp(args.begin()) );
-        //printf("Linear_command = %f,  Angular_command = %f --->  Angular_vel_interp = %f \n", args[0], args[1],  Angular_vel_interp->interp(args.begin()) );
-
-        double Linear_nominal_vell = Linear_vel_interp->interp(args.begin());
-        double Angular_nominal_vell = Angular_vel_interp->interp(args.begin());
-
-        double Linear_vell = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index , Linear_nominal_vell);
-        double Angular_vell = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index , Angular_nominal_vell);
-
-        double LinearNoise  = command_lN * (*Linear_Noise_dist)(generator);  //((std::rand() % 100)-50)/50;
-        double AngularNoise = command_aN * (*Angular_Noise_dist)(generator); //((std::rand() % 100)-50)/50;
-
-        Linear_ref_vel  =  (1 + LinearNoise)  * Linear_vell;
-        Angular_ref_vel =  (1 + AngularNoise) * Angular_vell;
-    }
-
-    private: void wheel_controller(physics::JointPtr wheel_joint, double ref_omega)
-    {
+        if(WheelThrottle-Throttle<=0.01||WheelThrottle-Throttle>=-0.01) WheelThrottle=Throttle;
+        else WheelThrottle=0.01*(Throttle-WheelThrottle);
+        
         double wheel_omega = wheel_joint->GetVelocity(0);
-
-        double error = ref_omega - wheel_omega;
-
-        double effort_command = (controll_P * error);
-
-        if(effort_command > WHEEL_EFFORT_LIMIT) effort_command = WHEEL_EFFORT_LIMIT;
-        if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
-
-
-//        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
-//        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
-
-
-#if GAZEBO_MAJOR_VERSION >= 5  
-                wheel_joint->SetVelocity(0,ref_omega);
-#else
-                wheel_joint->SetForce(0,effort_command);
-#endif        
+        double effort_command = power*WheelThrottle - damping*wheel_omega;
+      
+                wheel_joint->SetForce(0,effort_command);       
     }
+    private: void steer_controller(physics::JointPtr steer_joint, double Angle)
+    {
+        // std::cout << " getting angle"<< std::endl;
+        if(steer_joint)
+        {
+          double wheel_angle = steer_joint->GetVelocity(0);
+          double steer_omega = steer_joint->GetVelocity(0);
+          double effort_command = control_P*(0.6*Angle - wheel_angle)-control_D*fabs(steer_omega);
+          steer_joint->SetForce(0,effort_command); 
+        }
+          else
+          std::cout << "Null Exception! \n";
+        // std::cout << "efforting"<< std::endl;
+        // this->jointController->SetJointPosition(steer_joint, Angle*0.61);
 
+    }
 
   private: void apply_efforts()
     {
-
-        //std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
-
-        float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel * WHEELS_BASE/2)*STEERING_FRICTION_COMPENSATION;
-        float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * WHEELS_BASE/2)*STEERING_FRICTION_COMPENSATION;
-
-        //std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
-
-        float rigth_wheels_omega_ref = right_side_vel / (0.5 * WHEEL_DIAMETER);
-        float left_wheels_omega_ref = left_side_vel / (0.5 * WHEEL_DIAMETER);
-
-        //std::cout << " rigth_wheels_omega_ref = " << rigth_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
-
-        wheel_controller(this->front_right_joint, rigth_wheels_omega_ref);
-        wheel_controller(this->back_right_joint , rigth_wheels_omega_ref);
-        wheel_controller(this->front_left_joint , left_wheels_omega_ref);
-        wheel_controller(this->back_left_joint  , left_wheels_omega_ref);
+        float WheelTorque = Linear_command*EnginePower;
+        // std::cout << " Controlling wheels"<< std::endl;
+        wheel_controller(this->left_wheel_1 , WheelTorque);
+        wheel_controller(this->left_wheel_2 , WheelTorque);
+        wheel_controller(this->left_wheel_3 , WheelTorque);
+        wheel_controller(this->left_wheel_4 , WheelTorque);
+        wheel_controller(this->right_wheel_1, WheelTorque);
+        wheel_controller(this->right_wheel_2, WheelTorque);
+        wheel_controller(this->right_wheel_3, WheelTorque);
+        wheel_controller(this->right_wheel_4, WheelTorque);
+        // std::cout << " Controlling Steering"<< std::endl;
+        steer_controller(this->streer_joint_left_2, Steering_Request);
+        steer_controller(this->streer_joint_left_1, Steering_Request);
+        steer_controller(this->streer_joint_right_1, Steering_Request);
+        steer_controller(this->streer_joint_right_2, Steering_Request);
+        // std::cout << " Finished applying efforts"<< std::endl;
     }
 
 
@@ -298,9 +203,9 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
     {
       Angular_command_mutex.lock();
           // Recieving referance steering angle  
-          if(msg->data > 1)       { Angular_command =  1;          }
-          else if(msg->data < -1) { Angular_command = -1;          }
-          else                    { Angular_command = msg->data;   }
+          if(msg->data > 1)       { Steering_Request =  1;          }
+          else if(msg->data < -1) { Steering_Request = -1;          }
+          else                    { Steering_Request = msg->data;   }
 
         // Reseting timer every time LLC publishes message
 #if GAZEBO_MAJOR_VERSION >= 5 
@@ -338,12 +243,19 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
      private: physics::ModelPtr model;
 
       // Defining private Pointer to joints
-     private: physics::JointPtr steering_joint;
-     private: physics::JointPtr back_left_joint;
-     private: physics::JointPtr back_right_joint;
-     private: physics::JointPtr front_left_joint;
-     private: physics::JointPtr front_right_joint;
 
+     private: physics::JointPtr right_wheel_1;
+     private: physics::JointPtr right_wheel_2;
+     private: physics::JointPtr right_wheel_3;
+     private: physics::JointPtr right_wheel_4;
+     private: physics::JointPtr left_wheel_1;
+     private: physics::JointPtr left_wheel_2;
+     private: physics::JointPtr left_wheel_3;
+     private: physics::JointPtr left_wheel_4;
+     private: physics::JointPtr streer_joint_left_1;
+     private: physics::JointPtr streer_joint_left_2;
+     private: physics::JointPtr streer_joint_right_1;
+     private: physics::JointPtr streer_joint_right_2;
 
 
       // Defining private Pointer to the update event connection
@@ -371,7 +283,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
      private: boost::mutex Linear_command_mutex;
 
      private: float Linear_command;
-     private: float Angular_command;
+     private: float Steering_Request;
      private: double Linear_ref_vel;
      private: double Angular_ref_vel;
 
@@ -383,21 +295,17 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
      private: int Angular_command_index;
 
 
-     private: dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
-     private: double controll_P, controll_I ,controll_D;		// PID constants
+     private: dynamic_reconfigure::Server<oshkosh_model::oshkosh_modelConfig> *model_reconfiguration_server;
+     private: double control_P, control_I ,control_D,Steering_multiplier,damping,power;		// PID constants
      private: double command_lN, command_aN;   // command noise factors
 
-     std::default_random_engine generator;
-     std::normal_distribution<double> * Linear_Noise_dist;
-     std::normal_distribution<double> * Angular_Noise_dist;
-
-
-     InterpMultilinear<2, double> * Linear_vel_interp;
-     InterpMultilinear<2, double> * Angular_vel_interp;
+    //  std::default_random_engine generator;
+    //  std::normal_distribution<double> * Linear_Noise_dist;
+    //  std::normal_distribution<double> * Angular_Noise_dist;
 
   };
 
   // Tell Gazebo about this plugin, so that Gazebo can call Load on this plugin.
   GZ_REGISTER_MODEL_PLUGIN(oshkoshDrivingPlugin)
 }
-#endif
+
