@@ -150,10 +150,10 @@ namespace gazebo
               platform_hb_pub_.publish(connection);
     }
     double WheelThrottle=0;
+    double DesiredAngle=0;
     private: void wheel_controller(physics::JointPtr wheel_joint, double Throttle)
-    {
-        if(WheelThrottle-Throttle<=0.01||WheelThrottle-Throttle>=-0.01) WheelThrottle=Throttle;
-        else WheelThrottle=0.01*(Throttle-WheelThrottle);
+    {    
+        WheelThrottle=WheelThrottle+0.01*(Throttle-WheelThrottle);
         
         double wheel_omega = wheel_joint->GetVelocity(0);
         double effort_command = power*WheelThrottle - damping*wheel_omega;
@@ -165,10 +165,12 @@ namespace gazebo
         // std::cout << " getting angle"<< std::endl;
         if(steer_joint)
         {
-          double wheel_angle = steer_joint->GetVelocity(0);
+          DesiredAngle=DesiredAngle+Steering_multiplier*(Angle-DesiredAngle);
+          double wheel_angle = steer_joint->GetAngle(0).Radian();
           double steer_omega = steer_joint->GetVelocity(0);
-          double effort_command = control_P*(0.6*Angle - wheel_angle)-control_D*fabs(steer_omega);
+          double effort_command = control_P*(0.6*DesiredAngle - wheel_angle)-control_D*fabs(steer_omega);
           steer_joint->SetForce(0,effort_command); 
+           std::cout << wheel_angle<< std::endl;
         }
           else
           std::cout << "Null Exception! \n";
