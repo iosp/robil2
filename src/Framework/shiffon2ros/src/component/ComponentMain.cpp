@@ -226,3 +226,12 @@ void *ComponentMain::callHeartbeat(void * pParam)
 	myHandle->heartbeat();
 
 }
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+
+bool ComponentMain::isClosed() {
+	return _events->is_closed();
+}
