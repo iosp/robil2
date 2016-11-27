@@ -218,7 +218,7 @@ void HeightMap::displayConsole()
     }
 }
 int showX = -1, showY = -1;
-
+int test_x = -1, test_y = -1;
 Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
 {
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
@@ -232,6 +232,7 @@ Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
             {
                 cout << "x: " << x << " y: " << y << "\t" << h << endl;
                 showX = showY = -1;
+
             }
             if(h <= _min)
             {
@@ -273,8 +274,8 @@ void onMouseClick2(int event, int x, int y, int flags, void *param)
     if (event == CV_EVENT_LBUTTONDOWN)
     {
 
-        showX = y;
-        showY = x;
+        test_x = showX = y;
+        test_y = showY = x;
     }
 }
 
@@ -429,23 +430,54 @@ double HeightMap::calc_height(int x, int y, std::vector<int> conv)
     if (_at(x, y) == HEIGHT_UNKNOWN)
         return HEIGHT_UNKNOWN;
     double height = 0;
-    int counter = 0;
+    double counter = 0;
     int radius = (int)sqrt(conv.size());
-    for (int i = x - radius; i <= x + radius; i++)
-        for (int j = y - radius; j <= y + radius; j++)
+    int k = 0;
+    for (int i = x - radius / 2; i <= x + radius / 2; i++)
+        for (int j = y - radius / 2; j <= y + radius / 2; j++)
         {
-            double mul = 1;
+            double mul = conv.at(k++);
             if (i < 0 || i > _width || j < 0 || j > _height || _at(i, j) == HEIGHT_UNKNOWN)
                 continue;
-            if (i == x && j == y)
-                mul = 2;
             counter += mul;
             height += mul * _at(i, j);
         }
+    if (test_y == y && test_x == x)
+    {
+        cout << counter << ", " << height << " = " << height / counter << endl;
+        test_x = -1, test_y = -1;
+    }
+//    if (_at(x, y) > 0.4)
+//        cout << counter << ", " << height << " = " << height / counter << endl;
     height /= (1.0 * counter);
+
     return height;
 }
 
+double HeightMap::calc_slope(int x, int y, std::vector<int> conv)
+{
+    if (_at(x, y) == HEIGHT_UNKNOWN)
+        return HEIGHT_UNKNOWN;
+    double height = 0;
+    double counter = 0;
+    int radius = (int)sqrt(conv.size());
+    int k = 0;
+    for (int i = x - radius; i <= x + radius; i++)
+        for (int j = y - radius; j <= y + radius; j++)
+        {
+            double mul = conv.at(k++);
+            if (i < 0 || i > _width || j < 0 || j > _height || _at(i, j) == HEIGHT_UNKNOWN)
+                continue;
+            counter += mul;
+            height += mul * _at(i, j);
+        }
+    if (test_y == y && test_x == x)
+    {
+        cout << counter << ", " << height << " = " << height / counter << endl;
+    }
+    height /= counter;
+    return height;
+}
 void HeightMap::calculateTypes()//Vec3D position, Rotation myRot)
 {
     int mul;

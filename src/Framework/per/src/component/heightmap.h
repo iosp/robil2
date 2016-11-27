@@ -69,7 +69,7 @@ class HeightMap
 	void    setRelativeFeatureAt(int x, int y, int feature);
         int     getRelativeFeatureAt(int x, int y);
     double calc_height(int, int, std::vector<int>);
-
+    double calc_slope(int, int, std::vector<int>);
 	/**
 	 * This function attempts to (for now) classify each map cell as
 	 * passable, obstacle or unknown. Expected to work at lightning speed.
