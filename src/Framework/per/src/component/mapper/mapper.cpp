@@ -45,25 +45,28 @@ void Mapper::MainLoop(per::configConfig *p)
     height_map = new HeightMap(500,500, p);
     per::configConfig *dynamic_param = p;
     int i = 0;
+    ros::Duration rate(0.1);
     while(ros::ok())
     {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(100)); //10hz cycle
+
+//        boost::this_thread::sleep(boost::posix_time::milliseconds(100)); //10hz cycle
+        rate.sleep();
         int check; ros::param::param("/LOC/Ready",check,0); if(!check) continue;
         if(++i < 30) continue;
         //printf("MAPPER\n");
         lock.lock();
 
-        height_map->calculateTypes(position, myRot);
+        height_map->calculateTypes();//position, myRot);
 
-        if(camL && camR)
-        {
-            camL = camR = false;
-            Quaternion& q = myQuat;
-            Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
-            Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
-            Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
-            //ProjectDepthImage(height_map, stereo, right, front, up, position.add(up.multiply(1.6)), _lanes);
-        }
+//        if(camL && camR)
+//        {
+//            camL = camR = false;
+//            Quaternion& q = myQuat;
+//            Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
+//            Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
+//            Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
+//            //ProjectDepthImage(height_map, stereo, right, front, up, position.add(up.multiply(1.6)), _lanes);
+//        }
 
         publishMap();
         publishMiniMap();
