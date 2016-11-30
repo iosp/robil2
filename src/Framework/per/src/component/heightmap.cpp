@@ -218,7 +218,7 @@ void HeightMap::displayConsole()
     }
 }
 int showX = -1, showY = -1;
-
+int test_x = -1, test_y = -1;
 Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
 {
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
@@ -232,6 +232,7 @@ Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
             {
                 cout << "x: " << x << " y: " << y << "\t" << h << endl;
                 showX = showY = -1;
+
             }
             if(h <= _min)
             {
@@ -273,8 +274,8 @@ void onMouseClick2(int event, int x, int y, int flags, void *param)
     if (event == CV_EVENT_LBUTTONDOWN)
     {
 
-        showX = y;
-        showY = x;
+        test_x = showX = y;
+        test_y = showY = x;
     }
 }
 
@@ -376,94 +377,137 @@ void Morphology_Operations( int, void* )
 {
 }
 
-double HeightMap::calc_height(int x, int y, int radius)
+std::vector<int> getConvolution(string str, int size)
+{
+    std::vector<int> vect, conv;
+
+    std::stringstream ss(str);
+
+    int i;
+
+    while (ss >> i)
+    {
+        vect.push_back(i);
+
+        if (ss.peek() == ',')
+            ss.ignore();
+    }
+    if (!size%2)
+        size--;
+    if (vect.size() != size)
+        vect.assign(size, 1);
+    conv.assign(size*size, 1);
+    int mid = vect.size() / 2;
+    for (int i = 0; i < vect.size(); i++)
+    {
+        for (int j = 0; j < vect.size(); j++)
+        {
+            if (i > mid)
+            {
+                if (i > j && j > vect.size() - i - 1)
+                    conv.at(i * vect.size() + j) = vect.at(i);
+                else
+                    conv.at(i * vect.size() + j) = vect.at(j);
+            }
+            else if (i < mid)
+            {
+                if (i < j && j < vect.size() - i - 1)
+                    conv.at(i * vect.size() + j) = vect.at(i);
+                else
+                    conv.at(i * vect.size() + j) = vect.at(j);
+            }
+            else
+                conv.at(i * vect.size() + j) = vect.at(j);
+        }
+
+    }
+
+    return conv;
+}
+
+double HeightMap::calc_height(int x, int y, std::vector<int> conv)
 {
     if (_at(x, y) == HEIGHT_UNKNOWN)
         return HEIGHT_UNKNOWN;
     double height = 0;
-    int counter = 0;
-    for (int i = x - radius; i <= x + radius; i++)
-        for (int j = y - radius; j <= y + radius; j++)
+    double counter = 0;
+    int radius = (int)sqrt(conv.size());
+    int k = 0;
+    for (int i = x - radius / 2; i <= x + radius / 2; i++)
+        for (int j = y - radius / 2; j <= y + radius / 2; j++)
         {
+            double mul = conv.at(k++);
             if (i < 0 || i > _width || j < 0 || j > _height || _at(i, j) == HEIGHT_UNKNOWN)
-            {
-                counter++;
                 continue;
-            }
-            height += _at(i, j);
+            counter += mul;
+            height += mul * _at(i, j);
         }
-    height /= (pow( 2 * radius + 1, 2) - counter);
+    if (test_y == y && test_x == x)
+    {
+        cout << counter << ", " << height << " = " << height / counter << endl;
+        test_x = -1, test_y = -1;
+    }
+//    if (_at(x, y) > 0.4)
+//        cout << counter << ", " << height << " = " << height / counter << endl;
+    height /= (1.0 * counter);
+
     return height;
 }
 
-void HeightMap::calculateTypes(Vec3D position, Rotation myRot)
+double HeightMap::calc_slope(int x, int y, std::vector<int> conv)
+{
+    if (_at(x, y) == HEIGHT_UNKNOWN)
+        return HEIGHT_UNKNOWN;
+    double height = 0;
+    double counter = 0;
+    int radius = (int)sqrt(conv.size());
+    int k = 0;
+    for (int i = x - radius; i <= x + radius; i++)
+        for (int j = y - radius; j <= y + radius; j++)
+        {
+            double mul = conv.at(k++);
+            if (i < 0 || i > _width || j < 0 || j > _height || _at(i, j) == HEIGHT_UNKNOWN)
+                continue;
+            counter += mul;
+            height += mul * _at(i, j);
+        }
+    if (test_y == y && test_x == x)
+    {
+        cout << counter << ", " << height << " = " << height / counter << endl;
+    }
+    height /= counter;
+    return height;
+}
+void HeightMap::calculateTypes()//Vec3D position, Rotation myRot)
 {
     int mul;
+    std::vector<int> conv = getConvolution(_dynamic->convolution_type, _dynamic->convolution_size);
+    int conv_x[] = {-1, 0, 1, -2, 0, 2, -1, 0, 1};
+    std::vector<int> slope_conv_x; slope_conv_x.assign(conv_x, conv_x+9);
+    int conv_y[] = {-1, -2, -1, 0, 0, 0, 1, 2, 1};
+    std::vector<int> slope_conv_y; slope_conv_y.assign(conv_y, conv_y+9);
     const int road_thresh = 5;
     for(int i = 1; i < _width-1; i++)
+    {
         for(int j = 1; j < _height-1; j++)
         {
-            double height = calc_height(i,j, _dynamic->convolution_size);
+            double height = calc_height(i,j,conv);
             if (height > _dynamic->obstacle_threshold)
-                _types[j*_width+i] = TYPE_OBSTACLE;
+            {
+                double gx = calc_height(i, j, slope_conv_x);
+                double gy = calc_height(i, j, slope_conv_y);
+                if (abs(gx) > _dynamic->slope_threshold || abs(gy) > _dynamic->slope_threshold)
+                    _types[j*_width+i] = TYPE_OBSTACLE;
+                else
+                    _types[j*_width+i] = TYPE_CLEAR;
+            }
             else if(height == HEIGHT_UNKNOWN)
                 _types[j*_width+i] = TYPE_UNSCANNED;
             else
                 _types[j*_width+i] = TYPE_CLEAR;
-            //if(_types[j*_width+i] != TYPE_UNSCANNED) continue;
-//            double x = (_width/2 - position.x * 5 + _refPoint.x);
-//            double y = (_height/2 - position.y * 5 + _refPoint.y);
-//            double dist = sqrt((x-i) * (x-i) + (y-j) * (y-j));
-//            if (dist < 30)
-//                mul = 1;
-//            else
-//                mul = 2;
-//            double height = _at(i, j);
-//            double heightx1 = _at(i-1, j);
-//            double heightx2 = _at(i+1, j);
-//            double heighty1 = _at(i, j-1);
-//            double heighty2 = _at(i, j+1);
-//            if(height == HEIGHT_UNKNOWN)
-//            {
-//                if(heightx1 != HEIGHT_UNKNOWN && heightx2 != HEIGHT_UNKNOWN)
-//                    height = _at(i,j) = (heightx1 + heightx2)/2;
-//                else if(heighty1 != HEIGHT_UNKNOWN && heighty2 != HEIGHT_UNKNOWN)
-//                    height = _at(i,j) = (heighty1 + heighty2)/2;
-//                else
-//                    continue;
-//            }
-
-
-//            //if (abs(height - position.z) > 0.8) _types[j*_width+i] = TYPE_OBSTACLE;
-//            if(heighty2 != HEIGHT_UNKNOWN && heighty1 != HEIGHT_UNKNOWN && heightx2 != HEIGHT_UNKNOWN && heightx1 != HEIGHT_UNKNOWN)
-//            {
-//                if (abs(heighty2-heighty1)/2 > _dynamic->obstacle_threshold * mul || abs(heightx2-heightx1)/2 > _dynamic->slope_threshold * mul)
-//                    _types[j*_width+i] = TYPE_OBSTACLE;
-//                else if ((height - position.z) > _dynamic->obstacle_threshold * mul && (height - position.z) < 1.1)
-//                    _types[j*_width+i] = TYPE_OBSTACLE;
-//                else _types[j*_width+i] = TYPE_CLEAR;
-//            }
-//            else if ((height - position.z) > _dynamic->obstacle_threshold * mul && (height - position.z) < 1.1)
-//                _types[j*_width+i] = TYPE_OBSTACLE;
-//            else _types[j*_width+i] = TYPE_UNSCANNED;
-//            //_types[j*_width+i] = TYPE_CLEAR;
-
-//            if(	i - road_thresh >= 0 &&
-//                    j - road_thresh >= 0 &&
-//                    i + road_thresh < _width-1 &&
-//                    j + road_thresh < _height-1)
-//            {
-//                bool isClear = true;
-//                for(int x = i - road_thresh; x < i + road_thresh; x++)
-//                    for(int y = j - road_thresh; y < j + road_thresh; y++)
-//                    {
-//                        if(_types[y*_width+x] != TYPE_CLEAR) isClear = false;
-//                    }
-//                if(isClear) _features[(j*_width+i)] = FEATURE_ROAD;
-//                else _features[(j*_width+i)] = FEATURE_UNKNOWN;
-//            }
 
         }
+    }
 }
 
 HeightMap HeightMap::deriveMap(int px, int py, Rotation r)

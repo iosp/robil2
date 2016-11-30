@@ -9,7 +9,7 @@
 #define COMPONENTMAIN_H_
 #include "ros/ros.h"
 #include <std_msgs/String.h>
-#include <ParameterTypes.h>
+//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <time.h>
 #include <signal.h>
@@ -22,6 +22,24 @@
 
 #include <iostream>     // std::cout
 #include <sstream>
+
+#include <sensor_msgs/JointState.h>
+#include <std_msgs/Float64.h>
+#include <std_msgs/Bool.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+
+#ifndef COMPONENT
+#define COMPONENT context.parameters<Params>().comp
+#endif
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
+
 
 typedef enum { State_Off = 0, State_Init, State_Standby, State_Wait_Response, State_Ready } CS_STATE;
 /***********************************
@@ -49,9 +67,9 @@ public:
 	void workerFunc();
 
 	//Those methods are called each time the relevant topic has been caught
-	void handleEffortsTh(const config::LLI::sub::EffortsTh& msg);
-	void handleEffortsSt(const config::LLI::sub::EffortsSt& msg);
-	void handleEffortsJn(const config::LLI::sub::EffortsJn& msg);
+	void handleEffortsTh(const std_msgs::Float64& msg);
+	void handleEffortsSt(const std_msgs::Float64& msg);
+	void handleEffortsJn(const sensor_msgs::JointState& msg);
 
 
 	void publishTransform(const tf::Transform& _tf,  std::string srcFrame, std::string distFrame);

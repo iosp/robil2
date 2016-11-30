@@ -42,32 +42,32 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleGlobalPath(const config::PP::sub::GlobalPath& msg)
+void ComponentMain::handleGlobalPath(const robil_msgs::Path& msg)
 {
 	_move_base -> on_path(msg);
 }
 	
 
-void ComponentMain::handleBladePosition(const config::PP::sub::BladePosition& msg)
+void ComponentMain::handleBladePosition(const sensor_msgs::JointState& msg)
 {
 	//std::cout<< "PP say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleMap(const config::PP::sub::Map& msg)
+void ComponentMain::handleMap(const robil_msgs::Map& msg)
 {
 	_move_base -> on_map(msg);
 }
 	
 
-void ComponentMain::handleLocation(const config::PP::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 	_move_base -> on_position_update(msg);
 
 }
 	
 
-void ComponentMain::publishLocalPath(config::PP::pub::LocalPath& msg)
+void ComponentMain::publishLocalPath(robil_msgs::Path& msg)
 {
 	_pub_LocalPath.publish(msg);
 }

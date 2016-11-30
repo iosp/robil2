@@ -162,7 +162,7 @@ void ComponentMain::workerFunc()
 
 }
 
-void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
+void ComponentMain::handleEffortsTh(const std_msgs::Float64& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
 	if (!is_ready){
@@ -176,7 +176,7 @@ void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
 }
 	
 
-void ComponentMain::handleEffortsSt(const config::LLI::sub::EffortsSt& msg)
+void ComponentMain::handleEffortsSt(const std_msgs::Float64& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
 	if (!is_ready){
@@ -189,7 +189,7 @@ void ComponentMain::handleEffortsSt(const config::LLI::sub::EffortsSt& msg)
 }
 	
 
-void ComponentMain::handleEffortsJn(const config::LLI::sub::EffortsJn& msg)
+void ComponentMain::handleEffortsJn(const sensor_msgs::JointState& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
 
