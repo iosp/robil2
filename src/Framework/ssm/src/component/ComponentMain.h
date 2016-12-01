@@ -8,7 +8,6 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
-#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <ros/ros.h>
 #include <string>       // std::string
@@ -16,6 +15,22 @@
 #include <sstream>
 
 #include <boost/thread.hpp>
+
+
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/TwistStamped.h>
+#include <sensor_msgs/JointState.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
+
 
 class ComponentMain {
 	bool _inited;
@@ -31,9 +46,9 @@ class ComponentMain {
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	void handleBladePosition(const config::SSM::sub::BladePosition& msg);
-	void handleLocation(const config::SSM::sub::Location& msg);
-	void handlePerVelocity(const config::SSM::sub::PerVelocity& msg);
+	void handleBladePosition(const sensor_msgs::JointState& msg);
+	void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
+	void handlePerVelocity(const geometry_msgs::TwistStamped& msg);
 
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);

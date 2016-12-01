@@ -8,17 +8,19 @@
 #ifndef TYPES_H_
 #define TYPES_H_
 
-#include <ParameterTypes.h>
+#include <robil_msgs/Path.h>
+#include <robil_msgs/AssignNavTask.h>
 
-config::SMME::pub::GlobalPath
+
+robil_msgs::Path
 	extract_path(
-			const config::SMME::sub::AssignNavTask& task
+			const robil_msgs::AssignNavTask& task
 	)
 {
 	/** NOTE:
 	 * Twist limitation and time stamps are not used yet.
 	 */
-	config::SMME::pub::GlobalPath path;
+	robil_msgs::Path path;
 	path.id = task.task_id;
 	path.waypoints.poses.resize(task.waypoints.size());
 	path.waypoints.header = task.header;

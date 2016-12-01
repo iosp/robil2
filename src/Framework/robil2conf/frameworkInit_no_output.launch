@@ -1,7 +1,7 @@
 <launch>
 	
 	<!-- == GENERAL ===== -->
-	<include file="$(find robil2conf)/parametersLoad.launch" />
+	<!--include file="$(find robil2conf)/parametersLoad.launch" /-->
 	<!-- ================ -->
 
 	<!-- == MONITORING == -->

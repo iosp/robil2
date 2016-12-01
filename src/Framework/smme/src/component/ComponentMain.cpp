@@ -16,9 +16,9 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-//#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
+
 std::map<std::string, boost::shared_ptr<MissionMachine> > machines;
 namespace {
 
@@ -87,7 +87,7 @@ void ComponentMain::handleAssignManTask(const robil_msgs::AssignManipulatorTask&
 
 void ComponentMain::handleAssignMission(const robil_msgs::AssignMission& msg)
 {
-	config::SMME::pub::MissionAcceptance acceptance =
+	robil_msgs::MissionAcceptance acceptance =
 			_mission_manager->assign(msg);
 	if(acceptance.status==0){
 		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" accepted");
