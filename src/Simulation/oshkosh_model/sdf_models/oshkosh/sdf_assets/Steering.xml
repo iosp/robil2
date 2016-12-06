@@ -12,7 +12,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>1.1</mass>
+    <mass>20</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 3.14159265359</pose>
@@ -28,7 +28,7 @@
   <parent>suspension_left_1</parent>
   <child>steering_left_1</child>
   <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
-  <axis>
+  <axis> <dynamics><damping>1</damping></dynamics>
     <limit>
       <lower>-0.61</lower>
       <upper>0.61</upper>
@@ -47,7 +47,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>1.1</mass>
+    <mass>20</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 3.14159265359</pose>
@@ -63,7 +63,7 @@
   <parent>suspension_left_2</parent>
   <child>steering_left_2</child>
   <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
-  <axis>
+  <axis> <dynamics><damping>1</damping></dynamics>
     <limit>
       <lower>-0.61</lower>
       <upper>0.61</upper>
@@ -82,7 +82,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>1.1</mass>
+    <mass>20</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 0</pose>
@@ -98,7 +98,7 @@
   <parent>suspension_right_1</parent>
   <child>steering_right_1</child>
   <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
-  <axis>
+  <axis> <dynamics><damping>1</damping></dynamics>
     <limit>
       <lower>-0.61</lower>
       <upper>0.61</upper>
@@ -117,7 +117,7 @@
       <iyz>0.0</iyz>
       <izz>0.01</izz>
     </inertia>
-    <mass>1.1</mass>
+    <mass>20</mass>
   </inertial>
   <visual name='visual'>
     <pose>0 0 0 0 0 0</pose>
@@ -133,7 +133,7 @@
   <parent>suspension_right_2</parent>
   <child>steering_right_2</child>
   <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
-  <axis>
+  <axis> <dynamics><damping>1</damping></dynamics>
     <limit>
       <lower>-0.61</lower>
       <upper>0.61</upper>

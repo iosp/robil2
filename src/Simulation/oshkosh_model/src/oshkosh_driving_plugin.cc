@@ -87,12 +87,13 @@ namespace gazebo
       // Starting Timers
       Linear_command_timer.Start();
       Angular_command_timer.Start();
-
+      Breaking_command_timer.Start();
       this->Ros_nh = new ros::NodeHandle("oshkoshDrivingPlugin_node");
 
       // Subscribe to the topic, and register a callback
-      Steering_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Steering" , 1000, &oshkoshDrivingPlugin::On_Angular_command, this);
-      Velocity_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Throttle" , 1000, &oshkoshDrivingPlugin::On_Linear_command, this);
+      Steering_rate_sub = this->Ros_nh->subscribe("/Oshkosh/Driving/Steering" , 100, &oshkoshDrivingPlugin::On_Angular_command, this);
+      Velocity_rate_sub = this->Ros_nh->subscribe("/Oshkosh/Driving/Throttle" , 100, &oshkoshDrivingPlugin::On_Linear_command, this);
+            Breaking_sub = this->Ros_nh->subscribe("/Oshkosh/Driving/Break" , 100, &oshkoshDrivingPlugin::On_Break_command, this);
       
       platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform" , 100);
 
@@ -114,9 +115,9 @@ namespace gazebo
 
     public: void dynamic_Reconfiguration_callback(oshkosh_model::oshkosh_modelConfig &config, uint32_t level)
       {
-          control_P = config.Wheel_conntrol_P;
-          control_I = config.Wheel_conntrol_I;
-          control_D = config.Wheel_conntrol_D;
+          control_P = config.Steer_control_P;
+          control_I = config.Steer_control_I;
+          control_D = config.Steer_control_D;
           Steering_multiplier=config.Steering;
           damping=config.Damping;
           power=config.Power;
@@ -136,14 +137,21 @@ namespace gazebo
                 // Brakes
                    Linear_command = 0;
             }
-
+            if (Breaking_command_timer.GetElapsed().Float()> command_MAX_DELAY)
+            {
+                // Brakes
+                   Break = 1;
+            }
             if (Angular_command_timer.GetElapsed().Float()> command_MAX_DELAY)
             {
                 // Brakes
                    Steering_Request = 0;
             }
             // std::cout << "Applying efforts"<<std::endl; 
+            
               apply_efforts();
+              breaker(Break);
+
               // std::cout << "Applied"<<std::endl;
               std_msgs::Bool connection;
               connection.data = true;
@@ -153,7 +161,7 @@ namespace gazebo
     double DesiredAngle=0;
     private: void wheel_controller(physics::JointPtr wheel_joint, double Throttle)
     {    
-        WheelThrottle=WheelThrottle+0.01*(Throttle-WheelThrottle);
+        WheelThrottle=WheelThrottle+0.001*(Throttle-WheelThrottle);
         
         double wheel_omega = wheel_joint->GetVelocity(0);
         double effort_command = power*WheelThrottle - damping*wheel_omega;
@@ -168,9 +176,9 @@ namespace gazebo
           DesiredAngle=DesiredAngle+Steering_multiplier*(Angle-DesiredAngle);
           double wheel_angle = steer_joint->GetAngle(0).Radian();
           double steer_omega = steer_joint->GetVelocity(0);
-          double effort_command = control_P*(0.6*DesiredAngle - wheel_angle)-control_D*fabs(steer_omega);
+          double effort_command = control_P*(0.6*DesiredAngle - wheel_angle)-control_D*(steer_omega);
           steer_joint->SetForce(0,effort_command); 
-           std::cout << wheel_angle<< std::endl;
+          //  std::cout << wheel_angle<< std::endl;
         }
           else
           std::cout << "Null Exception! \n";
@@ -179,16 +187,18 @@ namespace gazebo
 
     }
 
+
+
   private: void apply_efforts()
     {
         float WheelTorque = Linear_command*EnginePower;
         // std::cout << " Controlling wheels"<< std::endl;
-        wheel_controller(this->left_wheel_1 , WheelTorque);
-        wheel_controller(this->left_wheel_2 , WheelTorque);
+        // wheel_controller(this->left_wheel_1 , WheelTorque);
+        // wheel_controller(this->left_wheel_2 , WheelTorque);
         wheel_controller(this->left_wheel_3 , WheelTorque);
         wheel_controller(this->left_wheel_4 , WheelTorque);
-        wheel_controller(this->right_wheel_1, WheelTorque);
-        wheel_controller(this->right_wheel_2, WheelTorque);
+        // wheel_controller(this->right_wheel_1, WheelTorque);
+        // wheel_controller(this->right_wheel_2, WheelTorque);
         wheel_controller(this->right_wheel_3, WheelTorque);
         wheel_controller(this->right_wheel_4, WheelTorque);
         // std::cout << " Controlling Steering"<< std::endl;
@@ -198,8 +208,48 @@ namespace gazebo
         steer_controller(this->streer_joint_right_2, Steering_Request);
         // std::cout << " Finished applying efforts"<< std::endl;
     }
+    private: void breaker(int breaking)
+    {
+      
+        // std::cout << " getting angle"<< std::endl;
+        if(breaking>=0.09&&!Breaks)
+        {
+          TempDamping=damping;
+          damping=10000*Break*Break;
+          Breaks=true;
+          // std::cout << "Break on "<<damping<<std::endl; 
+        }
+          else if(breaking==0&&Breaks)
+          {
+            damping=TempDamping;
+            Breaks=false;
+            // std::cout << "Breaks off "<<damping<<std::endl; 
+          }
+          if(breaking>=0.09&&Breaks) damping=1000*Break*Break;
+         
+        // std::cout << "efforting"<< std::endl;
+        // this->jointController->SetJointPosition(steer_joint, Angle*0.61);
+
+    }
+
+    private: void On_Break_command(const std_msgs::Float64ConstPtr &msg)
+    {
+     Breaking_command_mutex.lock();
+          // Recieving referance velocity
+          if(msg->data >= 1) Break = 1;
+           else if(msg->data >= 0.09) Break = msg->data;
+          else                     Break = 0;
+          
 
 
+        // Reseting timer every message
+#if GAZEBO_MAJOR_VERSION >= 5
+           Breaking_command_timer.Reset();
+#endif
+           Breaking_command_timer.Start();
+
+      Breaking_command_mutex.unlock();
+    }
     // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
     private: void On_Angular_command(const std_msgs::Float64ConstPtr &msg)
     {
@@ -223,6 +273,7 @@ namespace gazebo
     // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
     private: void On_Linear_command(const std_msgs::Float64ConstPtr &msg)
     {
+      
       Linear_command_mutex.lock();
           // Recieving referance velocity
           if(msg->data > 1)       { Linear_command =  1;          }
@@ -237,6 +288,8 @@ namespace gazebo
 
       Linear_command_mutex.unlock();
     }
+
+
 
 
      private: float gazebo_ver;
@@ -269,7 +322,7 @@ namespace gazebo
      // Defining private Ros Subscribers
      private: ros::Subscriber Steering_rate_sub;
      private: ros::Subscriber Velocity_rate_sub;
-
+     private: ros::Subscriber Breaking_sub;
      // Defining private Ros Publishers
      ros::Publisher platform_hb_pub_;
 
@@ -277,17 +330,20 @@ namespace gazebo
      // Defining private Timers
      private: common::Timer Linear_command_timer;
      private: common::Timer Angular_command_timer;
-
+     private: common::Timer Breaking_command_timer;
 
 
      // Defining private Mutex
      private: boost::mutex Angular_command_mutex;
      private: boost::mutex Linear_command_mutex;
-
+     private: boost::mutex Breaking_command_mutex;
      private: float Linear_command;
      private: float Steering_Request;
+     private: int Break=1;
      private: double Linear_ref_vel;
      private: double Angular_ref_vel;
+
+     private: bool Breaks=false;
 
      private: double Linear_command_array[LINEAR_COMMAND_FILTER_ARRY_SIZE];
      private: double Angular_command_array[ANGULAR_COMMAND_FILTER_ARRY_SIZE];
@@ -298,7 +354,7 @@ namespace gazebo
 
 
      private: dynamic_reconfigure::Server<oshkosh_model::oshkosh_modelConfig> *model_reconfiguration_server;
-     private: double control_P, control_I ,control_D,Steering_multiplier,damping,power;		// PID constants
+     private: double control_P, control_I ,control_D,Steering_multiplier,damping,power, TempDamping;		// PID constants
      private: double command_lN, command_aN;   // command noise factors
 
     //  std::default_random_engine generator;

@@ -7,8 +7,8 @@
 			<gravity>1</gravity>
 			<self_collide>1</self_collide>
 			<inertial>
-				<pose>-1.00 0.00 0.4 0 0 0</pose>
-				<mass>1000</mass>
+				<pose>-1.00 0.00 -0.4 0 0 0</pose>
+				<mass>2000</mass>
 				<inertia>
 					<ixx>3000</ixx>
 					<ixy>0.00</ixy>
