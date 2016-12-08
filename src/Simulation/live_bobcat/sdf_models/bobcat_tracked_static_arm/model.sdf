@@ -1009,6 +1009,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
       <dynamics/>
       </axis>
     </joint>    
@@ -1024,14 +1028,18 @@
       <child>IBEO::link</child>
       <parent>body</parent>
       <axis>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
         <xyz>0 1 0</xyz>
       <dynamics/>
       </axis>
     </joint>
 
 
-<!-- CAM Sensors --> <!---->
-    <include>
+ <!--CAM Sensors  <!---->
+    <!--<include>
       <uri>model://FLEA3_L</uri>
       <pose>-0.3 0.25 2.02 0 0 0</pose>
       <name>left_flea3</name>
@@ -1040,6 +1048,10 @@
       <child>left_flea3::camera_link</child>
       <parent>body</parent>
       <axis>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
         <xyz>0 1 0</xyz>
       <dynamics/>
       </axis>
@@ -1054,10 +1066,14 @@
       <child>right_flea3::camera_link</child>
       <parent>body</parent>
       <axis>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
         <xyz>0 1 0</xyz>
       <dynamics/>
       </axis>
-    </joint>
+    </joint>-->
 
 
 

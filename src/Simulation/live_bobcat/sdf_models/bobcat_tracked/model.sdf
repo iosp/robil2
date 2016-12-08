@@ -1201,6 +1201,10 @@
       <child>IPON::link</child>
       <parent>body</parent>
       <axis>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
         <xyz>0 1 0</xyz>
       <dynamics/>
       </axis>
@@ -1218,6 +1222,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
       <dynamics/>
       </axis>
     </joint>
@@ -1234,6 +1242,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
       <dynamics/>
       </axis>
     </joint>
@@ -1248,6 +1260,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
       <dynamics/>
       </axis>
     </joint>

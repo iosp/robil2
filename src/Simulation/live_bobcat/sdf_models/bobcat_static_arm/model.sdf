@@ -652,8 +652,10 @@
       <axis>
         <xyz>0 1 0</xyz>
         
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
+        </limit>
         
         <dynamics/>
       </axis>
@@ -672,8 +674,10 @@
       <axis>
         <xyz>0 1 0</xyz>                                                                                                                                                                                        
         
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
+        </limit>
         
         <dynamics/>
       </axis>
@@ -692,8 +696,10 @@
       <axis>
         <xyz>0 1 0</xyz>
         
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
+        </limit>
         
         <dynamics/>
       </axis>
@@ -710,8 +716,10 @@
       <axis>
         <xyz>0 1 0</xyz>
         
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
+        </limit>
         
         <dynamics/>
       </axis>
