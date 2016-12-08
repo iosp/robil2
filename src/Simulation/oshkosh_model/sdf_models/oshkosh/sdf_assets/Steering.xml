@@ -2,7 +2,7 @@
 <!-------------------------->
 <!--steering setup-->
 <link name="steering_left_1">
-  <pose>3.09659 1 -0.55525 0 0 0</pose>
+  <pose>2.61707 0.7 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -37,7 +37,7 @@
   </axis>
 </joint>
 <link name="steering_left_2">
-  <pose>1.30729 1 -0.55525 0 0 0</pose>
+  <pose>1.00737 0.7 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -72,7 +72,7 @@
   </axis>
 </joint>
 <link name="steering_right_1">
-  <pose>3.09659 -1 -0.55525 0 0 0</pose>
+  <pose>2.61707 -0.7 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -107,7 +107,7 @@
   </axis>
 </joint>
 <link name="steering_right_2">
-  <pose>1.30729 -1 -0.55525 0 0 0</pose>
+  <pose>1.00737 -0.7 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>

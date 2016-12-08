@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- -*- mode: XML -*- -->
+<sdf version='1.4'>
+	<model name='Oshkosh'>
+		<link name='body'>
+			<pose>0 0 0 0 0 0</pose>
+			<gravity>1</gravity>
+			<self_collide>1</self_collide>
+			<inertial>
+				<pose>-1.00 0.00 -0.4 0 0 0</pose>
+				<mass>2000</mass>
+				<inertia>
+					<ixx>3000</ixx>
+					<ixy>0.00</ixy>
+					<ixz>0.00</ixz>
+					<iyy>20000</iyy>
+					<iyz>0.00</iyz>
+					<izz>20000</izz>
+				</inertia>
+			</inertial>
+			<collision name='body_collision_base_bottom'>
+				<pose>-2.387 0 0.36711 0 0 0</pose>
+				<geometry>
+					<box>
+						<size>6.7 1.187 1.154</size>
+					</box>
+				</geometry>
+			</collision>
+			<collision name='body_collision_trunk'>
+				<pose>-2.384 0 1.0285 0 0 0</pose>
+				<geometry>
+					<box>
+						<size>6.813 3 1</size>
+					</box>
+				</geometry>
+			</collision>
+			<collision name='body_collision_front'>
+				<pose>3.05 0 1.145 0 0 0</pose>
+				<geometry>
+					<box>
+						<size>3.77 3.207 1.412</size>
+					</box>
+				</geometry>
+			</collision>
+			<collision name='body_collision_uppper_slope'>
+				<pose>4.6465 0.022 0.93 0 -0.471 0</pose>
+				<geometry>
+					<box>
+						<size>1.162 2.898 1.436</size>
+					</box>
+				</geometry>
+			</collision>
+			<collision name='body_collision_lower_slope'>
+				<pose>4.827 0.03 0.49525 0 2.35 0</pose>
+				<geometry>
+					<box>
+						<size>1.161 2.9 1</size>
+					</box>
+				</geometry>
+			</collision>
+			<visual name='body_visual'>
+				<pose>0 0 0 0 0 0</pose>
+				<geometry>
+					<mesh>
+						<scale>1 1 1</scale>
+						<uri>model://oshkosh/meshes/body_dynamic.dae</uri>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>

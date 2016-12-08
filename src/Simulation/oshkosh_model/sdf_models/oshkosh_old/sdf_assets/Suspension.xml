@@ -1,0 +1,334 @@
+		
+<!-------------------------->
+<!--Suspension setup-->
+<link name="suspension_left_1">
+  <pose>3.09659 0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 3.14159265359</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_left_1" type="revolute">
+  <parent>body</parent>
+  <child>suspension_left_1</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_left_2">
+  <pose>1.30729 0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 3.14159265359</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_left_2" type="revolute">
+  <parent>body</parent>
+  <child>suspension_left_2</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_left_3">
+  <pose>-3.42202 0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 3.14159265359</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_left_3" type="revolute">
+  <parent>body</parent>
+  <child>suspension_left_3</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_left_4">
+  <pose>-5.21133 0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 3.14159265359</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_left_4" type="revolute">
+  <parent>body</parent>
+  <child>suspension_left_4</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_right_1">
+  <pose>3.09659 -0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 0</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_right_1" type="revolute">
+  <parent>body</parent>
+  <child>suspension_right_1</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>-1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_right_2">
+  <pose>1.30729 -0 -0.55525 0 0 0</pose>
+  <inertial>
+  
+    <inertia>
+
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 0</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_right_2" type="revolute">
+  <parent>body</parent>
+  <child>suspension_right_2</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>-1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_right_3">
+  <pose>-3.42202 -0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 0</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_right_3" type="revolute">
+  <parent>body</parent>
+  <child>suspension_right_3</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>-1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_right_4">
+  <pose>-5.21133 -0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 0</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_right_4" type="revolute">
+  <parent>body</parent>
+  <child>suspension_right_4</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>-1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<!--End of suspension setup-->

@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- -*- mode: XML -*- -->
+<sdf version='1.4'>
+	<model name='Oshkosh'>
+		<link name='body'>
+			<pose>0 0 0 0 0 0</pose>
+			<gravity>1</gravity>
+			<self_collide>1</self_collide>
+			<inertial>
+				<pose>-1.00 0.00 -0.4 0 0 0</pose>
+				<mass>2000</mass>
+				<inertia>
+					<ixx>3000</ixx>
+					<ixy>0.00</ixy>
+					<ixz>0.00</ixz>
+					<iyy>20000</iyy>
+					<iyz>0.00</iyz>
+					<izz>20000</izz>
+				</inertia>
+			</inertial>
+			<collision name='body_collision_base_bottom'>
+				<pose>-2.387 0 0.36711 0 0 0</pose>
+				<geometry>
+					<box>
+						<size>6.7 1.187 1.154</size>
+					</box>
+				</geometry>
+			</collision>
+			<collision name='body_collision_trunk'>
+				<pose>-2.384 0 1.0285 0 0 0</pose>
+				<geometry>
+					<box>
+						<size>6.813 3 1</size>
+					</box>
+				</geometry>
+			</collision>
+			<collision name='body_collision_front'>
+				<pose>3.05 0 1.145 0 0 0</pose>
+				<geometry>
+					<box>
+						<size>3.77 3.207 1.412</size>
+					</box>
+				</geometry>
+			</collision>
+			<collision name='body_collision_uppper_slope'>
+				<pose>4.6465 0.022 0.93 0 -0.471 0</pose>
+				<geometry>
+					<box>
+						<size>1.162 2.898 1.436</size>
+					</box>
+				</geometry>
+			</collision>
+			<collision name='body_collision_lower_slope'>
+				<pose>4.827 0.03 0.49525 0 2.35 0</pose>
+				<geometry>
+					<box>
+						<size>1.161 2.9 1</size>
+					</box>
+				</geometry>
+			</collision>
+			<visual name='body_visual'>
+				<pose>0 0 0 0 0 0</pose>
+				<geometry>
+					<mesh>
+						<scale>1 1 1</scale>
+						<uri>model://oshkosh/meshes/body_dynamic.dae</uri>
+					</mesh>
+				</geometry>
+			</visual>
+		</link>
+		
+<!-------------------------->
+<!--Suspension setup-->
+<link name="suspension_left_1">
+  <pose>3.09659 0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 3.14159265359</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_left_1" type="revolute">
+  <parent>body</parent>
+  <child>suspension_left_1</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_left_2">
+  <pose>1.30729 0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 3.14159265359</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_left_2" type="revolute">
+  <parent>body</parent>
+  <child>suspension_left_2</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_left_3">
+  <pose>-3.42202 0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 3.14159265359</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_left_3" type="revolute">
+  <parent>body</parent>
+  <child>suspension_left_3</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_left_4">
+  <pose>-5.21133 0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 3.14159265359</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_left_4" type="revolute">
+  <parent>body</parent>
+  <child>suspension_left_4</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_right_1">
+  <pose>3.09659 -0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 0</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_right_1" type="revolute">
+  <parent>body</parent>
+  <child>suspension_right_1</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>-1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_right_2">
+  <pose>1.30729 -0 -0.55525 0 0 0</pose>
+  <inertial>
+  
+    <inertia>
+
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 0</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_right_2" type="revolute">
+  <parent>body</parent>
+  <child>suspension_right_2</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>-1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_right_3">
+  <pose>-3.42202 -0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 0</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_right_3" type="revolute">
+  <parent>body</parent>
+  <child>suspension_right_3</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>-1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<link name="suspension_right_4">
+  <pose>-5.21133 -0 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+     <mass>100</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 0</pose>
+    <geometry>
+      <mesh>
+        <scale>1 1 1</scale>
+        <uri>model://oshkosh/meshes/Suspension.dae</uri>
+      </mesh>
+    </geometry>
+
+  </visual>
+</link>
+<joint name="spring_right_4" type="revolute">
+  <parent>body</parent>
+  <child>suspension_right_4</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis>
+    <limit>
+      <lower>-0.8</lower>
+      <upper>0.08</upper>
+    </limit>
+    <xyz>-1 0 0</xyz>
+    <dynamics>
+      <spring_stiffness>40001</spring_stiffness>
+      <spring_reference>-0.1</spring_reference>
+      <damping>2002</damping>
+    </dynamics>
+  </axis>
+</joint>
+<!--End of suspension setup-->
+		
+<!-------------------------->
+<!--steering setup-->
+<link name="steering_left_1">
+  <pose>3.09659 1 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+    <mass>20</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 3.14159265359</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.1</radius>
+        <length>0.3</length>
+      </cylinder>
+    </geometry>
+  </visual>
+</link>
+<joint name="steering_joint_left_1" type="revolute">
+  <parent>suspension_left_1</parent>
+  <child>steering_left_1</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis> <dynamics><damping>1</damping></dynamics>
+    <limit>
+      <lower>-0.61</lower>
+      <upper>0.61</upper>
+    </limit>
+    <xyz>0 0 1</xyz>
+  </axis>
+</joint>
+<link name="steering_left_2">
+  <pose>1.30729 1 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+    <mass>20</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 3.14159265359</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.1</radius>
+        <length>0.3</length>
+      </cylinder>
+    </geometry>
+  </visual>
+</link>
+<joint name="steering_joint_left_2" type="revolute">
+  <parent>suspension_left_2</parent>
+  <child>steering_left_2</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis> <dynamics><damping>1</damping></dynamics>
+    <limit>
+      <lower>-0.61</lower>
+      <upper>0.61</upper>
+    </limit>
+    <xyz>0 0 1</xyz>
+  </axis>
+</joint>
+<link name="steering_right_1">
+  <pose>3.09659 -1 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+    <mass>20</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 0</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.1</radius>
+        <length>0.3</length>
+      </cylinder>
+    </geometry>
+  </visual>
+</link>
+<joint name="steering_joint_right_1" type="revolute">
+  <parent>suspension_right_1</parent>
+  <child>steering_right_1</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis> <dynamics><damping>1</damping></dynamics>
+    <limit>
+      <lower>-0.61</lower>
+      <upper>0.61</upper>
+    </limit>
+    <xyz>0 0 1</xyz>
+  </axis>
+</joint>
+<link name="steering_right_2">
+  <pose>1.30729 -1 -0.55525 0 0 0</pose>
+  <inertial>
+    <inertia>
+      <ixx>0.01</ixx>
+      <ixy>0.0</ixy>
+      <ixz>0.0</ixz>
+      <iyy>0.01</iyy>
+      <iyz>0.0</iyz>
+      <izz>0.01</izz>
+    </inertia>
+    <mass>20</mass>
+  </inertial>
+  <visual name='visual'>
+    <pose>0 0 0 0 0 0</pose>
+    <geometry>
+      <cylinder>
+        <radius>0.1</radius>
+        <length>0.3</length>
+      </cylinder>
+    </geometry>
+  </visual>
+</link>
+<joint name="steering_joint_right_2" type="revolute">
+  <parent>suspension_right_2</parent>
+  <child>steering_right_2</child>
+  <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+  <axis> <dynamics><damping>1</damping></dynamics>
+    <limit>
+      <lower>-0.61</lower>
+      <upper>0.61</upper>
+    </limit>
+    <xyz>0 0 1</xyz>
+  </axis>
+</joint>
+<!--End of steering setup-->
+<!--------------------------><!-------------------------->
+<!--Wheels Setup-->
+<link name='left_wheel_1'>
+	<pose>3.09659 1.60293 -0.55525 0 0 0</pose>
+	<inertial>
+		<pose>0 0 0 0 0 0</pose>
+		 <mass>30</mass>
+		<inertia>
+			<ixx>15</ixx>
+			<ixy>0</ixy>
+			<ixz>0</ixz>
+			<iyy>30</iyy>
+			<iyz>0</iyz>
+			<izz>15</izz>
+		</inertia>
+	</inertial>
+	<collision name='left_wheel_1_col'>
+		<pose>0 -0.1 0 1.57079633 0 0</pose>
+		<geometry>
+			<sphere>
+				<length>0.5</length>
+				<radius>0.78</radius>
+			</sphere>
+		</geometry>
+	</collision>
+	<visual name='left_wheel'>
+		<pose>0 0 0 0 -0 0</pose>
+		<geometry>
+			<mesh>
+				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.stl</uri>
+			</mesh>
+		</geometry>
+		<material>
+			<ambient>0.2 0.2 0.2 1</ambient>
+			<diffuse>0.1 0.1 0.1 1</diffuse>
+			<specular>1 1 1 1</specular>
+			<emissive>0 0 0 1</emissive>
+		</material>
+	</visual>
+	<gravity>1</gravity>
+	<self_collide>0</self_collide>
+</link>
+<joint name='left_wheel_1' type='revolute'>
+	<child>left_wheel_1</child>
+	<parent>steering_left_1</parent>
+	<axis>
+		<xyz>0 1 0</xyz>
+	</axis>
+</joint>
+<link name='left_wheel_2'>
+	<pose>1.30729 1.60293 -0.55525 0 0 0</pose>
+	<inertial>
+		<pose>0 0 0 0 0 0</pose>
+		 <mass>30</mass>
+		<inertia>
+			<ixx>15</ixx>
+			<ixy>0</ixy>
+			<ixz>0</ixz>
+			<iyy>30</iyy>
+			<iyz>0</iyz>
+			<izz>15</izz>
+		</inertia>
+	</inertial>
+	<collision name='left_wheel_2_col'>
+		<pose>0 -0.1 0 1.57079633 0 0</pose>
+		<geometry>
+			<sphere>
+				<length>0.5</length>
+				<radius>0.78</radius>
+			</sphere>
+		</geometry>
+	</collision>
+	<visual name='left_wheel'>
+		<pose>0 0 0 0 -0 0</pose>
+		<geometry>
+			<mesh>
+				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.stl</uri>
+			</mesh>
+		</geometry>
+		<material>
+			<ambient>0.2 0.2 0.2 1</ambient>
+			<diffuse>0.1 0.1 0.1 1</diffuse>
+			<specular>1 1 1 1</specular>
+			<emissive>0 0 0 1</emissive>
+		</material>
+	</visual>
+	<gravity>1</gravity>
+	<self_collide>0</self_collide>
+</link>
+<joint name='left_wheel_2' type='revolute'>
+	<child>left_wheel_2</child>
+	<parent>steering_left_2</parent>
+	<axis>
+		<xyz>0 1 0</xyz>
+	</axis>
+</joint>
+<link name='left_wheel_3'>
+	<pose>-3.42202 1.60293 -0.55525 0 0 0</pose>
+	<inertial>
+		<pose>0 0 0 0 0 0</pose>
+		 <mass>30</mass>
+		<inertia>
+			<ixx>15</ixx>
+			<ixy>0</ixy>
+			<ixz>0</ixz>
+			<iyy>30</iyy>
+			<iyz>0</iyz>
+			<izz>15</izz>
+		</inertia>
+	</inertial>
+	<collision name='left_wheel_3_col'>
+		<pose>0 -0.1 0 1.57079633 0 0</pose>
+		<geometry>
+			<sphere>
+				<length>0.5</length>
+				<radius>0.78</radius>
+			</sphere>
+		</geometry>
+	</collision>
+	<visual name='left_wheel'>
+		<pose>0 0 0 0 -0 0</pose>
+		<geometry>
+			<mesh>
+				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.stl</uri>
+			</mesh>
+		</geometry>
+		<material>
+			<ambient>0.2 0.2 0.2 1</ambient>
+			<diffuse>0.1 0.1 0.1 1</diffuse>
+			<specular>1 1 1 1</specular>
+			<emissive>0 0 0 1</emissive>
+		</material>
+	</visual>
+	<gravity>1</gravity>
+	<self_collide>0</self_collide>
+</link>
+<joint name='left_wheel_3' type='revolute'>
+	<child>left_wheel_3</child>
+	<parent>suspension_left_3</parent>
+	<axis>
+		<xyz>0 1 0</xyz>
+	</axis>
+</joint>
+<link name='left_wheel_4'>
+	<pose>-5.21133 1.60293 -0.55525 0 0 0</pose>
+	<inertial>
+		<pose>0 0 0 0 0 0</pose>
+		 <mass>30</mass>
+		<inertia>
+			<ixx>15</ixx>
+			<ixy>0</ixy>
+			<ixz>0</ixz>
+			<iyy>30</iyy>
+			<iyz>0</iyz>
+			<izz>15</izz>
+		</inertia>
+	</inertial>
+	<collision name='left_wheel_4_col'>
+		<pose>0 -0.1 0 1.57079633 0 0</pose>
+		<geometry>
+			<sphere>
+				<length>0.5</length>
+				<radius>0.78</radius>
+			</sphere>
+		</geometry>
+	</collision>
+	<visual name='left_wheel'>
+		<pose>0 0 0 0 -0 0</pose>
+		<geometry>
+			<mesh>
+				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.stl</uri>
+			</mesh>
+		</geometry>
+		<material>
+			<ambient>0.2 0.2 0.2 1</ambient>
+			<diffuse>0.1 0.1 0.1 1</diffuse>
+			<specular>1 1 1 1</specular>
+			<emissive>0 0 0 1</emissive>
+		</material>
+	</visual>
+	<gravity>1</gravity>
+	<self_collide>0</self_collide>
+</link>
+<joint name='left_wheel_4' type='revolute'>
+	<child>left_wheel_4</child>
+	<parent>suspension_left_4</parent>
+	<axis>
+		<xyz>0 1 0</xyz>
+	</axis>
+</joint>
+<link name='right_wheel_1'>
+	<pose>3.09659 -1.60293 -0.55525 0 0 0</pose>
+	<inertial>
+		<pose>0 0 0 0 0 0</pose>
+		 <mass>30</mass>
+		<inertia>
+			<ixx>15</ixx>
+			<ixy>0</ixy>
+			<ixz>0</ixz>
+			<iyy>30</iyy>
+			<iyz>0</iyz>
+			<izz>15</izz>
+		</inertia>
+	</inertial>
+	<collision name='right_wheel_1_col'>
+		<pose>0 0.1 0 1.57079633 0 0</pose>
+		<geometry>
+			<sphere>
+				<length>0.5</length>
+				<radius>0.78</radius>
+			</sphere>
+		</geometry>
+	</collision>
+	<visual name='right_wheel'>
+		<pose>0 0 0 0 -0 0</pose>
+		<geometry>
+			<mesh>
+				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.stl</uri>
+			</mesh>
+		</geometry>
+		<material>
+			<ambient>0.2 0.2 0.2 1</ambient>
+			<diffuse>0.1 0.1 0.1 1</diffuse>
+			<specular>1 1 1 1</specular>
+			<emissive>0 0 0 1</emissive>
+		</material>
+	</visual>
+	<gravity>1</gravity>
+	<self_collide>0</self_collide>
+</link>
+<joint name='right_wheel_1' type='revolute'>
+	<child>right_wheel_1</child>
+	<parent>steering_right_1</parent>
+	<axis>
+		<xyz>0 1 0</xyz>
+	</axis>
+</joint>
+<link name='right_wheel_2'>
+	<pose>1.30729 -1.60293 -0.55525 0 0 0</pose>
+	<inertial>
+		<pose>0 0 0 0 0 0</pose>
+		 <mass>30</mass>
+		<inertia>
+			<ixx>15</ixx>
+			<ixy>0</ixy>
+			<ixz>0</ixz>
+			<iyy>30</iyy>
+			<iyz>0</iyz>
+			<izz>15</izz>
+		</inertia>
+	</inertial>
+	<collision name='right_wheel_2_col'>
+		<pose>0 0.1 0 1.57079633 0 0</pose>
+		<geometry>
+			<sphere>
+				<length>0.5</length>
+				<radius>0.78</radius>
+			</sphere>
+		</geometry>
+	</collision>
+	<visual name='right_wheel'>
+		<pose>0 0 0 0 -0 0</pose>
+		<geometry>
+			<mesh>
+				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.stl</uri>
+			</mesh>
+		</geometry>
+		<material>
+			<ambient>0.2 0.2 0.2 1</ambient>
+			<diffuse>0.1 0.1 0.1 1</diffuse>
+			<specular>1 1 1 1</specular>
+			<emissive>0 0 0 1</emissive>
+		</material>
+	</visual>
+	<gravity>1</gravity>
+	<self_collide>0</self_collide>
+</link>
+<joint name='right_wheel_2' type='revolute'>
+	<child>right_wheel_2</child>
+	<parent>steering_right_2</parent>
+	<axis>
+		<xyz>0 1 0</xyz>
+	</axis>
+</joint>
+<link name='right_wheel_3'>
+	<pose>-3.42202 -1.60293 -0.55525 0 0 0</pose>
+	<inertial>
+		<pose>0 0 0 0 0 0</pose>
+		 <mass>30</mass>
+		<inertia>
+			<ixx>15</ixx>
+			<ixy>0</ixy>
+			<ixz>0</ixz>
+			<iyy>30</iyy>
+			<iyz>0</iyz>
+			<izz>15</izz>
+		</inertia>
+	</inertial>
+	<collision name='right_wheel_3_col'>
+		<pose>0 0.1 0 1.57079633 0 0</pose>
+		<geometry>
+			<sphere>
+				<length>0.5</length>
+				<radius>0.78</radius>
+			</sphere>
+		</geometry>
+	</collision>
+	<visual name='right_wheel'>
+		<pose>0 0 0 0 -0 0</pose>
+		<geometry>
+			<mesh>
+				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.stl</uri>
+			</mesh>
+		</geometry>
+		<material>
+			<ambient>0.2 0.2 0.2 1</ambient>
+			<diffuse>0.1 0.1 0.1 1</diffuse>
+			<specular>1 1 1 1</specular>
+			<emissive>0 0 0 1</emissive>
+		</material>
+	</visual>
+	<gravity>1</gravity>
+	<self_collide>0</self_collide>
+</link>
+<joint name='right_wheel_3' type='revolute'>
+	<child>right_wheel_3</child>
+	<parent>suspension_right_3</parent>
+	<axis>
+		<xyz>0 1 0</xyz>
+	</axis>
+</joint>
+<link name='right_wheel_4'>
+	<pose>-5.21133 -1.60293 -0.55525 0 0 0</pose>
+	<inertial>
+		<pose>0 0 0 0 0 0</pose>
+		 <mass>30</mass>
+		<inertia>
+			<ixx>15</ixx>
+			<ixy>0</ixy>
+			<ixz>0</ixz>
+			<iyy>30</iyy>
+			<iyz>0</iyz>
+			<izz>15</izz>
+		</inertia>
+	</inertial>
+	<collision name='right_wheel_4_col'>
+		<pose>0 0.1 0 1.57079633 0 0</pose>
+		<geometry>
+			<sphere>
+				<length>0.5</length>
+				<radius>0.78</radius>
+			</sphere>
+		</geometry>
+	</collision>
+	<visual name='right_wheel'>
+		<pose>0 0 0 0 -0 0</pose>
+		<geometry>
+			<mesh>
+				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.stl</uri>
+			</mesh>
+		</geometry>
+		<material>
+			<ambient>0.2 0.2 0.2 1</ambient>
+			<diffuse>0.1 0.1 0.1 1</diffuse>
+			<specular>1 1 1 1</specular>
+			<emissive>0 0 0 1</emissive>
+		</material>
+	</visual>
+	<gravity>1</gravity>
+	<self_collide>0</self_collide>
+</link>
+<joint name='right_wheel_4' type='revolute'>
+	<child>right_wheel_4</child>
+	<parent>suspension_right_4</parent>
+	<axis>
+		<xyz>0 1 0</xyz>
+	</axis>
+</joint>
+<!--End of wheels setup-->
+<!-------------------------->	<plugin name="oshkosh_driving_plugin" filename="liboshkosh_driving_plugin.so"/>
+		<!--<plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so"><robotNamespace>/Sahar</robotNamespace><jointName>left_wheel_1, </jointName><updateRate>50.0</updateRate><alwaysOn>true</alwaysOn></plugin>-->
+	</model>
+</sdf>

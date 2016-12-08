@@ -2,7 +2,7 @@
 <!-------------------------->
 <!--Suspension setup-->
 <link name="suspension_left_1">
-  <pose>3.09659 0 -0.55525 0 0 0</pose>
+  <pose>2.61707 0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -43,7 +43,7 @@
   </axis>
 </joint>
 <link name="suspension_left_2">
-  <pose>1.30729 0 -0.55525 0 0 0</pose>
+  <pose>1.00737 0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -84,7 +84,7 @@
   </axis>
 </joint>
 <link name="suspension_left_3">
-  <pose>-3.42202 0 -0.55525 0 0 0</pose>
+  <pose>-2.67222 0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -125,7 +125,7 @@
   </axis>
 </joint>
 <link name="suspension_left_4">
-  <pose>-5.21133 0 -0.55525 0 0 0</pose>
+  <pose>-4.28192 0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -166,7 +166,7 @@
   </axis>
 </joint>
 <link name="suspension_right_1">
-  <pose>3.09659 -0 -0.55525 0 0 0</pose>
+  <pose>2.61707 -0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -207,7 +207,7 @@
   </axis>
 </joint>
 <link name="suspension_right_2">
-  <pose>1.30729 -0 -0.55525 0 0 0</pose>
+  <pose>1.00737 -0 0.72 0 0 0</pose>
   <inertial>
   
     <inertia>
@@ -250,7 +250,7 @@
   </axis>
 </joint>
 <link name="suspension_right_3">
-  <pose>-3.42202 -0 -0.55525 0 0 0</pose>
+  <pose>-2.67222 -0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -291,7 +291,7 @@
   </axis>
 </joint>
 <link name="suspension_right_4">
-  <pose>-5.21133 -0 -0.55525 0 0 0</pose>
+  <pose>-4.28192 -0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>

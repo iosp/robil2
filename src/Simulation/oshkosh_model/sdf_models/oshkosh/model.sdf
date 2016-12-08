@@ -3,11 +3,11 @@
 <sdf version='1.4'>
 	<model name='Oshkosh'>
 		<link name='body'>
-			<pose>0 0 0 0 0 0</pose>
+			<pose>0 0 1.27525 0 0 0</pose>
 			<gravity>1</gravity>
 			<self_collide>1</self_collide>
 			<inertial>
-				<pose>-1.00 0.00 -0.4 0 0 0</pose>
+				<pose>0.00 0.00 0 0 0 0</pose>
 				<mass>2000</mass>
 				<inertia>
 					<ixx>3000</ixx>
@@ -19,23 +19,17 @@
 				</inertia>
 			</inertial>
 			<collision name='body_collision_base_bottom'>
-				<pose>-2.387 0 0.36711 0 0 0</pose>
+				<pose>-2 0 0.2 0 0 0</pose>
 				<geometry>
 					<box>
-						<size>6.7 1.187 1.154</size>
+						<size>6 1.187 1.154</size>
 					</box>
 				</geometry>
 			</collision>
-			<collision name='body_collision_trunk'>
-				<pose>-2.384 0 1.0285 0 0 0</pose>
-				<geometry>
-					<box>
-						<size>6.813 3 1</size>
-					</box>
-				</geometry>
-			</collision>
+
+-->
 			<collision name='body_collision_front'>
-				<pose>3.05 0 1.145 0 0 0</pose>
+				<pose>2.25 0 1.00 0 0 0</pose>
 				<geometry>
 					<box>
 						<size>3.77 3.207 1.412</size>
@@ -43,7 +37,7 @@
 				</geometry>
 			</collision>
 			<collision name='body_collision_uppper_slope'>
-				<pose>4.6465 0.022 0.93 0 -0.471 0</pose>
+				<pose>3.88 0.022 0.73 0 -0.471 0</pose>
 				<geometry>
 					<box>
 						<size>1.162 2.898 1.436</size>
@@ -51,7 +45,7 @@
 				</geometry>
 			</collision>
 			<collision name='body_collision_lower_slope'>
-				<pose>4.827 0.03 0.49525 0 2.35 0</pose>
+				<pose>3.9 0.03 0.493 0 2.35 0</pose>
 				<geometry>
 					<box>
 						<size>1.161 2.9 1</size>
@@ -59,19 +53,20 @@
 				</geometry>
 			</collision>
 			<visual name='body_visual'>
-				<pose>0 0 0 0 0 0</pose>
+				<pose>0 0 -1.27525 0 0 0</pose>
 				<geometry>
 					<mesh>
 						<scale>1 1 1</scale>
-						<uri>model://oshkosh/meshes/body_dynamic.dae</uri>
+						<uri>model://oshkosh/meshes/HEMTT2.dae</uri>
 					</mesh>
 				</geometry>
 			</visual>
-		</link>		
+		</link>
+		
 <!-------------------------->
 <!--Suspension setup-->
 <link name="suspension_left_1">
-  <pose>3.09659 0 -0.55525 0 0 0</pose>
+  <pose>2.61707 0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -112,7 +107,7 @@
   </axis>
 </joint>
 <link name="suspension_left_2">
-  <pose>1.30729 0 -0.55525 0 0 0</pose>
+  <pose>1.00737 0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -153,7 +148,7 @@
   </axis>
 </joint>
 <link name="suspension_left_3">
-  <pose>-3.42202 0 -0.55525 0 0 0</pose>
+  <pose>-2.67222 0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -194,7 +189,7 @@
   </axis>
 </joint>
 <link name="suspension_left_4">
-  <pose>-5.21133 0 -0.55525 0 0 0</pose>
+  <pose>-4.28192 0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -235,7 +230,7 @@
   </axis>
 </joint>
 <link name="suspension_right_1">
-  <pose>3.09659 -0 -0.55525 0 0 0</pose>
+  <pose>2.61707 -0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -276,7 +271,7 @@
   </axis>
 </joint>
 <link name="suspension_right_2">
-  <pose>1.30729 -0 -0.55525 0 0 0</pose>
+  <pose>1.00737 -0 0.72 0 0 0</pose>
   <inertial>
   
     <inertia>
@@ -319,7 +314,7 @@
   </axis>
 </joint>
 <link name="suspension_right_3">
-  <pose>-3.42202 -0 -0.55525 0 0 0</pose>
+  <pose>-2.67222 -0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -360,7 +355,7 @@
   </axis>
 </joint>
 <link name="suspension_right_4">
-  <pose>-5.21133 -0 -0.55525 0 0 0</pose>
+  <pose>-4.28192 -0 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -405,7 +400,7 @@
 <!-------------------------->
 <!--steering setup-->
 <link name="steering_left_1">
-  <pose>3.09659 1 -0.55525 0 0 0</pose>
+  <pose>2.61707 0.7 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -440,7 +435,7 @@
   </axis>
 </joint>
 <link name="steering_left_2">
-  <pose>1.30729 1 -0.55525 0 0 0</pose>
+  <pose>1.00737 0.7 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -475,7 +470,7 @@
   </axis>
 </joint>
 <link name="steering_right_1">
-  <pose>3.09659 -1 -0.55525 0 0 0</pose>
+  <pose>2.61707 -0.7 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -510,7 +505,7 @@
   </axis>
 </joint>
 <link name="steering_right_2">
-  <pose>1.30729 -1 -0.55525 0 0 0</pose>
+  <pose>1.00737 -0.7 0.72 0 0 0</pose>
   <inertial>
     <inertia>
       <ixx>0.01</ixx>
@@ -548,7 +543,7 @@
 <!--------------------------><!-------------------------->
 <!--Wheels Setup-->
 <link name='left_wheel_1'>
-	<pose>3.09659 1.60293 -0.55525 0 0 0</pose>
+	<pose>2.61707 1.06 0.72 0 0 0</pose>
 	<inertial>
 		<pose>0 0 0 0 0 0</pose>
 		 <mass>30</mass>
@@ -562,11 +557,11 @@
 		</inertia>
 	</inertial>
 	<collision name='left_wheel_1_col'>
-		<pose>0 -0.1 0 1.57079633 0 0</pose>
+		<pose>0 0 0 1.57079633 0 0</pose>
 		<geometry>
 			<sphere>
 				<length>0.5</length>
-				<radius>0.78</radius>
+				<radius>0.71</radius>
 			</sphere>
 		</geometry>
 	</collision>
@@ -574,15 +569,15 @@
 		<pose>0 0 0 0 -0 0</pose>
 		<geometry>
 			<mesh>
-				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.stl</uri>
+				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.dae</uri>
 			</mesh>
 		</geometry>
-		<material>
+<!--		<material>
 			<ambient>0.2 0.2 0.2 1</ambient>
 			<diffuse>0.1 0.1 0.1 1</diffuse>
 			<specular>1 1 1 1</specular>
 			<emissive>0 0 0 1</emissive>
-		</material>
+		</material>-->
 	</visual>
 	<gravity>1</gravity>
 	<self_collide>0</self_collide>
@@ -595,7 +590,7 @@
 	</axis>
 </joint>
 <link name='left_wheel_2'>
-	<pose>1.30729 1.60293 -0.55525 0 0 0</pose>
+	<pose>1.00737 1.06 0.72 0 0 0</pose>
 	<inertial>
 		<pose>0 0 0 0 0 0</pose>
 		 <mass>30</mass>
@@ -609,11 +604,11 @@
 		</inertia>
 	</inertial>
 	<collision name='left_wheel_2_col'>
-		<pose>0 -0.1 0 1.57079633 0 0</pose>
+		<pose>0 0 0 1.57079633 0 0</pose>
 		<geometry>
 			<sphere>
 				<length>0.5</length>
-				<radius>0.78</radius>
+				<radius>0.71</radius>
 			</sphere>
 		</geometry>
 	</collision>
@@ -621,15 +616,15 @@
 		<pose>0 0 0 0 -0 0</pose>
 		<geometry>
 			<mesh>
-				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.stl</uri>
+				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.dae</uri>
 			</mesh>
 		</geometry>
-		<material>
+<!--		<material>
 			<ambient>0.2 0.2 0.2 1</ambient>
 			<diffuse>0.1 0.1 0.1 1</diffuse>
 			<specular>1 1 1 1</specular>
 			<emissive>0 0 0 1</emissive>
-		</material>
+		</material>-->
 	</visual>
 	<gravity>1</gravity>
 	<self_collide>0</self_collide>
@@ -642,7 +637,7 @@
 	</axis>
 </joint>
 <link name='left_wheel_3'>
-	<pose>-3.42202 1.60293 -0.55525 0 0 0</pose>
+	<pose>-2.67222 1.06 0.72 0 0 0</pose>
 	<inertial>
 		<pose>0 0 0 0 0 0</pose>
 		 <mass>30</mass>
@@ -656,11 +651,11 @@
 		</inertia>
 	</inertial>
 	<collision name='left_wheel_3_col'>
-		<pose>0 -0.1 0 1.57079633 0 0</pose>
+		<pose>0 0 0 1.57079633 0 0</pose>
 		<geometry>
 			<sphere>
 				<length>0.5</length>
-				<radius>0.78</radius>
+				<radius>0.71</radius>
 			</sphere>
 		</geometry>
 	</collision>
@@ -668,15 +663,15 @@
 		<pose>0 0 0 0 -0 0</pose>
 		<geometry>
 			<mesh>
-				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.stl</uri>
+				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.dae</uri>
 			</mesh>
 		</geometry>
-		<material>
+<!--		<material>
 			<ambient>0.2 0.2 0.2 1</ambient>
 			<diffuse>0.1 0.1 0.1 1</diffuse>
 			<specular>1 1 1 1</specular>
 			<emissive>0 0 0 1</emissive>
-		</material>
+		</material>-->
 	</visual>
 	<gravity>1</gravity>
 	<self_collide>0</self_collide>
@@ -689,7 +684,7 @@
 	</axis>
 </joint>
 <link name='left_wheel_4'>
-	<pose>-5.21133 1.60293 -0.55525 0 0 0</pose>
+	<pose>-4.28192 1.06 0.72 0 0 0</pose>
 	<inertial>
 		<pose>0 0 0 0 0 0</pose>
 		 <mass>30</mass>
@@ -703,11 +698,11 @@
 		</inertia>
 	</inertial>
 	<collision name='left_wheel_4_col'>
-		<pose>0 -0.1 0 1.57079633 0 0</pose>
+		<pose>0 0 0 1.57079633 0 0</pose>
 		<geometry>
 			<sphere>
 				<length>0.5</length>
-				<radius>0.78</radius>
+				<radius>0.71</radius>
 			</sphere>
 		</geometry>
 	</collision>
@@ -715,15 +710,15 @@
 		<pose>0 0 0 0 -0 0</pose>
 		<geometry>
 			<mesh>
-				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.stl</uri>
+				<uri>model://oshkosh/meshes/Oshkosh_left_Wheel.dae</uri>
 			</mesh>
 		</geometry>
-		<material>
+<!--		<material>
 			<ambient>0.2 0.2 0.2 1</ambient>
 			<diffuse>0.1 0.1 0.1 1</diffuse>
 			<specular>1 1 1 1</specular>
 			<emissive>0 0 0 1</emissive>
-		</material>
+		</material>-->
 	</visual>
 	<gravity>1</gravity>
 	<self_collide>0</self_collide>
@@ -736,7 +731,7 @@
 	</axis>
 </joint>
 <link name='right_wheel_1'>
-	<pose>3.09659 -1.60293 -0.55525 0 0 0</pose>
+	<pose>2.61707 -1.06 0.72 0 0 0</pose>
 	<inertial>
 		<pose>0 0 0 0 0 0</pose>
 		 <mass>30</mass>
@@ -750,11 +745,11 @@
 		</inertia>
 	</inertial>
 	<collision name='right_wheel_1_col'>
-		<pose>0 0.1 0 1.57079633 0 0</pose>
+		<pose>0 0 0 1.57079633 0 0</pose>
 		<geometry>
 			<sphere>
 				<length>0.5</length>
-				<radius>0.78</radius>
+				<radius>0.71</radius>
 			</sphere>
 		</geometry>
 	</collision>
@@ -762,15 +757,15 @@
 		<pose>0 0 0 0 -0 0</pose>
 		<geometry>
 			<mesh>
-				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.stl</uri>
+				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.dae</uri>
 			</mesh>
 		</geometry>
-		<material>
+<!--		<material>
 			<ambient>0.2 0.2 0.2 1</ambient>
 			<diffuse>0.1 0.1 0.1 1</diffuse>
 			<specular>1 1 1 1</specular>
 			<emissive>0 0 0 1</emissive>
-		</material>
+		</material>-->
 	</visual>
 	<gravity>1</gravity>
 	<self_collide>0</self_collide>
@@ -783,7 +778,7 @@
 	</axis>
 </joint>
 <link name='right_wheel_2'>
-	<pose>1.30729 -1.60293 -0.55525 0 0 0</pose>
+	<pose>1.00737 -1.06 0.72 0 0 0</pose>
 	<inertial>
 		<pose>0 0 0 0 0 0</pose>
 		 <mass>30</mass>
@@ -797,11 +792,11 @@
 		</inertia>
 	</inertial>
 	<collision name='right_wheel_2_col'>
-		<pose>0 0.1 0 1.57079633 0 0</pose>
+		<pose>0 0 0 1.57079633 0 0</pose>
 		<geometry>
 			<sphere>
 				<length>0.5</length>
-				<radius>0.78</radius>
+				<radius>0.71</radius>
 			</sphere>
 		</geometry>
 	</collision>
@@ -809,15 +804,15 @@
 		<pose>0 0 0 0 -0 0</pose>
 		<geometry>
 			<mesh>
-				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.stl</uri>
+				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.dae</uri>
 			</mesh>
 		</geometry>
-		<material>
+<!--		<material>
 			<ambient>0.2 0.2 0.2 1</ambient>
 			<diffuse>0.1 0.1 0.1 1</diffuse>
 			<specular>1 1 1 1</specular>
 			<emissive>0 0 0 1</emissive>
-		</material>
+		</material>-->
 	</visual>
 	<gravity>1</gravity>
 	<self_collide>0</self_collide>
@@ -830,7 +825,7 @@
 	</axis>
 </joint>
 <link name='right_wheel_3'>
-	<pose>-3.42202 -1.60293 -0.55525 0 0 0</pose>
+	<pose>-2.67222 -1.06 0.72 0 0 0</pose>
 	<inertial>
 		<pose>0 0 0 0 0 0</pose>
 		 <mass>30</mass>
@@ -844,11 +839,11 @@
 		</inertia>
 	</inertial>
 	<collision name='right_wheel_3_col'>
-		<pose>0 0.1 0 1.57079633 0 0</pose>
+		<pose>0 0 0 1.57079633 0 0</pose>
 		<geometry>
 			<sphere>
 				<length>0.5</length>
-				<radius>0.78</radius>
+				<radius>0.71</radius>
 			</sphere>
 		</geometry>
 	</collision>
@@ -856,15 +851,15 @@
 		<pose>0 0 0 0 -0 0</pose>
 		<geometry>
 			<mesh>
-				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.stl</uri>
+				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.dae</uri>
 			</mesh>
 		</geometry>
-		<material>
+<!--		<material>
 			<ambient>0.2 0.2 0.2 1</ambient>
 			<diffuse>0.1 0.1 0.1 1</diffuse>
 			<specular>1 1 1 1</specular>
 			<emissive>0 0 0 1</emissive>
-		</material>
+		</material>-->
 	</visual>
 	<gravity>1</gravity>
 	<self_collide>0</self_collide>
@@ -877,7 +872,7 @@
 	</axis>
 </joint>
 <link name='right_wheel_4'>
-	<pose>-5.21133 -1.60293 -0.55525 0 0 0</pose>
+	<pose>-4.28192 -1.06 0.72 0 0 0</pose>
 	<inertial>
 		<pose>0 0 0 0 0 0</pose>
 		 <mass>30</mass>
@@ -891,11 +886,11 @@
 		</inertia>
 	</inertial>
 	<collision name='right_wheel_4_col'>
-		<pose>0 0.1 0 1.57079633 0 0</pose>
+		<pose>0 0 0 1.57079633 0 0</pose>
 		<geometry>
 			<sphere>
 				<length>0.5</length>
-				<radius>0.78</radius>
+				<radius>0.71</radius>
 			</sphere>
 		</geometry>
 	</collision>
@@ -903,15 +898,15 @@
 		<pose>0 0 0 0 -0 0</pose>
 		<geometry>
 			<mesh>
-				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.stl</uri>
+				<uri>model://oshkosh/meshes/Oshkosh_right_Wheel.dae</uri>
 			</mesh>
 		</geometry>
-		<material>
+<!--		<material>
 			<ambient>0.2 0.2 0.2 1</ambient>
 			<diffuse>0.1 0.1 0.1 1</diffuse>
 			<specular>1 1 1 1</specular>
 			<emissive>0 0 0 1</emissive>
-		</material>
+		</material>-->
 	</visual>
 	<gravity>1</gravity>
 	<self_collide>0</self_collide>
@@ -924,7 +919,8 @@
 	</axis>
 </joint>
 <!--End of wheels setup-->
-<!-------------------------->	<plugin name="oshkosh_driving_plugin" filename="liboshkosh_driving_plugin.so"/>
+<!-------------------------->
+	<plugin name="oshkosh_driving_plugin" filename="liboshkosh_driving_plugin.so"/>
 		<!--<plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so"><robotNamespace>/Sahar</robotNamespace><jointName>left_wheel_1, </jointName><updateRate>50.0</updateRate><alwaysOn>true</alwaysOn></plugin>-->
 	</model>
 </sdf>
