@@ -8,7 +8,7 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
-#include <ParameterTypes.h>
+//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <cognitao_v2/cognitao_v2.h>
 #include <ros/ros.h>
@@ -17,6 +17,31 @@
 #include <iostream>     // std::cout
 #include <sstream>
 #include <boost/thread.hpp>
+
+
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <robil_msgs/Path.h>
+#include <robil_msgs/IEDLocation.h>
+#include <robil_msgs/Map.h>
+#include <robil_msgs/AssignManipulatorTask.h>
+#include <robil_msgs/AssignMission.h>
+#include <robil_msgs/AssignNavTask.h>
+#include <robil_msgs/MissionAcceptance.h>
+#include <sensor_msgs/JointState.h>
+#include <geometry_msgs/TwistStamped.h>
+
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
+
+
 
 class ComponentMain {
 	bool _inited;
@@ -42,18 +67,18 @@ class ComponentMain {
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	void handleIEDLocation(const config::OCU::sub::IEDLocation& msg);
-	void handleMissionAcceptance(const config::OCU::sub::MissionAcceptance& msg);
-	void handleLocalPath(const config::OCU::sub::LocalPath& msg);
-	void handleBladePosition(const config::OCU::sub::BladePosition& msg);
-	void handleMap(const config::OCU::sub::Map& msg);
-	void handleLocation(const config::OCU::sub::Location& msg);
-	void handlePerVelocity(const config::OCU::sub::PerVelocity& msg);
-	void publishCustomIED(config::OCU::pub::CustomIED& msg);
-	void publishPositionUpdate(config::OCU::pub::PositionUpdate& msg);
-	void publishAssignNavTask(config::OCU::pub::AssignNavTask& msg);
-	void publishAssignManTask(config::OCU::pub::AssignManTask& msg);
-	void publishAssignMission(config::OCU::pub::AssignMission& msg);
+	void handleIEDLocation(const robil_msgs::IEDLocation& msg);
+	void handleMissionAcceptance(const robil_msgs::MissionAcceptance& msg);
+	void handleLocalPath(const robil_msgs::Path& msg);
+	void handleBladePosition(const sensor_msgs::JointState& msg);
+	void handleMap(const robil_msgs::Map& msg);
+	void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
+	void handlePerVelocity(const geometry_msgs::TwistStamped& msg);
+	void publishCustomIED(robil_msgs::IEDLocation& msg);
+	void publishPositionUpdate(geometry_msgs::PoseStamped& msg);
+	void publishAssignNavTask(robil_msgs::AssignNavTask& msg);
+	void publishAssignManTask(robil_msgs::AssignManipulatorTask& msg);
+	void publishAssignMission(robil_msgs::AssignMission& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);

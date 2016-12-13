@@ -45,25 +45,28 @@ void Mapper::MainLoop(per::configConfig *p)
     height_map = new HeightMap(500,500, p);
     per::configConfig *dynamic_param = p;
     int i = 0;
+    ros::Duration rate(0.1);
     while(ros::ok())
     {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(100)); //10hz cycle
+
+//        boost::this_thread::sleep(boost::posix_time::milliseconds(100)); //10hz cycle
+        rate.sleep();
         int check; ros::param::param("/LOC/Ready",check,0); if(!check) continue;
         if(++i < 30) continue;
         //printf("MAPPER\n");
         lock.lock();
 
-        height_map->calculateTypes(position, myRot);
+        height_map->calculateTypes();//position, myRot);
 
-        if(camL && camR)
-        {
-            camL = camR = false;
-            Quaternion& q = myQuat;
-            Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
-            Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
-            Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
-            //ProjectDepthImage(height_map, stereo, right, front, up, position.add(up.multiply(1.6)), _lanes);
-        }
+//        if(camL && camR)
+//        {
+//            camL = camR = false;
+//            Quaternion& q = myQuat;
+//            Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
+//            Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
+//            Vec3D up = GetUpVector(q.x,q.y,q.z,q.w);
+//            //ProjectDepthImage(height_map, stereo, right, front, up, position.add(up.multiply(1.6)), _lanes);
+//        }
 
         publishMap();
         publishMiniMap();
@@ -141,7 +144,7 @@ void Mapper::setLanes(Mat lanes)
 }
 
 /** Until Here**/
-void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher pcpubworld, ros::Publisher pcpub)
+void Mapper::handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pcpubworld, ros::Publisher pcpub)
 {
     if(!loc_received) return;
     //return;
@@ -208,7 +211,7 @@ void Mapper::handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher 
     lock.unlock();
 }
 
-void Mapper::handleSickL(const config::PER::sub::SensorSICK1& msg)
+void Mapper::handleSickL(const sensor_msgs::LaserScan& msg)
 {
     if(!loc_received) return;
     lock.lock();
@@ -231,7 +234,7 @@ void Mapper::handleSickL(const config::PER::sub::SensorSICK1& msg)
     lock.unlock();
 }
 
-void Mapper::handleSickR(const config::PER::sub::SensorSICK2& msg)
+void Mapper::handleSickR(const sensor_msgs::LaserScan& msg)
 {
     if(!loc_received) return;
     lock.lock();
@@ -256,7 +259,7 @@ void Mapper::handleSickR(const config::PER::sub::SensorSICK2& msg)
     lock.unlock();
 }
 
-void Mapper::handleLocation(const config::PER::sub::Location& msg)
+void Mapper::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
     lock.lock();
     geometry_msgs::Pose pose = msg.pose.pose;
@@ -275,7 +278,7 @@ void Mapper::handleLocation(const config::PER::sub::Location& msg)
 
 }
 
-void Mapper::handleCamR(const config::PER::sub::SensorCamR& msg)
+void Mapper::handleCamR(const sensor_msgs::Image& msg)
 {
     lock.lock();
     camR = true;
@@ -297,7 +300,7 @@ void Mapper::handleCamR(const config::PER::sub::SensorCamR& msg)
     lock.unlock();
 }
 
-void Mapper::handleCamL(const config::PER::sub::SensorCamL& msg)
+void Mapper::handleCamL(const sensor_msgs::Image& msg)
 {
     lock.lock();
     camL = true;
@@ -320,7 +323,7 @@ void Mapper::handleCamL(const config::PER::sub::SensorCamL& msg)
 
 void Mapper::publishMap()
 {
-    config::PER::pub::Map msg;
+    robil_msgs::Map msg;
     static int seq = 0;
     msg.header.seq = seq++;
     msg.header.stamp.sec = ros::Time::now().sec;
@@ -358,7 +361,7 @@ void Mapper::publishMap()
 
 void Mapper::publishMiniMap()
 {
-    config::PER::pub::Map msg;
+    robil_msgs::Map msg;
     static int seq = 0;
 
     msg.header.seq = seq++;

@@ -2,7 +2,7 @@
 #define MAPPER__H
 
 #include <std_msgs/String.h>
-#include <ParameterTypes.h>
+//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <cv_bridge/cv_bridge.h>
 #include "../helpermath.h"
@@ -22,6 +22,22 @@
 // #include <per/roadLanes.h>
 // #include <per/lane.h>
 #include <vector>
+
+
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <sensor_msgs/LaserScan.h>
+#include <sensor_msgs/Image.h>
+#include <robil_msgs/MultiLaserScan.h>
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
+
+
 using namespace std;
 // using namespace per;
 /// until here
@@ -39,17 +55,17 @@ class Mapper
     
     static void VisualizeLoop();
     
-    static void handleIBEO(const config::PER::sub::SensorIBEO& msg, ros::Publisher pcpubworld, ros::Publisher pcpub);
+    static void handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pcpubworld, ros::Publisher pcpub);
      
-    static void handleSickL(const config::PER::sub::SensorSICK1& msg);
+    static void handleSickL(const sensor_msgs::LaserScan& msg);
     
-    static void handleSickR(const config::PER::sub::SensorSICK2& msg);
+    static void handleSickR(const sensor_msgs::LaserScan& msg);
     
-    static void handleLocation(const config::PER::sub::Location& msg);
+    static void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
     
-    static void handleCamR(const config::PER::sub::SensorCamR& msg);
+    static void handleCamR(const sensor_msgs::Image& msg);
     
-    static void handleCamL(const config::PER::sub::SensorCamL& msg);
+    static void handleCamL(const sensor_msgs::Image& msg);
     
     static void publishMap();
     

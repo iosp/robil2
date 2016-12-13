@@ -50,8 +50,8 @@ bool ComponentMain::init(int argc,char** argv){
 void ComponentMain::performEstimation()
 {
   
-	config::LOC::pub::Location msg1;
-	config::LOC::pub::PerVelocity msg2;
+        geometry_msgs::PoseWithCovarianceStamped msg1;
+        geometry_msgs::TwistStamped msg2;
     while (ros::ok())
 	{
 		try
@@ -89,7 +89,7 @@ void ComponentMain::performEstimation()
 		}
 	}
 }
-void ComponentMain::handlePositionUpdate(const config::LOC::sub::PositionUpdate& msg)
+void ComponentMain::handlePositionUpdate(const geometry_msgs::PoseStamped& msg)
 {
     if(dyn_conf.noise)
 	  _this->_estimator.positionUpdate(msg);
@@ -98,10 +98,10 @@ void ComponentMain::handlePositionUpdate(const config::LOC::sub::PositionUpdate&
 }
 	
 
-void ComponentMain::handleGPS(const config::LOC::sub::GPS& msg)
+void ComponentMain::handleGPS(const sensor_msgs::NavSatFix& msg)
 {
-	config::LOC::pub::Location msg1;
-    config::LOC::pub::PerVelocity msg2;
+        geometry_msgs::PoseWithCovarianceStamped msg1;
+    geometry_msgs::TwistStamped msg2;
     if(dyn_conf.noise)
 		_estimator.setGPSMeasurement(msg);
 	else
@@ -109,7 +109,7 @@ void ComponentMain::handleGPS(const config::LOC::sub::GPS& msg)
 }
 	
 
-void ComponentMain::handleINS(const config::LOC::sub::INS& msg)
+void ComponentMain::handleINS(const sensor_msgs::Imu& msg)
 {
     if(dyn_conf.noise)
 		_estimator.setIMUMeasurement(msg);
@@ -118,7 +118,7 @@ void ComponentMain::handleINS(const config::LOC::sub::INS& msg)
 }
 	
 
-void ComponentMain::handleVOOdometry(const config::LOC::sub::VOOdometry& msg)
+void ComponentMain::handleVOOdometry(const nav_msgs::Odometry& msg)
 {
 	//std::cout<< "LOC say:" << msg << std::endl;
 }
@@ -129,13 +129,13 @@ void ComponentMain::handleGpsSpeed(const sensor_msgs::NavSatFix& msg)
     _estimator.setGPSSpeedMeasurement(msg);
 }	
 
-void ComponentMain::publishLocation(config::LOC::pub::Location& msg)
+void ComponentMain::publishLocation(geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 	_pub_Location.publish(msg);
 }
 	
 
-void ComponentMain::publishPerVelocity(config::LOC::pub::PerVelocity& msg)
+void ComponentMain::publishPerVelocity(geometry_msgs::TwistStamped& msg)
 {
 	_pub_PerVelocity.publish(msg);
 }

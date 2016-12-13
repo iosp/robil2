@@ -15,6 +15,7 @@
 #include <iostream>     // std::cout
 #include <sstream>
 //#include "ParameterHandler.h"
+
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
@@ -86,7 +87,7 @@ bool ComponentMain::init(int argc,char** argv){
 }
 
 void ComponentMain::ReadAndPub_ShiphonGPS(){
-	config::SHIFFON2ROS::pub::GPS GPS_msg;
+	sensor_msgs::NavSatFix GPS_msg;
 
 	GPS_msg.latitude  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LAT_Egi * PI_2_DEG;
 	GPS_msg.longitude =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LONG_Egi * PI_2_DEG;
@@ -97,14 +98,13 @@ void ComponentMain::ReadAndPub_ShiphonGPS(){
 	publishGPS(GPS_msg);
 }
 
-void ComponentMain::publishGPS(config::SHIFFON2ROS::pub::GPS& msg) {
+void ComponentMain::publishGPS(sensor_msgs::NavSatFix& msg) {
 	_pub_GPSPose.publish(msg);
 }
 
 
 void ComponentMain::ReadAndPub_ShiphonINS(){
-	config::SHIFFON2ROS::pub::INS INS_msg;
-
+	sensor_msgs::Imu INS_msg;
 	INS_msg.linear_acceleration.x  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_X_Egi;
 	INS_msg.linear_acceleration.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Y_Egi;
 	INS_msg.linear_acceleration.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Z_Egi;
@@ -138,25 +138,16 @@ void ComponentMain::ReadAndPub_ShiphonINS(){
 
 }
 
-void ComponentMain::publishINS(config::SHIFFON2ROS::pub::INS& msg) {
+void ComponentMain::publishINS(sensor_msgs::Imu& msg) {
 	_pub_INS.publish(msg);
 }
 
 
 void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 
-	config::SHIFFON2ROS::pub::GpsSpeed GpsSpeed_msg;
-/*
-	double East_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
-	double North_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
-	double Down_vel = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
+	robil_msgs::GpsSpeed GpsSpeed_msg;
 
-	GpsSpeed_msg.speed = sqrt(East_vel*East_vel + North_vel*North_vel + Down_vel*Down_vel);
-	GpsSpeed_msg.header.stamp = ros::Time::now();
-*/
-	publishGpsSpeed(GpsSpeed_msg);
-
-	config::SHIFFON2ROS::pub::GPS GpsSpeedVec_msg;
+	sensor_msgs::NavSatFix GpsSpeedVec_msg;
 	GpsSpeedVec_msg.latitude  = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
 	GpsSpeedVec_msg.longitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
 	GpsSpeedVec_msg.altitude  = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
@@ -164,13 +155,6 @@ void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 	_pub_GpsSpeed.publish(GpsSpeedVec_msg);
 
 }
-
-void ComponentMain::publishGpsSpeed(config::SHIFFON2ROS::pub::GpsSpeed& msg)
-{
-	_pub_GpsSpeed.publish(msg);
-}
-	
-
 
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	//static tf::TransformBroadcaster br;

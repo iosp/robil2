@@ -73,19 +73,19 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleAssignNavTask(const config::SMME::sub::AssignNavTask& msg)
+void ComponentMain::handleAssignNavTask(const robil_msgs::AssignNavTask& msg)
 {
 	_mission_manager->assign(msg);
 }
 	
 
-void ComponentMain::handleAssignManTask(const config::SMME::sub::AssignManTask& msg)
+void ComponentMain::handleAssignManTask(const robil_msgs::AssignManipulatorTask& msg)
 {
 	_mission_manager->assign(msg);
 }
 	
 
-void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& msg)
+void ComponentMain::handleAssignMission(const robil_msgs::AssignMission& msg)
 {
 	config::SMME::pub::MissionAcceptance acceptance =
 			_mission_manager->assign(msg);
@@ -104,18 +104,18 @@ void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& 
 }
 	
 
-void ComponentMain::handleBladePosition(const config::SMME::sub::BladePosition& msg)
+void ComponentMain::handleBladePosition(const sensor_msgs::JointState& msg)
 {
 	//std::cout<< "SMME say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleLocation(const config::SMME::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 	//std::cout<< "SMME say:" << msg << std::endl;
 }
 	
-void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& msg)
+void ComponentMain::handleIEDLocation(const robil_msgs::IEDLocation& msg)
 {
 	if(msg.is_detected==1){
 		tf::StampedTransform transform;
@@ -142,19 +142,19 @@ void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& ms
 	}
 }
 
-void ComponentMain::publishGlobalPath(config::SMME::pub::GlobalPath& msg)
+void ComponentMain::publishGlobalPath(robil_msgs::Path& msg)
 {
 	_pub_GlobalPath.publish(msg);
 }
 	
 
-void ComponentMain::publishWorkSeqData(config::SMME::pub::WorkSeqData& msg)
+void ComponentMain::publishWorkSeqData(robil_msgs::AssignManipulatorTask& msg)
 {
 	_pub_WorkSeqData.publish(msg);
 }
 	
 
-void ComponentMain::publishMissionAcceptance(config::SMME::pub::MissionAcceptance& msg)
+void ComponentMain::publishMissionAcceptance(robil_msgs::MissionAcceptance& msg)
 {
 	_pub_MissionAcceptance.publish(msg);
 }

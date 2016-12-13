@@ -41,7 +41,7 @@ using namespace std;
 #define RAISE(X,C) processor_ptr->bus_events << EVENT(X,C)
 //#define RAISE_NO_CONTEXT(X) processor_ptr->bus_events << cognitao::bus::Event( \
 //																cognitao::bus::Event::name_t(X))
-#define MISSION_ID MID_PREF(FSM_CONTEXT.parameters<TaskParams>().mission_id)
+//#define MISSION_ID MID_PREF(FSM_CONTEXT.parameters<TaskParams>().mission_id)
 
 class AsyncTask {
 protected:
@@ -135,23 +135,27 @@ public:
 		if(MM->task_type()==MissionManager::TT_Navigation){
 			MissionManager::NavTask task = MM->get_nav_task();
 			config::SMME::pub::GlobalPath path = extract_path(task);
+			RAISE("/pp/Resume", context);
 //			RAISE("/pp/StartTask");
-			RAISE("Resume", "pp");
+//			RAISE("Resume", "pp");
 			this_thread::sleep(milliseconds(500));
 			comp_ptr->publishGlobalPath(path);
 		}else
 		if(MM->task_type()==MissionManager::TT_Manipulator){
 			MissionManager::ManTask task = MM->get_man_task();
-			RAISE("Resume", "wsm");
+			RAISE("/wsm/Resume", context);
+//			RAISE("Resume", "wsm");
 			this_thread::sleep(milliseconds(500));
 			comp_ptr->publishWorkSeqData(task);
 		}else
 		if(MM->task_type()==MissionManager::TT_Unknown){
 			ROS_ERROR("smme: Active task type is unknown");
-			RAISE(mid + "/AbortTask", T_PREF);
+			RAISE(T_PREF + "/" + mid + "/AbortTask", context);
+//			RAISE(mid + "/AbortTask", T_PREF);
 		}else{
 			ROS_ERROR("smme: Error in task type detector");
-			RAISE(mid + "/AbortTask", T_PREF);
+			RAISE(T_PREF + "/" + mid + "/AbortTask", context);
+//			RAISE(mid + "/AbortTask", T_PREF);
 		}
 	}
 

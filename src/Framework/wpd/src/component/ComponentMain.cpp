@@ -11,7 +11,7 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include "ParameterHandler.h"
+//#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 #include "MoveBase.h"
@@ -37,22 +37,32 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleLocalPath(const config::WPD::sub::LocalPath& msg) {
+
+void ComponentMain::handleLocalPath(const robil_msgs::Path& msg)
+{
+
 	//std::cout<< "WPD say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleMiniMap(const config::WPD::sub::MiniMap& msg) {
+
+void ComponentMain::handleMiniMap(const robil_msgs::Map& msg)
+{
+
+
 	//std::cout<< "WPD say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleLocation(const config::WPD::sub::Location& msg) {
+
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
+{
+
 	_move_base->on_position_update(msg);
 }
 	
 
-void ComponentMain::publishWPDVelocity(config::WPD::pub::WPDVelocity& msg)
+void ComponentMain::publishWPDVelocity(geometry_msgs::TwistStamped& msg)
 {
 	_pub_WPDVelocity.publish(msg);
 }

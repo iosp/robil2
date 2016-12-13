@@ -41,73 +41,73 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleIEDLocation(const config::OCU::sub::IEDLocation& msg)
+void ComponentMain::handleIEDLocation(const robil_msgs::IEDLocation& msg)
 {
 //	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleMissionAcceptance(const config::OCU::sub::MissionAcceptance& msg)
+void ComponentMain::handleMissionAcceptance(const robil_msgs::MissionAcceptance& msg)
 {
 //	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleLocalPath(const config::OCU::sub::LocalPath& msg)
+void ComponentMain::handleLocalPath(const robil_msgs::Path& msg)
 {
 //	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleBladePosition(const config::OCU::sub::BladePosition& msg)
+void ComponentMain::handleBladePosition(const sensor_msgs::JointState& msg)
 {
 //	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleMap(const config::OCU::sub::Map& msg)
+void ComponentMain::handleMap(const robil_msgs::Map& msg)
 {
 //	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleLocation(const config::OCU::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 //	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handlePerVelocity(const config::OCU::sub::PerVelocity& msg)
+void ComponentMain::handlePerVelocity(const geometry_msgs::TwistStamped& msg)
 {
 //	std::cout<< "OCU say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::publishCustomIED(config::OCU::pub::CustomIED& msg)
+void ComponentMain::publishCustomIED(robil_msgs::IEDLocation& msg)
 {
 	_pub_CustomIED.publish(msg);
 }
 	
 
-void ComponentMain::publishPositionUpdate(config::OCU::pub::PositionUpdate& msg)
+void ComponentMain::publishPositionUpdate(geometry_msgs::PoseStamped& msg)
 {
 	_pub_PositionUpdate.publish(msg);
 }
 	
 
-void ComponentMain::publishAssignNavTask(config::OCU::pub::AssignNavTask& msg)
+void ComponentMain::publishAssignNavTask(robil_msgs::AssignNavTask& msg)
 {
 	_pub_AssignNavTask.publish(msg);
 }
 	
 
-void ComponentMain::publishAssignManTask(config::OCU::pub::AssignManTask& msg)
+void ComponentMain::publishAssignManTask(robil_msgs::AssignManipulatorTask& msg)
 {
 	_pub_AssignManTask.publish(msg);
 }
 	
 
-void ComponentMain::publishAssignMission(config::OCU::pub::AssignMission& msg)
+void ComponentMain::publishAssignMission(robil_msgs::AssignMission& msg)
 {
 	_pub_AssignMission.publish(msg);
 }
