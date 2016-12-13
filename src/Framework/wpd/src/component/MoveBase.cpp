@@ -25,7 +25,7 @@ double angular_z_dampening_alpha;
 double linear_x_dampening_alpha;
 
 void on_speed_reg_callback(const geometry_msgs::Twist::ConstPtr& m){
-	config::WPD::pub::WPDVelocity o;
+	geometry_msgs::TwistStamped o;
 	o.twist = *m;
 	speed_norm_pub.publish(o);
 }
@@ -46,7 +46,7 @@ void on_pose_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& 
 }
 void init_speed_patch(ros::NodeHandle& node){
 	speed_reg_sub = node.subscribe("/WPD/speed_reg", 10, &on_speed_reg_callback);
-	speed_norm_pub = node.advertise<config::WPD::pub::WPDVelocity>("/WPD/Speed", 10);
+	speed_norm_pub = node.advertise<geometry_msgs::TwistStamped>("/WPD/Speed", 10);
 
 	pose_1_sub = node.subscribe("/LOC/Pose", 10, &on_pose_callback);
 	pose_2_pub = node.advertise<geometry_msgs::PoseStamped>("/LOC/pose_reg", 10);
@@ -156,7 +156,7 @@ void send_static_base_center_offset(ComponentMain* comp){
 const double x_offset_for_bebug=0;
 const double y_offset_for_bebug=0;
 
-void MoveBase::on_position_update(const config::PP::sub::Location& msg){
+void MoveBase::on_position_update(const geometry_msgs::PoseWithCovarianceStamped& msg){
 // 	tf::Quaternion q(msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w);
 // 	tf::Vector3 l(msg.pose.pose.position.x+x_offset_for_bebug,msg.pose.pose.position.y+y_offset_for_bebug,msg.pose.pose.position.z);
 // 	tf::Transform tf(q,l);

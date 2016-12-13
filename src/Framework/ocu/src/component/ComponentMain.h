@@ -8,7 +8,6 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
-//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>

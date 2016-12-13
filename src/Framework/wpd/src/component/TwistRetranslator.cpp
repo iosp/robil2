@@ -20,7 +20,7 @@ TwistRetranslator::~TwistRetranslator() {
 }
 
 void TwistRetranslator::on_twist(const geometry_msgs::Twist::ConstPtr msg){
-	config::WPD::pub::WPDVelocity out_msg;
+	geometry_msgs::TwistStamped out_msg;
 	out_msg.header.stamp = ros::Time::now();
 	out_msg.header.frame_id = "map";
 	out_msg.twist = *msg;

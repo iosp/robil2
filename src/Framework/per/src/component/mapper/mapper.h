@@ -2,7 +2,6 @@
 #define MAPPER__H
 
 #include <std_msgs/String.h>
-//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <cv_bridge/cv_bridge.h>
 #include "../helpermath.h"

@@ -1,4 +1,3 @@
-#include "ParameterTypes.h"
 #include "InverseKinematics.h"
 #include "helpermath.h"
 #include "WsmTask.h"
@@ -22,11 +21,11 @@ WsmTask::WsmTask(ComponentMain* comp)
 	_comp = comp;
 }
 
-WsmTask::WsmTask(int taskid , int cur_step ,const config::WSM::sub::WorkSeqData& cur_WSD , ComponentMain* comp)
+WsmTask::WsmTask(int taskid , int cur_step ,const robil_msgs::AssignManipulatorTask& cur_WSD , ComponentMain* comp)
 	{
 		_taskid = taskid ;
 		_cur_step = 1 ;
-		_cur_WSD = new config::WSM::sub::WorkSeqData (cur_WSD);
+		_cur_WSD = new robil_msgs::AssignManipulatorTask (cur_WSD);
 		_status = "active";
 		_step_status = "active" ;
 		_comp = comp;
@@ -72,10 +71,10 @@ void WsmTask::push_key_value(diagnostic_msgs::DiagnosticStatus container , std::
 	COMPONENT_LINK->publishDiagnostic(container);
 }
 
-void WsmTask::Set_Task_WSD(const config::WSM::sub::WorkSeqData &WSD)
+void WsmTask::Set_Task_WSD(const robil_msgs::AssignManipulatorTask &WSD)
 {
-	config::WSM::sub::WorkSeqData *g;
-	g = new config::WSM::sub::WorkSeqData (WSD);
+	robil_msgs::AssignManipulatorTask *g;
+	g = new robil_msgs::AssignManipulatorTask (WSD);
 	this->_cur_WSD = g ;
 	this->_status = "active";
 	this->_taskid = atoi(this->_cur_WSD->task_id.c_str());
@@ -234,7 +233,7 @@ robil_msgs::AssignManipulatorTaskStep* WsmTask::Get_step()
 	return &(this->_cur_WSD->steps.front());
 }
 
-config::WSM::sub::WorkSeqData * WsmTask::Get_WSD()
+robil_msgs::AssignManipulatorTask * WsmTask::Get_WSD()
 {
 	return this->_cur_WSD;
 }
@@ -278,7 +277,7 @@ const int N = 1000 ;
 
 			double toc ;
 			double initialRPY [3] ;
-			config::WSM::pub::BladePositionCommand * bladeCommand;
+			sensor_msgs::JointState * bladeCommand;
 			int supporterStatesIndex = 0, loaderStatesIndex = 0;
 
 			/* finds supporter and loader's indecies */
@@ -313,7 +312,7 @@ const int N = 1000 ;
 							jacobi = InverseKinematics::get_J(Q3[i-1]);
 							Q3[i] = Q3[i-1] + (pow(jacobi,-1))*dh ;
 							loader[i] = -(InverseKinematics::get_pitch(Q3[i],0)) + des_pitch ;
-							bladeCommand = new config::WSM::pub::BladePositionCommand();
+							bladeCommand = new sensor_msgs::JointState();
 
 				/* publish to LLC every 5ms */
 													bladeCommand->name.push_back("supporter_joint");
@@ -358,7 +357,7 @@ int WsmTask::handle_type_2()
 			double toc;
 			double type2rpy[3];
 			tf::StampedTransform body2loaderInit;
-			config::WSM::pub::BladePositionCommand bladeCommand;
+			sensor_msgs::JointState bladeCommand;
 			int sign = (value > 0) ? 1 : -1;
 			//ROS_INFO("Got angle: %f; is angle: %f", value, targetJointAngle);
 			int loaderStatesIndex = 0;
@@ -430,7 +429,7 @@ int WsmTask::handle_type_3()
 
 		double toc;
 		double posdiff;
-		config::WSM::pub::BladePositionCommand * bladeCommand;
+		sensor_msgs::JointState * bladeCommand;
 		int sign = (value > 0) ? 1 : -1;
 		int bracketStatesIndex = 0;
 
@@ -446,7 +445,7 @@ int WsmTask::handle_type_3()
 			double speed = LIMIT(0.5 * fabs(currentSupportAngle-targetJointAngle), 0.005, 0.05) * sign;
 
 			//Set command to LLC
-			bladeCommand = new config::WSM::pub::BladePositionCommand();
+			bladeCommand = new sensor_msgs::JointState();
 			bladeCommand->name.push_back("brackets_joint");
 			bladeCommand->position.push_back(LIMIT(currentSupportAngle + speed, 0, 1));
 			COMPONENT_LINK->publishBladePositionCommand(*bladeCommand);
@@ -482,7 +481,7 @@ int WsmTask::handle_type_4()
 	robil_msgs::AssignManipulatorTaskStep* cur_step = &(this->Get_WSD()->steps.front());
 
 	double value = cur_step->value; //advance in meters
-	config::WSM::pub::WSMVelocity twist;
+	geometry_msgs::TwistStamped twist;
 	boost::thread *Thread_ptr ;
 
 	if(cur_step->blade_relativity == robil_msgs::AssignManipulatorTaskStep::blade_relativity_graund){
@@ -565,7 +564,7 @@ int WsmTask::handle_type_5()
 			Thread_ptr = new boost::thread(boost::bind(&WsmTask::blade_correction,this));
 		}
 
-			config::WSM::pub::WSMVelocity twist;
+			geometry_msgs::TwistStamped twist;
 			geometry_msgs::TwistStamped prev_speed;
 			geometry_msgs::TwistStamped current_speed;
 			tf::Quaternion q, initq;
@@ -772,7 +771,7 @@ Vec3D WsmTask::deriveMapPixel (tf::StampedTransform blade2body)
 				loaderStatesIndex = i;
 			}
 		}
-		config::WSM::pub::BladePositionCommand * bladeCommand;
+		sensor_msgs::JointState * bladeCommand;
 		double supporter_angle = 0 , loader_angle = 0 ;
 		double next_supporter_angle = 0 , next_loader_angle = 0 ;
 
@@ -817,7 +816,7 @@ while(loop_on){
 
 			//	ROS_INFO("Next supporter angle:%g",next_supporter_angle);
 
-				bladeCommand = new config::WSM::pub::BladePositionCommand();
+				bladeCommand = new sensor_msgs::JointState();
 				bladeCommand->name.push_back("supporter_joint");
 				bladeCommand->name.push_back("loader_joint");
 
@@ -876,7 +875,7 @@ while(loop_on){
 					loaderStatesIndex = i;
 				}
 			}
-			config::WSM::pub::BladePositionCommand * bladeCommand;
+			sensor_msgs::JointState * bladeCommand;
 			double supporter_angle = 0 , loader_angle = 0 ;
 			double next_supporter_angle = 0 , next_loader_angle = 0 ;
 
@@ -923,7 +922,7 @@ while(loop_on){
 
 		//	ROS_INFO("Next supporter angle:%g",next_supporter_angle);
 
-			bladeCommand = new config::WSM::pub::BladePositionCommand();
+			bladeCommand = new sensor_msgs::JointState();
 			bladeCommand->name.push_back("supporter_joint");
 			bladeCommand->name.push_back("loader_joint");
 
@@ -984,7 +983,7 @@ catch(boost::thread_interrupted const&)
 					loaderStatesIndex = i;
 				}
 			}
-			config::WSM::pub::BladePositionCommand * bladeCommand;
+			sensor_msgs::JointState * bladeCommand;
 			double supporter_angle = 0 , loader_angle = 0 ;
 			double next_supporter_angle = 0 , next_loader_angle = 0 ;
 
@@ -1031,7 +1030,7 @@ while(loop_on){
 
 		//	ROS_INFO("Next supporter angle:%g",next_supporter_angle);
 
-			bladeCommand = new config::WSM::pub::BladePositionCommand();
+			bladeCommand = new sensor_msgs::JointState();
 			bladeCommand->name.push_back("supporter_joint");
 			bladeCommand->name.push_back("loader_joint");
 

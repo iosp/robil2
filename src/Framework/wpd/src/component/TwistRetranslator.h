@@ -8,8 +8,21 @@
 #ifndef TWISTRETRANSLATOR_H_
 #define TWISTRETRANSLATOR_H_
 
-#include <ParameterTypes.h>
 #include "ComponentMain.h"
+
+
+#ifndef COMPONENT
+#define COMPONENT context.parameters<Params>().comp
+#endif
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
+
 
 class TwistRetranslator {
 public:
