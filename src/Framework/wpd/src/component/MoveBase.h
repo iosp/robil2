@@ -19,8 +19,21 @@
 #include <nav_msgs/MapMetaData.h>
 #include <nav_msgs/OccupancyGrid.h>
 
-#include <ParameterHandler.h>
-#include <ParameterTypes.h>
+
+#include <geometry_msgs/TwistStamped.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <sensor_msgs/LaserScan.h>
+
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
+
 
 class ComponentMain;
 class MoveBase {
@@ -39,7 +52,7 @@ public:
 
 	ComponentMain* comp;
 
-	void on_position_update(const config::PP::sub::Location& location);
+	void on_position_update(const geometry_msgs::PoseWithCovarianceStamped& location);
 	ros::Subscriber sub_location;
 	ros::Subscriber sub_location_cov;
 	ros::Subscriber sub_speed;
@@ -47,7 +60,7 @@ public:
 	void on_sub_loc_cov(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
 	void on_sub_speed(const geometry_msgs::Twist::ConstPtr& msg);
 	void on_speed(const geometry_msgs::Twist& msg);
-	config::PP::sub::Location last_location;
+	geometry_msgs::PoseWithCovarianceStamped last_location;
 	void resend();
 	boost::thread* resend_thread;
 
