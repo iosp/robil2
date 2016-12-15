@@ -463,10 +463,6 @@
     <parent>body</parent>
     <axis>
 	<xyz>3.67321e-06 1 4.44089e-16</xyz>
-	
-	  
-	  
-	
 	<dynamics/>
     </axis>
 </joint>
@@ -658,10 +654,6 @@
     <parent>body</parent>
     <axis>
 	<xyz>-3.67321e-06 1 -1.73472e-18</xyz>
-	
-	  
-	  
-	
 	<dynamics/>
     </axis>
 </joint>
@@ -726,10 +718,6 @@
     <parent>body</parent>
     <axis>
 	<xyz>3.67321e-06 1 0</xyz>
-	
-	  
-	  
-	
 	<dynamics/>
     </axis>
 </joint>
@@ -862,10 +850,6 @@
     <parent>body</parent>
     <axis>
 	<xyz>3.67321e-06 1 0</xyz>
-	
-	  
-	  
-	
 	<dynamics/>
     </axis>
 </joint>
@@ -907,10 +891,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
-        
+        </limit>
         <dynamics/>
       </axis>
     </joint>    
@@ -927,10 +911,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
-        
+        </limit>
         <dynamics/>
       </axis>
     </joint>
@@ -947,10 +931,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
-        
+        </limit>
         <dynamics/>
       </axis>
     </joint>
@@ -965,10 +949,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
-        
+        </limit>
         <dynamics/>
       </axis>
     </joint>
@@ -985,10 +969,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
-        
+        </limit>
         <dynamics/>
       </axis>
     </joint>
@@ -1003,10 +987,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
-        
+        </limit>
         <dynamics/>
       </axis>
     </joint>
@@ -1023,10 +1007,10 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
-        
+        </limit>
         <dynamics/>
       </axis>
     </joint>
@@ -1041,10 +1025,10 @@
       <parent>main_arm</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
-        
+        </limit>
         <dynamics/>
       </axis>
     </joint>
@@ -1066,10 +1050,10 @@
       <parent>loader</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
-        
+        </limit>
         <dynamics/>
       </axis>
     </joint>
@@ -1084,10 +1068,10 @@
       <parent>main_arm</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
+        <limit>
           <lower>0</lower>
           <upper>0</upper>
-        
+        </limit>
         <dynamics/>
       </axis>
     </joint>
