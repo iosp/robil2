@@ -7,7 +7,7 @@
 
 #define DELETE(X) if(X){delete X; X=NULL;}
 #define RESET(X,Y) if(current_task == X) { \
-					ROS_DEBUG_STREAM(" Current PP task: " << current_task); \
+					ROS_WARN_STREAM(" Current PP task: " << current_task); \
 					DELETE(task_ptr) \
 					task_ptr = new Y; \
 					task_ptr->start(); \
@@ -189,7 +189,6 @@ void process_machine(cognitao::machine::Machine & machine,
 			size_t context_size = e_poped.context().size();
 			string current_event_context = e_poped.context().str();
 			if (context_size > 1) {
-				ROS_WARN_STREAM(" PP Event: " << e_poped.str());
 				std::string current_task = e_poped.context()[context_size - 2];
 //				ROS_WARN_STREAM(" Current PP task: " << current_task);
 //				ROS_INFO_STREAM(

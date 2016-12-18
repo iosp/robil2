@@ -108,8 +108,8 @@ public:
 			this_thread::sleep(milliseconds(100));
 		}
 		ROS_INFO("active out of loop");
-		if(MM->task_type()==MissionManager::TT_Navigation) RAISE("Standby", "pp");
-		else RAISE("Standby", "wsm");
+		if(MM->task_type()==MissionManager::TT_Navigation) RAISE("/pp/Standby", context);
+		else RAISE("/wsm/Standby", context);
 	}
 
 	virtual ~AsyncTask() {
@@ -173,10 +173,10 @@ public:
 		if(!is_active) activation_thread = boost::thread(boost::bind(&AsyncTask::active, this));
 		MM->task_state("paused");
 		if(MM->task_type()==MissionManager::TT_Navigation) {
-			RAISE("Standby", "pp");
+			RAISE("/pp/Standby", context);
 		}
 		else {
-			RAISE("Standby", "wsm");
+			RAISE("/wsm/Standby", context);
 		}
 	}
 
@@ -198,10 +198,10 @@ public:
 
 		MM->task_state("aborted");
 		if(MM->task_type()==MissionManager::TT_Navigation) {
-			RAISE("Standby", "pp");
+			RAISE("/pp/Standby", context);
 		}
 		else {
-			RAISE("Standby", "wsm");
+			RAISE("/wsm/Standby", context);
 		}
 	}
 
@@ -220,10 +220,10 @@ public:
 		if(!is_active) activation_thread = boost::thread(boost::bind(&AsyncTask::active, this));
 		MM->task_state("finished");
 		if(MM->task_type()==MissionManager::TT_Navigation) {
-			RAISE("Standby", "pp");
+			RAISE("/pp/Standby", context);
 		}
 		else {
-			RAISE("Standby", "wsm");
+			RAISE("/wsm/Standby", context);
 		}
 	//	if( MM->next_task() ){
 	//		RAISE("restart");
@@ -495,7 +495,7 @@ void TaskMachine::startTask(ComponentMain* component, std::string mission_id){
 			<< endl << "		<root>task</root>" << endl << "	</machines>" << endl
 			<< "</tao>" << endl;
 
-	cognitao::machine::Context context("smme/task");
+	cognitao::machine::Context context("smme/mission");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::MachinesCollection machines;
 	try {
