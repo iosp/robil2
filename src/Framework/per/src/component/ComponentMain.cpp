@@ -63,7 +63,6 @@ _maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,th
 	 /// walrus func:
 	  boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 }
-
 ComponentMain::~ComponentMain() {
 
 }
@@ -91,13 +90,11 @@ void ComponentMain::handlePerVelocity(const geometry_msgs::TwistStamped& msg)
 void ComponentMain::handleSensorINS(const /*config::PER::sub::SensorINS*/sensor_msgs::Imu& msg)
 {
     _imuData = msg;
-
     double pitch = msg.linear_acceleration.x * msg.linear_acceleration.x +
                    msg.linear_acceleration.y * msg.linear_acceleration.y +
                    msg.linear_acceleration.z * msg.linear_acceleration.z - 9.81 * 9.81;
 
     if (sqrt(pitch) / 10.0 > _dyn_conf.acc_filter)
-
     {
         _should_pub = false;
         _should_pub_timeout.stamp = ros::Time::now();
@@ -105,9 +102,7 @@ void ComponentMain::handleSensorINS(const /*config::PER::sub::SensorINS*/sensor_
     else
     {
         if (!_should_pub)
-
             if (ros::Time::now().toSec() - _should_pub_timeout.stamp.toSec() > _dyn_conf.acc_filter_timeout)
-
                 _should_pub = true;
     }
 

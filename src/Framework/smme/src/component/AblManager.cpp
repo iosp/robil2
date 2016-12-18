@@ -6,8 +6,6 @@
  */
 
 #include "AblManager.h"
-//#include <decision_making/EventSystem.h>
-//using namespace decision_making;
 
 AblManager::AblManager(ComponentMain* comp)
 :

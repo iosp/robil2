@@ -19,6 +19,11 @@
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
+
+#include <std_msgs/String.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+
+
 using namespace std;
 using namespace ros;
 using namespace boost;

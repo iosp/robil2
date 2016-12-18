@@ -52,16 +52,3 @@ void PathRecorder::clean_path(){
 void PathRecorder::communication_ok(){
 	path.clear();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -14,6 +14,8 @@ MissionTester::MissionTester() {
 
 	p_NavTask = node.advertise<NavTask>(fetchParam(&node,"SMME","AssignNavTask","sub"),10);
 	p_Mission = node.advertise<Mission>(fetchParam(&node,"SMME","AssignMission","sub"),10);
+	//p_NavTask = node.advertise<NavTask>("/OCU/SMME/NavigationTask",10);
+	//p_Mission = node.advertise<Mission>("/OCU/SMME/MissionPlan",10);
 
 }
 

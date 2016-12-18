@@ -10,15 +10,11 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <ParameterTypes.h>
-#include <tf/tf.h>
 #include <cognitao_v2/cognitao_v2.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-
-//#include <ParameterTypes.h>
 #include <tf/tf.h>
-#include <ros/ros.h>
 #include <boost/thread.hpp>
 
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
@@ -34,6 +30,7 @@
 #ifndef HEARTBEAT_FREQUENCY
 #define HEARTBEAT_FREQUENCY 2 //Hz
 #endif
+
 
 class ComponentMain {
 	bool _inited;
@@ -75,13 +72,10 @@ public:
 	void publishEffortsSt(std_msgs::Float64& msg);
 
 	void publishEffortsJn(sensor_msgs::JointState& msg);
-	void publishTransform(const tf::Transform& _tf, std::string srcFrame,
-			std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame,
-			std::string distFrame);
+	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
-	void publishDiagnostic(const std_msgs::Header& header,
-			const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 	void heartbeat();
 	static void *callHeartbeat(void *pThis);
 	void set_events(cognitao::bus::RosEventQueue* events);

@@ -13,6 +13,16 @@
 #include <list>
 
 
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <tf/tf.h>
+#include <robil_msgs/Path.h>
+
+#ifndef COMPONENT
+#define COMPONENT context.parameters<Params>().comp
+#endif
+
+
 class PathRecorder {
 public:
 	PathRecorder();

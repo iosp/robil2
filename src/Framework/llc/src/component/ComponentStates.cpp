@@ -86,6 +86,7 @@ void cb_currentYaw(geometry_msgs::PoseWithCovarianceStamped msg)
           currentYaw = yaw;
 }
 
+
 double calcIntegral_linearError(double currError)
 {
   sum_linear -= errorLinearArray[indexOf_errorLinearArray];
@@ -373,7 +374,7 @@ void process_machine(cognitao::machine::Machine & machine,
 	}
 }
 
-void runComponent(int argc, char** argv, ComponentMain& component) {
+void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros::NodeHandle node;
 //	cognitao::bus::RosEventQueue events(node, NULL, 1000,

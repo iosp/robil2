@@ -18,7 +18,6 @@
 #include <sstream>
 #include <boost/thread.hpp>
 
-
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <diagnostic_msgs/DiagnosticArray.h>
@@ -40,7 +39,6 @@
 #ifndef HEARTBEAT_FREQUENCY
 #define HEARTBEAT_FREQUENCY 2 //Hz
 #endif
-
 
 
 class ComponentMain {

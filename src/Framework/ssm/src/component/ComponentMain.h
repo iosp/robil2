@@ -17,6 +17,22 @@
 #include <sstream>
 #include <boost/thread.hpp>
 
+
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/TwistStamped.h>
+#include <sensor_msgs/JointState.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
+
+
 class ComponentMain {
 	bool _inited;
 	ros::NodeHandle _nh;

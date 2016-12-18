@@ -22,6 +22,16 @@ using namespace std;
 using namespace boost;
 using namespace boost::posix_time;
 
+#include <tf/tf.h>
+#include <robil_msgs/AssignManipulatorTask.h>
+#include <robil_msgs/AssignMission.h>
+#include <robil_msgs/AssignNavTask.h>
+#include <robil_msgs/MissionAcceptance.h>
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
 #include <ParameterTypes.h>
 
 class MissionManager{

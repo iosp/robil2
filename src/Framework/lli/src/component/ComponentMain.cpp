@@ -8,6 +8,7 @@
 #include "ComponentMain.h"
 //#include "lliCtrlManager.h"
 #include <pthread.h>
+#include <boost/thread.hpp>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <string>       // std::string
@@ -16,8 +17,8 @@
 //#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
+
 #define TEST_HEARTBEAT
-#include <boost/thread.hpp>
 
 ComponentMain::ComponentMain(int argc,char** argv) : _inited(init(argc,argv)), _events(0)
 {
@@ -41,7 +42,6 @@ ComponentMain::ComponentMain(int argc,char** argv) : _inited(init(argc,argv)), _
 	//ComponentMain::_this = this;
 
 
-   // _driver_thread = new boost::thread(&ComponentMain::lliCtrlLoop);
 
     _driver_thread = (boost::thread *) NULL;
     _mythread = (pthread_t)NULL;
@@ -68,7 +68,6 @@ ComponentMain::~ComponentMain() {
 	}
 #endif
 }
-
 bool ComponentMain::init(int argc,char** argv){
 	ros::init(argc,argv,"LLI_node");
 	return true;
@@ -150,7 +149,6 @@ void ComponentMain::releaseDriverAndManipulator()
 void ComponentMain::workerFunc()
 {
 
-  //_driver_thread = new boost::thread(boost::bind(&ComponentMain::lliCtrlLoop, this));
     SetState(State_Init);
 	pthread_t t;
 
@@ -227,14 +225,43 @@ tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::s
 }
 void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report){
 	diagnostic_msgs::DiagnosticArray msg;
-	msg.status.push_back(_report);
-	_pub_diagnostic.publish(msg);
+		msg.status.push_back(_report);
+		_pub_diagnostic.publish(msg);
 }
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
 	diagnostic_msgs::DiagnosticArray msg;
-	msg.header = header;
-	msg.status.push_back(_report);
-	_pub_diagnostic.publish(msg);
+		msg.header = header;
+		msg.status.push_back(_report);
+		_pub_diagnostic.publish(msg);
+}
+void ComponentMain::heartbeat(){
+	using namespace boost::posix_time;
+	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);
+	double hz = HEARTBEAT_FREQUENCY;
+	double cycle = (1/hz);
+	ros::Duration oneSec(cycle);
+//	ros::Duration oneSec(1.0);
+
+	while(ros::ok()){
+		//boost::system_time stop_time = boost::get_system_time() + milliseconds((1/hz)*1000);
+		std_msgs::String msg;
+		msg.data = "LLI";
+		_pub.publish(msg);
+		oneSec.sleep();
+		//boost::this_thread::sleep(stop_time);
+	}
+}
+
+void ComponentMain::publishConnectedToPlatform(std_msgs::Bool& msg){
+	_pub_connected_to_platform.publish(msg);
+}
+
+void * ComponentMain::callHeartbeat(void * pParam)
+{
+	ComponentMain *myHandle = (ComponentMain *) (pParam);
+
+	myHandle->heartbeat();
+
 }
 
 void * ComponentMain::callPThread(void * pParam)
@@ -274,10 +301,18 @@ void ComponentMain::lliCtrlLoop()
 
 	   //QinitiQ has been properly initialized.
 	ros::Rate r(100);
-
+    std_msgs::Bool msg;
+    //int count=0;
 	while (ros::ok())
 		{
 		    r.sleep();
+		    if (StateNotReady()){
+		    				msg.data=false;
+		    			}
+		    else msg.data=true;
+		    //if (count > 1000) msg.data=true;
+		    //count++;
+   			publishConnectedToPlatform(msg);
 			if (!_clli->PeriodicActivity())
 							break;
 
@@ -285,31 +320,7 @@ void ComponentMain::lliCtrlLoop()
 
 }
 
-void ComponentMain::heartbeat(){
-	using namespace boost::posix_time;
-	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);
-	double hz = HEARTBEAT_FREQUENCY;
-	double cycle = (1/hz);
-	ros::Duration oneSec(cycle);
-//	ros::Duration oneSec(1.0);
 
-	while(ros::ok()){
-		//boost::system_time stop_time = boost::get_system_time() + milliseconds((1/hz)*1000);
-		std_msgs::String msg;
-		msg.data = "LLI";
-		_pub.publish(msg);
-		oneSec.sleep();
-		//boost::this_thread::sleep(stop_time);
-	}
-}
-
-void * ComponentMain::callHeartbeat(void * pParam)
-{
-	ComponentMain *myHandle = (ComponentMain *) (pParam);
-
-	myHandle->heartbeat();
-
-}
 
 void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
 	boost::mutex::scoped_lock l(_mt);

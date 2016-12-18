@@ -357,7 +357,6 @@ void MissionMachine::startMission(ComponentMain* component, std::string mission_
 //	FsmMission(&context, &events);
 //	ROS_INFO_STREAM("Stop smme (Mission:"<<mission_id<<")");
 }
-
 void MissionMachine::stop(){
 	task.stop();
 	static_cast<cognitao::bus::RosEventQueue*>(events_ptr)->close();

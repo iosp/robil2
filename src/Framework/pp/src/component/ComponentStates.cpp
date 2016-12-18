@@ -1,8 +1,6 @@
 #include <iostream>
 #include <ros/ros.h>
 
-// need
-//#include <decision_making/SynchCout.h>
 #include "ComponentStates.h"
 
 #define DELETE(X) if(X){delete X; X=NULL;}
@@ -19,18 +17,7 @@
 				cognitao::bus::Event::context_t(context))
 #define RAISE(X) processor_ptr->bus_events << EVENT(X)
 
-// OLD B
-//			#include <decision_making/BT.h>
-//			#include <decision_making/FSM.h>
-//			#include <decision_making/ROSTask.h>
-//			#include <decision_making/DecisionMaking.h>
-//			#include <decision_making/DebugModeTracker.hpp>
-// OLD E
-
 using namespace std;
-
-// OLD B
-//using namespace decision_making;
 
 class AsyncTask {
 protected:
@@ -165,14 +152,6 @@ public:
 
 AsyncTask* task_ptr;
 
-//class Params: public CallContextParameters{
-//public:
-//	ComponentMain* comp;
-//	Params(ComponentMain* comp):comp(comp){}
-//	std::string str()const{return "";}
-//};
-// OLD E
-
 void process_machine(cognitao::machine::Machine & machine,
 		Processor & processor, ComponentMain& component) {
 	while (processor.empty() == false) {
@@ -204,122 +183,7 @@ void process_machine(cognitao::machine::Machine & machine,
 	}
 }
 
-// OLD B
-//FSM(pp_WORK)
-//{
-//	FSM_STATES
-//	{
-//		STANDBY,
-//		READY
-//	}
-//	FSM_START(READY);
-//	FSM_BGN
-//	{
-//		FSM_STATE(STANDBY)
-//		{
-//			FSM_CALL_TASK(STANDBY);
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("/pp/Resume", FSM_NEXT(READY));
-//			}
-//		}
-//		FSM_STATE(READY)
-//		{
-//			FSM_CALL_TASK(READY);
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("/pp/Standby", FSM_NEXT(STANDBY));
-//			}
-//		}
-//
-//	}
-//	FSM_END
-//}
-//FSM(pp_ON)
-//{
-//	FSM_STATES
-//	{
-//		INIT,
-//		WORK
-//	}
-//	FSM_START(INIT);
-//	FSM_BGN
-//	{
-//		FSM_STATE(INIT)
-//		{
-//			FSM_CALL_TASK(INIT);
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("INIT/EndOfInit", FSM_NEXT(WORK));
-//			}
-//		}
-//		FSM_STATE(WORK)
-//		{
-//			FSM_CALL_FSM(pp_WORK)
-//			FSM_TRANSITIONS{}
-//		}
-//
-//	}
-//	FSM_END
-//}
-//
-//FSM(pp)
-//{
-//	FSM_STATES
-//	{
-//		OFF,
-//		ON
-//	}
-//	FSM_START(ON);
-//	FSM_BGN
-//	{
-//		FSM_STATE(OFF)
-//		{
-//			FSM_CALL_TASK(OFF);
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-//				FSM_ON_EVENT("/pp/Activation", FSM_NEXT(ON));
-//			}
-//		}
-//		FSM_STATE(ON)
-//		{
-//			FSM_CALL_FSM(pp_ON)
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-//				FSM_ON_EVENT("/pp/Shutdown", FSM_NEXT(OFF));
-//			}
-//		}
-//
-//	}
-//	FSM_END
-//}
-//
-//TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
-//	PAUSE(10000);
-//	//diagnostic_msgs::DiagnosticStatus status;
-//	//COMPONENT->publishDiagnostic(status);
-//	return TaskResult::SUCCESS();
-//}
-//TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
-//	PAUSE(1000);
-//	events.raiseEvent(Event("EndOfInit",context));
-//	return TaskResult::SUCCESS();
-//}
-//TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
-//	COMPONENT->resume_navigation();
-//	COMPONENT->rise_taskStarted();
-//	return TaskResult::SUCCESS();
-//}
-//TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
-//	COMPONENT->cancel_navigation();
-//	COMPONENT->rise_taskPaused();
-//	return TaskResult::SUCCESS();
-//}
-// OLD E
-
-void runComponent(int argc, char** argv, ComponentMain& component) {
+void runComponent(int argc, char** argv, ComponentMain& component){
 
 	ros::NodeHandle node;
 //	cognitao::bus::RosEventQueue events(node, NULL, 1000,

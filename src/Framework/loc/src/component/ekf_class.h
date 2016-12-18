@@ -2,12 +2,20 @@
 #include <math.h>
 #include "EKF_properties.h"
 #include "ros/ros.h"
-#include <ParameterTypes.h>
 #include <opencv2/opencv.hpp>
 #include "Egps.h"
 #include "Eimu.h"
 #include "loc/configConfig.h"
 #include <tf/transform_broadcaster.h>
+
+
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/TwistStamped.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <std_msgs/Float64.h>
+
 
 class ekf:public ekf_props {
 	/*

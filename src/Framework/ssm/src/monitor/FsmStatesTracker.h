@@ -20,6 +20,10 @@
 #include <boost/algorithm/string.hpp>
 #include <robil_msgs/FSMState.h>
 
+
+#include <diagnostic_msgs/DiagnosticArray.h>
+
+
 using namespace std;
 using namespace ros;
 using namespace boost;

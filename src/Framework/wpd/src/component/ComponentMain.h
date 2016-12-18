@@ -8,7 +8,6 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
-//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <cognitao_v2/cognitao_v2.h>
 #include <ros/ros.h>
@@ -47,8 +46,7 @@ public:
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
-	void publishDiagnostic(const std_msgs::Header& header,
-			const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 	void heartbeat();
 	void set_events(cognitao::bus::RosEventQueue* events);
 	void rise_taskFinished();

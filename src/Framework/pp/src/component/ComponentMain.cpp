@@ -42,11 +42,9 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-
 void ComponentMain::handleGlobalPath(const robil_msgs::Path& msg)
 {
 	_move_base -> on_path(msg);
-
 }
 	
 

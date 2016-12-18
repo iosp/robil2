@@ -17,12 +17,10 @@
 #include "../QinetiQ_IO/LLICtrl.h"
 #include <boost/thread.hpp>
 #include <pthread.h>
-#include "../QinetiQ_IO/LLICtrl.h"
 #include <cognitao_v2/cognitao_v2.h>
 #include <ros/ros.h>
 #include <iostream>     // std::cout
 #include <sstream>
-
 
 #include <sensor_msgs/JointState.h>
 #include <std_msgs/Float64.h>
@@ -59,10 +57,10 @@ typedef enum { State_Off = 0, State_Init, State_Standby, State_Wait_Response, St
 class ComponentMain {
 
 public:
-	ComponentMain(int argc, char** argv);
+	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
 	//Thread Function for LLI Ctrl for QinetiQ
-	void lliCtrlLoop();
+	void   lliCtrlLoop();
 	static void * callPThread(void *pThis);
 	static void *callHeartbeat(void *pThis);
 	//This method is called when the state of the component is switching to State_Init
@@ -73,13 +71,10 @@ public:
 	void handleEffortsSt(const std_msgs::Float64& msg);
 	void handleEffortsJn(const sensor_msgs::JointState& msg);
 
-	void publishTransform(const tf::Transform& _tf, std::string srcFrame,
-			std::string distFrame);
-	tf::StampedTransform getLastTrasform(std::string srcFrame,
-			std::string distFrame);
+	void publishTransform(const tf::Transform& _tf,  std::string srcFrame, std::string distFrame);
+	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
-	void publishDiagnostic(const std_msgs::Header& header,
-			const diagnostic_msgs::DiagnosticStatus& _report);
+	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishConnectedToPlatform(std_msgs::Bool& msg);
 	void heartbeat();
 

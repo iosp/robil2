@@ -992,6 +992,7 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 		exit(1);
 	}
 
+
 	move_base_msgs::MoveBaseActionGoal goal;
 	geometry_msgs::PoseStamped ps_goal;
 
@@ -1020,6 +1021,7 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 
 //	goalCancelPublisher.publish(last_nav_goal_id);
 	goalPublisher.publish(goal);
+
 
 }
 

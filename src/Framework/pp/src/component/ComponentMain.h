@@ -31,20 +31,21 @@
 class MoveBase;
 
 class ComponentMain {
-	bool _inited;
-	ComponentMain   * _comp;
-	ros::NodeHandle _nh;
-	ros::Publisher _pub_diagnostic;
-	boost::thread_group _maintains;
-	ros::Subscriber _sub_GlobalPath;
-	ros::Subscriber _sub_BladePosition;
-	ros::Subscriber _sub_Map;
-	ros::Subscriber _sub_Location;
-	ros::Publisher  _pub_LocalPath;
-	bool init(int argc,char** argv);
 	MoveBase* _move_base;
 	cognitao::bus::RosEventQueue* _events;
 	boost::mutex _mt;
+	 bool _inited;
+	  ComponentMain   * _comp;
+	  ros::NodeHandle _nh;
+	  ros::Publisher _pub_diagnostic;
+	  boost::thread_group _maintains;
+		ros::Subscriber _sub_GlobalPath;
+		ros::Subscriber _sub_BladePosition;
+		ros::Subscriber _sub_Map;
+		ros::Subscriber _sub_Location;
+		ros::Publisher  _pub_LocalPath;
+
+	  bool init(int argc,char** argv);
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();

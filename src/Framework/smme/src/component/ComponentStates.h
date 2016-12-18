@@ -7,12 +7,9 @@ void runComponent(int argc, char** argv, ComponentMain& component);
 inline
 void runComponent(int argc, char** argv, ComponentMain* component){runComponent(argc, argv, *component);}
 
-//void startSystem(ComponentMain* component);
 
 //==============================================================================================
 
-//void initMissionTasks();
-//void initTask();
 void startStateService(ComponentMain* component, std::string mid);
 
 
@@ -44,8 +41,6 @@ class MissionMachine{
 
 	static int init(ComponentMain* comp,std::string mid){
 		startStateService(comp,mid);
-//		initMissionTasks();
-//		initTask();
 		return 0;
 	}
 public:

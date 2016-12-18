@@ -1,16 +1,9 @@
 #include <iostream>
 #include <ros/ros.h>
-//#include <decision_making/SynchCout.h>
-//#include <decision_making/BT.h>
-//#include <decision_making/FSM.h>
-//#include <decision_making/ROSTask.h>
-//#include <decision_making/DecisionMaking.h>
-//#include <decision_making/DebugModeTracker.hpp>
 
 using namespace std;
 
 #include "ComponentStates.h"
-//#include <decision_making/ROSTask.h>
 
 #define DELETE(X) if(X){delete X; X=NULL;}
 #define RESET(X,Y) if(current_task == X) { \
@@ -165,98 +158,7 @@ void process_machine(cognitao::machine::Machine & machine,
 	}
 }
 
-//class Params: public CallContextParameters{
-//public:
-//	ComponentMain* comp;
-//	Params(ComponentMain* comp):comp(comp){}
-//	std::string str()const{return "";}
-//};
 
-//FSM(ssm_ON)
-//{
-//	FSM_STATES
-//	{
-//		INIT,
-//		READY
-//	}
-//	FSM_START(INIT);
-//	FSM_BGN
-//	{
-//		FSM_STATE(INIT)
-//		{
-//			FSM_CALL_TASK(INIT)
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("INIT/EndOfInit", FSM_NEXT(READY));
-//			}
-//		}
-//		FSM_STATE(READY)
-//		{
-//			FSM_CALL_TASK(READY)
-//			FSM_TRANSITIONS{}
-//		}
-//
-//	}
-//	FSM_END
-//}
-//
-//FSM(ssm)
-//{
-//	FSM_STATES
-//	{
-//		OFF,
-//		ON
-//	}
-//	FSM_START(ON);
-//	FSM_BGN
-//	{
-//		FSM_STATE(OFF)
-//		{
-//			FSM_CALL_TASK(OFF)
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-//				FSM_ON_EVENT("/ssm/Activation", FSM_NEXT(ON));
-//			}
-//		}
-//		FSM_STATE(ON)
-//		{
-//			FSM_CALL_FSM(ssm_ON)
-//			FSM_TRANSITIONS
-//			{
-//				FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-//				FSM_ON_EVENT("/ssm/Shutdown", FSM_NEXT(OFF));
-//			}
-//		}
-//
-//	}
-//	FSM_END
-//}
-//
-//namespace {
-//
-//TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
-//	PAUSE(10000);
-//	//diagnostic_msgs::DiagnosticStatus status;
-//	//COMPONENT->publishDiagnostic(status);
-//	return TaskResult::SUCCESS();
-//}
-//TaskResult state_INIT(string id, const CallContext& context,
-//		EventQueue& events) {
-//	PAUSE(10000);
-//	return TaskResult::SUCCESS();
-//}
-//TaskResult state_READY(string id, const CallContext& context,
-//		EventQueue& events) {
-//	PAUSE(10000);
-//	return TaskResult::SUCCESS();
-//}
-//
-//}
-
-//void init_dm(int argc, char** argv) {
-//	ros_decision_making_init(argc, argv);
-//}
 
 void startComponent(ComponentMain* component) {
 

@@ -234,23 +234,7 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 		process_machine(current_machine, processor, component);
 	}
 
-//	delete(task_ptr);
 
 	return;
-
-//	ros_decision_making_init(argc, argv);
-//	RosEventQueue events;
-//	CallContext context;
-//	context.createParameters(new Params(&component));
-//	//events.async_spin();
-//	LocalTasks::registration("OFF", state_OFF);
-//	LocalTasks::registration("INIT", state_INIT);
-//	LocalTasks::registration("READY", state_READY);
-//	LocalTasks::registration("STANDBY", state_STANDBY);
-//
-//	ROS_INFO("Starting shiffon2ros...");
-//	Fsmshiffon2ros(&context, &events);
-//
-//	Shiphon_Ctrl * _shiphonCtrl;
 
 }

@@ -1,4 +1,8 @@
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+set(ROS_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug)
+
 cmake_minimum_required(VERSION 2.8.3)
 project(shiffon2ros)
 find_package(catkin REQUIRED COMPONENTS

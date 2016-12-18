@@ -34,13 +34,13 @@ ComponentMain::ComponentMain(int argc,char** argv) : _inited(init(argc,argv)), _
 
 }
 
+
 ComponentMain::~ComponentMain() {}
 
 bool ComponentMain::init(int argc,char** argv){
 	ros::init(argc,argv,"OCU_node");
 	return true;
 }
-
 void ComponentMain::handleIEDLocation(const robil_msgs::IEDLocation& msg)
 {
 //	std::cout<< "OCU say:" << msg << std::endl;
@@ -116,32 +116,28 @@ void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFr
 	static tf::TransformBroadcaster br;
 	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));
 }
-
 tf::StampedTransform ComponentMain::getLastTransform(std::string srcFrame, std::string distFrame){
 	tf::StampedTransform _tf;
-	static tf::TransformListener listener;
-	try {
-	    listener.waitForTransform(distFrame, srcFrame, ros::Time(0), ros::Duration(10.0) );
-	    listener.lookupTransform(distFrame, srcFrame, ros::Time(0), _tf);
-	} catch (tf::TransformException& ex) {
-		ROS_ERROR("%s",ex.what());
-	}
-	return _tf;
+		static tf::TransformListener listener;
+		try {
+		    listener.waitForTransform(distFrame, srcFrame, ros::Time(0), ros::Duration(10.0) );
+		    listener.lookupTransform(distFrame, srcFrame, ros::Time(0), _tf);
+		} catch (tf::TransformException& ex) {
+		    ROS_ERROR("%s",ex.what());
+		}
+		return _tf;
 }
-
 void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report){
 	diagnostic_msgs::DiagnosticArray msg;
 		msg.status.push_back(_report);
 		_pub_diagnostic.publish(msg);
 }
-
 void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report){
 	diagnostic_msgs::DiagnosticArray msg;
 		msg.header = header;
 		msg.status.push_back(_report);
 		_pub_diagnostic.publish(msg);
 }
-
 void ComponentMain::heartbeat(){
 	using namespace boost::posix_time;
 	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);

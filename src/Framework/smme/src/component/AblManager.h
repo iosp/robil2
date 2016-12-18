@@ -11,9 +11,7 @@
 #include "ComponentMain.h"
 #include "PathRecorder.h"
 
-//namespace decision_making{
-//class EventQueue;
-//}
+
 
 class AblManager {
 	ComponentMain* component;

@@ -8,10 +8,10 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
-//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <cognitao_v2/cognitao_v2.h>
 #include <ros/ros.h>
+#include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>

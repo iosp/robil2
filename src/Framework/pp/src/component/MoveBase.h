@@ -30,6 +30,11 @@ typedef rosgraph_msgs::Log LogMessage;
 #include <diagnostic_msgs/DiagnosticArray.h>
 #include <diagnostic_msgs/DiagnosticStatus.h>
 
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+
 
 using namespace std;
 

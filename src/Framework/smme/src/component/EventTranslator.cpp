@@ -6,11 +6,9 @@
  */
 
 #include "EventTranslator.h"
-//#include <decision_making/EventSystem.h>
 
 void EventTranslator(ComponentMain* comp, cognitao::bus::EventQueue* events)
 {
-//	using namespace decision_making;
 #	define TRIGGER cognitao::bus::Event event=events->waitEvent(); if(event == cognitao::bus::Event()) return; if(false){}
 #	define ON_EVENT(event_name) else if(event==cognitao::bus::Event(event_name))
 #	define SEND(event_name) events->rise(cognitao::bus::Event(event_name))
