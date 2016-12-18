@@ -11,7 +11,6 @@ using namespace decision_making;
 #include "MissionManager.h"
 #include "Types.h"
 
-
 class TaskParams: public CallContextParameters{
 public:
 	ComponentMain* comp;
@@ -154,7 +153,7 @@ TaskResult state_TaskSpooling(string id, const CallContext& context, EventQueue&
 	MM->task_state("spooling");
 	if(MM->task_type()==MissionManager::TT_Navigation){
 		MissionManager::NavTask task = MM->get_nav_task();
-		config::SMME::pub::GlobalPath path = extract_path(task);
+		robil_msgs::Path path = extract_path(task);
 		events.raiseEvent("/pp/Resume");
 		this_thread::sleep(milliseconds(500));
 		comp->publishGlobalPath(path);

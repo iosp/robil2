@@ -9,8 +9,6 @@
 #define MISSIONTESTER_H_
 
 #include <ros/ros.h>
-#include <ParameterTypes.h>
-#include <ParameterHandler.h>
 #include <boost/thread.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/bind.hpp>
@@ -21,13 +19,19 @@
 #include <sstream>
 #include <iostream>
 
+
+#include <std_msgs/String.h>
+#include <robil_msgs/AssignMission.h>
+#include <robil_msgs/AssignNavTask.h>
+
+
 using namespace std;
 using namespace boost;
 using namespace boost::posix_time;
 using namespace ros;
 
-typedef config::SMME::sub::AssignNavTask NavTask;
-typedef config::SMME::sub::AssignMission Mission;
+typedef robil_msgs::AssignNavTask NavTask;
+typedef robil_msgs::AssignMission Mission;
 
 class MissionTester {
 public:

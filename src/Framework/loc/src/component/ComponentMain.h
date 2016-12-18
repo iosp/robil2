@@ -14,7 +14,6 @@
 #include <sstream>
 
 #include <std_msgs/String.h>
-//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include "ekf_class.h"
 #include "noiseless_estimator.h"
@@ -29,6 +28,16 @@
 #include <sensor_msgs/NavSatFix.h>
 #include <diagnostic_msgs/DiagnosticArray.h>
 #include <geometry_msgs/TwistStamped.h>
+
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
+
 
 //class ComponentMain;
 class ComponentMain {

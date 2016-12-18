@@ -14,11 +14,14 @@
 #include "sensor_msgs/NavSatFix.h"
 #include "sensor_msgs/NavSatStatus.h"
 #include "std_msgs/Int8.h"
-#include <ParameterTypes.h>
 #include <ctime>
 #include <sstream>
 #include <string>
 #include <tf/tf.h>
+
+
+#include <robil_msgs/GpsSpeed.h>
+
 
 #define CENTER_X_NS		31.2622		// GPS coordinates
 #define CENTER_Y_EW		34.803611	// of lab 320
