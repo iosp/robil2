@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tao>
+     <args>
+     	<arg M="INCLUDED" />
+         <arg A="${S}" />
+         <arg B="B" />
+         <arg C="C" />
+         <arg START="${S}" />
+         <arg id="SUCC"> <state>C</state> </arg>
+         <arg id="FAIL"> <state>B</state> </arg>
+         <arg Ea="a" Eq="q" Ew="w" Eb="b" Ec="c" />
+     </args>
+     <machines>
+         <machine id="${arg:M}" type="fsm">
+             <states>
+                 <state id="${A}">
+                     <transit 
+						on_event="?${Ea}"
+						send="!${Eq}"
+						target="${B}" />
+                     <transit 
+						on_event="?${Eb}"
+						send="!${Eq}"
+						target="${C}" />
+                 </state>
+                 <state id="${B}">
+                     <transit 
+						on_event="?${Eb}"
+						send="!${Ew}"
+						target="${B}" />
+                     <transit 
+						on_event="?${Ec}"
+						send="!${Ew}"
+						target="${B}" />
+                     <transit 
+						on_event="?${Ea}"
+						send="!${Eq}"
+						target="${C}" />
+                 </state>
+                 <state id="${C}">
+                     <transit 
+						on_event="?${Eb}"
+						send="!${Ew}"
+						target="${A}" />
+                 </state>
+             </states>
+             <fsm>
+                 <start>${arg:START}</start>
+                 <success>${SUCC}</success>
+                 <fail>${FAIL}</fail>
+             </fsm>
+         </machine>
+         <root>${arg:M}</root>
+     </machines>
+</tao>

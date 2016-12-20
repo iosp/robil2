@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="ocu" type="ftt">
+			<tasks>
+
+				<task id="OFF">
+					<reaction on_event="?/ocu/Activation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="ocu_ON" type="ftt">
+						<tasks>
+
+							<task id="INIT">
+								<reaction on_event="?/ocu/EndOfInit" target="READY" />
+							</task>           
+							
+							<task id="READY"> 
+							</task> 
+
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/ocu/Shutdown" target="OFF" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>ON</start>
+			</ftt>
+		</machine>
+		<root>ocu</root>
+	</machines>
+</tao>

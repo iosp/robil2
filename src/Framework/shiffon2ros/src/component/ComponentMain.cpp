@@ -9,6 +9,13 @@
 #include "ros/time.h"
 #include "tf/LinearMath/Matrix3x3.h"
 
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+#include <string>       // std::string
+#include <iostream>     // std::cout
+#include <sstream>
+//#include "ParameterHandler.h"
+
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
@@ -21,7 +28,7 @@ const double PI_2_DEG = 180; //
 
 
 ComponentMain::ComponentMain(int argc,char** argv)
-: _inited(init(argc, argv))
+: _inited(init(argc, argv)), _events(0)
 {
 	if ( argc == 2 )
 	{
@@ -202,4 +209,13 @@ void *ComponentMain::callHeartbeat(void * pParam)
 
 	myHandle->heartbeat();
 
+}
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+
+bool ComponentMain::isClosed() {
+	return _events->is_closed();
 }

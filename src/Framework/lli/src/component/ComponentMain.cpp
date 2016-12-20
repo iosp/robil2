@@ -8,21 +8,19 @@
 #include "ComponentMain.h"
 //#include "lliCtrlManager.h"
 #include <pthread.h>
-
 #include <boost/thread.hpp>
-
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
+//#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
 #define TEST_HEARTBEAT
 
-ComponentMain::ComponentMain(int argc,char** argv)
-: _inited(init(argc, argv))
+ComponentMain::ComponentMain(int argc,char** argv) : _inited(init(argc,argv)), _events(0)
 {
 	_sub_EffortsTh=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Throttle", 10, &ComponentMain::handleEffortsTh,this));
 	_sub_EffortsSt=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Steering", 10, &ComponentMain::handleEffortsSt,this));
@@ -45,7 +43,10 @@ ComponentMain::ComponentMain(int argc,char** argv)
 
 
 
+    _driver_thread = (boost::thread *) NULL;
     _mythread = (pthread_t)NULL;
+
+
 
 //
 	//ros::Timer timer = nh.createTimer(ros::Duration(0.01), TimerCallback);
@@ -211,7 +212,6 @@ void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFr
 	static tf::TransformBroadcaster br;
 	br.sendTransform(tf::StampedTransform(_tf, ros::Time::now(), srcFrame, distFrame));
 }
-
 tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::string distFrame){
 	tf::StampedTransform _tf;
 		static tf::TransformListener listener;
@@ -223,7 +223,6 @@ tf::StampedTransform ComponentMain::getLastTrasform(std::string srcFrame, std::s
 		}
 		return _tf;
 }
-
 void ComponentMain::publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report){
 	diagnostic_msgs::DiagnosticArray msg;
 		msg.status.push_back(_report);
@@ -271,6 +270,7 @@ void * ComponentMain::callPThread(void * pParam)
 
 	myHandle->lliCtrlLoop();
 
+	return 0;
 }
 
 void ComponentMain::lliCtrlLoop()
@@ -316,7 +316,33 @@ void ComponentMain::lliCtrlLoop()
 			if (!_clli->PeriodicActivity())
 							break;
 
-
 	   	}
 
+}
+
+
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsAborted"));
 }

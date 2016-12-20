@@ -9,6 +9,7 @@
 #define FSMCOMPONENTTESTER_H_
 
 #include <ros/ros.h>
+#include <ParameterTypes.h>
 #include <map>
 #include <vector>
 #include <set>

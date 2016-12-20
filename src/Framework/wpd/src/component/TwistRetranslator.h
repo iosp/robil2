@@ -8,6 +8,7 @@
 #ifndef TWISTRETRANSLATOR_H_
 #define TWISTRETRANSLATOR_H_
 
+#include <ParameterTypes.h>
 #include "ComponentMain.h"
 
 

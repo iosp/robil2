@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tao>
+     <machines>
+         <machine id="FsmSingleState" type="fsm">
+             <states>
+                 <state id="A">
+                     <transit 
+						on_event="?e1"
+						send="!e2"
+						target="registertoserver" />
+                 </state>
+                <state id="registertoserver">
+                     <transit 
+                        on_event="?server_registration_finished"
+                        send="!e4"
+                        target="A" />
+                 </state>
+             </states>
+             <fsm>
+                 <start>A</start>
+                 <success></success>
+                 <fail></fail>
+             </fsm>
+         </machine>
+         <root>FsmSingleState</root>
+     </machines>
+</tao>

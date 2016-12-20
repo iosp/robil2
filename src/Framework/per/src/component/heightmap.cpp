@@ -491,7 +491,9 @@ void HeightMap::calculateTypes()//Vec3D position, Rotation myRot)
     {
         for(int j = 1; j < _height-1; j++)
         {
+
             double height = calc_height(i,j,conv);
+
             if (height > _dynamic->obstacle_threshold)
             {
                 double gx = calc_height(i, j, slope_conv_x);

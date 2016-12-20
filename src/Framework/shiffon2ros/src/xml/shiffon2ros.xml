@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="shiffon2ros" type="ftt">
+			<tasks>
+
+				<task id="OFF">
+					<reaction on_event="?/shiffon2ros/Activation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="shiffon2ros_ON" type="ftt">
+						<tasks>
+
+							<task id="INIT">
+								<reaction on_event="?/shiffon2ros/EndOfInit" target="READY" />
+							</task>           
+							
+							<task id="READY"> 
+								<reaction on_event="?/shiffon2ros/Standby" target="STANDBY" />
+							</task> 
+							
+							<task id="STANDBY"> 
+								<reaction on_event="?/shiffon2ros/Resume" target="READY" />
+							</task> 
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/shiffon2ros/Shutdown" target="OFF" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>ON</start>
+			</ftt>
+		</machine>
+		<root>shiffon2ros</root>
+	</machines>
+</tao>

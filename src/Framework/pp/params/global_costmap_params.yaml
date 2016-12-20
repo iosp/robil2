@@ -2,8 +2,8 @@ global_costmap:
   publish_voxel_map: false
   global_frame: /WORLD
   robot_base_frame: /ROBOT_CENTER
-  update_frequency: 1.0
-  publish_frequency: 1.0
+  update_frequency: 5.0
+  publish_frequency: 5.0
   transform_tolerance: 10
   static_map: false
   rolling_window: true

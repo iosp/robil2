@@ -8,10 +8,12 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
+//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <boost/thread.hpp>
 #include <set>
 #include "LocationSet.h"
+#include <cognitao_v2/cognitao_v2.h>
 
 #include <ros/ros.h>
 #include <string>       // std::string
@@ -30,7 +32,6 @@
 #include <sensor_msgs/JointState.h>
 
 class MissionManager;
-namespace decision_making{ class EventQueue; }
 
 class ComponentMain {
 	bool _inited;
@@ -51,8 +52,9 @@ class ComponentMain {
 	  bool init(int argc,char** argv);
 	MissionManager* _mission_manager;
 	boost::thread_group threads;
-	decision_making::EventQueue* _events;
+	cognitao::bus::EventQueue* _events;
 	LocationSet<geometry_msgs::Point> knownIEDObjects;
+	boost::mutex _m;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -73,7 +75,14 @@ public:
 
 	MissionManager * const mission_manager(){return _mission_manager;}
 
-	void set_events(decision_making::EventQueue* e){ _events = e; }
-	decision_making::EventQueue* events()const{ return _events; }
+	void set_events(cognitao::bus::EventQueue* e){ _events = e; }
+	cognitao::bus::EventQueue* events()const{ return _events; }
+
+//	void rise_taskStarted();
+//	void rise_taskPaused();
+//	void rise_taskResumed();
+//	void rise_taskStopped();
+//	void rise_taskAborted();
+//	void rise_taskCompleted();
 };
 #endif /* COMPONENTMAIN_H_ */

@@ -1,3 +1,4 @@
+#include <ParameterTypes.h>
 #include <string>
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,13 +31,13 @@ class WsmTask {
 	int _taskid ;
 	int _cur_step ;
 	string _step_status;
-	robil_msgs::AssignManipulatorTask * _cur_WSD;
+	config::WSM::sub::WorkSeqData * _cur_WSD;
 	ComponentMain* _comp;
 
 public:
 
 	WsmTask(ComponentMain* comp);
-	WsmTask(int taskid , int cur_step ,const robil_msgs::AssignManipulatorTask& cur_WSD , ComponentMain* comp);
+	WsmTask(int taskid , int cur_step ,const config::WSM::sub::WorkSeqData& cur_WSD , ComponentMain* comp);
 	WsmTask(const WsmTask& other);
 	~WsmTask();
 	void pauseTask();
@@ -45,9 +46,9 @@ public:
 	void Update_step();
 	void Set_task_status(string status);
 	void Set_step_id(int index);
-	void Set_Task_WSD(const robil_msgs::AssignManipulatorTask &WSD);
+	void Set_Task_WSD(const config::WSM::sub::WorkSeqData &WSD);
 	robil_msgs::AssignManipulatorTaskStep* Get_step();
-	robil_msgs::AssignManipulatorTask * Get_WSD();
+	config::WSM::sub::WorkSeqData * Get_WSD();
 	int Get_Task_id();
 	int Get_cur_step_index();
 	void publish_step_diag(int before , int exit_status);

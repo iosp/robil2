@@ -14,6 +14,7 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
+//#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
@@ -111,32 +112,39 @@ void ComponentMain::heartbeat(){
 	}
 }
 
-#include <decision_making/ROSTask.h>
-void ComponentMain::set_events(decision_making::EventQueue* events){
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events) {
 	boost::mutex::scoped_lock l(_mt);
 	_events = events;
 }
 void ComponentMain::rise_taskFinished(){
 	boost::mutex::scoped_lock l(_mt);
-	if(not _events) return;
-	_events->raiseEvent("/CompleteTask");
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+//	_events->raiseEvent("/CompleteTask");
 	//_events->raiseEvent("/pp/Standby");
 }
 void ComponentMain::rise_taskAborted(){
 	boost::mutex::scoped_lock l(_mt);
-	if(not _events) return;
-	_events->raiseEvent("/AbortTask");
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+//	_events->raiseEvent("/AbortTask");
 	//_events->raiseEvent("/pp/Standby");
 }
 void ComponentMain::rise_taskStarted(){
 	boost::mutex::scoped_lock l(_mt);
-	if(not _events) return;
-	_events->raiseEvent("/TaskIsStarted");
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+//	_events->raiseEvent("/TaskIsStarted");
 }
 void ComponentMain::rise_taskPaused(){
 	boost::mutex::scoped_lock l(_mt);
-	if(not _events) return;
-	_events->raiseEvent("/TaskIsPaused");
+	if (not _events)
+		return;
+	_events->rise(cognitao::bus::Event("/TaskIsPaused"));
+//	_events->raiseEvent("/TaskIsPaused");
 }
 
 void ComponentMain::cancel_navigation(){
@@ -151,4 +159,6 @@ void ComponentMain::resume_navigation(){
 	ROS_DEBUG("PP: resume navigation (activate)");
 	_move_base->activate();
 }
-
+bool ComponentMain::isClosed() {
+	return _events->is_closed();
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="smme" type="ftt">
+			<tasks>
+
+				<task id="OFF">
+					<reaction on_event="?/smme/SystemActivation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="smme_ON" type="ftt">
+						<tasks>
+
+							<task id="INIT">
+								<reaction on_event="?/smme/EndOfCoreSystemInit" target="READY" />
+							</task>           
+							
+							<task id="READY"> 
+								<reaction on_event="?/smme/EStopCommand" target="EMERGENCY" />
+							</task>    
+
+							<task id="EMERGENCY"> 
+								<reaction on_event="?/smme/ClearEStopCommand" target="READY" />
+							</task>   
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/smme/PowerOff" target="OFF" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>ON</start>
+			</ftt>
+		</machine>
+		<root>smme</root>
+	</machines>
+</tao>

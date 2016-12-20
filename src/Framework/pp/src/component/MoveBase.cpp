@@ -640,7 +640,7 @@ void MoveBase::notify_path_is_finished(bool success)const{
 }
 
 
-void MoveBase::on_position_update(const geometry_msgs::PoseWithCovarianceStamped& location){
+void MoveBase::on_position_update(const config::PP::sub::Location& location){
 SYNCH
 	//DBG_INFO("\t on_position_update( "<<location.pose.pose.position.x<<","<<location.pose.pose.position.y<<" )");
 	gotten_location = location;
@@ -650,7 +650,7 @@ SYNCH
 
 #define STR(P) P.x<<","<<P.y
 
-void MoveBase::on_path(const robil_msgs::Path& goal_path){
+void MoveBase::on_path(const config::PP::sub::GlobalPath& goal_path){
 SYNCH
 
 	DBG_INFO("Navigation: Global path gotten. Number of way points is "<<goal_path.waypoints.poses.size()<<" ");
@@ -793,7 +793,7 @@ void path_publishing(ComponentMain* comp, boost::recursive_mutex* mtx, bool* is_
 			boost::recursive_mutex::scoped_lock locker(*mtx);
 			if(*is_canceled or not *is_path_calculated) continue;
 
-			robil_msgs::Path lpath;
+			config::PP::pub::LocalPath lpath;
 			lpath.is_heading_defined=false;
 			lpath.is_ip_defined=false;
 			lpath.waypoints = curr_nav_path;
@@ -936,7 +936,7 @@ namespace{
 	}
 
 }
-void MoveBase::diagnostic_publish_new_goal(const string& path_id, const geometry_msgs::PoseStamped& goal, size_t goal_index, const geometry_msgs::PoseWithCovarianceStamped& gotten_location){
+void MoveBase::diagnostic_publish_new_goal(const string& path_id, const geometry_msgs::PoseStamped& goal, size_t goal_index, const config::PP::sub::Location& gotten_location){
 	using namespace diagnostic_msgs;
 	DiagnosticArray array;
 	DiagnosticStatus status;
@@ -998,6 +998,7 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 
 	ps_goal = robil_goal;
 	remove_orientation(ps_goal);
+
 	ps_goal.pose.position.x = robil_goal_x;
 	ps_goal.pose.position.y = robil_goal_y;
 
@@ -1031,7 +1032,7 @@ SYNCH
 }
 
 
-void MoveBase::on_map(const robil_msgs::Map& robil_map){
+void MoveBase::on_map(const config::PP::sub::Map& robil_map){
 SYNCH
 
 #if CREATE_POINTCLOUD_FOR_NAV == 1

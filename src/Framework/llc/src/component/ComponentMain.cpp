@@ -141,6 +141,11 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 		_pub_diagnostic.publish(msg);
 }
 
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+
 void ComponentMain::heartbeat(){
 	//using namespace boost::posix_time;
 	ros::Publisher _pub = _nh.advertise<std_msgs::String>("/heartbeat", 10);

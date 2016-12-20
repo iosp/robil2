@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="wpd" type="ftt">
+			<tasks>
+
+				<task id="OFF">
+					<reaction on_event="?/wpd/Activation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="wpd_ON" type="ftt">
+						<tasks>
+
+							<task id="INIT">
+								<reaction on_event="?/wpd/EndOfInit" target="WORK" />
+							</task>           
+							
+							<task id="WORK">
+								<machine id="wpd_WORK" type="ftt">
+									<tasks>
+
+										<task id="STANDBY">
+											<reaction on_event="?/wpd/Resume" target="READY" />
+										</task>
+
+										<task id="READY">
+											<reaction on_event="?/wpd/Standby" target="STANDBY" />
+										</task>            
+										
+									</tasks>
+									<ftt>
+										<start>STANDBY</start>
+									</ftt>
+								</machine>
+							</task>         
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/wpd/Shutdown" target="OFF" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>ON</start>
+			</ftt>
+		</machine>
+		<root>wpd</root>
+	</machines>
+</tao>

@@ -9,6 +9,7 @@
 #define COMPONENTMAIN_H_
 #include "ros/ros.h"
 #include <std_msgs/String.h>
+//#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <time.h>
 #include <signal.h>
@@ -16,9 +17,8 @@
 #include "../QinetiQ_IO/LLICtrl.h"
 #include <boost/thread.hpp>
 #include <pthread.h>
-
+#include <cognitao_v2/cognitao_v2.h>
 #include <ros/ros.h>
-
 #include <iostream>     // std::cout
 #include <sstream>
 
@@ -41,6 +41,7 @@
 
 
 typedef enum { State_Off = 0, State_Init, State_Standby, State_Wait_Response, State_Ready } CS_STATE;
+
 /***********************************
  * General Explanation
  *
@@ -70,7 +71,6 @@ public:
 	void handleEffortsSt(const std_msgs::Float64& msg);
 	void handleEffortsJn(const sensor_msgs::JointState& msg);
 
-
 	void publishTransform(const tf::Transform& _tf,  std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTrasform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
@@ -78,34 +78,40 @@ public:
 	void publishConnectedToPlatform(std_msgs::Bool& msg);
 	void heartbeat();
 
-    void setReady();
-    void setNotReady();
-    void checkReady();
-    void SetState(CS_STATE inState);
-    bool StateNotReady();
-    bool StateIsInit();
-    CS_STATE GetComponentState();
-    bool IsCLLIStillInInit();
-    void releaseDriverAndManipulator();
+	void setReady();
+	void setNotReady();
+	void checkReady();
+	void SetState(CS_STATE inState);
+	bool StateNotReady();
+	bool StateIsInit();
+	CS_STATE GetComponentState();
+	bool IsCLLIStillInInit();
+	void releaseDriverAndManipulator();
+
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
 
 private:
     bool _inited;
-      ros::NodeHandle _nh;
-      ros::Publisher _pub_diagnostic;
-      boost::thread_group _maintains;
-    	ros::Subscriber _sub_EffortsTh;
-    	ros::Subscriber _sub_EffortsSt;
-    	ros::Subscriber _sub_EffortsJn;
-    	ros::Publisher _pub_connected_to_platform;
-
-
-      bool init(int argc,char** argv);
+    ros::NodeHandle _nh;
+    ros::Publisher _pub_diagnostic;
+    boost::thread_group _maintains;
+    ros::Subscriber _sub_EffortsTh;
+    ros::Subscriber _sub_EffortsSt;
+    ros::Subscriber _sub_EffortsJn;
+    ros::Publisher _pub_connected_to_platform;
+    bool init(int argc,char** argv);
 	boost::thread* _driver_thread;
+	pthread_t _myHeartbeatThread;
 	CLLI_Ctrl *_clli;
 	static ComponentMain *_this;
 	pthread_t _mythread;
 	bool is_ready;
 	CS_STATE _state;
-	pthread_t _myHeartbeatThread;
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
 };
 #endif /* COMPONENTMAIN_H_ */

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="mission" type="ftt">
+			<tasks>
+			
+				<task id="UNLOADED">
+					<reaction on_event="?/smme/mission/1/MissionUnloaded/Stopped" target="STOP_MACHINE" />
+				</task>
+				
+				<task id="STOP_MACHINE" />
+				
+				<task id="PENDING">
+					<reaction on_event="?/smme/ClearMissionBuffer" target="UNLOADED" />
+					<reaction on_event="?/smme/mission/1/DeleteMission" target="UNLOADED" />
+					<reaction on_event="?/smme/mission/1/StartMission" target="ACTIVE" />
+				</task>     
+       
+				<task id="ACTIVE">
+					<machine id="mission_active" type="ftt">
+						<tasks>
+
+							<task id="SPOOLING">
+								<reaction on_event="?/smme/mission/1/CompleteMission" target="FINISHED" />
+								<reaction on_event="?/smme/mission/1/AbortMission" target="ABORTED" />
+								<reaction on_event="?/smme/mission/1/PauseMission" target="PAUSED" />
+							</task>           
+							
+							<task id="PAUSED"> 
+								<reaction on_event="?/smme/mission/1/CompleteMission" target="FINISHED" />
+								<reaction on_event="?/smme/mission/1/AbortMission" target="ABORTED" />
+								<reaction on_event="?/smme/mission/1/ResumeMission" target="SPOOLING" />
+							</task>    
+
+							<task id="ABORTED"> 
+								<reaction on_event="?/smme/mission/1/StartMission" target="SPOOLING" />
+							</task>   
+	
+							<task id="FINISHED"> 
+								<reaction on_event="?/smme/mission/1/StartMission" target="SPOOLING" />
+							</task>   
+						</tasks>
+						<ftt>
+							<start>SPOOLING</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/smme/mission/1/DeleteMission" target="UNLOADED" />
+					<reaction on_event="?/smme/mission/1/Standby" target="UNLOADED" />
+					<reaction on_event="?/smme/mission/ClearMissionBuffer" target="UNLOADED" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>PENDING</start>
+				<success>
+					<task>STOP_MACHINE</task>
+				</success>
+			</ftt>
+		</machine>
+		<root>mission</root>
+	</machines>
+</tao>

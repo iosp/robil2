@@ -7,13 +7,14 @@
  */
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
-
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
+//#include <ParameterTypes.h>
 #include <tf/tf.h>
+#include <cognitao_v2/cognitao_v2.h>
 #include <boost/thread.hpp>
 
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
@@ -28,11 +29,10 @@
 #endif
 
 class MoveBase;
-namespace decision_making{ class EventQueue; }
 
 class ComponentMain {
 	MoveBase* _move_base;
-	decision_making::EventQueue* _events;
+	cognitao::bus::RosEventQueue* _events;
 	boost::mutex _mt;
 	 bool _inited;
 	  ComponentMain   * _comp;
@@ -58,8 +58,8 @@ public:
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
-
-	void set_events(decision_making::EventQueue* events);
+	void heartbeat();
+	void set_events(cognitao::bus::RosEventQueue* events);
 	void rise_taskFinished();
 	void rise_taskAborted();
 	void rise_taskStarted();
@@ -68,7 +68,6 @@ public:
 	void cancel_navigation();
 	void pause_navigation();
 	void resume_navigation();
-
-	void heartbeat();
+	bool isClosed();
 };
 #endif /* COMPONENTMAIN_H_ */

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="lli" type="ftt">
+			<tasks>
+
+				<task id="OFF">
+					<reaction on_event="?/lli/Activation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="lli_ON" type="ftt">
+						<tasks>
+
+							<task id="INIT">
+								<reaction on_event="?/lli/EndOfInit" target="READY" />
+							</task>           
+							
+							<task id="READY"> 
+								<reaction on_event="?/lli/Standby" target="STANDBY" />
+							</task> 
+							
+							<task id="STANDBY"> 
+								<reaction on_event="?/lli/Resume" target="READY" />
+							</task> 
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/lli/Shutdown" target="OFF" />
+				</task>
+				
+			</tasks>
+			<ftt>
+				<start>ON</start>
+				<fail><task>OFF</task></fail>
+			</ftt>
+		</machine>
+		<root>lli</root>
+	</machines>
+</tao>

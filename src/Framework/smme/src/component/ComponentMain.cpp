@@ -8,7 +8,6 @@
 #include "ComponentMain.h"
 #include "MissionManager.h"
 #include "ComponentStates.h"
-#include <decision_making/ROSTask.h>
 #include <tf/transform_listener.h>
 
 #include <ros/ros.h>
@@ -16,9 +15,9 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
+//#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
-
 std::map<std::string, boost::shared_ptr<MissionMachine> > machines;
 namespace {
 
@@ -87,7 +86,7 @@ void ComponentMain::handleAssignManTask(const robil_msgs::AssignManipulatorTask&
 
 void ComponentMain::handleAssignMission(const robil_msgs::AssignMission& msg)
 {
-	robil_msgs::MissionAcceptance acceptance =
+	config::SMME::pub::MissionAcceptance acceptance =
 			_mission_manager->assign(msg);
 	if(acceptance.status==0){
 		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" accepted");
@@ -129,7 +128,7 @@ void ComponentMain::handleIEDLocation(const robil_msgs::IEDLocation& msg)
 			if(location_global.point not_in knownIEDObjects){
 				std:stringstream buff;
 				check_if_not_contains(location_global.point, knownIEDObjects, buff);
-				if(events()) events()->raiseEvent("/IEDDetected");
+				if(events()) events()->rise(cognitao::bus::Event("/IEDDetected"));
 				knownIEDObjects.insert(location_global.point);
 				ROS_INFO_STREAM("SMME: new IED object detected: its global pose is "<<location_global.point.x<<", "<<location_global.point.y<<", "<<location_global.point.z);
 				ROS_INFO_STREAM("SMME: new IED object detected: ... \n"<<buff.str());

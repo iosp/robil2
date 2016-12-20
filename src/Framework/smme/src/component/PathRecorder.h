@@ -9,6 +9,7 @@
 #define PATHRECORDER_H_
 
 #include <ros/ros.h>
+#include <ParameterTypes.h>
 #include <list>
 
 
@@ -32,7 +33,7 @@ public:
 	ros::Subscriber s_location;
 	ros::Publisher  p_plan;
 
-	void on_new_location(const geometry_msgs::PoseWithCovarianceStamped& msg);
+	void on_new_location(const config::SMME::sub::Location& msg);
 
 	boost::mutex m;
 	bool record;

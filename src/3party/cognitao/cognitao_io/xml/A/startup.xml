@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="startup" type="ftt">
+			<tasks>
+				<!-- -->
+				<task id="root">
+					<reaction on_event="?__/finish" target="end" />
+					<machine id="system_client"
+						file="/home/dan/workspace/cognitao/src/cognitao/cognitao_io/xml/A/system_client.xml">
+					</machine>
+					<machine id="run_mission"
+						file="/home/dan/workspace/cognitao/src/cognitao/cognitao_io/xml/A/run_mission.xml">
+					</machine>
+					<reaction on_event="?__/finish" target="end" />
+				</task>
+				<task id="end"></task>
+			</tasks>
+			<ftt>
+				<start>root</start>
+				<success>
+					<task>end</task>
+				</success>
+			</ftt>
+		</machine>
+		<root>startup</root>
+	</machines>
+</tao>

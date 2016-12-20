@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tao>
+	<machines>
+		<machine id="per" type="ftt">
+			<tasks>
+				<task id="OFF">
+					<reaction on_event="?/per/Activation" target="ON" />
+				</task>    
+       
+				<task id="ON">
+					<machine id="per_ON" type="ftt">
+						<tasks>
+							<task id="INIT">
+								<reaction on_event="?/per/EndOfInit" target="READY" />
+							</task>           
+							
+							<task id="READY">
+							</task>         
+						</tasks>
+						<ftt>
+							<start>INIT</start>
+						</ftt>
+					</machine>
+					<reaction on_event="?/per/Shutdown" target="OFF" />
+				</task>
+			</tasks>
+			<ftt>
+				<start>ON</start>
+			</ftt>
+		</machine>
+		<root>per</root>
+	</machines>
+</tao>

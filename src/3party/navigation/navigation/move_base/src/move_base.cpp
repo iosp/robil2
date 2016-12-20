@@ -48,6 +48,9 @@
 
 #include <fstream>
 
+//static std::ofstream move_base_debug_file("/tmp/move_base_debug.log");
+#define DP(X) //move_base_debug_file<<X<<" ["<<__FUNCTION__<<":"<<__LINE__<<"]"<<std::endl
+
 namespace move_base {
 
 namespace{
@@ -68,9 +71,13 @@ namespace{
     recovery_loader_("nav_core", "nav_core::RecoveryBehavior"),
     planner_plan_(NULL), latest_plan_(NULL), controller_plan_(NULL),
 	last_path_plan(NULL),
-    runPlanner_(false), setup_(false), p_freq_change_(false), c_freq_change_(false), new_global_plan_(false) {
-
+    runPlanner_(false), setup_(false), p_freq_change_(false), c_freq_change_(false), new_global_plan_(false) 
+    {
+      DP("Create MoveBase objects");
+      
     as_ = new MoveBaseActionServer(ros::NodeHandle(), "move_base", boost::bind(&MoveBase::executeCb, this, _1), false);
+    
+    DP("  MoveBaseActionServer is created");
 
     ros::NodeHandle private_nh("~");
     ros::NodeHandle nh;
@@ -92,6 +99,7 @@ namespace{
     private_nh.param("oscillation_distance", oscillation_distance_, 0.5);
 
 
+    DP("  all paramteres are retrived");
 
     //set up plan triple buffer
     planner_plan_ = new std::vector<geometry_msgs::PoseStamped>();
@@ -100,6 +108,8 @@ namespace{
 
     //set up the planner's thread
     planner_thread_ = new boost::thread(boost::bind(&MoveBase::planThread, this));
+    
+    DP("  planer thread is launched");
 
     //for comanding the base
     vel_pub_ = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
@@ -117,6 +127,8 @@ namespace{
     //like nav_view and rviz
     ros::NodeHandle simple_nh("move_base_simple");
     goal_sub_ = simple_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1, boost::bind(&MoveBase::goalCB, this, _1));
+    
+    DP("  all subsribers and publishers are created");
 
     //we'll assume the radius of the robot to be consistent with what's specified for the costmaps
     private_nh.param("local_costmap/inscribed_radius", inscribed_radius_, 0.325);
@@ -127,54 +139,71 @@ namespace{
     private_nh.param("shutdown_costmaps", shutdown_costmaps_, false);
     private_nh.param("clearing_rotation_allowed", clearing_rotation_allowed_, true);
     private_nh.param("recovery_behavior_enabled", recovery_behavior_enabled_, true);
+    
+    DP("   additional paramerters are retrived");
 
+    DP("  create the ros wrapper for the planner's costmap... and initializer a pointer we'll use with the underlying map");
     //create the ros wrapper for the planner's costmap... and initializer a pointer we'll use with the underlying map
     planner_costmap_ros_ = new costmap_2d::Costmap2DROS("global_costmap", tf_);
     planner_costmap_ros_->pause();
 
     //initialize the global planner
+    DP("  initialize the global planner");
     try {
       planner_ = bgp_loader_.createInstance(global_planner);
-      planner_->initialize(bgp_loader_.getName(global_planner), planner_costmap_ros_);
+      std::string name = bgp_loader_.getName(global_planner);
+      nav_core::BaseGlobalPlanner* _p = planner_.get();
+      _p->initialize(name, planner_costmap_ros_);
     } catch (const pluginlib::PluginlibException& ex) {
+      DP("  FATAL ERROR : Failed to create the "<<global_planner<<" planner, are you sure it is properly registered and that the containing library is built? Exception: "<<ex.what() );
       ROS_FATAL("Failed to create the %s planner, are you sure it is properly registered and that the containing library is built? Exception: %s", global_planner.c_str(), ex.what());
       exit(1);
     }
 
     //create the ros wrapper for the controller's costmap... and initializer a pointer we'll use with the underlying map
+    DP("  create the ros wrapper for the controller's costmap... and initializer a pointer we'll use with the underlying map");
     controller_costmap_ros_ = new costmap_2d::Costmap2DROS("local_costmap", tf_);
     controller_costmap_ros_->pause();
 
     //create a local planner
+    DP("  create a local planner");
     try {
       tc_ = blp_loader_.createInstance(local_planner);
       ROS_INFO("Created local_planner %s", local_planner.c_str());
+      DP("     Created local_planner "<<local_planner);
       tc_->initialize(blp_loader_.getName(local_planner), &tf_, controller_costmap_ros_);
     } catch (const pluginlib::PluginlibException& ex) {
+      DP("  FATAL ERROR: Failed to create the "<<local_planner<<" planner, are you sure it is properly registered and that the containing library is built? Exception: "<<ex.what() );
       ROS_FATAL("Failed to create the %s planner, are you sure it is properly registered and that the containing library is built? Exception: %s", local_planner.c_str(), ex.what());
       exit(1);
     }
 
     // Start actively updating costmaps based on sensor data
+    DP("   Start actively updating costmaps based on sensor data");
     planner_costmap_ros_->start();
     controller_costmap_ros_->start();
 
     //advertise a service for getting a plan
+    DP("   advertise a service for getting a plan");
     make_plan_srv_ = private_nh.advertiseService("make_plan", &MoveBase::planService, this);
 
     //advertise a service for clearing the costmaps
+    DP("  advertise a service for clearing the costmaps");
     clear_costmaps_srv_ = private_nh.advertiseService("clear_costmaps", &MoveBase::clearCostmapsService, this);
 
     version_srv = private_nh.advertiseService("version", &MoveBase::versionServiceCallback, this);
 
     //if we shutdown our costmaps when we're deactivated... we'll do that now
+    DP("   if we shutdown our costmaps when we're deactivated... we'll do that now");
     if(shutdown_costmaps_){
       ROS_DEBUG_NAMED("move_base","Stopping costmaps initially");
+      DP("   Stopping costmaps initially");
       planner_costmap_ros_->stop();
       controller_costmap_ros_->stop();
     }
 
     //load any user specified recovery behaviors, and if that fails load the defaults
+    DP("   load any user specified recovery behaviors, and if that fails load the defaults");
     if(!loadRecoveryBehaviors(private_nh)){
       loadDefaultRecoveryBehaviors();
     }
@@ -186,6 +215,7 @@ namespace{
     recovery_index_ = 0;
 
     //we're all set up now so we can start the action server
+    DP("   we're all set up now so we can start the action server");
     as_->start();
 
     dsrv_ = new dynamic_reconfigure::Server<move_base::MoveBaseConfig>(ros::NodeHandle("~"));
@@ -194,6 +224,7 @@ namespace{
 
     trajectory_parameters_publisher = nh.advertise<dynamic_reconfigure::Config>("/move_base/TrajectoryPlannerROS/parameter_updates",1);
 
+    DP("  End of initialization");
   }
 
   void MoveBase::reconfigureCB(move_base::MoveBaseConfig &config, uint32_t level){
@@ -654,31 +685,40 @@ namespace{
 
   void MoveBase::executeCb(const move_base_msgs::MoveBaseGoalConstPtr& move_base_goal)
   {
+    DP("Execute New Goal");
+    
     if(!isQuaternionValid(move_base_goal->target_pose.pose.orientation)){
       as_->setAborted(move_base_msgs::MoveBaseResult(), "Aborting on goal because it was sent with an invalid quaternion");
+      DP("  Aborting on goal because it was sent with an invalid quaternion");
       return;
     }
 
+    DP("   get goal");
     geometry_msgs::PoseStamped goal = goalToGlobalFrame(move_base_goal->target_pose);
 
     //we have a goal so start the planner
+    DP("  we have a goal so start the planner");
     boost::unique_lock<boost::mutex> lock(planner_mutex_);
     planner_goal_ = goal;
     runPlanner_ = true;
     planner_cond_.notify_one();
     lock.unlock();
 
+    DP("   publish goal");
+    
     current_goal_pub_.publish(goal);
     std::vector<geometry_msgs::PoseStamped> global_plan;
 
     ros::Rate r(controller_frequency_);
     if(shutdown_costmaps_){
       ROS_DEBUG_NAMED("move_base","Starting up costmaps that were shut down previously");
+      DP("  Starting up costmaps that were shut down previously");
       planner_costmap_ros_->start();
       controller_costmap_ros_->start();
     }
 
     //we want to make sure that we reset the last time we had a valid plan and control
+    DP("   we want to make sure that we reset the last time we had a valid plan and control");
     last_valid_control_ = ros::Time::now();
     last_valid_plan_ = ros::Time::now();
     last_oscillation_reset_ = ros::Time::now();
@@ -686,6 +726,7 @@ namespace{
     ros::NodeHandle n;
     while(n.ok())
     {
+      DP("  start iteration");
       if(c_freq_change_)
       {
         ROS_INFO("Setting controller frequency to %.2f", controller_frequency_);
@@ -693,13 +734,16 @@ namespace{
         c_freq_change_ = false;
       }
 
+      DP("  isPreemptRequested() == "<<(as_->isPreemptRequested()?"yes":"no"));
       if(as_->isPreemptRequested()){
         if(as_->isNewGoalAvailable()){
           //if we're active and a new goal is available, we'll accept it, but we won't shut anything down
+	  DP("  if we're active and a new goal is available, we'll accept it, but we won't shut anything down");
           move_base_msgs::MoveBaseGoal new_goal = *as_->acceptNewGoal();
 
           if(!isQuaternionValid(new_goal.target_pose.pose.orientation)){
             as_->setAborted(move_base_msgs::MoveBaseResult(), "Aborting on goal because it was sent with an invalid quaternion");
+	    DP("   Aborting on goal because it was sent with an invalid quaternion");
             return;
           }
 
@@ -717,6 +761,7 @@ namespace{
           lock.unlock();
 
           //publish the goal point to the visualizer
+	  DP(" move_base has received a goal. publish the goal point to the visualizer");
           ROS_DEBUG_NAMED("move_base","move_base has received a goal of x: %.2f, y: %.2f", goal.pose.position.x, goal.pose.position.y);
           current_goal_pub_.publish(goal);
 
@@ -727,10 +772,12 @@ namespace{
         }
         else {
           //if we've been preempted explicitly we need to shut things down
+	  DP("   if we've been preempted explicitly we need to shut things down");
           resetState();
 
           //notify the ActionServer that we've successfully preempted
           ROS_DEBUG_NAMED("move_base","Move base preempting the current goal");
+	  DP("  Move base preempting the current goal");
           as_->setPreempted();
 
           //we'll actually return from execute after preempting
@@ -739,10 +786,12 @@ namespace{
       }
 
       //we also want to check if we've changed global frames because we need to transform our goal pose
+      DP("   we also want to check if we've changed global frames because we need to transform our goal pose");
       if(goal.header.frame_id != planner_costmap_ros_->getGlobalFrameID()){
         goal = goalToGlobalFrame(goal);
 
         //we want to go back to the planning state for the next execution cycle
+	DP("   we want to go back to the planning state for the next execution cycle");
         recovery_index_ = 0;
         state_ = PLANNING;
 
@@ -764,12 +813,14 @@ namespace{
       }
 
       //for timing that gives real time even in simulation
+      DP("   for timing that gives real time even in simulation");
       ros::WallTime start = ros::WallTime::now();
 
       //the real work on pursuing a goal is done here
       bool done = executeCycle(goal, global_plan);
 
       //if we're done, then we'll return from execute
+      DP("   if we're done, then we'll return from execute = "<<(done ? "done" : "continue"));
       if(done)
         return;
 
@@ -782,6 +833,7 @@ namespace{
       //make sure to sleep for the remainder of our cycle time
       if(r.cycleTime() > ros::Duration(1 / controller_frequency_) && state_ == CONTROLLING)
         ROS_WARN("Control loop missed its desired rate of %.4fHz... the loop actually took %.4f seconds", controller_frequency_, r.cycleTime().toSec());
+      DP("   END of iteration");
     }
 
     //wake up the planner thread so that it can exit cleanly
@@ -792,6 +844,7 @@ namespace{
 
     //if the node is killed then we'll abort and return
     as_->setAborted(move_base_msgs::MoveBaseResult(), "Aborting on the goal because the node has been killed");
+    DP("Aborting on the goal because the node has been killed");
     return;
   }
 
@@ -803,25 +856,31 @@ namespace{
 
   bool MoveBase::executeCycle(geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& global_plan){
     boost::recursive_mutex::scoped_lock ecl(configuration_mutex_);
+    
+    DP("Start executeCycle");
 
     static std::ofstream error_file("/tmp/move_base_error.log");
 
 
 
     //we need to be able to publish velocity commands
+    DP("  we need to be able to publish velocity commands");
     geometry_msgs::Twist cmd_vel;
 
     //update feedback to correspond to our curent position
+    DP("  getting robot pose");
     tf::Stamped<tf::Pose> global_pose;
     planner_costmap_ros_->getRobotPose(global_pose);
     geometry_msgs::PoseStamped current_position;
     tf::poseStampedTFToMsg(global_pose, current_position);
 
     //push the feedback out
+    DP("  publishing feedback");
     move_base_msgs::MoveBaseFeedback feedback;
+    DP("  movebase feedback init");
     feedback.base_position = current_position;
     as_->publishFeedback(feedback);
-
+    DP("  finished publish");
     //check to see if we've moved far enough to reset our oscillation timeout
     if(distance(current_position, oscillation_pose_) >= oscillation_distance_)
     {
@@ -833,6 +892,7 @@ namespace{
         recovery_index_ = 0;
     }
 
+    DP("  checking if costmap is current");
     //check that the observation buffers for the costmap are current, we don't want to drive blind
     if(!controller_costmap_ros_->isCurrent()){
       ROS_WARN("[%s]:Sensor data is out of date, we're not going to allow commanding of the base for safety",ros::this_node::getName().c_str());
@@ -844,7 +904,7 @@ namespace{
       publishZeroVelocity();
       return false;
     }
-
+    DP("  costmap is current");
     //if we have a new plan then grab it and give it to the controller
     if(new_global_plan_){
       //make sure to set the new plan flag to false
@@ -904,7 +964,7 @@ namespace{
       trajectory_parameters_publisher.publish(param_msg);
 
 
-
+      DP("  setting controller plan");
       if(!tc_->setPlan(*controller_plan_)){
         //ABORT and SHUTDOWN COSTMAPS
         ROS_ERROR("Failed to pass global plan to the controller, aborting.");
@@ -934,6 +994,7 @@ namespace{
       //if we are in a planning state, then we'll attempt to make a plan
       case PLANNING:
         {
+	  DP(" case planning");
           boost::mutex::scoped_lock lock(planner_mutex_);
           runPlanner_ = true;
           planner_cond_.notify_one();
@@ -943,6 +1004,7 @@ namespace{
 
       //if we're controlling, we'll attempt to find valid velocity commands
       case CONTROLLING:
+	DP(" case controlling");
         ROS_DEBUG_NAMED("move_base","In controlling state.");
 
         //check to see if we've reached our goal
@@ -955,6 +1017,7 @@ namespace{
           runPlanner_ = false;
           lock.unlock();
 
+	   DP("  set goal reached");
           as_->setSucceeded(move_base_msgs::MoveBaseResult(), "Goal reached.");
           return true;
         }
@@ -963,6 +1026,7 @@ namespace{
         if(oscillation_timeout_ > 0.0 &&
             last_oscillation_reset_ + ros::Duration(oscillation_timeout_) < ros::Time::now())
         {
+	  DP(" oscillation timeout");
           publishZeroVelocity();
           state_ = CLEARING;
           recovery_trigger_ = OSCILLATION_R;
@@ -1010,6 +1074,7 @@ namespace{
 
       //we'll try to clear out space with any user-provided recovery behaviors
       case CLEARING:
+	DP(" case clearing");
         ROS_DEBUG_NAMED("move_base","In clearing/recovery state");
         //we'll invoke whatever recovery behavior we're currently on if they're enabled
         if(recovery_behavior_enabled_ && recovery_index_ < recovery_behaviors_.size()){
@@ -1066,12 +1131,13 @@ namespace{
         }
         break;
       default:
+	DP("  case default");
         ROS_ERROR("This case should never be reached, something is wrong, aborting");
 
         error_file << NOW() << " : This case should never be reached, something is wrong, aborting";
 		error_file.flush();
 
-
+	DP(" reset state");
         resetState();
         //disable the planner thread
         boost::unique_lock<boost::mutex> lock(planner_mutex_);
@@ -1080,7 +1146,7 @@ namespace{
         as_->setAborted(move_base_msgs::MoveBaseResult(), "Reached a case that should not be hit in move_base. This is a bug, please report it.");
         return true;
     }
-
+    DP(" end of executecycle");
     //we aren't done yet
     return false;
   }

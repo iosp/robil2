@@ -8,6 +8,7 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
+//#include <ParameterTypes.h>
 #include <tf/tf.h>
 
 // #include <per/lane.h>
@@ -16,34 +17,13 @@
 #include <vector>
 #include <dynamic_reconfigure/server.h>
 #include <per/configConfig.h>
-
+#include <cognitao_v2/cognitao_v2.h>
+using namespace std;
 #include <ros/ros.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
 #include <boost/thread.hpp>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #include <std_msgs/String.h>
 #include <nav_msgs/Path.h>
@@ -94,36 +74,37 @@ class HeightMap;
 
 class ComponentMain {
 	bool _inited;
-	  ros::NodeHandle _nh;
-	  ros::Publisher _pub_diagnostic;
-	  boost::thread_group _maintains;
-		ros::Subscriber _sub_Location;
-		ros::Subscriber _sub_PerVelocity;
-		ros::Subscriber _sub_SensorINS;
-		ros::Subscriber _sub_SensorGPS;
-		ros::Subscriber _sub_SensorCamL;
-		ros::Subscriber _sub_SensorCamR;
-		ros::Subscriber _sub_SensorWire;
-		ros::Subscriber _sub_SensorSICK1;
-		ros::Subscriber _sub_SensorSICK2;
-		ros::Subscriber _sub_SensorIBEO;
-		ros::Subscriber _sub_EffortsTh;
-		ros::Subscriber _sub_EffortsSt;
-		ros::Subscriber _sub_EffortsJn;
-		ros::Subscriber _sub_GpsSpeed;
-		ros::Publisher  _pub_GPS;
-		ros::Publisher  _pub_INS;
-		ros::Publisher  _pub_BladePosition;
-		ros::Publisher  _pub_Map;
-		ros::Publisher  _pub_MiniMap;
-		ros::Publisher  _pub_VOOdometry;
-		ros::Publisher  _pub_GpsSpeed;
-        ros::Publisher  _pub_PC;
-        ros::Publisher  _pub_PC_world;
-        ros::Publisher _pub_hMap;
-        ros::Publisher _pub_tMap;
-
-	  bool init(int argc,char** argv);
+	ros::NodeHandle _nh;
+	ros::Publisher _pub_diagnostic;
+	boost::thread_group _maintains;
+	ros::Subscriber _sub_Location;
+	ros::Subscriber _sub_PerVelocity;
+	ros::Subscriber _sub_SensorINS;
+	ros::Subscriber _sub_SensorGPS;
+	ros::Subscriber _sub_SensorCamL;
+	ros::Subscriber _sub_SensorCamR;
+	ros::Subscriber _sub_SensorWire;
+	ros::Subscriber _sub_SensorSICK1;
+	ros::Subscriber _sub_SensorSICK2;
+	ros::Subscriber _sub_SensorIBEO;
+	ros::Subscriber _sub_EffortsTh;
+	ros::Subscriber _sub_EffortsSt;
+	ros::Subscriber _sub_EffortsJn;
+	ros::Subscriber _sub_GpsSpeed;
+	ros::Publisher  _pub_GPS;
+	ros::Publisher  _pub_INS;
+	ros::Publisher  _pub_BladePosition;
+	ros::Publisher  _pub_Map;
+	ros::Publisher  _pub_MiniMap;
+	ros::Publisher  _pub_VOOdometry;
+	ros::Publisher  _pub_GpsSpeed;
+    ros::Publisher  _pub_PC;
+    ros::Publisher  _pub_PC_world;
+    ros::Publisher _pub_hMap;
+    ros::Publisher _pub_tMap;
+    bool init(int argc,char** argv);
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
@@ -157,6 +138,13 @@ public:
 	void handleSensorIBEOandINS(const sensor_msgs::ImuConstPtr& msgINS, const robil_msgs::MultiLaserScanConstPtr& msgIBEO);
 	void setVisualize(char);
 	void heartbeat();
+	
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
+	bool isClosed();
 
 	/**
 	 * Walrus Changes:

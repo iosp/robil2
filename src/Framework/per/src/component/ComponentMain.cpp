@@ -10,6 +10,7 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
+//#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 #include <sensor_msgs/Imu.h>
@@ -37,8 +38,7 @@ void cb(const sensor_msgs::ImuConstPtr& msgINS, const robil_msgs::MultiLaserScan
     std::cout << "got data" << msgIBEO->header.stamp << ", " << msgINS->header.stamp << std::endl;
 }
 
-ComponentMain::ComponentMain(int argc,char** argv)
-: _inited(init(argc, argv))
+ComponentMain::ComponentMain(int argc,char** argv) : _inited(init(argc,argv)), _events(0)
 {
     _should_pub = true;
 _sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
@@ -275,6 +275,34 @@ void ComponentMain::handleGpsSpeed(const robil_msgs::GpsSpeed& msg)
 void ComponentMain::publishGpsSpeed(robil_msgs::GpsSpeed& msg)
 {
 	_pub_GpsSpeed.publish(msg);
+}
+
+void ComponentMain::set_events(cognitao::bus::RosEventQueue* events){
+	boost::mutex::scoped_lock l(_mt);
+	_events = events;
+}
+void ComponentMain::rise_taskFinished(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/CompleteTask"));
+}
+void ComponentMain::rise_taskAborted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/AbortTask"));
+}
+void ComponentMain::rise_taskStarted(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsStarted"));
+}
+void ComponentMain::rise_taskPaused(){
+	boost::mutex::scoped_lock l(_mt);
+	if(not _events) return;
+	_events->rise(cognitao::bus::Event("/TaskIsAborted"));
+}
+bool ComponentMain::isClosed(){
+	return _events->is_closed();
 }
 
 /**

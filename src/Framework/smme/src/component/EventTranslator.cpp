@@ -6,15 +6,12 @@
  */
 
 #include "EventTranslator.h"
-#include <decision_making/EventSystem.h>
-#include "ComponentMain.h"
 
-void EventTranslator(ComponentMain* comp, decision_making::EventQueue* events)
+void EventTranslator(ComponentMain* comp, cognitao::bus::EventQueue* events)
 {
-	using namespace decision_making;
-#	define TRIGGER Event event=events->waitEvent(); if(not event) return; if(false){}
-#	define ON_EVENT(event_name) else if(event==Event(event_name))
-#	define SEND(event_name) events->raiseEvent(Event(event_name))
+#	define TRIGGER cognitao::bus::Event event=events->waitEvent(); if(event == cognitao::bus::Event()) return; if(false){}
+#	define ON_EVENT(event_name) else if(event==cognitao::bus::Event(event_name))
+#	define SEND(event_name) events->rise(cognitao::bus::Event(event_name))
 #define X(x) x
 
 	while(true){
@@ -27,7 +24,7 @@ void EventTranslator(ComponentMain* comp, decision_making::EventQueue* events)
 			SEND("/llc/Resume");
 		}
 		ON_EVENT("/IEDDetected"){
-			SEND("/PauseMission");
+			SEND("/smme/mission/./PauseMission");
 		}
 
 

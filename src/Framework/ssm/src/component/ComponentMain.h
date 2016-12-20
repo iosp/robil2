@@ -8,12 +8,13 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
+#include <ParameterTypes.h>
 #include <tf/tf.h>
+#include <cognitao_v2/cognitao_v2.h>
 #include <ros/ros.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-
 #include <boost/thread.hpp>
 
 
@@ -34,26 +35,32 @@
 
 class ComponentMain {
 	bool _inited;
-	  ros::NodeHandle _nh;
-	  ros::Publisher _pub_diagnostic;
-	  boost::thread_group _maintains;
-		ros::Subscriber _sub_BladePosition;
-		ros::Subscriber _sub_Location;
-		ros::Subscriber _sub_PerVelocity;
-
-
-	  bool init(int argc,char** argv);
+	ros::NodeHandle _nh;
+	ros::Publisher _pub_diagnostic;
+	boost::thread_group _maintains;
+	ros::Subscriber _sub_BladePosition;
+	ros::Subscriber _sub_Location;
+	ros::Subscriber _sub_PerVelocity;
+	bool init(int argc,char** argv);
+	cognitao::bus::RosEventQueue* _events;
+	boost::mutex _mt;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	void handleBladePosition(const sensor_msgs::JointState& msg);
-	void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
-	void handlePerVelocity(const geometry_msgs::TwistStamped& msg);
+	void handleBladePosition(const config::SSM::sub::BladePosition& msg);
+	void handleLocation(const config::SSM::sub::Location& msg);
+	void handlePerVelocity(const config::SSM::sub::PerVelocity& msg);
 
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 	void heartbeat();
+	void set_events(cognitao::bus::RosEventQueue* events);
+	void rise_taskFinished();
+	void rise_taskAborted();
+	void rise_taskStarted();
+	void rise_taskPaused();
+	bool isClosed();
 };
 #endif /* COMPONENTMAIN_H_ */
