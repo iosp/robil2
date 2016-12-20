@@ -165,6 +165,92 @@ void process_machine(cognitao::machine::Machine & machine,
 	}
 }
 
+void build_fsm(
+    /*INPUT*/
+    Processor& processor,
+    cognitao::machine::Context& context,
+    /*OUTPUT*/
+    cognitao::io::compiler::CompilationObjectsCollector& collector,
+    cognitao::io::compiler::CompiledMachine& ready_machine
+)
+{
+    std::stringstream mission_description_stream;
+    mission_description_stream << "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+		    << endl << "<tao>" << endl << "	<machines>" << endl
+		    << "		<machine file=\"${rospack:shiffon2ros}/src/xml/shiffon2ros.xml\"/>"
+		    << endl << "		<root>shiffon2ros</root>" << endl << "	</machines>"
+		    << endl << "</tao>" << endl;
+
+    
+    cognitao::io::parser::xml::XMLParser parser;
+    cognitao::io::parser::MachinesCollection machines;
+    try {
+	    machines = parser.parse(mission_description_stream, context.str());
+    } catch (const cognitao::io::parser::ParsingError& error) {
+	    std::cerr << "ParsingError:" << endl << error.message << endl;
+	    return;
+    }
+
+    cognitao::io::compiler::Compiler compiler;
+    
+    compiler.add_builder(
+		    cognitao::io::compiler::MachineBuilder::Ptr(
+				    new cognitao::io::compiler::fsm::FsmBuilder(processor)));
+    compiler.add_builder(
+		    cognitao::io::compiler::MachineBuilder::Ptr(
+				    new cognitao::io::compiler::ftt::FttBuilder(processor)));
+
+    
+    try {
+	    ready_machine = compiler.compile(machines, collector);
+    } catch (const cognitao::io::compiler::CompilerError& error) {
+	    std::cerr << "CompilerError:" << endl << error.message << endl;
+	    return;
+    }
+  
+    cout << endl << endl;
+}
+
+
+void run_fsm(
+    /*INPUT*/
+    Processor& processor,
+    cognitao::machine::Context& context,
+    cognitao::bus::EventQueue& events,
+    ComponentMain& component,
+    cognitao::io::compiler::CompiledMachine& ready_machine
+)
+{
+  
+    //	task_ptr = new AsyncTask(&component, &processor);
+    cognitao::machine::Events p_events;
+    cognitao::machine::Machine current_machine =
+		    ready_machine->machine->start_instance(context, p_events);
+    processor.insert(p_events);
+    process_machine(current_machine, processor, component);
+
+    time_duration max_wait_duration(0, 0, 5, 0);
+    bool is_timeout = false;
+    cognitao::bus::Event event;
+    while (events.wait_and_pop_timed(event, max_wait_duration, is_timeout)
+		    or ros::ok()) {
+	    if (is_timeout) {
+    //			cout << "event bus timeout" << endl;
+		    continue;
+	    }
+    //		cout << "GET: " << event << endl;
+    //		if (event.context().str().find(context.str()) != 0) {
+    //			cout << "\033[1;31m SKIP event from other node \033[0m\n";
+    //			continue;
+    //		}
+	    processor.send_no_pub(event);
+	    process_machine(current_machine, processor, component);
+    }
+  
+}
+
+
+
 void runComponent(int argc, char** argv, ComponentMain& component) {
 
 	ros::NodeHandle node;
@@ -172,69 +258,21 @@ void runComponent(int argc, char** argv, ComponentMain& component) {
 //			"/robil/event_bus/events");
 	cognitao::bus::RosEventQueue events(node, NULL, 1000);
 	component.set_events(&events);
-
-	std::stringstream mission_description_stream;
-	mission_description_stream << "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-			<< endl << "<tao>" << endl << "	<machines>" << endl
-			<< "		<machine file=\"${rospack:shiffon2ros}/src/xml/shiffon2ros.xml\"/>"
-			<< endl << "		<root>shiffon2ros</root>" << endl << "	</machines>"
-			<< endl << "</tao>" << endl;
-
 	cognitao::machine::Context context("shiffon2ros");
-	cognitao::io::parser::xml::XMLParser parser;
-	cognitao::io::parser::MachinesCollection machines;
-	try {
-		machines = parser.parse(mission_description_stream, context.str());
-	} catch (const cognitao::io::parser::ParsingError& error) {
-		std::cerr << "ParsingError:" << endl << error.message << endl;
-		return;
-	}
-
-	cognitao::io::compiler::Compiler compiler;
+	
 	Processor processor(events);
-	compiler.add_builder(
-			cognitao::io::compiler::MachineBuilder::Ptr(
-					new cognitao::io::compiler::fsm::FsmBuilder(processor)));
-	compiler.add_builder(
-			cognitao::io::compiler::MachineBuilder::Ptr(
-					new cognitao::io::compiler::ftt::FttBuilder(processor)));
-
 	cognitao::io::compiler::CompilationObjectsCollector collector;
 	cognitao::io::compiler::CompiledMachine ready_machine;
-	try {
-		ready_machine = compiler.compile(machines, collector);
-	} catch (const cognitao::io::compiler::CompilerError& error) {
-		std::cerr << "CompilerError:" << endl << error.message << endl;
-		return;
-	}
 
-	cout << endl << endl;
-//	task_ptr = new AsyncTask(&component, &processor);
-	cognitao::machine::Events p_events;
-	cognitao::machine::Machine current_machine =
-			ready_machine->machine->start_instance(context, p_events);
-	processor.insert(p_events);
-	process_machine(current_machine, processor, component);
-
-	time_duration max_wait_duration(0, 0, 5, 0);
-	bool is_timeout = false;
-	cognitao::bus::Event event;
-	while (events.wait_and_pop_timed(event, max_wait_duration, is_timeout)
-			or ros::ok()) {
-		if (is_timeout) {
-//			cout << "event bus timeout" << endl;
-			continue;
-		}
-//		cout << "GET: " << event << endl;
-//		if (event.context().str().find(context.str()) != 0) {
-//			cout << "\033[1;31m SKIP event from other node \033[0m\n";
-//			continue;
-//		}
-		processor.send_no_pub(event);
-		process_machine(current_machine, processor, component);
-	}
-
-
+// 	build_fsm( processor, context, collector, ready_machine );
+// 	run_fsm( processor, context, events, component, ready_machine );
+	
+	TaskInit _init_state(&component, &processor, "/shiffon2ros");
+	_init_state.run();
+	
+	TaskReady _ready_state(&component, &processor, "/shiffon2ros");
+	_ready_state.run();
+	
 	return;
 
 }

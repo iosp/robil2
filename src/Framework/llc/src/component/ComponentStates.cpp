@@ -158,6 +158,7 @@ void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
 
 void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
 {
+  std::cout<<"LLC: set speed : "<<msg<<std::endl;
   wpdSpeedTimeInMilli = ros::Time::now().toSec()*1000; // toSec() return seconds.milliSecconds
 
   sumOfWpdSpeedLinear -= wpdCmdLinearArray[indexOf_wpdCmdLinearArray];
@@ -178,6 +179,7 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
 
 void pubThrottleAndSteering()
 {
+
     double RosTimeNowInMilli = ros::Time::now().toSec()*1000;  // toSec() return seconds.milliSecconds
 
     //if there is no WPD command as long as  500ms, give the zero command
@@ -202,6 +204,8 @@ void pubThrottleAndSteering()
     std_msgs::Float64 msgAngularEffortCMD;
     msgAngularEffortCMD.data = angularEffortCMD;
     Steering_rate_pub.publish(msgAngularEffortCMD);
+    
+    //std::cout<<"LLC: pub speed : "<<msgAngularEffortCMD<<std::endl;
 }
 
 class AsyncTask {
@@ -374,15 +378,18 @@ void process_machine(cognitao::machine::Machine & machine,
 	}
 }
 
-void runComponent(int argc, char** argv, ComponentMain& component){
-
-	ros::NodeHandle node;
-//	cognitao::bus::RosEventQueue events(node, NULL, 1000,
-//			"/robil/event_bus/events");
-	cognitao::bus::RosEventQueue events(node, NULL, 1000);
-
-	component.set_events(&events);
-
+void build_fsm(
+      /*INPUT*/
+      ros::NodeHandle& node, 
+      cognitao::bus::RosEventQueue& events, 
+      ComponentMain& component, 
+      Processor& processor,
+      cognitao::machine::Context& context,
+      /*OUTPUT*/
+      cognitao::io::compiler::CompilationObjectsCollector& collector,
+      cognitao::io::compiler::CompiledMachine& ready_machine
+)
+{
 	std::stringstream mission_description_stream;
 	mission_description_stream << "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 			<< endl << "<tao>" << endl << "	<machines>" << endl
@@ -390,7 +397,6 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 			<< "		<root>llc</root>" << endl << "	</machines>" << endl
 			<< "</tao>" << endl;
 
-	cognitao::machine::Context context("llc");
 	cognitao::io::parser::xml::XMLParser parser;
 	cognitao::io::parser::core::MachinesCollection machines;
 	try {
@@ -401,7 +407,7 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	}
 
 	cognitao::io::compiler::Compiler compiler;
-	Processor processor(events);
+	
 	compiler.add_builder(
 			cognitao::io::compiler::MachineBuilder::Ptr(
 					new cognitao::io::compiler::fsm::FsmBuilder(processor)));
@@ -409,16 +415,27 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 			cognitao::io::compiler::MachineBuilder::Ptr(
 					new cognitao::io::compiler::ftt::FttBuilder(processor)));
 
-	cognitao::io::compiler::CompilationObjectsCollector collector;
-	cognitao::io::compiler::CompiledMachine ready_machine;
+	//cognitao::io::compiler::CompilationObjectsCollector collector;
+	//cognitao::io::compiler::CompiledMachine ready_machine;
 	try {
 		ready_machine = compiler.compile(machines, collector);
 	} catch (const cognitao::io::compiler::CompilerError& error) {
 		std::cerr << "CompilerError:" << endl << error.message << endl;
 		return;
 	}
-
 	cout << endl << endl;
+}
+
+void run_fsm(
+      /*INPUT*/
+      ros::NodeHandle& node, 
+      cognitao::bus::RosEventQueue& events, 
+      ComponentMain& component, 
+      Processor& processor,
+      cognitao::machine::Context& context,
+      cognitao::io::compiler::CompiledMachine& ready_machine
+)
+{
 //	task_ptr = new AsyncTask(&component, &processor);
 	cognitao::machine::Events p_events;
 	cognitao::machine::Machine current_machine =
@@ -443,7 +460,45 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 		processor.send_no_pub(event);
 		process_machine(current_machine, processor, component);
 	}
+}
 
+void fsm_llc(ros::NodeHandle& node, cognitao::bus::RosEventQueue& events, ComponentMain& component)
+{
+	Processor processor(events);
+	cognitao::machine::Context context("llc");
+	cognitao::io::compiler::CompilationObjectsCollector collector;
+	cognitao::io::compiler::CompiledMachine ready_machine;
+	
+//	build_fsm( node, events, component, processor, context, collector, ready_machine );
+//	run_fsm( node, events, component, processor, context, ready_machine );
+	
+	// Temporary solution - need to fix this hack	
+	TaskInit task_init(&component, &processor, "/llc");
+	task_init.run();
+	TaskReady task_ready(&component, &processor, "/llc");
+	task_ready.run();
+}
+
+void runComponent(int argc, char** argv, ComponentMain& component){
+
+	ros::NodeHandle node;
+	
+	dynamic_reconfigure::Server<llc::ControlParamsConfig> server;
+	dynamic_reconfigure::Server<llc::ControlParamsConfig>::CallbackType f;
+
+	f = boost::bind(&dynamic_Reconfiguration_callback, _1, _2);
+	server.setCallback(f);
+	
+//	cognitao::bus::RosEventQueue events(node, NULL, 1000,
+//			"/robil/event_bus/events");
+	cognitao::bus::RosEventQueue events(node, NULL, 1000);
+
+	component.set_events(&events);
+
+	ROS_INFO("Starting llc...");
+	fsm_llc(node, events, component);
+
+  
 	return;
 
 //	ros::init(argc, argv, "llc");

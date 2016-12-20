@@ -519,7 +519,9 @@ FttInstance::FttMachine TaskMachine::on_start( FttInstance::FttMachine inst )con
 {
 
 	Events sub_machine_private_events;
-	Machine sub_machine = def_machine().start_instance(inst->context(), sub_machine_private_events);
+	MachineDefinition& _def_machine = def_machine();
+	const Context& _context = inst->context();
+	Machine sub_machine = _def_machine.start_instance(_context, sub_machine_private_events);
 
 	FttInstance* fm = (FttInstance*) inst->clone();
 	FttInstance::FttMachine nm(fm);
