@@ -73,7 +73,7 @@ namespace base_local_planner{
       min_vel_th_ = config.min_vel_theta;
       min_in_place_vel_th_ = config.min_in_place_vel_theta;
 
-//      sim_time_ = config.sim_time;
+   //   sim_time_ = config.sim_time;
       sim_time_ = 3.0;
       sim_granularity_ = config.sim_granularity;
       angular_sim_granularity_ = config.angular_sim_granularity;
@@ -384,6 +384,7 @@ namespace base_local_planner{
     }
     return DBL_MAX;
   }
+
 
   //calculate the cost of a ray-traced line
   double TrajectoryPlanner::lineCost(int x0, int x1,
