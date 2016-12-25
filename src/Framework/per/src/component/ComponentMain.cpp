@@ -10,7 +10,6 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 #include <sensor_msgs/Imu.h>
@@ -29,7 +28,7 @@
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
-using namespace std; 
+using namespace std;
 typedef string String;
 typedef bool boolean;
 
@@ -42,60 +41,37 @@ ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
     _should_pub = true;
-_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","Location","sub"), 10, &ComponentMain::handleLocation,this));
-//_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","PerVelocity","sub"), 10, &ComponentMain::handlePerVelocity,this));
-_sub_SensorINS=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorINS","sub"), 10, &ComponentMain::handleSensorINS,this));
-//_sub_SensorGPS=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorGPS","sub"), 10, &ComponentMain::handleSensorGPS,this));
-_sub_SensorCamL=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorCamL","sub"), 10, &ComponentMain::handleSensorCamL,this));
-_sub_SensorCamR=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorCamR","sub"), 10, &ComponentMain::handleSensorCamR,this));
-//_sub_SensorWire=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorWire","sub"), 10, &ComponentMain::handleSensorWire,this));
-_sub_SensorSICK1=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorSICK1","sub"), 10, &ComponentMain::handleSensorSICK1,this));
-_sub_SensorSICK2=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorSICK2","sub"), 10, &ComponentMain::handleSensorSICK2,this));
-_sub_SensorIBEO=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorIBEO","sub"), 10, &ComponentMain::handleSensorIBEO,this));
-//_sub_EffortsTh=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsTh","sub"), 10, &ComponentMain::handleEffortsTh,this));
-//_sub_EffortsSt=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsSt","sub"), 10, &ComponentMain::handleEffortsSt,this));
-//_sub_EffortsJn=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","EffortsJn","sub"), 10, &ComponentMain::handleEffortsJn,this));
-//_sub_GpsSpeed=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PER","SensorGpsSpeed","sub"), 10, &ComponentMain::handleGpsSpeed,this));
-//_pub_GPS=ros::Publisher(_nh.advertise<config::PER::pub::GPS>(fetchParam(&_nh,"PER","GPS","pub"),10));
+_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+_sub_SensorINS=ros::Subscriber(_nh.subscribe("/SENSORS/INS", 10, &ComponentMain::handleSensorINS,this));
+//_sub_SensorCamL=ros::Subscriber(_nh.subscribe("/SENSORS/CAM/L", 10, &ComponentMain::handleSensorCamL,this));
+//_sub_SensorCamR=ros::Subscriber(_nh.subscribe("/SENSORS/CAM/R", 10, &ComponentMain::handleSensorCamR,this));
+//_sub_SensorSICK1=ros::Subscriber(_nh.subscribe("/SENSORS/SICK/1", 10, &ComponentMain::handleSensorSICK1,this));
+//_sub_SensorSICK2=ros::Subscriber(_nh.subscribe("/SENSORS/SICK/2", 10, &ComponentMain::handleSensorSICK2,this));
+_sub_SensorIBEO=ros::Subscriber(_nh.subscribe("/SENSORS/IBEO", 10, &ComponentMain::handleSensorIBEO,this));
 _pub_PC=ros::Publisher(_nh.advertise<sensor_msgs::PointCloud>("/SENSORS/IBEO/PC", 10));
 _pub_PC_world=ros::Publisher(_nh.advertise<sensor_msgs::PointCloud>("/SENSORS/IBEO/WORLDPC", 10));
-//_pub_INS=ros::Publisher(_nh.advertise<config::PER::pub::INS>(fetchParam(&_nh,"PER","INS","pub"),10));
-//_pub_BladePosition=ros::Publisher(_nh.advertise<config::PER::pub::BladePosition>(fetchParam(&_nh,"PER","BladePosition","pub"),10));
-_pub_Map=ros::Publisher(_nh.advertise<config::PER::pub::Map>(fetchParam(&_nh,"PER","Map","pub"),10));
-_pub_MiniMap=ros::Publisher(_nh.advertise<config::PER::pub::MiniMap>(fetchParam(&_nh,"PER","MiniMap","pub"),10));
-//_pub_VOOdometry=ros::Publisher(_nh.advertise<config::PER::pub::VOOdometry>(fetchParam(&_nh,"PER","VOOdometry","pub"),10));
-//_pub_GpsSpeed=ros::Publisher(_nh.advertise<config::PER::pub::PerGpsSpeed>(fetchParam(&_nh,"PER","PerGpsSpeed","pub"),10));
+_pub_Map=ros::Publisher(_nh.advertise<robil_msgs::Map>("/PER/Map",10));
+_pub_MiniMap=ros::Publisher(_nh.advertise<robil_msgs::Map>("/PER/MiniMap",10));
 _pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 _pub_hMap = ros::Publisher(_nh.advertise<sensor_msgs::Image>("/PER/DEBUG/HEIGHTMAP",3));
 _pub_tMap = ros::Publisher(_nh.advertise<sensor_msgs::Image>("/PER/DEBUG/TYPEMAP",3));
 _maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
-//message_filters::Subscriber<sensor_msgs::Imu> ins_sub(_nh, "/SENSORS/INS", 1);
-//message_filters::Subscriber<robil_msgs::MultiLaserScan> ibeo_sub(_nh, "/SENSORS/IBEO/1", 1);
-// typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Imu, robil_msgs::MultiLaserScan> MySyncPolicy;
-//message_filters::Synchronizer<MySyncPolicy> sync(MySyncPolicy(10), ins_sub, ibeo_sub);
-//message_filters::TimeSynchronizer<sensor_msgs::Imu, robil_msgs::MultiLaserScan> sync(ins_sub, ibeo_sub, 10);
-//sync.registerCallback(boost::bind(&ComponentMain::handleSensorIBEOandINS, this, _1, _2));
-//sync.registerCallback(boost::bind(&cb, _1, _2));
 	 Mapper::component = this;
-     //Mapper::listener = new(tf::TransformListener);
      boost::thread mapper(Mapper::MainLoop, &this->_dyn_conf);
 	 boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 	 boost::thread mapper2(Mapper::VisualizeLoop);
 	 /// walrus func:
 	  boost::this_thread::sleep(boost::posix_time::milliseconds(300));
-	 //boost::thread mapper3(Mapper::StereoThread);
-	 //boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 }
 ComponentMain::~ComponentMain() {
 
-    //delete Mapper::listener;
 }
 bool ComponentMain::init(int argc,char** argv){
 	ros::init(argc,argv,"PER_node");
 	return true;
 }
 
-void ComponentMain::handleLocation(const config::PER::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
   Mapper::handleLocation(msg);
 }
@@ -106,24 +82,29 @@ void ComponentMain::setVisualize(char flags)
   Mapper::setVisualize((unsigned char)flags);
 }
 
-void ComponentMain::handlePerVelocity(const config::PER::sub::PerVelocity& msg)
+void ComponentMain::handlePerVelocity(const geometry_msgs::TwistStamped& msg)
 {
 }
 	
 
-void ComponentMain::handleSensorINS(const config::PER::sub::SensorINS& msg)
+void ComponentMain::handleSensorINS(const /*config::PER::sub::SensorINS*/sensor_msgs::Imu& msg)
 {
     _imuData = msg;
-    tf::Quaternion q(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w);
-    tf::Matrix3x3 m(q);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-    double acc2 = msg.linear_acceleration.x * msg.linear_acceleration.x + msg.linear_acceleration.y * msg.linear_acceleration.y;
-//    cout << msg.angular_velocity << endl;
-    if (abs(pitch) > _dyn_conf.pitch_filter)
-        _should_pub = true;
+    double pitch = msg.linear_acceleration.x * msg.linear_acceleration.x +
+                   msg.linear_acceleration.y * msg.linear_acceleration.y +
+                   msg.linear_acceleration.z * msg.linear_acceleration.z - 9.81 * 9.81;
+
+    if (sqrt(pitch) / 10.0 > _dyn_conf.acc_filter)
+    {
+        _should_pub = false;
+        _should_pub_timeout.stamp = ros::Time::now();
+    }
     else
-        _should_pub = true;
+    {
+        if (!_should_pub)
+            if (ros::Time::now().toSec() - _should_pub_timeout.stamp.toSec() > _dyn_conf.acc_filter_timeout)
+                _should_pub = true;
+    }
 
 //    cout << "got INS\n";
 //    config::PER::pub::INS msg2;
@@ -132,45 +113,46 @@ void ComponentMain::handleSensorINS(const config::PER::sub::SensorINS& msg)
 }
 	
 
-void ComponentMain::handleSensorGPS(const config::PER::sub::SensorGPS& msg)
+void ComponentMain::handleSensorGPS(const sensor_msgs::NavSatFix& msg)
 {
 	_gpsData = msg;
-	config::PER::pub::GPS msg2;
+	//config::PER::pub::GPS msg2;
+	sensor_msgs::NavSatFix msg2;
 	msg2 = msg;
 	publishGPS(msg2);
 }
 	
 
-void ComponentMain::handleSensorCamL(const config::PER::sub::SensorCamL& msg)
+void ComponentMain::handleSensorCamL(const sensor_msgs::Image& msg)
 {
   Mapper::handleCamL(msg);
 }
 	
 
-void ComponentMain::handleSensorCamR(const config::PER::sub::SensorCamR& msg)
+void ComponentMain::handleSensorCamR(const sensor_msgs::Image& msg)
 {
   Mapper::handleCamR(msg);
 }
 	
 
-void ComponentMain::handleSensorWire(const config::PER::sub::SensorWire& msg)
+void ComponentMain::handleSensorWire(const std_msgs::Float64& msg)
 {
   //rdbg("wire");
 }
 	
 
-void ComponentMain::handleSensorSICK1(const config::PER::sub::SensorSICK1& msg)
+void ComponentMain::handleSensorSICK1(const sensor_msgs::LaserScan& msg)
 {
   Mapper::handleSickR(msg);
 }
-void ComponentMain::handleSensorSICK2(const config::PER::sub::SensorSICK2& msg)
+void ComponentMain::handleSensorSICK2(const sensor_msgs::LaserScan& msg)
 {
   
   Mapper::handleSickL(msg);
 }
 	
 
-void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msgIBEO)
+void ComponentMain::handleSensorIBEO(const robil_msgs::MultiLaserScan& msgIBEO)
 {
     int check=0;
     ros::param::param("/LOC/Ready",check,0);
@@ -178,7 +160,6 @@ void ComponentMain::handleSensorIBEO(const config::PER::sub::SensorIBEO& msgIBEO
     if (_should_pub)
         Mapper::handleIBEO(msgIBEO, this->_pub_PC_world, this->_pub_PC);
 }
-
 
 
 void ComponentMain::handleSensorIBEOandINS(const sensor_msgs::ImuConstPtr& msgINS, const robil_msgs::MultiLaserScanConstPtr& msgIBEO)
@@ -193,28 +174,27 @@ void ComponentMain::handleSensorIBEOandINS(const sensor_msgs::ImuConstPtr& msgIN
 //  Mapper::handleIBEO(*msgIBEO, this->_pub_PC_world, this->_pub_PC);
 
 }
-	
 
 
-void ComponentMain::handleEffortsTh(const config::PER::sub::EffortsTh& msg)
+void ComponentMain::handleEffortsTh(const std_msgs::Float64& msg)
 {
 	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleEffortsSt(const config::PER::sub::EffortsSt& msg)
+void ComponentMain::handleEffortsSt(const std_msgs::Float64& msg)
 {
 	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleEffortsJn(const config::PER::sub::EffortsJn& msg)
+void ComponentMain::handleEffortsJn(const sensor_msgs::JointState& msg)
 {
 	//std::cout<< "PER say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::publishGPS(config::PER::pub::GPS& msg)
+void ComponentMain::publishGPS(sensor_msgs::NavSatFix& msg)
 {
 	msg = _gpsData;
 	//std::cout << "publishing: " << msg << std::endl;
@@ -222,26 +202,26 @@ void ComponentMain::publishGPS(config::PER::pub::GPS& msg)
 }
 	
 
-void ComponentMain::publishINS(config::PER::pub::INS& msg)
+void ComponentMain::publishINS(sensor_msgs::Imu& msg)
 {
 	msg = _imuData;
 	_pub_INS.publish(msg);
 }
 	
 
-void ComponentMain::publishBladePosition(config::PER::pub::BladePosition& msg)
+void ComponentMain::publishBladePosition(sensor_msgs::JointState& msg)
 {
 	_pub_BladePosition.publish(msg);
 }
 	
 
-void ComponentMain::publishMap(config::PER::pub::Map& msg)
+void ComponentMain::publishMap(robil_msgs::Map& msg)
 {
   _pub_Map.publish(msg);
 }
 	
 
-void ComponentMain::publishMiniMap(config::PER::pub::MiniMap& msg)
+void ComponentMain::publishMiniMap(robil_msgs::Map& msg)
 {
    _pub_MiniMap.publish(msg);
 }
@@ -252,7 +232,7 @@ void ComponentMain::publishDebug(sensor_msgs::ImagePtr hmsg, sensor_msgs::ImageP
     _pub_tMap.publish(*tmsg);
 }
 
-void ComponentMain::publishVOOdometry(config::PER::pub::VOOdometry& msg)
+void ComponentMain::publishVOOdometry(nav_msgs::Odometry& msg)
 {
 	_pub_VOOdometry.publish(msg);
 }
@@ -284,14 +264,15 @@ void ComponentMain::publishDiagnostic(const std_msgs::Header& header, const diag
 		_pub_diagnostic.publish(msg);
 }
 
-void ComponentMain::handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg)
+void ComponentMain::handleGpsSpeed(const robil_msgs::GpsSpeed& msg)
 {
-	config::PER::pub::PerGpsSpeed msg2;
+        //config::PER::pub::PerGpsSpeed msg2;
+        robil_msgs::GpsSpeed msg2;
 	msg2 = msg;
 	publishGpsSpeed(msg2);
 }
 
-void ComponentMain::publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg)
+void ComponentMain::publishGpsSpeed(robil_msgs::GpsSpeed& msg)
 {
 	_pub_GpsSpeed.publish(msg);
 }

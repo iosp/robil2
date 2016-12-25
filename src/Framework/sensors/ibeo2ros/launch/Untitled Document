@@ -1,6 +1,0 @@
-<launch>
-
-	<node name="ibeo2ros" type="llc_node" pkg="llc" />
-	<!-- ================ -->
-
-</launch>

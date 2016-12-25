@@ -71,11 +71,11 @@ namespace gazebo
     /// \param[in] _sdf A pointer to the plugin's SDF element.
   public: void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
-      //std::cout << "GAZEBO_VERSION = [" << GAZEBO_VERSION << "]"<<std::endl; 
-      //float gazebo_ver = std::stof(GAZEBO_VERSION);
-      //std::cout << "GAZEBO_MAJOR_VERSION = [" << GAZEBO_MAJOR_VERSION  << "]"<<std::endl; 
-      //if (GAZEBO_MAJOR_VERSION > 2.0) std::cout << "GADOL"<<std::endl; 
-      //else std::cout << "NOT GADOL"<<std::endl; 
+      std::cout << "GAZEBO_VERSION = [" << GAZEBO_VERSION << "]"<<std::endl; 
+      float gazebo_ver = std::stof(GAZEBO_VERSION);
+      std::cout << "GAZEBO_MAJOR_VERSION = [" << GAZEBO_MAJOR_VERSION  << "]"<<std::endl; 
+      if (GAZEBO_MAJOR_VERSION > 2.0) std::cout << "GADOL"<<std::endl; 
+      else std::cout << "KATAN"<<std::endl; 
       // Store the pointer to the model
       this->model = _model;
 
@@ -132,14 +132,14 @@ namespace gazebo
       // note that we will pass in a sequence of iterators pointing to the beginning of each grid
       double Throttle_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
 
-      double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.04,     0.00,    0.40,     0.70,      1.00};
+      double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
 
                                          //r=-1.00    r=-0.70   r=-0.40   r=0.00   r=0.40     r=0.70    r=1.00
       double Linear_vell_values_array[] = { -1.20,    -1.30,    -1.40,    -1.50,    -1.40,    -1.30,    -1.20,    //t=-1.00
                                             -0.65,    -0.70,    -0.75,    -0.80,    -0.75,    -0.70,    -0.65,    //t=-0.70
-                                            -0.14,    -0.16,    -0.23,    -0.20,    -0.18,    -0.16,    -0.14,    //t=-0.40
+                                            -0.14,    -0.16,    -0.18,    -0.20,    -0.18,    -0.16,    -0.14,    //t=-0.40
                                              0.40,     0.17,     0.00,     0.00,     0.00,     0.17,     0.40,    //t=0.00
-                                             0.14,     0.16,     0.23,     0.20,     0.18,     0.16,     0.14,    //t=0.40
+                                             0.14,     0.16,     0.18,     0.20,     0.18,     0.16,     0.14,    //t=0.40
                                              0.65,     0.70,     0.75,     0.80,     0.75,     0.70,     0.65,    //t=0.70
                                              1.20,     1.30,     1.40,     1.50,     1.40,     1.30,     1.20};   //t=1.00
 

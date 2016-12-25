@@ -16,9 +16,9 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
+
 std::map<std::string, boost::shared_ptr<MissionMachine> > machines;
 namespace {
 
@@ -43,15 +43,15 @@ tf::TransformListener* tf_listener;
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv)), _events(0)
 {
-	_sub_AssignNavTask=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SMME","AssignNavTask","sub"), 10, &ComponentMain::handleAssignNavTask,this));
-	_sub_AssignManTask=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SMME","AssignManTask","sub"), 10, &ComponentMain::handleAssignManTask,this));
-	_sub_AssignMission=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SMME","AssignMission","sub"), 10, &ComponentMain::handleAssignMission,this));
-	_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SMME","BladePosition","sub"), 10, &ComponentMain::handleBladePosition,this));
-	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SMME","Location","sub"), 10, &ComponentMain::handleLocation,this));
-	_sub_IEDLocation=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"IEDSIM","IEDLocation","pub"), 10, &ComponentMain::handleIEDLocation,this));
-	_pub_GlobalPath=ros::Publisher(_nh.advertise<config::SMME::pub::GlobalPath>(fetchParam(&_nh,"SMME","GlobalPath","pub"),10));
-	_pub_WorkSeqData=ros::Publisher(_nh.advertise<config::SMME::pub::WorkSeqData>(fetchParam(&_nh,"SMME","WorkSeqData","pub"),10));
-	_pub_MissionAcceptance=ros::Publisher(_nh.advertise<config::SMME::pub::MissionAcceptance>(fetchParam(&_nh,"SMME","MissionAcceptance","pub"),10));
+	_sub_AssignNavTask=ros::Subscriber(_nh.subscribe("/OCU/SMME/NavigationTask", 10, &ComponentMain::handleAssignNavTask,this));
+	_sub_AssignManTask=ros::Subscriber(_nh.subscribe("/OCU/SMME/ManipulationTask", 10, &ComponentMain::handleAssignManTask,this));
+	_sub_AssignMission=ros::Subscriber(_nh.subscribe("/OCU/SMME/MissionPlan", 10, &ComponentMain::handleAssignMission,this));
+	_sub_BladePosition=ros::Subscriber(_nh.subscribe("/PER/BladPosition", 10, &ComponentMain::handleBladePosition,this));
+	_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+	_sub_IEDLocation=ros::Subscriber(_nh.subscribe("/IED/Location", 10, &ComponentMain::handleIEDLocation,this));
+	_pub_GlobalPath=ros::Publisher(_nh.advertise<robil_msgs::Path>("/SMME/GlobalPath",10));
+	_pub_WorkSeqData=ros::Publisher(_nh.advertise<robil_msgs::AssignManipulatorTask>("/SMME/WSM/Task",10));
+	_pub_MissionAcceptance=ros::Publisher(_nh.advertise<robil_msgs::MissionAcceptance>("/SMME/OCU/MissionAcceptance",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 
@@ -73,21 +73,21 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleAssignNavTask(const config::SMME::sub::AssignNavTask& msg)
+void ComponentMain::handleAssignNavTask(const robil_msgs::AssignNavTask& msg)
 {
 	_mission_manager->assign(msg);
 }
 	
 
-void ComponentMain::handleAssignManTask(const config::SMME::sub::AssignManTask& msg)
+void ComponentMain::handleAssignManTask(const robil_msgs::AssignManipulatorTask& msg)
 {
 	_mission_manager->assign(msg);
 }
 	
 
-void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& msg)
+void ComponentMain::handleAssignMission(const robil_msgs::AssignMission& msg)
 {
-	config::SMME::pub::MissionAcceptance acceptance =
+	robil_msgs::MissionAcceptance acceptance =
 			_mission_manager->assign(msg);
 	if(acceptance.status==0){
 		ROS_INFO_STREAM("Mission "<<msg.mission_id<<" accepted");
@@ -104,18 +104,18 @@ void ComponentMain::handleAssignMission(const config::SMME::sub::AssignMission& 
 }
 	
 
-void ComponentMain::handleBladePosition(const config::SMME::sub::BladePosition& msg)
+void ComponentMain::handleBladePosition(const sensor_msgs::JointState& msg)
 {
 	//std::cout<< "SMME say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleLocation(const config::SMME::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 	//std::cout<< "SMME say:" << msg << std::endl;
 }
 	
-void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& msg)
+void ComponentMain::handleIEDLocation(const robil_msgs::IEDLocation& msg)
 {
 	if(msg.is_detected==1){
 		tf::StampedTransform transform;
@@ -142,19 +142,19 @@ void ComponentMain::handleIEDLocation(const config::IEDSIM::pub::IEDLocation& ms
 	}
 }
 
-void ComponentMain::publishGlobalPath(config::SMME::pub::GlobalPath& msg)
+void ComponentMain::publishGlobalPath(robil_msgs::Path& msg)
 {
 	_pub_GlobalPath.publish(msg);
 }
 	
 
-void ComponentMain::publishWorkSeqData(config::SMME::pub::WorkSeqData& msg)
+void ComponentMain::publishWorkSeqData(robil_msgs::AssignManipulatorTask& msg)
 {
 	_pub_WorkSeqData.publish(msg);
 }
 	
 
-void ComponentMain::publishMissionAcceptance(config::SMME::pub::MissionAcceptance& msg)
+void ComponentMain::publishMissionAcceptance(robil_msgs::MissionAcceptance& msg)
 {
 	_pub_MissionAcceptance.publish(msg);
 }

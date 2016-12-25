@@ -9,7 +9,6 @@
 #define FSMCOMPONENTTESTER_H_
 
 #include <ros/ros.h>
-#include <ParameterTypes.h>
 #include <map>
 #include <vector>
 #include <set>
@@ -18,6 +17,11 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
+
+
+#include <std_msgs/String.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+
 
 using namespace std;
 using namespace ros;

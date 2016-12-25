@@ -12,11 +12,22 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <boost/thread.hpp>
 
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <std_msgs/Float64.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <sensor_msgs/JointState.h>
+#include <geometry_msgs/TwistStamped.h>
 
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
 
 
 class ComponentMain {
@@ -40,21 +51,21 @@ class ComponentMain {
 public:
 	//config::LLC::sub::PerVelocity Per_measured_speed ;	/* real measured speed */
 	geometry_msgs::Twist Per_measured_speed ;
-	config::LLC::sub::WSMVelocity WSM_desired_speed ;		/* WSM desired vel. - on work sequence mode */
-	config::LLC::sub::WPDVelocity WPD_desired_speed ;		/* WPD desired vel. - on driving mode */
-	config::LLC::sub::BladePositionCommand Blade_angle ; 	/* WSM desired supporter positon */
-	config::LLC::sub::Location Per_pose ; 					/* Per location */
+	geometry_msgs::TwistStamped WSM_desired_speed ;		/* WSM desired vel. - on work sequence mode */
+	geometry_msgs::TwistStamped WPD_desired_speed ;		/* WPD desired vel. - on driving mode */
+	sensor_msgs::JointState Blade_angle ; 	/* WSM desired supporter positon */
+	geometry_msgs::PoseWithCovarianceStamped Per_pose ; 					/* Per location */
 	int t_flag;
 
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	void handleWPDVelocity(const config::LLC::sub::WPDVelocity& msg);
-	void handleWSMVelocity(const config::LLC::sub::WSMVelocity& msg);
-	void handleBladePositionCommand(const config::LLC::sub::BladePositionCommand& msg);
-	void handleLocation(const config::LLC::sub::Location& msg);
-	void handlePerVelocity(const config::LLC::sub::PerVelocity& msg);
-	void publishEffortsTh(config::LLC::pub::EffortsTh& msg);
-	void publishEffortsSt(config::LLC::pub::EffortsSt& msg);
+	void handleWPDVelocity(const geometry_msgs::TwistStamped& msg);
+	void handleWSMVelocity(const geometry_msgs::TwistStamped& msg);
+	void handleBladePositionCommand(const sensor_msgs::JointState& msg);
+	void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
+	void handlePerVelocity(const geometry_msgs::TwistStamped& msg);
+	void publishEffortsTh(std_msgs::Float64& msg);
+	void publishEffortsSt(std_msgs::Float64& msg);
 	void publishEffortsJn(sensor_msgs::JointState& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);

@@ -1,7 +1,14 @@
 #include <math.h>
 #include "ros/ros.h"
-#include <ParameterTypes.h>
 #include <opencv2/opencv.hpp>
+
+
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <robil_msgs/GpsSpeed.h>
+#include <geometry_msgs/TwistStamped.h>
+
 
 class Observer {
 	/*

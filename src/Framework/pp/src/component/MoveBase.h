@@ -20,15 +20,27 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <actionlib_msgs/GoalStatusArray.h>
 
-#include <ParameterHandler.h>
-#include <ParameterTypes.h>
-
 #include <rosgraph_msgs/Log.h>
 typedef rosgraph_msgs::Log LogMessage;
 
 #define DIAGNOSTIC_TOPIC_NAME "/diagnostics"
 #include <diagnostic_msgs/DiagnosticArray.h>
 #include <diagnostic_msgs/DiagnosticStatus.h>
+
+
+#include <std_msgs/String.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <sensor_msgs/LaserScan.h>
+#include <robil_msgs/Path.h>
+#include <robil_msgs/Map.h>
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
 
 
 using namespace std;
@@ -40,11 +52,11 @@ public:
 	MoveBase(ComponentMain* comp);
 	virtual ~MoveBase();
 
-	void on_position_update(const config::PP::sub::Location& location);
-	void on_path(const config::PP::sub::GlobalPath& goal_path);
+	void on_position_update(const geometry_msgs::PoseWithCovarianceStamped& location);
+	void on_path(const robil_msgs::Path& goal_path);
 	void on_path(const nav_msgs::Path& goal_path);
 	void on_goal(const geometry_msgs::PoseStamped& robil_goal);
-	void on_map(const config::PP::sub::Map& map);
+	void on_map(const robil_msgs::Map& map);
 	void on_map(const nav_msgs::OccupancyGrid& map);
 
 	void on_nav_path(const nav_msgs::Path& goal_pat);
@@ -59,11 +71,11 @@ public:
 
 protected:
 	bool is_active;
-	config::PP::sub::GlobalPath gotten_path;
+	robil_msgs::Path gotten_path;
 	bool gp_defined;
 	nav_msgs::Path gotten_nav_path;
 	bool gnp_defined;
-	config::PP::sub::Location gotten_location;
+	geometry_msgs::PoseWithCovarianceStamped gotten_location;
 	bool gl_defined;
 	bool is_canceled;
 	bool is_path_calculated;
@@ -101,7 +113,7 @@ protected:
 	void update_unvisited_index(string path_id, size_t new_index);
 
 	string last_diagnostic_message_id;
-	void diagnostic_publish_new_goal(const string& path_id, const geometry_msgs::PoseStamped& goal, size_t goal_index, const config::PP::sub::Location& gotten_location);
+	void diagnostic_publish_new_goal(const string& path_id, const geometry_msgs::PoseStamped& goal, size_t goal_index, const geometry_msgs::PoseWithCovarianceStamped& gotten_location);
 
 	void publish_global_gotten_path_visualization(nav_msgs::Path global_gotten_path);
 

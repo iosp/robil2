@@ -1,8 +1,12 @@
-#include <ParameterTypes.h>
 #include <fstream>
 #include <string>
 #include <stdlib.h>     /* atof */
 #include "../component/gps_calculator.h"
+
+
+#include <sensor_msgs/NavSatFix.h>
+#include <geometry_msgs/Point.h>
+
 using namespace std;
 
 sensor_msgs::NavSatFix read_file(char *fname,char *strtim)

@@ -1,9 +1,25 @@
-#include <ParameterTypes.h>
 #include <string>
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
 #include <ros/ros.h>
+
+
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <robil_msgs/AssignManipulatorTask.h>
+
+#ifndef COMPONENT
+#define COMPONENT context.parameters<Params>().comp
+#endif
+
+#ifndef HEARTBEAT_FREQUANCY
+#define HEARTBEAT_FREQUANCY 2 //Hz
+#endif
+
+#ifndef HEARTBEAT_FREQUENCY
+#define HEARTBEAT_FREQUENCY 2 //Hz
+#endif
+
 
 using namespace std ;
 class ComponentMain;
@@ -14,13 +30,13 @@ class WsmTask {
 	int _taskid ;
 	int _cur_step ;
 	string _step_status;
-	config::WSM::sub::WorkSeqData * _cur_WSD;
+	robil_msgs::AssignManipulatorTask * _cur_WSD;
 	ComponentMain* _comp;
 
 public:
 
 	WsmTask(ComponentMain* comp);
-	WsmTask(int taskid , int cur_step ,const config::WSM::sub::WorkSeqData& cur_WSD , ComponentMain* comp);
+	WsmTask(int taskid , int cur_step ,const robil_msgs::AssignManipulatorTask& cur_WSD , ComponentMain* comp);
 	WsmTask(const WsmTask& other);
 	~WsmTask();
 	void pauseTask();
@@ -29,9 +45,9 @@ public:
 	void Update_step();
 	void Set_task_status(string status);
 	void Set_step_id(int index);
-	void Set_Task_WSD(const config::WSM::sub::WorkSeqData &WSD);
+	void Set_Task_WSD(const robil_msgs::AssignManipulatorTask &WSD);
 	robil_msgs::AssignManipulatorTaskStep* Get_step();
-	config::WSM::sub::WorkSeqData * Get_WSD();
+	robil_msgs::AssignManipulatorTask * Get_WSD();
 	int Get_Task_id();
 	int Get_cur_step_index();
 	void publish_step_diag(int before , int exit_status);

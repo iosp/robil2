@@ -2,7 +2,7 @@
 	
 
 	<!-- == GENERAL ===== -->
-	<include file="$(find robil2conf)/parametersLoad.launch" />
+	<!--include file="$(find robil2conf)/parametersLoad.launch" /-->
 	<include file="$(find robil2tf)/launch/robilTFpublisher.launch" />
 	<!-- ================ -->
         <!-- == MONITORING == -->
@@ -15,7 +15,8 @@
         <node name="ibeo2ros" type="sickldmrs.py" pkg="sick_ldmrs" args="127.0.0.1" output="screen" respawn="true"/>
         <!--node name="lli_node" type="lli_node" pkg="lli" output="screen" respawn="true" / -->
         
-        <node pkg="robil2conf" type="timed_roslaunch.sh" args="30 robil2conf frameworkInitLegacy.launch" name="timed_roslaunch" output="screen">   </node>
+        <include file="$(find robil2conf)/frameworkInitLegacy.launch" />
+        <!-- node pkg="robil2conf" type="timed_roslaunch.sh" args="30 robil2conf frameworkInitLegacy.launch" name="timed_roslaunch" output="screen">   </node  -->
 
 
 

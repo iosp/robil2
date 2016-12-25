@@ -19,7 +19,7 @@ std::string fetchParam(ros::NodeHandle *_nh,std::string compName,std::string nee
   }
   else
   {
-    ROS_ERROR("%s not found on prarmeter server",ss.str().c_str());
+    ROS_ERROR("compName: %s, %s not found on prarmeter server",compName.c_str(),ss.str().c_str());
     return "";
   }
   if(type.compare("sub")==0)
@@ -32,7 +32,7 @@ std::string fetchParam(ros::NodeHandle *_nh,std::string compName,std::string nee
     }
     else
     {
-      ROS_ERROR("%s not found on prarmeter server",ss2.str().c_str());
+      ROS_ERROR("compName: %s, %s not found on prarmeter server",compName.c_str(),ss2.str().c_str());
       return "";
     }
   }

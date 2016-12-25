@@ -1,5 +1,5 @@
 <launch>
-	<include file="$(find robil2conf)/parametersLoad.launch" />
+	<!--include file="$(find robil2conf)/parametersLoad.launch" /-->
 	<node name="ssm_fsm_states_tracker_node" type="ssm_fsm_states_tracker_node" pkg="ssm" />
 	<node name="ssm_heartbeat_monitor_node" type="ssm_heartbeat_monitor_node" pkg="ssm" />
 

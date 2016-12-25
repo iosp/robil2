@@ -14,20 +14,19 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
-_sub_WorkSeqData=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","WorkSeqData","sub"), 10, &ComponentMain::handleWorkSeqData,this));
-_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","BladePosition","sub"), 10, &ComponentMain::handleBladePosition,this));
-_sub_MiniMapWSM=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WSM","MiniMap","sub"), 10, &ComponentMain::handleMiniMapWSM,this));
-_pub_WSMVelocity=ros::Publisher(_nh.advertise<config::WSM::pub::WSMVelocity>(fetchParam(&_nh,"WSM","WSMVelocity","pub"),10));
-_pub_BladePositionCommand=ros::Publisher(_nh.advertise<config::WSM::pub::BladePositionCommand>(fetchParam(&_nh,"WSM","BladePositionCommand","pub"),10));
-_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","Location","sub"), 10, &ComponentMain::handleLocation,this));
-_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLC","PerVelocity","sub"), 10, &ComponentMain::handlePerVelocity,this));
+_sub_WorkSeqData=ros::Subscriber(_nh.subscribe("/SMME/WSM/Task", 10, &ComponentMain::handleWorkSeqData,this));
+_sub_BladePosition=ros::Subscriber(_nh.subscribe("/PER/BladPosition", 10, &ComponentMain::handleBladePosition,this));
+_sub_MiniMapWSM=ros::Subscriber(_nh.subscribe("/PER/MiniMap", 10, &ComponentMain::handleMiniMapWSM,this));
+_pub_WSMVelocity=ros::Publisher(_nh.advertise<geometry_msgs::TwistStamped>("/WSM/Speed",10));
+_pub_BladePositionCommand=ros::Publisher(_nh.advertise<sensor_msgs::JointState>("/WSM/BladePosition",10));
+_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+_sub_PerVelocity=ros::Subscriber(_nh.subscribe("/LOC/Velocity", 10, &ComponentMain::handlePerVelocity,this));
 _pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 _maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 _plp_monitor=ros::Publisher(_nh.advertise<std_msgs::Header>("/monitor/task_time",100));
@@ -54,7 +53,7 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
+void ComponentMain::handleWorkSeqData(const robil_msgs::AssignManipulatorTask& msg)
 {
 	if(this->cur_mission != NULL)
 	{
@@ -86,40 +85,40 @@ void ComponentMain::handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg)
 	}
 }
 	
-void ComponentMain::handleBladePosition(const config::WSM::sub::BladePosition& msg)
+void ComponentMain::handleBladePosition(const sensor_msgs::JointState& msg)
 {
 	if(this->receivedBladePosition != NULL)
 		delete this->receivedBladePosition;
-	this->receivedBladePosition = new config::WSM::sub::BladePosition(msg);
+	this->receivedBladePosition = new sensor_msgs::JointState(msg);
 	//std::cout<< "WSM say:" << msg << std::endl;
 }
 
-void ComponentMain::handleLocation(const config::LLC::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 
 	if(this->receivedLocation != NULL)
 		delete this->receivedLocation;
-	this->receivedLocation = new config::LLC::sub::Location(msg);
+	this->receivedLocation = new geometry_msgs::PoseWithCovarianceStamped(msg);
 	//std::cout<< "LLC say:" << msg.pose.pose.position.x << std::endl;
 }
 
-void ComponentMain::handlePerVelocity(const config::LLC::sub::PerVelocity& msg)
+void ComponentMain::handlePerVelocity(const geometry_msgs::TwistStamped& msg)
 {
 
 	if(this->receivedPerVelocity != NULL)
 		delete this->receivedPerVelocity;
-	this->receivedPerVelocity = new config::LLC::sub::PerVelocity(msg);
+	this->receivedPerVelocity = new geometry_msgs::TwistStamped(msg);
 
 //	std::cout<< "LLC say:" << msg << std::endl;
 }
 
-void ComponentMain::handleMiniMapWSM(const config::WSM::sub::MiniMap& msg)
+void ComponentMain::handleMiniMapWSM(const robil_msgs::Map& msg)
 {
 
 	if(this->recivedMap != NULL){
 		delete this->recivedMap ;
 	}
-		this->recivedMap = new config::WSM::sub::MiniMap(msg);
+		this->recivedMap = new robil_msgs::Map(msg);
 
 			//double max = 0 ;
 	//	for(int i = 12 ; i < 18 ; i++)
@@ -150,12 +149,12 @@ void ComponentMain::publish_m(const std_msgs::Float64 &msg)
 	_roscomm->publish_m(msg);
 }
 */
-void ComponentMain::publishWSMVelocity(config::WSM::pub::WSMVelocity& msg)
+void ComponentMain::publishWSMVelocity(geometry_msgs::TwistStamped& msg)
 {
 	_pub_WSMVelocity.publish(msg);
 }
 	
-void ComponentMain::publishBladePositionCommand(config::WSM::pub::BladePositionCommand& msg)
+void ComponentMain::publishBladePositionCommand(sensor_msgs::JointState& msg)
 {
 	_pub_BladePositionCommand.publish(msg);
 }
