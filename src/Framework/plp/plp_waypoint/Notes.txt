@@ -1,0 +1,25 @@
+# Waypoint PLP
+This package contains the waypoint PLP - the PLP responsible for predicting the result of navigating the Bobcat through a planned path.
+
+## Running the node
+
+NOTE: The plp_waypoint node must be started before the tasks and missions are submitted
+      to the system. Preferably at system startup.
+
+Command to run the node:
+
+    rosrun plp_waypoint PlpWaypointRosHarness.py
+
+The ros node takes a few optional parameters:
+
+-monitor: on trigger, create a PLP to monitor the system (default behavior)
+-capture: on trigger, dump the parameters to a file. Filename is passed as the following argument.
+
+Examples:
+
+    rosrun plp_waypoint PlpWaypointRosHarness.py
+    rosrun plp_waypoint PlpWaypointRosHarness.py -monitor
+    rosrun plp_waypoint PlpWaypointRosHarness.py -capture my-capture-file-name
+    rosrun plp_waypoint PlpWaypointRosHarness.py -capture my-capture-file-name -monitor
+
+The node will listen to the proper topics, and issue a prediction on the first time a planned path is published, once a navigation task has become active. The prediction is sent to topic `plp/messages`.

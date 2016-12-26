@@ -1,3 +1,0 @@
-<launch>
-<rosparam command="load" file="$(find robil2conf)/configuration.yaml" />
-</launch>

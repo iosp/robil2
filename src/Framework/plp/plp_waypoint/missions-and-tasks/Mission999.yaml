@@ -1,0 +1,10 @@
+header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+mission_id: '999'
+mission_description: 'Mission for testing a complex path'
+tasks:
+- task_id: '999'
