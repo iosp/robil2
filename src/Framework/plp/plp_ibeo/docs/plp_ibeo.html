@@ -1,0 +1,170 @@
+<!DOCTYPE html5>
+<html>
+  <title>PLP IBEO</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <style media="screen" type="text/css">
+    h1 {
+      color: green;
+      border-bottom: 2px solid green;
+    }
+    h2 {
+      border-top: 3px solid black;
+      border-bottom: 1px solid black;
+    }
+    em {
+      color: #060;
+    }
+    body > ol:first-of-type {
+      font-family: Monaco, Courier, monospace;
+      background-color: #EEE;
+      position: relative;
+      padding-top: 2em;
+    }
+    body > ol:first-of-type::before {
+      content:"Change Table";
+      font-weight: bold;
+      display: block;
+      border-bottom: 1px dotted black;
+      padding: 0.3em;
+      position: absolute;
+      top: 0;
+      left:0;
+      right:0;
+      height: 1em;
+    }
+  </style>
+  <body>
+
+<h1>WP Navigation PLP</h1>
+
+<ol>
+<li>2015-03-01 Initial Version</li>
+<li>2015-04-25 Updated message type</li>
+</ol>
+
+<h2>About</h2>
+
+<p>This PLP <strong>detects</strong> when an IBEO unit cannot provide useful sensing data.</p>
+
+<h2>Description (Daniel)</h2>
+
+<div style="direction:rtl; white-space:pre-line">
+
+אתה יכול להירשם ל topic של 1\\SENSORS\IBEO
+
+אתה תראה את כל הנתונים כפי שמפורט ומוסבר ב ICD שמצורף תחת סעיף robil_msgs/MultiLaserScan
+
+אתה יכול לבצע בדיקה על ההיבטים הבאים :
+
+1.      time_increment לוודא שלא חורג מ sec0.08 (12.5Hz) פלוס מינוס sec0.001  ושבאמת תואם לקצב הגעת ההודעות.
+2.      ranges_t1[] , ranges_t2[], ranges_t3[], ranges_t4[]  - אלה המערכים של הסריקות של ארבעת הקרניים, אתה יכול לבדוק עבורם
+a.       אחוז הנק' עם טווח קטן מ- 1מ'  -   לבדוק שהוא לא גדול מ-  10%  -- מצבים בהם החישן לא תקין או שיש משהו שמסתיר (כמו הכף של ה BobCat)
+b.      אחוז הנק' עם טווח קטן מ- 3מ' - לבדוק שהוא לא גדול מ- מ 30%  -- מצבים שיש גוף גדול ומאוד קרוב ל BobCat
+c.       אחוז הנק' עם טווח גדול מ- 50מ' - לבדוק שהוא לא גדול מ- מ 80%    --  מצבים שהחיישן לא תקין או מסתכל לשמיים
+
+
+בוא נתחיל מזה, אחרי שנצליח נוסיף בהמשך עוד פרמטרים לבדיקה.
+
+את האחוזים בשלב זה קבעתי שרירותית, לכן כדאי שילקחו מקובץ קונפיגורציה.
+</div>
+
+<h2>Values</h2>
+
+<h3>Parameters</h3>
+
+<ul>
+<li><code>scan</code> &larr; <code>/SENSORS/IBEO/1</code> Scan data from the IBEO node.</li>
+<li>Message type: <code>robil_msgs/MultiLaserScan</code></li>
+</ul>
+
+<h3>Constants</h3>
+
+<ul>
+<li><code>TIME_INCREMENT</code> Time interval between IBEO scans (0.08sec)</li>
+<li><code>TIME_INCREMENT_TOLERANCE</code> (0.001sec)</li>
+<li><code>FAIL_OR_COVER_THRESHOLD</code> Percent of points below 1m. Above this, indicates sensor failure or something covering the IBEO, e.g. Bobcat's arm (10%)</li>
+<li><code>OBSTACLE_THRESHOLD</code> Percent of points below 3m. Above this - there's an obstacle close to the Bobcat (30%)</li>
+<li><code>SKY_THRESHOLD</code> Percent of points further than 50m. Above this, IBEO is probably pointing to the sky (80%)</li>
+</ul>
+
+<h3>Variables</h3>
+
+<p><em>Calculated based on parameters and constants.</em></p>
+
+<ul>
+<li><code>last_scan_time</code> last time scan happened.</li>
+<li><code>fail_or_cover_pcnt[i]</code> how many reads on scan <code>i</code> are below 1m.</li>
+<li><code>obstacle_pcnt[i]</code> how many reads on scan <code>i</code> are below 3m.</li>
+<li><code>sky_pcnt[i]</code> how many reads on scan <code>i</code> are above 50m.</li>
+</ul>
+
+<h2>Application Context</h2>
+
+<h3>Resources</h3>
+
+<ul>
+<li>IBEO (shared)</li>
+</ul>
+
+<h3>Preconditions</h3>
+
+<ul>
+<li>None</li>
+</ul>
+
+<h3>Concurrency Conditions</h3>
+
+<p><em>Later, we will replace this with &quot;health&quot; PLP for the entire system</em></p>
+
+<ul>
+<li><code>IBEO_OK</code></li>
+</ul>
+
+<h3>Concurrent Modules</h3>
+
+<ul>
+<li>None</li>
+</ul>
+
+<h2>Side Effects</h2>
+
+<ul>
+<li>None</li>
+</ul>
+
+<h2>Detection Goals</h2>
+
+<ul>
+<li>For each i in [0..3]:</li>
+<li><code>fail_or_cover_pcnt[i] &gt; FAIL_OR_COVER_THRESHOLD</code></li>
+<li><code>obstacle_pcnt[i] &gt; OBSTACLE_THRESHOLD</code></li>
+<li><code>sky_pcnt[i] &gt; SKY_THRESHOLD</code></li>
+<li><code>current_time in Range(last_scan_time+TIME_INCREMENT-TIME_INCREMENT_TOLERANCE,
+                      last_scan_time+TIME_INCREMENT+TIME_INCREMENT_TOLERANCE)</code></li>
+</ul>
+
+<h2>Detection Probability Given Condition</h2>
+
+<p>0.99</p>
+
+<h2>Robil Integration</h2>
+
+<h3>Trigger</h3>
+
+<ul>
+<li>System startup</li>
+</ul>
+
+<h3>Abort</h3>
+
+<ul>
+<li>None</li>
+</ul>
+
+<h3>Output</h3>
+
+<ul>
+<li>Predictions and advance measure warnings sent to the <code>plp/messages</code> ROS topic.</li>
+</ul>
+</body>
+</html>
