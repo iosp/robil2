@@ -31,8 +31,8 @@
 					<sor>1.4</sor>
 				</solver>
 				<constraints>
-					<cfm>0.00002</cfm>
-					<erp>0.02</erp>
+					<cfm>0.0001</cfm>
+					<erp>0.2</erp>
 					<contact_max_correcting_vel>100</contact_max_correcting_vel>
 					<contact_surface_layer>0.001</contact_surface_layer>
 				</constraints>

@@ -464,10 +464,10 @@
     <parent>body</parent>
     <axis>
 	<xyz>3.67321e-06 1 4.44089e-16</xyz>
-	<limit>
-	  <lower>-1e+16</lower>
-	  <upper>1e+16</upper>
-	</limit>
+	
+	  
+	  
+	
 	<dynamics/>
     </axis>
 </joint>
@@ -591,10 +591,10 @@
     <parent>body</parent>
     <axis>
       <xyz>3.67321e-06 1 0</xyz>
-      <limit>
-	<lower>-1e+16</lower>
-	<upper>1e+16</upper>
-      </limit>
+      
+	
+	
+      
       <dynamics/>
     </axis>
 </joint>
@@ -659,10 +659,10 @@
     <parent>body</parent>
     <axis>
 	<xyz>-3.67321e-06 1 -1.73472e-18</xyz>
-	<limit>
-	  <lower>-1e+16</lower>
-	  <upper>1e+16</upper>
-	</limit>
+	
+	  
+	  
+	
 	<dynamics/>
     </axis>
 </joint>
@@ -727,10 +727,10 @@
     <parent>body</parent>
     <axis>
 	<xyz>3.67321e-06 1 0</xyz>
-	<limit>
-	  <lower>-1e+16</lower>
-	  <upper>1e+16</upper>
-	</limit>
+	
+	  
+	  
+	
 	<dynamics/>
     </axis>
 </joint>
@@ -795,10 +795,10 @@
       <parent>body</parent>
       <axis>
 	  <xyz>3.67321e-06 1 -1.73472e-18</xyz>
-	  <limit>
-	    <lower>-1e+16</lower>
-	    <upper>1e+16</upper>
-	  </limit>
+	  
+	    
+	    
+	  
 	  <dynamics/>
       </axis>
 </joint>
@@ -863,10 +863,10 @@
     <parent>body</parent>
     <axis>
 	<xyz>3.67321e-06 1 0</xyz>
-	<limit>
-	  <lower>-1e+16</lower>
-	  <upper>1e+16</upper>
-	</limit>
+	
+	  
+	  
+	
 	<dynamics/>
     </axis>
 </joint>
