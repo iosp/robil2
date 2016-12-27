@@ -450,7 +450,7 @@ void CLLI_Ctrl::SetThrottelRequest (short reqVal)
 
 	reqThrottel_Val = JausRealToShort (valScaledTmp, -100, 100);
 
-	printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqThrottel_Val);
+	//printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqThrottel_Val);
 
 	ResetLocalTimeTag (m_DriveCurrentState.effortTT);
 	m_DriveCurrentState.lastCmdTT = m_DriveCurrentState.effortTT;
@@ -469,7 +469,7 @@ void CLLI_Ctrl::SetSteeringRequest (short reqVal)
 
 	reqSteering_Val = JausRealToShort (valScaledTmp, -100, 100);
 
-	printf ("SetSteeringRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqSteering_Val);
+	//printf ("SetSteeringRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqSteering_Val);
 
 	ResetLocalTimeTag (m_DriveCurrentState.effortTT);
 	m_DriveCurrentState.lastCmdTT = m_DriveCurrentState.effortTT;
@@ -499,8 +499,7 @@ void CLLI_Ctrl::SetJointRequest (short reqVal1, short reqVal2)
 	m_ManipulatorCurrentState.lastCmdTT = m_ManipulatorCurrentState.effortTT;
 
 
-	printf ("SetJointRequest: Scaling: %d --> %d       %d --> %d\n",
-			reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
+	//printf ("SetJointRequest: Scaling: %d --> %d       %d --> %d\n", reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
 }
 
 
