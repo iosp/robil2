@@ -86,10 +86,6 @@ namespace gazebo
       this->front_left_joint  = this->model->GetJoint("front_left_wheel_joint");
       this->front_right_joint = this->model->GetJoint("front_right_wheel_joint");
       
-      // Starting Timers
-      Linear_command_timer.Start();
-      Angular_command_timer.Start();
-
       this->Ros_nh = new ros::NodeHandle("bobtankDrivePlugin_node");
 
       platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform" , 100);
@@ -191,25 +187,12 @@ namespace gazebo
             On_Angular_command_func(sqc.getSteering());
             On_Linear_command_func(sqc.getThrottel());
 
-            // Applying effort to the wheels , brakes if no message income
-            if (Linear_command_timer.GetElapsed().Float()> command_MAX_DELAY)
-            {
-                // Brakes
-                   Linear_command = 0;
-            }
+            update_ref_vels();
+            apply_efforts();
 
-            if (Angular_command_timer.GetElapsed().Float()> command_MAX_DELAY)
-            {
-                // Brakes
-                   Angular_command = 0;
-            }
-
-              update_ref_vels();
-              apply_efforts();
-
-              std_msgs::Bool connection;
-              connection.data = true;
-              platform_hb_pub_.publish(connection);
+            std_msgs::Bool connection;
+            connection.data = true;
+            platform_hb_pub_.publish(connection);
     }
 
 
@@ -290,11 +273,6 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
         wheel_controller(this->back_left_joint  , left_wheels_omega_ref);
     }
 
-  public: static void On_Angular_command_cb(float msg, void* ptr)
-{
-  ((bobtankDrivePlugin*)ptr)->On_Angular_command_func(msg);
-}
-
 // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
   private: void On_Angular_command_func(float msg)
 {
@@ -303,18 +281,8 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
       if(msg > 1)       { Angular_command =  1;          }
       else if(msg < -1) { Angular_command = -1;          }
       else                    { Angular_command = msg;   }
-    // Reseting timer every time LLC publishes message
-    #if GAZEBO_MAJOR_VERSION >= 5
-       Angular_command_timer.Reset();
-    #endif
-       Angular_command_timer.Start();
 
   Angular_command_mutex.unlock();
-}
-
-  public: static void On_Linear_command_cb(float msg, void* ptr)
-{
-  ((bobtankDrivePlugin*)ptr)->On_Linear_command_func(msg);
 }
 
 // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
@@ -325,17 +293,8 @@ private: void On_Linear_command_func(float msg)
       if(msg > 1)       { Linear_command =  1;          }
       else if(msg < -1) { Linear_command = -1;          }
       else                    { Linear_command = msg;   }
-
-    // Reseting timer every time LLC publishes message
-    #if GAZEBO_MAJOR_VERSION >= 5
-       Linear_command_timer.Reset();
-    #endif
-       Linear_command_timer.Start();
-
   Linear_command_mutex.unlock();
 }
-
-
 
      private: float gazebo_ver;
 
@@ -357,18 +316,8 @@ private: void On_Linear_command_func(float msg)
      // Defining private Ros Node Handle
      private: ros::NodeHandle  *Ros_nh;
 
-     // Defining private Ros Subscribers
-     private: ros::Subscriber Steering_rate_sub;
-     private: ros::Subscriber Velocity_rate_sub;
-
      // Defining private Ros Publishers
      ros::Publisher platform_hb_pub_;
-
-
-     // Defining private Timers
-     private: common::Timer Linear_command_timer;
-     private: common::Timer Angular_command_timer;
-
 
 
      // Defining private Mutex

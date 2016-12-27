@@ -8,8 +8,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <pthread.h>
-
-//#include <gazebo/common/Plugin.hh>
+#include <time.h>
 
 using namespace std;
 
@@ -18,9 +17,7 @@ using namespace std;
 
 const int qin_headerSize = 16;
 
-//const unsigned short qin_DriveCtrlCode = 0x0166;
 const BYTE qin_lli_MsgProp[] = { 0x06, 0x02 };
-//const unsigned short lli_HeartBeatConfirmId = 0x0242;
 const unsigned short qin_HeartBeatID = 0x0222;
 const unsigned short qin_CtrlConfirmId = 0x0F00;
 const unsigned short qin_CtrlRejectId = 0x1000;
@@ -116,9 +113,7 @@ class simQinetiqClient{
 
   float Throttel;
   float Steering;
-//  void (*Throttel_cb)(float, void*);
-//  void (*Steering_cb)(float, void*);
-//  void* ptrToInst;
+
 public:
 
   simQinetiqClient(){}
@@ -127,17 +122,6 @@ public:
 
   float getThrottel(){return Throttel;}
   float getSteering(){return Steering;}
-
-//  void setThrottel_cb(void (*p)(float, void*)) {
-//     Throttel_cb = p;
-//  }
-//  void setSteering_cb(void (*p)(float, void*)) {
-//     Steering_cb = p;
-//  }
-//  void setPtrToInst(void* ptrTOinst)
-//  {
-//    this->ptrToInst = ptrTOinst;
-//  }
 
   bool commConnect(string IP, int udpLP, int udpRP)
   {
@@ -205,8 +189,31 @@ public:
   {
     while(true)
     {
+        if(!HBRespons)
+          printf("SQC: HeartBeat was not response\n");
         sendto(s, QIN_QueryHeartbeatMsg, sizeof(QIN_QueryHeartbeatMsg), 0, (struct sockaddr *) &si_Remote, sizeof(si_Remote));
+        HBRespons = false;
         sleep(5);
+    }
+  }
+
+  void safeThreadFunc()
+  {
+    struct timespec currentTime;
+    double lastUpdateTime;
+    double currTime;
+
+    while(true)
+    {
+      clock_gettime(CLOCK_REALTIME, &currentTime);
+      currTime = currentTime.tv_sec + currentTime.tv_nsec / 1E9;
+      lastUpdateTime = lastUpdateOfCommands.tv_sec + lastUpdateOfCommands.tv_nsec / 1E9;
+      if(currTime > lastUpdateTime + 0.5)
+      {
+        Throttel = 0;
+        Steering = 0;
+      }
+      sleep(0.1);
     }
   }
 
@@ -217,13 +224,15 @@ public:
     myHandle->HeartBeatFunc();
   }
 
-  void recvThread()
+static void* safeThread(void* p)
+{
+  simQinetiqClient *myHandle = (simQinetiqClient*) (p);
+
+  myHandle->safeThreadFunc();
+}
+
+  void mainThreadFunc()
   {
-    pthread_t HBFunc;
-    pthread_create(&HBFunc, NULL, &HeratBeatThread, this);
-
-    printf("SQC: first connection success\n");
-
     BYTE msgHeader[qin_headerSize];
     short temp = 0;
     while (true)
@@ -251,30 +260,27 @@ public:
                   printf("qin_ManipulatorCtrlCode\n");
                   break;
                 case lli_CtrlCmdId:
+                  //send controlConfirmMsg for the driving and manipulation, otherwise the LLI will not move to ready state.
                   sendto(s, QIN_DriveControlConfirmMsg, sizeof(QIN_DriveControlConfirmMsg), 0, (struct sockaddr *) &si_Remote, sizeof(si_Remote));
                   sendto(s, QIN_ManipulatorControlConfirmMsg, sizeof(QIN_ManipulatorControlConfirmMsg), 0, (struct sockaddr *) &si_Remote, sizeof(si_Remote));
                   break;
                 case lli_SetWrenchEffortId:
+                  //recieve throttel and steering commands
                   temp = 0;
                   memcpy(&temp, &(buf[18]), sizeof(short));
                   Throttel = reverseShortJausToReal(temp, -100, 100)/100.0;
-//                  if(Throttel_cb)
-//                    Throttel_cb(Throttel, ptrToInst);
                   temp = 0;
                   memcpy(&temp, &buf[20], sizeof(short));
                   Steering = reverseShortJausToReal(temp, -100, 100)/100.0;
-//                  if(Steering_cb)
-//                    Steering_cb(Steering, ptrToInst);
+
+                  //update last time update for saftyThread
+                  clock_gettime(CLOCK_REALTIME, &lastUpdateOfCommands);
+
                   break;
                 case lli_HeartBeatConfirmId:
-                  //do nothing - it's just respons
+                  //response for HB - do nothing
+                  HBRespons = true;
                   //printf("lli_HeartBeatConfirmId\n");
-                  break;
-                case qin_HeartBeatID:                                       //not should appear
-                  printf("?!?!?!?!qin_HeartBeatID\n");
-                  break;
-                case qin_CtrlConfirmId:                                     //not should appear
-                  printf("?!?!?!?!qin_CtrlConfirmId\n");
                   break;
                 case qin_CtrlRejectId:
                   printf("qin_CtrlRejectId\n");
@@ -283,6 +289,7 @@ public:
                   printf("lli_CtrlReleaseId\n");
                   break;
                 case lli_SetJointEffortId:
+                  //manipulation commands
 //                  temp = 0;
 //                  memcpy(&temp, &(buf[17]), sizeof(unsigned short));
 //                  if(temp != 0)
@@ -305,20 +312,27 @@ public:
     }
   }
 
-  static void* threadForRecv(void * p)
+  static void* mainThread(void * p)
   {
     simQinetiqClient *myHandle = (simQinetiqClient*) (p);
 
-    myHandle->recvThread();
+    pthread_t HBThread;
+    pthread_create(&HBThread, NULL, &HeratBeatThread, myHandle);
+
+    pthread_t SaftyThread;
+    pthread_create(&SaftyThread, NULL, &safeThread, myHandle);
+
+    myHandle->mainThreadFunc();
   }
 
   void Init(string IP, int udpLP, int udpRP)
   {
       commConnect(IP, udpLP, udpRP);
       slen=sizeof(si_Local);
+      HBRespons = true;
 
       pthread_t recvFunc;
-      pthread_create(&recvFunc, NULL, &threadForRecv, this);
+      pthread_create(&recvFunc, NULL, &mainThread, this);
   }
 
   struct sockaddr_in si_Local;
@@ -326,6 +340,7 @@ public:
   int s, i;
   socklen_t slen;
   unsigned char buf[BUFLEN];
-
+  bool HBRespons;
+  struct timespec lastUpdateOfCommands;
 
 };
