@@ -9,14 +9,14 @@
 	
 	
 	<!-- == SENSORS INTERFACEs == -->
-        <node name="ipon2ros" type="shiffon2ros_node" pkg="shiffon2ros" args="127.0.0.1" output="screen" respawn="true"/>
-        <node name="ibeo2ros" type="sickldmrs.py" pkg="sick_ldmrs" args="127.0.0.1" output="screen" respawn="true"/>
+        <node name="ipon2ros" type="shiffon2ros_node" pkg="shiffon2ros" args="132.4.6.60" output="screen" respawn="true"/>
+        <node name="ibeo2ros" type="sickldmrs.py" pkg="sick_ldmrs" args="192.168.0.6" output="screen" respawn="true"/>
         
         
         
         
         <!-- == PLATFORM INTERFACE == -->  
-        <!--node name="ros2qinetiq" type="lli_node" pkg="lli" args="127.0.0.1" output="screen" respawn="true"/-->   
+        <!--node name="ros2qinetiq" type="lli_node" pkg="lli" args="192.168.101.3" output="screen" respawn="true"/-->   
         
 	
 	
