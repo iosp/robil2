@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <time.h>
+#include <boost/thread/mutex.hpp>
 
 using namespace std;
 
@@ -120,8 +121,20 @@ public:
   simQinetiqClient(simQinetiqClient const &) = delete;
   void operator=(simQinetiqClient const&) = delete;
 
-  float getThrottel(){return Throttel;}
-  float getSteering(){return Steering;}
+  float getThrottel(){
+    float temp;
+    mutex_Throttel.lock();
+    temp = Throttel;
+    mutex_Throttel.unlock();
+    return temp;
+  }
+  float getSteering(){
+    float temp;
+    mutex_Steering.lock();
+    temp = Steering;
+    mutex_Steering.unlock();
+    return temp;
+  }
 
   bool commConnect(string IP, int udpLP, int udpRP)
   {
@@ -228,9 +241,15 @@ static void* safeThread(void* p)
 {
   simQinetiqClient *myHandle = (simQinetiqClient*) (p);
 
-  myHandle->safeThreadFunc();
+  //myHandle->safeThreadFunc();
 }
 
+//limit temp to +-1
+void limitToAbsOne(float& temp)
+{
+  if(temp > 1)       { temp =  1;          }
+  else if(temp < -1) { temp = -1;          }
+}
   void mainThreadFunc()
   {
     BYTE msgHeader[qin_headerSize];
@@ -268,11 +287,18 @@ static void* safeThread(void* p)
                   //recieve throttel and steering commands
                   temp = 0;
                   memcpy(&temp, &(buf[18]), sizeof(short));
-                  Throttel = reverseShortJausToReal(temp, -100, 100)/100.0;
+                  temp = reverseShortJausToReal(temp, -100, 100)/100.0;
+                  limitToAbsOne(temp);
+                  mutex_Throttel.lock();
+                  Throttel = temp;
+                  mutex_Throttel.unlock();
                   temp = 0;
                   memcpy(&temp, &buf[20], sizeof(short));
-                  Steering = reverseShortJausToReal(temp, -100, 100)/100.0;
-
+                  temp  = reverseShortJausToReal(temp, -100, 100)/100.0;
+                  limitToAbsOne(temp);
+                  mutex_Steering.lock();
+                  Steering = temp;
+                  mutex_Steering.unlock();
                   //update last time update for saftyThread
                   clock_gettime(CLOCK_REALTIME, &lastUpdateOfCommands);
 
@@ -342,5 +368,9 @@ static void* safeThread(void* p)
   unsigned char buf[BUFLEN];
   bool HBRespons;
   struct timespec lastUpdateOfCommands;
+
+  private: boost::mutex mutex_Throttel;
+  private: boost::mutex mutex_Steering;
+
 
 };

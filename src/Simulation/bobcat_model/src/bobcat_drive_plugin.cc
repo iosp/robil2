@@ -184,9 +184,6 @@ namespace gazebo
     // Called by the world update start event, This function is the event that will be called every update
     public: void OnUpdate(const common::UpdateInfo & /*_info*/)  // we are not using the pointer to the info so its commanted as an option
     {
-            On_Angular_command_func(sqc.getSteering());
-            On_Linear_command_func(sqc.getThrottel());
-
             update_ref_vels();
             apply_efforts();
 
@@ -216,7 +213,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
     {
         Linear_command_mutex.lock();
         Angular_command_mutex.lock();
-            array<double,2> args = {Linear_command, Angular_command};
+            array<double,2> args = {sqc.getThrottel(), sqc.getSteering()};
         Linear_command_mutex.unlock();
         Angular_command_mutex.unlock();
 
@@ -272,29 +269,6 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
         wheel_controller(this->front_left_joint , left_wheels_omega_ref);
         wheel_controller(this->back_left_joint  , left_wheels_omega_ref);
     }
-
-// The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
-  private: void On_Angular_command_func(float msg)
-{
-  Angular_command_mutex.lock();
-      // Recieving referance steering angle
-      if(msg > 1)       { Angular_command =  1;          }
-      else if(msg < -1) { Angular_command = -1;          }
-      else                    { Angular_command = msg;   }
-
-  Angular_command_mutex.unlock();
-}
-
-// The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
-private: void On_Linear_command_func(float msg)
-{
-  Linear_command_mutex.lock();
-      // Recieving referance velocity
-      if(msg > 1)       { Linear_command =  1;          }
-      else if(msg < -1) { Linear_command = -1;          }
-      else                    { Linear_command = msg;   }
-  Linear_command_mutex.unlock();
-}
 
      private: float gazebo_ver;
 
