@@ -22,6 +22,7 @@
 #include "QinetiQ_ICD.h"
 #include "ShareUtil.h"
 // #include "Share_QueryPerformanceTime.h"
+#include <boost/thread/mutex.hpp>
 
 #pragma pack (1)
 
@@ -207,6 +208,8 @@ private:
 
 	short			JausRealToShort (short realVal, short lowerLimit, short upperLimit);
 	unsigned short	JausRealToUShort (short realVal, short lowerLimit, short upperLimit);
+
+	boost::mutex mutex_time;
 
 };
 
