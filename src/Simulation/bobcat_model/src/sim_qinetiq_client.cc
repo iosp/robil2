@@ -253,7 +253,8 @@ void limitToAbsOne(float& temp)
   void mainThreadFunc()
   {
     BYTE msgHeader[qin_headerSize];
-    short temp = 0;
+    short shTemp = 0;
+    float fTemp = 0;
     while (true)
     {
         memset(buf,'\0', BUFLEN);
@@ -285,19 +286,21 @@ void limitToAbsOne(float& temp)
                   break;
                 case lli_SetWrenchEffortId:
                   //recieve throttel and steering commands
-                  temp = 0;
-                  memcpy(&temp, &(buf[18]), sizeof(short));
-                  temp = reverseShortJausToReal(temp, -100, 100)/100.0;
-                  limitToAbsOne(temp);
+                  shTemp = 0;
+                  fTemp = 0;
+                  memcpy(&shTemp, &(buf[18]), sizeof(short));
+                  fTemp = reverseShortJausToReal(shTemp, -100, 100)/100.0;
+                  limitToAbsOne(fTemp);
                   mutex_Throttel.lock();
-                  Throttel = temp;
+                  Throttel = fTemp;
                   mutex_Throttel.unlock();
-                  temp = 0;
-                  memcpy(&temp, &buf[20], sizeof(short));
-                  temp  = reverseShortJausToReal(temp, -100, 100)/100.0;
-                  limitToAbsOne(temp);
+                  shTemp = 0;
+                  fTemp = 0;
+                  memcpy(&shTemp, &buf[20], sizeof(short));
+                  fTemp  = reverseShortJausToReal(shTemp, -100, 100)/100.0;
+                  limitToAbsOne(fTemp);
                   mutex_Steering.lock();
-                  Steering = temp;
+                  Steering = fTemp;
                   mutex_Steering.unlock();
                   //update last time update for saftyThread
                   clock_gettime(CLOCK_REALTIME, &lastUpdateOfCommands);
