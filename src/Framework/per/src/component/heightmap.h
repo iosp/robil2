@@ -53,6 +53,7 @@ class HeightMap
         int     getAbsoluteFeatureAt(int x, int y);
 	
 	int     getAbsoluteTypeAt(int x, int y);
+	double getHeightAt(int x, int y);
 	/// Until here **
 	
 	/**
@@ -92,6 +93,7 @@ class HeightMap
         void displayGUI(int, int, int, int enlarger=3);
         void displayTypesGUI(Mat lanes, int enlarger=3);
         void display3D();
+        Mat add_arrow(Mat image, int rotation, int px, int py, int enlarger);
     /*
      * This function generates from the Heightmap object a Mat image
      */

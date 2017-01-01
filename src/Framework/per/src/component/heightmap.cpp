@@ -219,6 +219,72 @@ void HeightMap::displayConsole()
 }
 int showX = -1, showY = -1;
 int test_x = -1, test_y = -1;
+
+
+Mat HeightMap::add_arrow(Mat image, int rotation, int px, int py, int enlarger)
+{
+  Mat arrow;
+  cv::Point2f pt(_arrow.rows/2, _arrow.cols/2);
+  cv::Mat r = cv::getRotationMatrix2D(pt, 90+rotation, 1.0);
+  cv::warpAffine(_arrow, arrow, r, cv::Size(_arrow.rows, _arrow.rows));
+  px *= 5;
+  py *= 5; //transformation to 20x20cm cell coords
+  px -= _refPoint.x;
+  py -= _refPoint.y;
+  if(px >= _width/2 || px <= -_width/2 || py >= _height/2 || py <= -_height/2)
+  {
+      return image;
+  }
+  px = _width/2 - px;
+  py = _height/2 - py;
+  for(int i = 0; i < _arrow.rows; i++)
+      for(int j = 0; j < _arrow.cols; j++)
+          if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0))
+              image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
+  return image;
+}
+
+void onMouseClick2(int event, int x, int y, int flags, void *param)
+{
+
+    Mat *img = ((Mat *)param);
+    if (event == CV_EVENT_LBUTTONDOWN)
+    {
+        cout << "x: " << x << " y: " << y << "\t" << img->size() <<endl;
+        test_x = showX = y;
+        test_y = showY = x;
+    }
+}
+
+void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
+{
+    // rdbg("gui enter");
+    Mat image = this->generateMat(rotation, px, py, enlarger);
+    //put the tempory arrow representing my position and rotation on the map
+    image = add_arrow(image, rotation, px, py, enlarger);
+    char name[30];
+    sprintf(name, "GUI %d", _width);
+
+    if (!image.empty())
+    {
+        setMouseCallback(name, onMouseClick2, &image);
+        imshow(name, image);
+        waitKey(100);
+    }
+
+}
+void onMouseClick(int event, int x, int y, int flags, void *param)
+{
+
+    Mat *img = ((Mat *)param);
+
+    if (event == CV_EVENT_LBUTTONDOWN)
+    {
+//        cout << "x: " << x << " y: " << y << "\t" << img->size() <<endl;
+        test_x = showX = y;
+        test_y = showY = x;
+    }
+}
 Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
 {
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
@@ -243,69 +309,8 @@ Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
             image.at<Vec3b>(x,y) = Vec3b(120*(1-c),240, 240);
         }
     cvtColor(image, image, CV_HSV2BGR);
-
-    Mat arrow;
-    cv::Point2f pt(_arrow.rows/2, _arrow.cols/2);
-    cv::Mat r = cv::getRotationMatrix2D(pt, 90+rotation, 1.0);
-    cv::warpAffine(_arrow, arrow, r, cv::Size(_arrow.rows, _arrow.rows));
-    px *= 5;
-    py *= 5; //transformation to 20x20cm cell coords
-    px -= _refPoint.x;
-    py -= _refPoint.y;
-    if(px >= _width/2 || px <= -_width/2 || py >= _height/2 || py <= -_height/2)
-    {
-        return image;
-    }
-    px = _width/2 - px;
-    py = _height/2 - py;
-    for(int i = 0; i < _arrow.rows; i++)
-        for(int j = 0; j < _arrow.cols; j++)
-            if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0))
-                image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
-
-
     return image;
 }
-
-void onMouseClick2(int event, int x, int y, int flags, void *param)
-{
-
-
-    if (event == CV_EVENT_LBUTTONDOWN)
-    {
-
-        test_x = showX = y;
-        test_y = showY = x;
-    }
-}
-
-void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
-{
-    // rdbg("gui enter");
-    Mat image = this->generateMat(rotation, px, py, enlarger);
-    //put the tempory arrow representing my position and rotation on the map
-    char name[30];
-    sprintf(name, "GUI %d", _width);
-
-    if (!image.empty())
-    {
-        setMouseCallback(name, onMouseClick2, &image);
-        imshow(name, image);
-        waitKey(100);
-    }
-
-}
-void onMouseClick(int event, int x, int y, int flags, void *param)
-{
-
-    Mat *img = ((Mat *)param);
-
-    if (event == CV_EVENT_LBUTTONDOWN)
-    {
-        cout << "x: " << x << " y: " << y << "\t" << img->size() <<endl;
-    }
-}
-
 Mat HeightMap::generateMat(int enlarger)
 {
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
@@ -438,8 +443,8 @@ double HeightMap::calc_height(int x, int y, std::vector<int> conv)
         {
             double mul = conv.at(k++);
             if (i < 0 || i > _width || j < 0 || j > _height || _at(i, j) == HEIGHT_UNKNOWN)
-                continue;
-            counter += mul;
+                return 0.0;
+            counter += abs(mul);
             height += mul * _at(i, j);
         }
     if (test_y == y && test_x == x)
@@ -449,7 +454,8 @@ double HeightMap::calc_height(int x, int y, std::vector<int> conv)
     }
 //    if (_at(x, y) > 0.4)
 //        cout << counter << ", " << height << " = " << height / counter << endl;
-    height /= (1.0 * counter);
+    if (counter)
+      height /= (1.0 * counter);
 
     return height;
 }
@@ -468,7 +474,7 @@ double HeightMap::calc_slope(int x, int y, std::vector<int> conv)
             double mul = conv.at(k++);
             if (i < 0 || i > _width || j < 0 || j > _height || _at(i, j) == HEIGHT_UNKNOWN)
                 continue;
-            counter += mul;
+            counter += abs(mul);
             height += mul * _at(i, j);
         }
     if (test_y == y && test_x == x)
@@ -478,6 +484,12 @@ double HeightMap::calc_slope(int x, int y, std::vector<int> conv)
     height /= counter;
     return height;
 }
+
+double HeightMap::getHeightAt(int x, int y)
+{
+
+}
+
 void HeightMap::calculateTypes()//Vec3D position, Rotation myRot)
 {
     int mul;
@@ -496,8 +508,11 @@ void HeightMap::calculateTypes()//Vec3D position, Rotation myRot)
             {
                 double gx = calc_height(i, j, slope_conv_x);
                 double gy = calc_height(i, j, slope_conv_y);
-                if (abs(gx) > _dynamic->slope_threshold || abs(gy) > _dynamic->slope_threshold)
+                if (sqrt(gx * gx + gy * gy) > _dynamic->slope_threshold)
+                  {
                     _types[j*_width+i] = TYPE_OBSTACLE;
+//                    std::cout << i << ", " << j << ": " << gx << ", " << gy << std::endl;
+                  }
                 else
                     _types[j*_width+i] = TYPE_CLEAR;
             }
