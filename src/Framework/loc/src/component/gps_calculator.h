@@ -1,6 +1,9 @@
 #ifndef GPS_CALCULATOR_H_
 #define GPS_CALCULATOR_H_
 const double PI  = 3.141592653589793238463;
+
+#include <sensor_msgs/NavSatFix.h>
+
 inline double calcDistance(sensor_msgs::NavSatFix p1,sensor_msgs::NavSatFix p2)
 {
 	/**

@@ -116,7 +116,8 @@ void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
     tf::Matrix3x3 m(qut);
     double roll, pitch, yaw;
     m.getRPY(roll, pitch, yaw);
-    qut.setRPY(-roll, pitch, -yaw); yaw *= -1;
+    qut.setRPY(roll, pitch, yaw);
+    //qut.setRPY(-roll, pitch, -yaw); yaw *= -1;
 
     z.at<double>(5,0) = (measurement.linear_acceleration.x - Eacc) * cos(yaw);
     z.at<double>(6,0) = (measurement.linear_acceleration.x - Eacc) * sin(yaw);
@@ -129,17 +130,19 @@ void ekf::setIMUMeasurement(sensor_msgs::Imu measurement)
 	z.at<double>(13,0) = measurement.angular_velocity.z;
 
 }
-void ekf::setGPSSpeedMeasurement(robil_msgs::GpsSpeed _speed)
+void ekf::setGPSSpeedMeasurement(sensor_msgs::NavSatFix _speed)
 {
-    tf::Quaternion qut (xk.at<double>(7,0), xk.at<double>(8,0), xk.at<double>(9,0), xk.at<double>(10,0));
-    tf::Matrix3x3 m(qut);
-    double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);
-    if (isnan(yaw) || isinf(yaw))
-        yaw = 0;
+//    tf::Quaternion qut (xk.at<double>(7,0), xk.at<double>(8,0), xk.at<double>(9,0), xk.at<double>(10,0));
+//    tf::Matrix3x3 m(qut);
+//    double roll, pitch, yaw;
+//    m.getRPY(roll, pitch, yaw);
+//    if (isnan(yaw) || isinf(yaw))
+//        yaw = 0;
 
-    z.at<double>(3,0) = _speed.speed * cos(yaw);// * cos(xk.at<double>(9,0));
-    z.at<double>(4,0) = _speed.speed * sin(yaw);// * sin(xk.at<double>(9,0));
+//    z.at<double>(3,0) = _speed.speed * cos(yaw);// * cos(xk.at<double>(9,0));
+//    z.at<double>(4,0) = _speed.speed * sin(yaw);// * sin(xk.at<double>(9,0));
+    z.at<double>(3,0) = _speed.latitude;
+    z.at<double>(4,0) = -_speed.longitude;
 }
 
 void ekf::estimator()

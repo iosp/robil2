@@ -12,28 +12,48 @@
 #include <dynamic_reconfigure/server.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <robil_msgs/GpsSpeed.h>
+#include "ComponentStates.h"
+#include <math.h>
+
 using namespace std;
 using namespace decision_making;
-#include "ComponentStates.h"
+using namespace ros;
 
+#define DT 0.01
+#define LENGTH_OF_RECORD_IN_SECONDS 3
+#define LENGTH_OF_RECORD_IN_FRAMES (1/DT)*LENGTH_OF_RECORD_IN_SECONDS
+#define SIZE_OF_WPD_INTEGRAL 3
+static double P_linear, D_linear, I_linear; 				/* PID constants of linear x */
+static double P_angular, D_angular, I_angular;		/* PID constants of angular z */
+static double linearNormalizer;
+double sum_linear;
+double sum_angular;
+ros::Publisher Throttle_rate_pub;
+ros::Publisher Steering_rate_pub;
 
-double k_emrg=1;
-double hb_time = 0 ;
-const double t_out = 20.0 ;
-static double Kp = 1.3 , Kd = 0.0 , Ki = 0.0   ; 				/* PID constants of linear x */
-static double Kpz = -1.8 , Kdz = 0.01 , Kiz = -0.1   ;		/* PID constants of angular z */
-ros::Time heartbeat_time;
-ros::Time GPS_time;
-ros::Time LOC_time;
-double linear_vel,angular_vel;
-double dt_GPS, dt_LOC;
-double wanted_linear_vel, wanted_angular_vel;
-	geometry_msgs::TwistStamped cur_error ; 			/* stores the current error signal */
-	geometry_msgs::TwistStamped old_error ; 			/* stores the last error signal */
-		double linear_integral;
-	double angular_integral;
-		double linear_der;
-	double angular_der;
+double errorAngularArray[1000];
+int indexOf_errorAngularArray;
+double errorLinearArray[1000];
+int indexOf_errorLinearArray;
+double wpdCmdLinearArray[SIZE_OF_WPD_INTEGRAL];
+int indexOf_wpdCmdLinearArray;
+double wpdCmdAngularArray[SIZE_OF_WPD_INTEGRAL];
+int indexOf_wpdCmdAngularArray;
+double lastLinearError;
+double lastAngularError;
+double LocVelLinearX;
+double LocVelLinearY;
+double LocVelAngularZ;
+double sumOfWpdSpeedLinear;
+double sumOfWpdSpeedAngular;
+double WpdSpeedLinear;
+double WpdSpeedAngular;
+double currentYaw;
+double currentVelocity;
+double wpdSpeedTimeInMilli;
+double linearFactor;
+double angularFactor;
+
 class Params: public CallContextParameters{
 public:
 	ComponentMain* comp;
@@ -92,7 +112,7 @@ FSM(llc)
 		{
 			FSM_CALL_TASK(OFF)
 			FSM_TRANSITIONS
-			{	
+			{
 				FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
 				FSM_ON_EVENT("/llc/Activation", FSM_NEXT(ON));
 			}
@@ -113,218 +133,209 @@ FSM(llc)
 
 TaskResult state_OFF(string id, const CallContext& context, EventQueue& events){
 	ROS_INFO("LLC OFF");
-	//diagnostic_msgs::DiagnosticStatus status;
-	//COMPONENT->publishDiagnostic(status);
 	return TaskResult::SUCCESS();
 }
 
 TaskResult state_INIT(string id, const CallContext& context, EventQueue& events){
-	//PAUSE(10000);
 	ROS_INFO("LLC Init");
+	sum_linear = 0;
+	sum_angular = 0;
+	LocVelLinearX = 0;
+	LocVelLinearY = 0;
+	LocVelAngularZ = 0;
+	WpdSpeedLinear = 0;
+	WpdSpeedAngular = 0;
+	indexOf_errorAngularArray = 0;
+	indexOf_errorLinearArray = 0;
+	indexOf_wpdCmdAngularArray = 0;
+	indexOf_wpdCmdLinearArray = 0;
+	sumOfWpdSpeedLinear = 0;
+	sumOfWpdSpeedAngular = 0;
+	currentYaw = 0;
+	currentVelocity = 0;
+	linearNormalizer = 1;
+	wpdSpeedTimeInMilli = 0;
+
+	for(int i = 0 ; i < 1000 ; i++)
+	  {
+	    errorLinearArray[i] = 0;
+	    errorAngularArray[i] = 0;
+	  }
+	for(int i = 0 ; i < SIZE_OF_WPD_INTEGRAL ; i++)
+	  {
+	    wpdCmdLinearArray[i] = 0;
+	    wpdCmdAngularArray[i] = 0;
+	  }
 	Event e("EndOfInit");
 	events.raiseEvent(e);
 	return TaskResult::SUCCESS();
 }
 
-void hb_callback (const std_msgs::Bool &msg)
-{
-	if(msg.data == true )
-		hb_time = ros::Time::now().toSec();
-	if(msg.data == false)
-		hb_time = t_out + 1.0;
-}
-
-
-
-void llc_status_heartbeat (const geometry_msgs::TwistStamped &msg)
-{
-	heartbeat_time = ros::Time::now();
-	wanted_linear_vel=msg.twist.linear.x;
-	wanted_angular_vel=msg.twist.angular.z;
-}
-
-void llc_status_callback (const std_msgs::Float64 &msg)
-{
-	k_emrg=msg.data;
-}
-
-
-void GPS_angular_vel_cb  (const robil_msgs::GpsSpeed &msg)
-{
-        
-	linear_vel=msg.speed;
-	dt_GPS=(ros::Time::now()-GPS_time).toSec();
-	GPS_time=ros::Time::now();
-	if(dt_GPS < 0.01)dt_GPS=0.01;
-	linear_integral += ((cur_error.twist.linear.x )* dt_GPS);
-	linear_der = ((cur_error.twist.linear.x - old_error.twist.linear.x)/dt_GPS);
-	//ROS_INFO("dt_GPS  = %lf ", dt_GPS);
-}
-
-
-void LOC_linear_vel_cb  (const geometry_msgs::TwistStamped &msg)
-{
-        
-	angular_vel=msg.twist.angular.z;
-	dt_LOC=(ros::Time::now()-LOC_time).toSec();
-	if(dt_LOC < 0.01) dt_LOC = 0.01;
-	LOC_time=ros::Time::now();
-	angular_integral += ((cur_error.twist.angular.z)* dt_LOC);
-	angular_der = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt_LOC);
-	//ROS_INFO("dt_LOC  = %lf ", dt_LOC);
-}
 
 
 void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t level) {
 
-	Kp=config.linearVelocity_P;
-	Ki=config.linearVelocity_I;
-	Kd=config.linearVelocity_D;
-	Kpz=config.angularVelocity_P;
-	Kiz=config.angularVelocity_I;
-	Kdz=config.angularVelocity_D;
+	P_linear=config.linearVelocity_P;
+	I_linear=config.linearVelocity_I;
+	D_linear=config.linearVelocity_D;
+	P_angular=config.angularVelocity_P;
+	I_angular=config.angularVelocity_I;
+	D_angular=config.angularVelocity_D;
+
+	linearFactor=config.linearFactor;
+	angularFactor=config.angularFactor;
+}
+
+void cb_currentYaw(geometry_msgs::PoseWithCovarianceStamped msg)
+{
+  double roll, pitch, yaw = 0;
+        tf::Quaternion q(  msg.pose.pose.orientation.x ,  msg.pose.pose.orientation.y,   msg.pose.pose.orientation.z,   msg.pose.pose.orientation.w);
+          tf::Matrix3x3 rot_mat(q);
+          rot_mat.getEulerYPR(yaw,pitch,roll);
+
+          currentYaw = yaw;
+}
+
+
+double calcIntegral_linearError(double currError)
+{
+  sum_linear -= errorLinearArray[indexOf_errorLinearArray];
+  sum_linear += currError;
+
+  errorLinearArray[indexOf_errorLinearArray] = currError;
+
+  if(++indexOf_errorLinearArray >= LENGTH_OF_RECORD_IN_FRAMES)
+          indexOf_errorLinearArray = 0;
+
+  return sum_linear*DT;
+}
+
+double calcDiferencial_linearError(double currError)
+{
+  double diff = currError - lastLinearError;
+  double result = diff / DT;
+  lastLinearError = currError;
+  return result;
+}
+
+double calcIntegral_angularError(double currError)
+{
+  sum_angular -= errorAngularArray[indexOf_errorAngularArray];
+  sum_angular += currError;
+
+  errorAngularArray[indexOf_errorAngularArray] = currError;
+  indexOf_errorAngularArray++;
+
+  if(indexOf_errorAngularArray >= LENGTH_OF_RECORD_IN_FRAMES)
+          indexOf_errorAngularArray = 0;
+
+  return sum_angular*DT;
+}
+
+double calcDiferencial_angularError(double currError)
+{
+  double diff = currError - lastAngularError;
+  double result = diff / DT;
+  lastAngularError = currError;
+  return result;
+}
+
+void cb_LocVelpcityUpdate(geometry_msgs::TwistStamped msg)
+{
+  LocVelLinearX = msg.twist.linear.x;
+  LocVelLinearY = msg.twist.linear.y;
+
+  LocVelAngularZ = msg.twist.angular.z;
+
+  double V_normal = sqrt((LocVelLinearX * LocVelLinearX) + (LocVelLinearY * LocVelLinearY));
+  if (V_normal > 0.01)
+    {
+      double x_normal = LocVelLinearX/V_normal;
+      double y_noraml = LocVelLinearY/V_normal;
+      double theta = atan2(y_noraml, x_normal);
+      if(abs(theta - currentYaw) - 3.0/8.0*M_PI < 0.01)
+        {
+          currentVelocity = V_normal;
+        }
+      else if (abs(theta - currentYaw) - 5.0/8.0*M_PI < 0.01)
+        {
+          currentVelocity = 0;
+        }
+      else
+        currentVelocity = -V_normal;
+    }
+}
+
+void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
+{
+  wpdSpeedTimeInMilli = ros::Time::now().toSec()*1000; // toSec() return seconds.milliSecconds
+
+  sumOfWpdSpeedLinear -= wpdCmdLinearArray[indexOf_wpdCmdLinearArray];
+  sumOfWpdSpeedLinear += msg.twist.linear.x;
+  sumOfWpdSpeedAngular -= wpdCmdAngularArray[indexOf_wpdCmdAngularArray];
+  sumOfWpdSpeedAngular += msg.twist.angular.z;
+
+  wpdCmdLinearArray[indexOf_wpdCmdLinearArray] = msg.twist.linear.x;
+  wpdCmdAngularArray[indexOf_wpdCmdAngularArray] = msg.twist.angular.z;
+  if(++indexOf_wpdCmdLinearArray >= SIZE_OF_WPD_INTEGRAL)
+    indexOf_wpdCmdLinearArray = 0;
+  if(++indexOf_wpdCmdAngularArray >= SIZE_OF_WPD_INTEGRAL)
+    indexOf_wpdCmdAngularArray = 0;
+
+  WpdSpeedLinear = sumOfWpdSpeedLinear/SIZE_OF_WPD_INTEGRAL;
+  WpdSpeedAngular = sumOfWpdSpeedAngular/SIZE_OF_WPD_INTEGRAL;
+}
+
+void pubThrottleAndSteering()
+{
+    double RosTimeNowInMilli = ros::Time::now().toSec()*1000;  // toSec() return seconds.milliSecconds
+
+    //if there is no WPD command as long as  500ms, give the zero command
+    if(wpdSpeedTimeInMilli + 500 - RosTimeNowInMilli <= 0)
+      {
+        WpdSpeedLinear = 0;
+        WpdSpeedAngular = 0;
+      }
+
+    double linearError = (linearFactor*WpdSpeedLinear) - currentVelocity;
+    double linearEffortCMD = P_linear * linearError + I_linear* calcIntegral_linearError(linearError)+ D_linear * calcDiferencial_linearError(linearError);
+
+    std_msgs::Float64 msglinearEffortCMD;
+    msglinearEffortCMD.data = linearEffortCMD;
+    Throttle_rate_pub.publish(msglinearEffortCMD);
+
+    double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
+    double angularEffortCMD = P_angular * angularError + I_angular* calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
+
+    if(linearEffortCMD < 0)
+      angularEffortCMD = -angularEffortCMD;
+    std_msgs::Float64 msgAngularEffortCMD;
+    msgAngularEffortCMD.data = angularEffortCMD;
+    Steering_rate_pub.publish(msgAngularEffortCMD);
 }
 
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
 
-
-
-	ROS_INFO("LLC Ready");
-
-	double linear_der;
-	double angular_der;
-	double linear_integral_limit = 5;
-	double angular_integral_limit = 5;
-	double err_epsilon = 0.01;
-	double old_err = 0;
-	COMPONENT->t_flag = 0 ;
-
-
-
-
-	config::LLC::pub::EffortsSt Steering_rate ; 		/* steering rate  +- 1 */
-	config::LLC::pub::EffortsTh Throttle_rate ;			/* Throttle rate  +- 1 */
- 	sensor_msgs::JointState Blade_pos;
-
-
-	std_msgs::Float64 angular_error;
-	std_msgs::Float64 linear_error;							/* used for co-ordinates transform */
-	
-
 	ros::NodeHandle n;
 
-	ros::Subscriber link_to_heatbeat = n.subscribe("/WPD/Speed" , 100, llc_status_heartbeat);
-	ros::Subscriber link_to_platform = n.subscribe("/Sahar/link_with_platform" , 100, hb_callback);
-	ros::Subscriber GPS_angular_vel  = n.subscribe("/SENSORS/GPS/Speed" , 100, GPS_angular_vel_cb);
-	ros::Subscriber LOC_linear_vel  = n.subscribe("/LOC/Velocity" , 100, LOC_linear_vel_cb);
-	
-	ros::Publisher linear_error_publisher = n.advertise<std_msgs::Float64>("linear_error", 100);
-	ros::Publisher angular_error_publisher = n.advertise<std_msgs::Float64>("/angular_error", 100);
-	ros::Publisher Throttle_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Throttle", 100);
-	ros::Publisher Steering_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Steering", 100);
-	
+        Throttle_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Throttle", 100);
+        Steering_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Steering", 100);
 
-	/* PID loop */
+        ros::Subscriber locVel= n.subscribe("/LOC/Velocity" , 10, cb_LocVelpcityUpdate);
+        ros::Subscriber locPose= n.subscribe("/LOC/Pose" , 10, cb_currentYaw);
+        ros::Subscriber wpdSpeed = n.subscribe("/WPD/Speed" , 10, cb_WpdSpeed);
 
-	while (!hb_time);
+        ROS_INFO("LLC Ready");
 
-		ROS_INFO("Connected with platform");
-		/*
-		 * TODO: Diagnostics about connection
-		 */
+        ros::Rate rate(100);
+        while(ros::ok())
+        {
+          pubThrottleAndSteering();
+          rate.sleep();
+          ros::spinOnce();
+        }
 
-/*
- *  PID LOOP
- */
-
-	while((ros::Time::now().toSec() - hb_time) < t_out){
-		if(events.isTerminated() || !ros::ok()){			/* checks whether the line is empty, or node failed */
-			ROS_INFO("STOPPED");
-			return TaskResult::TERMINATED();
-		}
-
-	/* get measurements and calculate error signal */
-
-
-
-
-			if(wanted_linear_vel || wanted_angular_vel ){
-				cur_error.twist.linear.x = (wanted_linear_vel) -linear_vel;
-				cur_error.twist.angular.z = (wanted_angular_vel - angular_vel);
-			}
-			else{
-				cur_error.twist.linear.x = (COMPONENT->WSM_desired_speed.twist.linear.x) - linear_vel;
-				cur_error.twist.angular.z = ((COMPONENT->WSM_desired_speed.twist.angular.z) - angular_vel);
-			}
-
-	
-	angular_error.data=cur_error.twist.angular.z;
-	linear_error.data=cur_error.twist.linear.x;
-	old_err = cur_error.twist.linear.x ;
-
-
-
-	/* calculate integral and derivatives */
-	//ROS_INFO("dt_GPS  = %lf   dt_LOC  = %lf ", dt_GPS,dt_LOC );
-
-	angular_integral += ((cur_error.twist.angular.z)* dt_LOC);
-	angular_der = ((cur_error.twist.angular.z - old_error.twist.angular.z)/dt_LOC);
-	
-	/* limits to the integral */
-	if(linear_integral > linear_integral_limit )
-			linear_integral = linear_integral_limit ;
-	else if (linear_integral < -linear_integral_limit)
-			linear_integral = -linear_integral_limit ;
-		
-	if(angular_integral > angular_integral_limit)
-			angular_integral = angular_integral_limit ;
-	else if (angular_integral < -angular_integral_limit)
-			angular_integral = -angular_integral_limit ;
-	
-	/* reset the integral */
-	if(abs(cur_error.twist.linear.x)<err_epsilon ) linear_integral=0;
-	if(abs(cur_error.twist.angular.z)<err_epsilon ) angular_integral=0;
-
-	if((ros::Time::now()-heartbeat_time).toSec()>0.1) k_emrg=0;
-	else k_emrg=1;
-	
-	Throttle_rate.data =( Kp*cur_error.twist.linear.x + Ki*linear_integral + Kd*linear_der )*k_emrg;
-	Steering_rate.data =( Kpz*cur_error.twist.angular.z+Kdz*angular_der+Kiz*angular_integral )*k_emrg; 
-	
-
-
-	/* publish */
-
-	Throttle_rate_pub.publish(Throttle_rate);
-	Steering_rate_pub.publish(Steering_rate);
-	linear_error_publisher.publish(linear_error);
-	angular_error_publisher.publish(angular_error);
-
-	/* WSM blade controller */
-
-	if(COMPONENT->t_flag){
-
-		Blade_pos.name.clear();
-		Blade_pos.name = COMPONENT->Blade_angle.name;
-		Blade_pos.position.clear();
-	for(int i = 0 ; i < COMPONENT->Blade_angle.position.size(); i++)
-		Blade_pos.position.push_back(COMPONENT->Blade_angle.position[i]);
-		COMPONENT->publishEffortsJn(Blade_pos);
-		COMPONENT->t_flag = 0 ;
-	}
-
-	/* calibrate the error */
-	old_error.twist.angular.z = cur_error.twist.angular.z ;
-	old_error.twist.linear.x = cur_error.twist.linear.x ;
-
-	}
-
-	ROS_INFO("cannot connect with platform");
-	/*
-	 * TODO: break bond diagnostics
-	 */
-	// END PID loop
-	return TaskResult::SUCCESS();
+        return TaskResult::SUCCESS();
 }
 
 TaskResult state_STANDBY(string id, const CallContext& context, EventQueue& events){
@@ -342,7 +353,6 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	RosEventQueue events;
 	CallContext context;
 	context.createParameters(new Params(&component));
-	//events.async_spin();
 	LocalTasks::registration("OFF",state_OFF);
 	LocalTasks::registration("INIT",state_INIT);
 	LocalTasks::registration("READY",state_READY);
@@ -358,4 +368,3 @@ void runComponent(int argc, char** argv, ComponentMain& component){
 	Fsmllc(&context, &events);
 
 }
-

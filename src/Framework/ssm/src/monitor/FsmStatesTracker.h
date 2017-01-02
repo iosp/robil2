@@ -9,7 +9,6 @@
 #define FSMSTATESTRACKER_H_
 
 #include <ros/ros.h>
-#include <ParameterTypes.h>
 #include <map>
 #include <vector>
 #include <set>
@@ -19,6 +18,10 @@
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 #include <robil_msgs/FSMState.h>
+
+
+#include <diagnostic_msgs/DiagnosticArray.h>
+
 
 using namespace std;
 using namespace ros;

@@ -16,7 +16,6 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
@@ -25,12 +24,12 @@
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
-	_sub_EffortsTh=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLI","EffortsTh","sub"), 10, &ComponentMain::handleEffortsTh,this));
-	_sub_EffortsSt=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLI","EffortsSt","sub"), 10, &ComponentMain::handleEffortsSt,this));
-	_sub_EffortsJn=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"LLI","EffortsJn","sub"), 10, &ComponentMain::handleEffortsSt,this));
+	_sub_EffortsTh=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Throttle", 10, &ComponentMain::handleEffortsTh,this));
+	_sub_EffortsSt=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Steering", 10, &ComponentMain::handleEffortsSt,this));
+	_sub_EffortsJn=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Joints", 10, &ComponentMain::handleEffortsSt,this));
 
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
-	_pub_connected_to_platform=ros::Publisher(_nh.advertise<std_msgs::Bool>(fetchParam(&_nh,"LLI","ConnectedToPlatform","pub"),100));
+	_pub_connected_to_platform=ros::Publisher(_nh.advertise<std_msgs::Bool>("/Sahar/link_with_platform",100));
 	//_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
     //Replace the thread group with a simple pthread because there is a SIGEV otherwise
 	// and I didn't find the reason.
@@ -162,7 +161,7 @@ void ComponentMain::workerFunc()
 
 }
 
-void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
+void ComponentMain::handleEffortsTh(const std_msgs::Float64& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
 	if (!is_ready){
@@ -176,7 +175,7 @@ void ComponentMain::handleEffortsTh(const config::LLI::sub::EffortsTh& msg)
 }
 	
 
-void ComponentMain::handleEffortsSt(const config::LLI::sub::EffortsSt& msg)
+void ComponentMain::handleEffortsSt(const std_msgs::Float64& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
 	if (!is_ready){
@@ -189,7 +188,7 @@ void ComponentMain::handleEffortsSt(const config::LLI::sub::EffortsSt& msg)
 }
 	
 
-void ComponentMain::handleEffortsJn(const config::LLI::sub::EffortsJn& msg)
+void ComponentMain::handleEffortsJn(const sensor_msgs::JointState& msg)
 {
 //	std::cout<< "LLI say:" << msg << std::endl;
 

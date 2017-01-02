@@ -8,7 +8,6 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
-#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <boost/thread.hpp>
 #include <set>
@@ -18,6 +17,17 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
+
+
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <robil_msgs/Path.h>
+#include <robil_msgs/IEDLocation.h>
+#include <robil_msgs/AssignManipulatorTask.h>
+#include <robil_msgs/AssignMission.h>
+#include <robil_msgs/AssignNavTask.h>
+#include <robil_msgs/MissionAcceptance.h>
+#include <sensor_msgs/JointState.h>
 
 class MissionManager;
 namespace decision_making{ class EventQueue; }
@@ -46,15 +56,15 @@ class ComponentMain {
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	void handleAssignNavTask(const config::SMME::sub::AssignNavTask& msg);
-	void handleAssignManTask(const config::SMME::sub::AssignManTask& msg);
-	void handleAssignMission(const config::SMME::sub::AssignMission& msg);
-	void handleBladePosition(const config::SMME::sub::BladePosition& msg);
-	void handleLocation(const config::SMME::sub::Location& msg);
-	void handleIEDLocation(const config::IEDSIM::pub::IEDLocation& msg);
-	void publishGlobalPath(config::SMME::pub::GlobalPath& msg);
-	void publishWorkSeqData(config::SMME::pub::WorkSeqData& msg);
-	void publishMissionAcceptance(config::SMME::pub::MissionAcceptance& msg);
+	void handleAssignNavTask(const robil_msgs::AssignNavTask& msg);
+	void handleAssignManTask(const robil_msgs::AssignManipulatorTask& msg);
+	void handleAssignMission(const robil_msgs::AssignMission& msg);
+	void handleBladePosition(const sensor_msgs::JointState& msg);
+	void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
+	void handleIEDLocation(const robil_msgs::IEDLocation& msg);
+	void publishGlobalPath(robil_msgs::Path& msg);
+	void publishWorkSeqData(robil_msgs::AssignManipulatorTask& msg);
+	void publishMissionAcceptance(robil_msgs::MissionAcceptance& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);

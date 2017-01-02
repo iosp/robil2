@@ -222,6 +222,12 @@ void Shiphon_Ctrl::ThreadFunc() {
 			 nRcvDataInBuff += retVal;
 			 MsgID = rxBuf[2];
 
+			 // Akiva fix: if SOM is not equal to 'a5a5'(= 42405, by the ICD) do not parse that msg;
+			 unsigned short usTmp = 0;
+			 memcpy (&usTmp, &(rxBuf[0]), 2);
+			 if(usTmp != 42405)
+			   continue;
+			 // end Akiva fix
 
 			// if (dbgKey == 'r' || dbgKey == 'f') {
 				//	lastTime = currentTime;

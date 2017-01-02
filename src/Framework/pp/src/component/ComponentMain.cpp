@@ -14,17 +14,16 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
 ComponentMain::ComponentMain(int argc,char** argv)	: _inited(init(argc, argv))
 {
-	_sub_GlobalPath=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PP","GlobalPath","sub"), 10, &ComponentMain::handleGlobalPath,this));
-	_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PP","BladePosition","sub"), 10, &ComponentMain::handleBladePosition,this));
-	_sub_Map=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PP","Map","sub"), 10, &ComponentMain::handleMap,this));
-	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"PP","Location","sub"), 10, &ComponentMain::handleLocation,this));
-	_pub_LocalPath=ros::Publisher(_nh.advertise<config::PP::pub::LocalPath>(fetchParam(&_nh,"PP","LocalPath","pub"),10));
+	_sub_GlobalPath=ros::Subscriber(_nh.subscribe("/SMME/GlobalPath", 10, &ComponentMain::handleGlobalPath,this));
+	_sub_BladePosition=ros::Subscriber(_nh.subscribe("/PER/BladPosition", 10, &ComponentMain::handleBladePosition,this));
+	_sub_Map=ros::Subscriber(_nh.subscribe("/PER/Map", 10, &ComponentMain::handleMap,this));
+	_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+	_pub_LocalPath=ros::Publisher(_nh.advertise<robil_msgs::Path>("/PP/Path",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 
@@ -42,32 +41,32 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleGlobalPath(const config::PP::sub::GlobalPath& msg)
+void ComponentMain::handleGlobalPath(const robil_msgs::Path& msg)
 {
 	_move_base -> on_path(msg);
 }
 	
 
-void ComponentMain::handleBladePosition(const config::PP::sub::BladePosition& msg)
+void ComponentMain::handleBladePosition(const sensor_msgs::JointState& msg)
 {
 	//std::cout<< "PP say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleMap(const config::PP::sub::Map& msg)
+void ComponentMain::handleMap(const robil_msgs::Map& msg)
 {
 	_move_base -> on_map(msg);
 }
 	
 
-void ComponentMain::handleLocation(const config::PP::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 	_move_base -> on_position_update(msg);
 
 }
 	
 
-void ComponentMain::publishLocalPath(config::PP::pub::LocalPath& msg)
+void ComponentMain::publishLocalPath(robil_msgs::Path& msg)
 {
 	_pub_LocalPath.publish(msg);
 }

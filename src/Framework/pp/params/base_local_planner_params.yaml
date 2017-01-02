@@ -4,19 +4,19 @@ clearing_rotation_allowed: false
 
 TrajectoryPlannerROS:
   max_vel_x: 0.8
-  min_vel_x: 0.1
+  min_vel_x: 0.3
 
-  max_vel_theta: 1
-  min_vel_theta: -1
+  max_vel_theta: 0.1
+  min_vel_theta: -0.1
 
   max_rotational_vel: 1
   min_in_place_vel_theta: 0.1
   escape_vel: -0.4
 
-  acc_lim_th: 2.5
+  acc_lim_theta: 0.1
   acc_lim_x: 2.5
 
-  yaw_goal_tolerance: 3.12
+  yaw_goal_tolerance: 6.28
   xy_goal_tolerance: 1.0
   dwa: false
 

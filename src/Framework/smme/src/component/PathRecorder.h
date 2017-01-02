@@ -9,8 +9,17 @@
 #define PATHRECORDER_H_
 
 #include <ros/ros.h>
-#include <ParameterTypes.h>
 #include <list>
+
+
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <tf/tf.h>
+#include <robil_msgs/Path.h>
+
+#ifndef COMPONENT
+#define COMPONENT context.parameters<Params>().comp
+#endif
 
 
 class PathRecorder {
@@ -23,7 +32,7 @@ public:
 	ros::Subscriber s_location;
 	ros::Publisher  p_plan;
 
-	void on_new_location(const config::SMME::sub::Location& msg);
+	void on_new_location(const geometry_msgs::PoseWithCovarianceStamped& msg);
 
 	boost::mutex m;
 	bool record;

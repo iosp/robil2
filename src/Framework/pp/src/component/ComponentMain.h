@@ -13,9 +13,19 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <boost/thread.hpp>
+
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <robil_msgs/Path.h>
+#include <robil_msgs/Map.h>
+#include <sensor_msgs/JointState.h>
+
+
+#ifndef COMPONENT
+#define COMPONENT context.parameters<Params>().comp
+#endif
 
 class MoveBase;
 namespace decision_making{ class EventQueue; }
@@ -39,11 +49,11 @@ class ComponentMain {
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	void handleGlobalPath(const config::PP::sub::GlobalPath& msg);
-	void handleBladePosition(const config::PP::sub::BladePosition& msg);
-	void handleMap(const config::PP::sub::Map& msg);
-	void handleLocation(const config::PP::sub::Location& msg);
-	void publishLocalPath(config::PP::pub::LocalPath& msg);
+	void handleGlobalPath(const robil_msgs::Path& msg);
+	void handleBladePosition(const sensor_msgs::JointState& msg);
+	void handleMap(const robil_msgs::Map& msg);
+	void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
+	void publishLocalPath(robil_msgs::Path& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);

@@ -10,7 +10,15 @@
                         <uri>model://terrainWithRoad/meshes/terrain1.dae</uri>
                     </mesh>
                 </geometry>
-            </collision>
+		<surface>
+		  <friction>
+		    <ode>
+		      <mu>100</mu>
+		      <mu2>100</mu2>
+		    </ode>
+		  </friction>
+		</surface>
+	    </collision>
             <visual name="terrain1_visual">
                 <geometry>
                     <mesh>
