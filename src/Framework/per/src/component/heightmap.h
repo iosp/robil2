@@ -97,7 +97,7 @@ class HeightMap
     /*
      * This function generates from the Heightmap object a Mat image
      */
-    Mat generateMat(int rotation, int px, int py, int enlarger);
+    Mat generateMat(int rotation, int px, int py, int enlarger, bool arrow=false);
     Mat generateMat(int enlarger);
 	/**
 	 * These are getters for the internal data structures of the map. 

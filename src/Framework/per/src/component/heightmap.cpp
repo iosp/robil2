@@ -257,7 +257,7 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
 
 }
 
-Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
+Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger, bool arrow)
 {
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
     cvtColor(image, image, CV_BGR2HSV);
@@ -275,6 +275,8 @@ Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
             image.at<Vec3b>(x,y) = Vec3b(120*(1-c),240, 240);
         }
     cvtColor(image, image, CV_HSV2BGR);
+    if (arrow)
+        image = this->add_arrow(image, rotation, px, py, enlarger);
     return image;
 }
 
@@ -305,7 +307,22 @@ Mat HeightMap::generateMat(int enlarger)
             }
         }
     }
-    image = this->add_arrow(image, 0, _width/2+25, _height/2, enlarger);
+    int px = _width/2+25;
+    int py = _height/2;
+    Mat arrow;
+    cv::Point2f pt(_arrow.rows/2, _arrow.cols/2);
+    cv::Mat r = cv::getRotationMatrix2D(pt, 90, 1.0);
+    cv::warpAffine(_arrow, arrow, r, cv::Size(_arrow.rows, _arrow.rows));
+    for(int i = 0; i < _arrow.rows; i++)
+    {
+        for(int j = 0; j < _arrow.cols; j++)
+        {
+            if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0))
+            {
+                image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
+            }
+        }
+    }
     return image;
 }
 
@@ -415,6 +432,11 @@ double HeightMap::calc_slope(int x, int y, std::vector<int> conv)
 }
 
 double HeightMap::getHeightAt(int x, int y)
+{
+
+}
+
+void sobel_conv()
 {
 
 }
