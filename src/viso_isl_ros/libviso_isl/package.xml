@@ -1,0 +1,18 @@
+<package>
+  <name>libviso_isl</name>
+  <version>0.0.1</version>
+  <description>viso_isl</description>
+  <maintainer email="alex.kreimer@gmail.com">maintained by: Alex Kreimer</maintainer>
+  <license>xxx</license>
+  <url type="website"></url>
+  <url type="bugtracker"></url>
+
+  <author>Alex Kreimer</author>
+  <author email="alex.kreimer@gmail.com">Alex Kreimer</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+    <cpp lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib -lviso_isl" cflags="-I${prefix}/libviso_isl/src/"/>
+  </export>
+</package>
