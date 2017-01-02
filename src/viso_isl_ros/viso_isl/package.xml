@@ -1,0 +1,21 @@
+<package>
+  <name>viso_isl</name>
+  <version>0.0.1</version>
+  <description>viso_isl ros wrappers</description>
+  
+  <license>xxx</license>
+
+  <url type="website"></url>
+  <url type="bugtracker"></url>
+
+  <author email="alex.kreimer@gmail.com">Alex Kreimer</author>
+  <maintainer email="alex.kreimer@gmail.com">Alex Kreimer</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>libviso_isl</run_depend>
+  <run_depend>viso_isl_ros</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>

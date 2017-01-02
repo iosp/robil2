@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+      <model name="step">
+        <static>true</static>
+	 <link name='step_link'>
+            <pose>0 0 0 0 0 0</pose>
+
+            <collision name='collision'>
+              <geometry>
+                <box>
+                  <size>20 20 .01</size>
+                </box>
+              </geometry>
+	      <surface>
+		<friction>
+		  <ode>
+		    <mu>100</mu>
+		    <mu2>100</mu2>
+		  </ode>
+		</friction>
+	      </surface>
+            </collision>
+
+            <visual name='visual'>
+              <geometry>
+                <box>
+                  <size>20 20 .01</size>
+                </box>
+
+              </geometry>
+		<material>
+		  <script>
+		    <uri>file://media/materials/scripts/gazebo.material</uri>
+		    <name>Gazebo/Green</name>
+		  </script>
+		</material>
+            </visual>
+          </link>
+	</model>
+</sdf>
+

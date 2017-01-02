@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <world name="default">
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <scene>
+            <sky>
+                <time>10</time>
+                <clouds>
+                    <speed>5</speed>
+                    <direction>1.14</direction>
+                    <humidity>0.3</humidity>
+                </clouds>
+            </sky>
+        </scene>
+        <gui>
+            <camera name="camera_pose">
+                <pose>80 -60 60 0 0.5 2</pose>
+            </camera>
+        </gui>
+
+	
+	<include>
+	    <uri>model://robil_ground_plane</uri>
+	    <name>ground_plane</name>
+            <pose>0 0 0 0 0 0</pose>
+        </include>
+	
+	
+        <include>
+      	    <uri>model://bobtank_static_arm</uri>
+	    <name>Sahar</name>
+            <pose>0 0 0.5 0 0 0</pose>
+        </include>
+
+    </world>
+</sdf>

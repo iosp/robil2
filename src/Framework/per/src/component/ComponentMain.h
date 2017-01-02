@@ -8,7 +8,6 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
-#include <ParameterTypes.h>
 #include <tf/tf.h>
 
 // #include <per/lane.h>
@@ -23,6 +22,69 @@
 #include <iostream>     // std::cout
 #include <sstream>
 #include <boost/thread.hpp>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <std_msgs/String.h>
+#include <nav_msgs/Path.h>
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/PointStamped.h>
+#include <tf/tf.h>
+#include <sensor_msgs/LaserScan.h>
+#include <sensor_msgs/Image.h>
+#include <sensor_msgs/CameraInfo.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <sensor_msgs/NavSatStatus.h>
+//#include <gps_common/GPSFix.h>
+//#include <gps_common/GPSStatus.h>
+#include <sensor_msgs/JointState.h>
+#include <nav_msgs/OccupancyGrid.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <std_msgs/Float64.h>
+#include <std_msgs/Int32.h>
+#include <std_msgs/Int8.h>
+#include <std_msgs/Bool.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <robil_msgs/Path.h>
+#include <robil_msgs/IEDLocation.h>
+#include <robil_msgs/Map.h>
+#include <robil_msgs/AssignManipulatorTask.h>
+#include <robil_msgs/AssignMission.h>
+#include <robil_msgs/AssignNavTask.h>
+#include <robil_msgs/MissionAcceptance.h>
+#include <sensor_msgs/JointState.h>
+#include <robil_msgs/MultiLaserScan.h>
+#include <robil_msgs/GpsSpeed.h>
+
+
+
+
+
+
+
 using namespace std;
 // using namespace per;
 using namespace cv;
@@ -65,34 +127,34 @@ class ComponentMain {
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	void handleLocation(const config::PER::sub::Location& msg);
-	void handlePerVelocity(const config::PER::sub::PerVelocity& msg);
-	void handleSensorINS(const config::PER::sub::SensorINS& msg);
-	void handleSensorGPS(const config::PER::sub::SensorGPS& msg);
-	void handleSensorCamL(const config::PER::sub::SensorCamL& msg);
-	void handleSensorCamR(const config::PER::sub::SensorCamR& msg);
-	void handleSensorWire(const config::PER::sub::SensorWire& msg);
-	void handleSensorSICK1(const config::PER::sub::SensorSICK1& msg);
-	void handleSensorSICK2(const config::PER::sub::SensorSICK2& msg);
-	void handleSensorIBEO(const config::PER::sub::SensorIBEO& msg);
-	void handleEffortsTh(const config::PER::sub::EffortsTh& msg);
-	void handleEffortsSt(const config::PER::sub::EffortsSt& msg);
-	void handleEffortsJn(const config::PER::sub::EffortsJn& msg);
-	void publishGPS(config::PER::pub::GPS& msg);
-	void publishINS(config::PER::pub::INS& msg);
-	void publishBladePosition(config::PER::pub::BladePosition& msg);
-	void publishMap(config::PER::pub::Map& msg);
-	void publishMiniMap(config::PER::pub::MiniMap& msg);
-    void publishDebug(sensor_msgs::ImagePtr hmsg, sensor_msgs::ImagePtr tmsg);
-	void publishVOOdometry(config::PER::pub::VOOdometry& msg);
-	void publishGpsSpeed(config::PER::pub::PerGpsSpeed& msg);
-	void handleGpsSpeed(const config::PER::sub::SensorGpsSpeed& msg);
+	void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
+	void handlePerVelocity(const geometry_msgs::TwistStamped& msg);
+	void handleSensorINS(const sensor_msgs::Imu& msg);
+	void handleSensorGPS(const sensor_msgs::NavSatFix& msg);
+	void handleSensorCamL(const sensor_msgs::Image& msg);
+	void handleSensorCamR(const sensor_msgs::Image& msg);
+	void handleSensorWire(const std_msgs::Float64& msg);
+	void handleSensorSICK1(const sensor_msgs::LaserScan& msg);
+	void handleSensorSICK2(const sensor_msgs::LaserScan& msg);
+	void handleSensorIBEO(const robil_msgs::MultiLaserScan& msg);
+	void handleEffortsTh(const std_msgs::Float64& msg);
+	void handleEffortsSt(const std_msgs::Float64& msg);
+	void handleEffortsJn(const sensor_msgs::JointState& msg);
+	void publishGPS(sensor_msgs::NavSatFix& msg);
+	void publishINS(sensor_msgs::Imu& msg);
+	void publishBladePosition(sensor_msgs::JointState& msg);
+	void publishMap(robil_msgs::Map& msg);
+	void publishMiniMap(robil_msgs::Map& msg);
+	void publishDebug(sensor_msgs::ImagePtr hmsg, sensor_msgs::ImagePtr tmsg);
+	void publishVOOdometry(nav_msgs::Odometry& msg);
+	void publishGpsSpeed(robil_msgs::GpsSpeed& msg);
+	void handleGpsSpeed(const robil_msgs::GpsSpeed& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
-    void configCallback(per::configConfig &config, uint32_t level);
-	
+	void configCallback(per::configConfig &config, uint32_t level);
+	void handleSensorIBEOandINS(const sensor_msgs::ImuConstPtr& msgINS, const robil_msgs::MultiLaserScanConstPtr& msgIBEO);
 	void setVisualize(char);
 	void heartbeat();
 
@@ -105,6 +167,8 @@ private:
       sensor_msgs::Imu _imuData;
       sensor_msgs::NavSatFix _gpsData;
       HeightMap* height_map;
+      bool _should_pub;
+      std_msgs::Header _should_pub_timeout;
 
       
       

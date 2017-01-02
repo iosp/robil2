@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <model name="Testing_Grounds">
+        <static>true</static>
+        <link name="Testing_grounds">
+            <pose>0 0 0 0 0 0</pose>
+            <collision name="terrain1_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://Testing_grounds1/meshes/testing_ground.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain1_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://Testing_grounds1/meshes/testing_ground.dae</uri>
+                    </mesh>
+                </geometry>
+                 <material>
+                  <script>
+                    <uri>model://Testing_grounds1/materials/scripts</uri>
+            				<uri>model://Testing_grounds1/materials/textures</uri>
+                    <name>Ground/Diffuse</name>
+                  </script>
+                </material>
+        </link>
+    </model>
+</sdf>

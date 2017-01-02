@@ -13,15 +13,15 @@
 	</velocity_decay>
 	<self_collide>1</self_collide>
 	<inertial>
-	    <pose>-0.873221 -0.0104657 0.683626 0 -0 0</pose>
-	    <mass>2646.54</mass>
+	    <pose>-1.00 0.00 0.20 0 -0 0</pose>
+	    <mass>2500</mass>
 	    <inertia>
-		<ixx>818.884</ixx>
-		<ixy>10.9258</ixy>
-		<ixz>-87.8857</ixz>
-		<iyy>1232.58</iyy>
-		<iyz>-8.30849</iyz>
-		<izz>1018.05</izz>
+		<ixx>800.00</ixx>
+		<ixy>0.00</ixy>
+		<ixz>0.00</ixz>
+		<iyy>1200.00</iyy>
+		<iyz>0.00</iyz>
+		<izz>1000.00</izz>
 	    </inertia>
 	</inertial>
 	<collision name='body_collision'>
@@ -29,7 +29,7 @@
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobtank/meshes_bobcat_with_boggies/body.STL</uri>
+		<uri>model://bobtank/meshes/body.STL</uri>
 	      </mesh>
 	    </geometry>
 	    <surface>
@@ -49,7 +49,7 @@
 	    <geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/body.STL</uri>
+	    <uri>model://bobtank/meshes/body.STL</uri>
 	    </mesh>
 	    </geometry>
 	    <material>
@@ -65,7 +65,7 @@
 	    <geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/cabin.STL</uri>
+	    <uri>model://bobtank/meshes/cabin.STL</uri>
 	    </mesh>
 	    </geometry>
 	    <surface>
@@ -85,7 +85,7 @@
 	    <geometry>
 		<mesh>
 		    <scale>1 1 1</scale>
-		    <uri>model://bobtank/meshes_bobcat_with_boggies/cabin.STL</uri>
+		    <uri>model://bobtank/meshes/cabin.STL</uri>
 		</mesh>
 	    </geometry>
 	    <material>
@@ -101,7 +101,7 @@
 	    <geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL</uri>
+	    <uri>model://bobtank/meshes/supporter_hinge.STL</uri>
 	    </mesh>
 	    </geometry>
 	    <surface>
@@ -121,7 +121,7 @@
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobtank/meshes_bobcat_with_boggies/supporter_hinge.STL</uri>
+		<uri>model://bobtank/meshes/supporter_hinge.STL</uri>
 		</mesh>
 	    </geometry>
 	    <material>
@@ -137,7 +137,7 @@
 	    <geometry>
 		<mesh>
 		  <scale>1 1 1</scale>
-		  <uri>model://bobtank/meshes_bobcat_with_boggies/top_installation.STL</uri>
+		  <uri>model://bobtank/meshes/top_installation.STL</uri>
 		</mesh>
 	    </geometry>
 	    <surface>
@@ -157,7 +157,7 @@
 	    <geometry>
 	      <mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobtank/meshes_bobcat_with_boggies/top_installation.STL</uri>
+		<uri>model://bobtank/meshes/top_installation.STL</uri>
 	      </mesh>
 	    </geometry>
 	    <material>
@@ -174,7 +174,7 @@
 	    <geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/front_sick_lite.stl</uri>
+	    <uri>model://bobtank/meshes/front_sick_lite.stl</uri>
 	    </mesh>
 	    </geometry>
 	    <surface>
@@ -194,7 +194,7 @@
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobtank/meshes_bobcat_with_boggies/front_sick.STL</uri>
+		<uri>model://bobtank/meshes/front_sick.STL</uri>
 		</mesh>
 	    </geometry>
 	    <material>
@@ -211,7 +211,7 @@
 	    <geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/left_sick_lite.stl</uri>
+	    <uri>model://bobtank/meshes/left_sick_lite.stl</uri>
 	    </mesh>
 	    </geometry>
 	    <surface>
@@ -231,7 +231,7 @@
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobtank/meshes_bobcat_with_boggies/left_sick.STL</uri>
+		<uri>model://bobtank/meshes/left_sick.STL</uri>
 		</mesh>
 	    </geometry>
 	    <material>
@@ -247,7 +247,7 @@
 	    <geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/right_sick_lite.stl</uri>
+	    <uri>model://bobtank/meshes/right_sick_lite.stl</uri>
 	    </mesh>
 	    </geometry>
 	    <surface>
@@ -267,7 +267,7 @@
 	    <geometry>
 		<mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobtank/meshes_bobcat_with_boggies/right_sick.STL</uri>
+		<uri>model://bobtank/meshes/right_sick.STL</uri>
 		</mesh>
 	    </geometry>
 	    <material>
@@ -377,7 +377,7 @@
     <geometry>
       <mesh>
 	<scale>1 1 1</scale>
-	<uri>model://bobtank/meshes_bobcat_with_boggies/left_wheel.STL</uri>
+	<uri>model://bobtank/meshes/left_wheel.STL</uri>
       </mesh>
     </geometry>
     <material>
@@ -504,7 +504,7 @@
 	<geometry>
 	  <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/right_wheel.STL</uri>
+	    <uri>model://bobtank/meshes/right_wheel.STL</uri>
 	  </mesh>
 	</geometry>
 	<material>
@@ -580,7 +580,7 @@
       <geometry>
 	<mesh>
 	  <scale>1 1 1</scale>
-	  <uri>model://bobtank/meshes_bobcat_with_boggies/front_left_boggie.STL</uri>
+	  <uri>model://bobtank/meshes/front_left_boggie.STL</uri>
 	</mesh>
       </geometry>
     </visual>
@@ -648,7 +648,7 @@
 	<geometry>
 	<mesh>
 	<scale>1 1 1</scale>
-	<uri>model://bobtank/meshes_bobcat_with_boggies/front_right_boggie.STL</uri>
+	<uri>model://bobtank/meshes/front_right_boggie.STL</uri>
 	</mesh>
 	</geometry>
     </visual>
@@ -716,7 +716,7 @@
 	<geometry>
 	  <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/back_left_boggie.STL</uri>
+	    <uri>model://bobtank/meshes/back_left_boggie.STL</uri>
 	  </mesh>
 	</geometry>
       </visual>
@@ -784,7 +784,7 @@
 	  <geometry>
 	  <mesh>
 	  <scale>1 1 1</scale>
-	  <uri>model://bobtank/meshes_bobcat_with_boggies/back_right_boggie.STL</uri>
+	  <uri>model://bobtank/meshes/back_right_boggie.STL</uri>
 	  </mesh>
 	  </geometry>
       </visual>
@@ -825,7 +825,7 @@
 	<geometry>
 	  <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/base_arm.STL</uri>
+	    <uri>model://bobtank/meshes/base_arm.STL</uri>
 	  </mesh>
 	</geometry>
 	<surface>
@@ -842,7 +842,7 @@
 	<geometry>
 	  <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/base_arm.STL</uri>
+	    <uri>model://bobtank/meshes/base_arm.STL</uri>
 	  </mesh>
 	</geometry>
 	<material>
@@ -894,7 +894,7 @@
 	<geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/main_arm.STL</uri>
+	    <uri>model://bobtank/meshes/main_arm.STL</uri>
 	    </mesh>
 	</geometry>
 	<surface>
@@ -911,7 +911,7 @@
 	<geometry>
 	    <mesh>
 		<scale>1 1 1</scale>
-		<uri>model://bobtank/meshes_bobcat_with_boggies/main_arm.STL</uri>
+		<uri>model://bobtank/meshes/main_arm.STL</uri>
 	    </mesh>
 	</geometry>
 	<material>
@@ -962,7 +962,7 @@
 	<geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/loader.STL</uri>
+	    <uri>model://bobtank/meshes/loader.STL</uri>
 	    </mesh>
 	</geometry>
 	<surface>
@@ -982,7 +982,7 @@
 	<geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/loader.STL</uri>
+	    <uri>model://bobtank/meshes/loader.STL</uri>
 	    </mesh>
 	</geometry>
 	<material>
@@ -1034,7 +1034,7 @@
     <geometry>
 	<mesh>
 	<scale>1 1 1</scale>
-	<uri>model://bobtank/meshes_bobcat_with_boggies/brackets.STL</uri>
+	<uri>model://bobtank/meshes/brackets.STL</uri>
 	</mesh>
     </geometry>
     <surface>
@@ -1054,7 +1054,7 @@
 	<geometry>
 	    <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/brackets.STL</uri>
+	    <uri>model://bobtank/meshes/brackets.STL</uri>
 	    </mesh>
 	</geometry>
 	<material>
@@ -1105,7 +1105,7 @@
 	<geometry>
 	  <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/supporter.STL</uri>
+	    <uri>model://bobtank/meshes/supporter.STL</uri>
 	  </mesh>
 	</geometry>
 	<surface>
@@ -1125,7 +1125,7 @@
 	<geometry>
 	  <mesh>
 	    <scale>1 1 1</scale>
-	    <uri>model://bobtank/meshes_bobcat_with_boggies/supporter.STL</uri>
+	    <uri>model://bobtank/meshes/supporter.STL</uri>
 	  </mesh>
 	</geometry>
 	<material>
@@ -1156,7 +1156,21 @@
 	<dynamics/>
     </axis>
 </joint>
-
+		<joint name='supporter_joint2' type='revolute'>
+			<pose>1.04 0 -0.122 0 0 0</pose>
+			<child>supporter</child>
+			<parent>body</parent>
+			<axis>
+				<xyz>0 1 0</xyz>
+				<limit>
+					<lower>-0.5</lower>
+					<upper>1.5</upper>
+					<effort>1e+06</effort>
+					<velocity>100</velocity>
+				</limit>
+				<!--<dynamics><friction>1</friction></dynamics>-->
+			</axis>
+		</joint>
 <include>
     <uri>model://tracks</uri>
     <pose>-1.25 -0.84 0.6 0 3.95 3.14159</pose>

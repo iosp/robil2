@@ -21,3 +21,7 @@ runsnake*/
 wasroscomm*/
 core
 *.bag
+*.user
+*.cbp
+*.autosave
+CATKIN_IGNORE

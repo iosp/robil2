@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+        <arg name="config_file" default="$(find robil2rviz)/rviz_config/WPD_test.rviz"/>
+
+	<node name="rviz" type="rviz" pkg="rviz" output="screen" args="-d $(arg config_file)"/>
+</launch>

@@ -12,16 +12,15 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
-	_sub_BladePosition=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SSM","BladePosition","sub"), 10, &ComponentMain::handleBladePosition,this));
-	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SSM","Location","sub"), 10, &ComponentMain::handleLocation,this));
-	_sub_PerVelocity=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"SSM","PerVelocity","sub"), 10, &ComponentMain::handlePerVelocity,this));
+	_sub_BladePosition=ros::Subscriber(_nh.subscribe("/PER/BladPosition", 10, &ComponentMain::handleBladePosition,this));
+	_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+	_sub_PerVelocity=ros::Subscriber(_nh.subscribe("/LOC/Velocity", 10, &ComponentMain::handlePerVelocity,this));
 
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
@@ -34,19 +33,19 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleBladePosition(const config::SSM::sub::BladePosition& msg)
+void ComponentMain::handleBladePosition(const sensor_msgs::JointState& msg)
 {
 	//std::cout<< "SSM say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleLocation(const config::SSM::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 	//std::cout<< "SSM say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handlePerVelocity(const config::SSM::sub::PerVelocity& msg)
+void ComponentMain::handlePerVelocity(const geometry_msgs::TwistStamped& msg)
 {
 	//std::cout<< "SSM say:" << msg << std::endl;
 }

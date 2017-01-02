@@ -12,7 +12,6 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 #include "ComponentMain.h"
@@ -22,10 +21,10 @@
 
 ComponentMain::ComponentMain(int argc,char** argv): _inited(init(argc, argv))
 {
-	_sub_LocalPath=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WPD","LocalPath","sub"), 10, &ComponentMain::handleLocalPath,this));
-	_sub_MiniMap=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WPD","MiniMap","sub"), 10, &ComponentMain::handleMiniMap,this));
-	_sub_Location=ros::Subscriber(_nh.subscribe(fetchParam(&_nh,"WPD","Location","sub"), 10, &ComponentMain::handleLocation,this));
-	_pub_WPDVelocity=ros::Publisher(_nh.advertise<config::WPD::pub::WPDVelocity>(fetchParam(&_nh,"WPD","WPDVelocity","pub"),10));
+	_sub_LocalPath=ros::Subscriber(_nh.subscribe("/PP/Path", 10, &ComponentMain::handleLocalPath,this));
+	_sub_MiniMap=ros::Subscriber(_nh.subscribe("/PER/MiniMap", 10, &ComponentMain::handleMiniMap,this));
+	_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
+	_pub_WPDVelocity=ros::Publisher(_nh.advertise<geometry_msgs::TwistStamped>("/WPD/Speed",10));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
 
@@ -41,25 +40,25 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleLocalPath(const config::WPD::sub::LocalPath& msg)
+void ComponentMain::handleLocalPath(const robil_msgs::Path& msg)
 {
 	//std::cout<< "WPD say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleMiniMap(const config::WPD::sub::MiniMap& msg)
+void ComponentMain::handleMiniMap(const robil_msgs::Map& msg)
 {
 	//std::cout<< "WPD say:" << msg << std::endl;
 }
 	
 
-void ComponentMain::handleLocation(const config::WPD::sub::Location& msg)
+void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
 {
 	_move_base->on_position_update(msg);
 }
 	
 
-void ComponentMain::publishWPDVelocity(config::WPD::pub::WPDVelocity& msg)
+void ComponentMain::publishWPDVelocity(geometry_msgs::TwistStamped& msg)
 {
 	_pub_WPDVelocity.publish(msg);
 }

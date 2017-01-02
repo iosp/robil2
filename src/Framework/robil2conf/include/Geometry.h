@@ -12,7 +12,10 @@
 //#include <bullet/LinearMath/btQuaternion.h>
 #include <tf/tf.h>
 #include <angles/angles.h>
-#include "ParameterTypes.h"
+
+
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 
 inline tf::Vector3 toVector(const geometry_msgs::Pose& A){
 	return tf::Vector3(A.position.x, A.position.y, A.position.z);

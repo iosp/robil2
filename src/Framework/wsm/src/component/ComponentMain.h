@@ -8,16 +8,21 @@
 #ifndef COMPONENTMAIN_H_
 #define COMPONENTMAIN_H_
 #include <std_msgs/String.h>
-#include <ParameterTypes.h>
 #include <tf/tf.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
-#include <ParameterTypes.h>
 
 #include <boost/thread.hpp>
+
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/TwistStamped.h>
+#include <sensor_msgs/JointState.h>
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <robil_msgs/Map.h>
+#include <robil_msgs/AssignManipulatorTask.h>
 
 class WsmTask;
 class RosComm;
@@ -36,33 +41,29 @@ class ComponentMain {
 		ros::Subscriber _sub_PerVelocity;
 		ros::Subscriber _sub_MiniMapWSM;
 		ros::Publisher _plp_monitor;
-	//	ros::Publisher _blade_h;
-	//	ros::Publisher _Map_pub;
 
 	  bool init(int argc,char** argv);
 public:
 	WsmTask* cur_mission;
-	config::WSM::sub::WorkSeqData * receivedWorkSeqData;
-	config::WSM::sub::BladePosition * receivedBladePosition;
-	config::LLC::sub::Location * receivedLocation;
-	config::LLC::sub::PerVelocity * receivedPerVelocity;
-	config::WSM::sub::MiniMap *recivedMap;
+	robil_msgs::AssignManipulatorTask * receivedWorkSeqData;
+	sensor_msgs::JointState * receivedBladePosition;
+	geometry_msgs::PoseWithCovarianceStamped * receivedLocation;
+	geometry_msgs::TwistStamped * receivedPerVelocity;
+	robil_msgs::Map *recivedMap;
 	sensor_msgs::JointState *jointStates;
 	double ground_heigth;
 	double z_offset ;
 
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	void handleWorkSeqData(const config::WSM::sub::WorkSeqData& msg);
-	void handleBladePosition(const config::WSM::sub::BladePosition& msg);
-	void publishWSMVelocity(config::WSM::pub::WSMVelocity& msg);
-	void publishBladePositionCommand(config::WSM::pub::BladePositionCommand& msg);
-	void handleLocation(const config::LLC::sub::Location& msg);
-	void handlePerVelocity(const config::LLC::sub::PerVelocity& msg);
-	void handleMiniMapWSM(const config::WSM::sub::MiniMap& msg);
+	void handleWorkSeqData(const robil_msgs::AssignManipulatorTask& msg);
+	void handleBladePosition(const sensor_msgs::JointState& msg);
+	void publishWSMVelocity(geometry_msgs::TwistStamped& msg);
+	void publishBladePositionCommand(sensor_msgs::JointState& msg);
+	void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
+	void handlePerVelocity(const geometry_msgs::TwistStamped &msg);
+	void handleMiniMapWSM(const robil_msgs::Map& msg);
 	void publish_monitor_time(const std_msgs::Header& msg);
-//	void publish_h(const std_msgs::Float64 &msg);
-//	void publish_m(const std_msgs::Float64 &msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
 	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
