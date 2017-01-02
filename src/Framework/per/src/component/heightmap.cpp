@@ -217,9 +217,6 @@ void HeightMap::displayConsole()
         printf("\n");
     }
 }
-int showX = -1, showY = -1;
-int test_x = -1, test_y = -1;
-
 
 Mat HeightMap::add_arrow(Mat image, int rotation, int px, int py, int enlarger)
 {
@@ -244,21 +241,8 @@ Mat HeightMap::add_arrow(Mat image, int rotation, int px, int py, int enlarger)
   return image;
 }
 
-void onMouseClick2(int event, int x, int y, int flags, void *param)
-{
-
-    Mat *img = ((Mat *)param);
-    if (event == CV_EVENT_LBUTTONDOWN)
-    {
-        cout << "x: " << x << " y: " << y << "\t" << img->size() <<endl;
-        test_x = showX = y;
-        test_y = showY = x;
-    }
-}
-
 void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
 {
-    // rdbg("gui enter");
     Mat image = this->generateMat(rotation, px, py, enlarger);
     //put the tempory arrow representing my position and rotation on the map
     image = add_arrow(image, rotation, px, py, enlarger);
@@ -267,24 +251,12 @@ void HeightMap::displayGUI(int rotation, int px, int py, int enlarger)
 
     if (!image.empty())
     {
-        setMouseCallback(name, onMouseClick2, &image);
         imshow(name, image);
         waitKey(100);
     }
 
 }
-void onMouseClick(int event, int x, int y, int flags, void *param)
-{
 
-    Mat *img = ((Mat *)param);
-
-    if (event == CV_EVENT_LBUTTONDOWN)
-    {
-//        cout << "x: " << x << " y: " << y << "\t" << img->size() <<endl;
-        test_x = showX = y;
-        test_y = showY = x;
-    }
-}
 Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
 {
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
@@ -294,12 +266,6 @@ Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
         for(int x = 0; x < _width*enlarger; x++)
         {
             double h = this->_at(x/enlarger,y/enlarger);
-            if (showX == x && showY == y)
-            {
-                cout << "x: " << x << " y: " << y << "\t" << h << endl;
-                showX = showY = -1;
-
-            }
             if(h <= _min)
             {
                 image.at<Vec3b>(x,y) = Vec3b(0,0,100);
@@ -311,6 +277,7 @@ Mat HeightMap::generateMat(int rotation, int px, int py, int enlarger)
     cvtColor(image, image, CV_HSV2BGR);
     return image;
 }
+
 Mat HeightMap::generateMat(int enlarger)
 {
     Mat image(_width*enlarger, _height*enlarger, CV_8UC3);
@@ -338,23 +305,7 @@ Mat HeightMap::generateMat(int enlarger)
             }
         }
     }
-    //cvtColor(image, image, CV_HSV2BGR);
-    int px = _width/2+25;
-    int py = _height/2;
-    Mat arrow;
-    cv::Point2f pt(_arrow.rows/2, _arrow.cols/2);
-    cv::Mat r = cv::getRotationMatrix2D(pt, 90, 1.0);
-    cv::warpAffine(_arrow, arrow, r, cv::Size(_arrow.rows, _arrow.rows));
-    for(int i = 0; i < _arrow.rows; i++)
-    {
-        for(int j = 0; j < _arrow.cols; j++)
-        {
-            if(arrow.at<Vec3b>(i,j) != Vec3b(0,0,0))
-            {
-                image.at<Vec3b>(i+px*enlarger-arrow.rows/2, j+py*enlarger-arrow.cols/2) = arrow.at<Vec3b>(i, j);
-            }
-        }
-    }
+    image = this->add_arrow(image, 0, _width/2+25, _height/2, enlarger);
     return image;
 }
 
@@ -364,22 +315,9 @@ void HeightMap::displayTypesGUI(Mat lanes,int enlarger)
     Mat image = generateMat(enlarger);
     if (image.empty())
         return;
-    setMouseCallback("TerrainTypeUI", onMouseClick, &image);
     imshow("TerrainTypeUI", image);
     
     cv::waitKey(200);
-}
-int lowThreshold = 24;
-int morph_elem = 0;
-int morph_size = 10;
-int morph_operator = 0;
-int const max_operator = 4;
-int const max_elem = 2;
-int const max_kernel_size = 21;
-int erode_size = 2;
-
-void Morphology_Operations( int, void* )
-{
 }
 
 std::vector<int> getConvolution(string str, int size)
@@ -447,11 +385,6 @@ double HeightMap::calc_height(int x, int y, std::vector<int> conv)
             counter += abs(mul);
             height += mul * _at(i, j);
         }
-    if (test_y == y && test_x == x)
-    {
-        cout << counter << ", " << height << " = " << height / counter << endl;
-        test_x = -1, test_y = -1;
-    }
 //    if (_at(x, y) > 0.4)
 //        cout << counter << ", " << height << " = " << height / counter << endl;
     if (counter)
@@ -477,10 +410,6 @@ double HeightMap::calc_slope(int x, int y, std::vector<int> conv)
             counter += abs(mul);
             height += mul * _at(i, j);
         }
-    if (test_y == y && test_x == x)
-    {
-        cout << counter << ", " << height << " = " << height / counter << endl;
-    }
     height /= counter;
     return height;
 }
