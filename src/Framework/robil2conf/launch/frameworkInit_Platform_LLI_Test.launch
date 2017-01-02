@@ -1,0 +1,21 @@
+<launch>
+		
+	
+	<!-- == GENERAL ===== -->
+	<!--include file="$(find robil2conf)/launch/parametersLoad.launch" /-->
+	<include file="$(find robil2tf)/launch/robilTFpublisher.launch" />
+	
+	
+        
+        <!-- == PLATFORM INTERFACE == -->  
+        <node name="ros2qinetiq" type="lli_node" pkg="lli" args="127.0.0.1" output="screen" respawn="true"/>   
+        
+	
+			
+	<!-- == SYSTEM MANAGEMENT AND MISSION EXECUTION == -->
+	<node name="smme_node" type="smme_node" pkg="smme" output="screen" respawn="true"/>
+
+		
+	
+
+</launch>

@@ -28,8 +28,6 @@ static double P_angular, D_angular, I_angular;		/* PID constants of angular z */
 static double linearNormalizer;
 double sum_linear;
 double sum_angular;
-ros::Publisher Throttle_rate_pub;
-ros::Publisher Steering_rate_pub;
 
 double errorAngularArray[1000];
 int indexOf_errorAngularArray;
@@ -286,7 +284,7 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   WpdSpeedAngular = sumOfWpdSpeedAngular/SIZE_OF_WPD_INTEGRAL;
 }
 
-void pubThrottleAndSteering()
+void getThrottleAndSteering(double& throttle, double& angular)
 {
     double RosTimeNowInMilli = ros::Time::now().toSec()*1000;  // toSec() return seconds.milliSecconds
 
@@ -299,27 +297,19 @@ void pubThrottleAndSteering()
 
     double linearError = (linearFactor*WpdSpeedLinear) - currentVelocity;
     double linearEffortCMD = P_linear * linearError + I_linear* calcIntegral_linearError(linearError)+ D_linear * calcDiferencial_linearError(linearError);
-
-    std_msgs::Float64 msglinearEffortCMD;
-    msglinearEffortCMD.data = linearEffortCMD;
-    Throttle_rate_pub.publish(msglinearEffortCMD);
+    throttle = linearEffortCMD;
 
     double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
     double angularEffortCMD = P_angular * angularError + I_angular* calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
 
     if(linearEffortCMD < 0)
       angularEffortCMD = -angularEffortCMD;
-    std_msgs::Float64 msgAngularEffortCMD;
-    msgAngularEffortCMD.data = angularEffortCMD;
-    Steering_rate_pub.publish(msgAngularEffortCMD);
+    angular = angularEffortCMD;
 }
 
 TaskResult state_READY(string id, const CallContext& context, EventQueue& events){
 
 	ros::NodeHandle n;
-
-        Throttle_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Throttle", 100);
-        Steering_rate_pub = n.advertise<std_msgs::Float64>("/LLC/EFFORTS/Steering", 100);
 
         ros::Subscriber locVel= n.subscribe("/LOC/Velocity" , 10, cb_LocVelpcityUpdate);
         ros::Subscriber locPose= n.subscribe("/LOC/Pose" , 10, cb_currentYaw);
@@ -330,7 +320,17 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
         ros::Rate rate(100);
         while(ros::ok())
         {
-          pubThrottleAndSteering();
+          double throttle, angular;
+          getThrottleAndSteering(throttle, angular);
+
+          std_msgs::Float64 msglinearEffortCMD;
+          msglinearEffortCMD.data = throttle;
+          context.parameters<Params>().comp->publishEffortsTh(msglinearEffortCMD);
+
+          std_msgs::Float64 msgAngularEffortCMD;
+          msgAngularEffortCMD.data = angular;
+          context.parameters<Params>().comp->publishEffortsSt(msgAngularEffortCMD);
+
           rate.sleep();
           ros::spinOnce();
         }

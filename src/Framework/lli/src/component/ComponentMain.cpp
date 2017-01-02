@@ -1,4 +1,3 @@
-
 /*
  * ComponentMain.cpp
  *
@@ -16,6 +15,7 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>
+#include "ParameterHandler.h"
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
@@ -24,31 +24,33 @@
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
-	_sub_EffortsTh=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Throttle", 10, &ComponentMain::handleEffortsTh,this));
-	_sub_EffortsSt=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Steering", 10, &ComponentMain::handleEffortsSt,this));
-	_sub_EffortsJn=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Joints", 10, &ComponentMain::handleEffortsSt,this));
+    if ( argc == 2 )
+    {
+        //if IP received from command line (as parameter), change the default (localhost - 127.0.0.1)
+        IPADDR = argv[1];
+    }
+    else
+    	IPADDR = "127.0.0.1";
 
+    _sub_EffortsTh=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Throttle", 10, &ComponentMain::handleEffortsTh,this));
+    _sub_EffortsSt=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Steering", 10, &ComponentMain::handleEffortsSt,this));
+    _sub_EffortsJn=ros::Subscriber(_nh.subscribe("/LLC/EFFORTS/Joints", 10, &ComponentMain::handleEffortsJn,this));
 	_pub_diagnostic=ros::Publisher(_nh.advertise<diagnostic_msgs::DiagnosticArray>("/diagnostics",100));
 	_pub_connected_to_platform=ros::Publisher(_nh.advertise<std_msgs::Bool>("/Sahar/link_with_platform",100));
 	//_maintains.add_thread(new boost::thread(boost::bind(&ComponentMain::heartbeat,this)));
-    //Replace the thread group with a simple pthread because there is a SIGEV otherwise
-	// and I didn't find the reason.
-	// With pthread, it seems to work.
+	//Replace the thread group with a simple pthread because there is a SIGEV otherwise
+    // and I didn't find the reason.
+    // With pthread, it seems to work.
+    _myHeartbeatThread = (pthread_t) NULL;
 
-	_myHeartbeatThread = (pthread_t) NULL;
-
-   // _maintains=NULL;
+    //_maintains=NULL;
     _clli = (CLLI_Ctrl *) NULL;
     is_ready = false;
     SetState(State_Off);
-	//ComponentMain::_this = this;
-
-
+    //ComponentMain::_this = this;
 
     _mythread = (pthread_t)NULL;
-
-//
-	//ros::Timer timer = nh.createTimer(ros::Duration(0.01), TimerCallback);
+    //ros::Timer timer = nh.createTimer(ros::Duration(0.01), TimerCallback);
 }
 
 ComponentMain::~ComponentMain() {
@@ -75,8 +77,8 @@ bool ComponentMain::init(int argc,char** argv){
 void ComponentMain::setNotReady(){
     _clli->DriveControlRelease();
     _clli->ManipulatorControlRelease();
-	is_ready=false;
-	SetState(State_Standby);
+        is_ready=false;
+        SetState(State_Standby);
 }
 
 void ComponentMain::setReady() {
@@ -149,9 +151,8 @@ void ComponentMain::workerFunc()
 {
 
     SetState(State_Init);
-	pthread_t t;
 
-	pthread_create(&_mythread, NULL, &callPThread, this);
+    pthread_create(&_mythread, NULL, &callPThread, this);
 
 #ifdef TEST_HEARTBEAT
 	pthread_create(&_myHeartbeatThread, NULL, &callHeartbeat, this);
@@ -173,7 +174,7 @@ void ComponentMain::handleEffortsTh(const std_msgs::Float64& msg)
 	_clli->SetThrottelRequest(data);
 
 }
-	
+
 
 void ComponentMain::handleEffortsSt(const std_msgs::Float64& msg)
 {
@@ -186,7 +187,7 @@ void ComponentMain::handleEffortsSt(const std_msgs::Float64& msg)
 	data = 100*msg.data;
 	_clli->SetSteeringRequest(data);
 }
-	
+
 
 void ComponentMain::handleEffortsJn(const sensor_msgs::JointState& msg)
 {
@@ -205,7 +206,7 @@ void ComponentMain::handleEffortsJn(const sensor_msgs::JointState& msg)
 			_clli->SetJointRequest(data1, data2);
 
 }
-	
+
 
 void ComponentMain::publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame){
 	static tf::TransformBroadcaster br;
@@ -277,8 +278,9 @@ void ComponentMain::lliCtrlLoop()
 {
 	std::cout << "Welcome to lliCtrlLoop Thread " << std::endl;
 	//Init QinetiQ IP
-		char ipAddr[16];
-	    string tmpStr = "192.168.101.3";
+	    char ipAddr[16];
+//	    string tmpStr = "192.168.101.3";
+	    string tmpStr = IPADDR;
 	    bool retval;
 
 	    strcpy (ipAddr, tmpStr.c_str());
@@ -303,20 +305,20 @@ void ComponentMain::lliCtrlLoop()
 	ros::Rate r(100);
     std_msgs::Bool msg;
     //int count=0;
-	while (ros::ok())
-		{
-		    r.sleep();
-		    if (StateNotReady()){
-		    				msg.data=false;
-		    			}
-		    else msg.data=true;
-		    //if (count > 1000) msg.data=true;
-		    //count++;
-   			publishConnectedToPlatform(msg);
-			if (!_clli->PeriodicActivity())
-							break;
+        while (ros::ok())
+                {
+                    r.sleep();
+                    if (StateNotReady()){
+                                                msg.data=false;
+                                        }
+                    else msg.data=true;
+                    //if (count > 1000) msg.data=true;
+                    //count++;
+                        publishConnectedToPlatform(msg);
+                        if (!_clli->PeriodicActivity())
+                                                        break;
 
 
-	   	}
+                }
 
 }

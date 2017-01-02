@@ -40,6 +40,8 @@
 #include <ctime>
 #include "linterp.h"
 
+#include "sim_qinetiq_client.cc"
+
 
 // Maximum time delays
 #define command_MAX_DELAY 0.3
@@ -76,14 +78,7 @@ namespace gazebo
       this->front_left_joint = this->model->GetJoint("front_left_boggie_joint");
       this->front_right_joint = this->model->GetJoint("front_right_boggie_joint");
 
-      // Starting Timers
-      command_timer.Start();
-
       this->Ros_nh = new ros::NodeHandle("bobtankDrivePlugin_node");
-
-      // Subscribe to the topic, and register a callback
-      Steering_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Steering" , 1000, &bobtankDrivePlugin::On_Angular_command, this);
-      Velocity_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Throttle" , 1000, &bobtankDrivePlugin::On_Linear_command, this);
 
       platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform" , 100);
 
@@ -99,6 +94,7 @@ namespace gazebo
       this->Angular_Noise_dist = new std::normal_distribution<double>(0,1);
 
       calibration_data_setup();
+      sqc.Init("127.0.0.1", 4660, 5355);
       }
 
    void calibration_data_setup()
@@ -164,23 +160,15 @@ namespace gazebo
     // Called by the world update start event, This function is the event that will be called every update
     public: void OnUpdate(const common::UpdateInfo & /*_info*/)  // we are not using the pointer to the info so its commanted as an option
     {
+   		  On_Angular_command_func(sqc.getSteering());
+   		  On_Linear_command_func(sqc.getThrottel());
 
-           // std::cout << "command_timer = " << command_timer.GetElapsed().Float() << std::endl;
+          update_ref_vels();
+          apply_efforts();
 
-            // Applying effort to the wheels , brakes if no message income
-            if (command_timer.GetElapsed().Float()> command_MAX_DELAY)
-            {
-                // Brakes
-                   Linear_command = 0;
-                   Angular_command = 0;
-            }
-
-              update_ref_vels();
-              apply_efforts();
-
-              std_msgs::Bool connection;
-              connection.data = true;
-              platform_hb_pub_.publish(connection);
+          std_msgs::Bool connection;
+          connection.data = true;
+          platform_hb_pub_.publish(connection);
     }
 
 
@@ -247,48 +235,28 @@ namespace gazebo
         wheel_controller(this->back_left_joint  , left_wheels_omega_ref);
     }
 
+  // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
+  private: void On_Angular_command_func(float msg)
+  {
+    Angular_command_mutex.lock();
+        // Recieving referance steering angle
+        if(msg > 1)       { Angular_command =  1;          }
+        else if(msg < -1) { Angular_command = -1;          }
+        else                    { Angular_command = msg;   }
+    Angular_command_mutex.unlock();
+  }
 
-    // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
-    private: void On_Angular_command(const std_msgs::Float64ConstPtr &msg)
-    {
-      Angular_command_mutex.lock();
-          // Recieving referance steering angle
-          if(msg->data > 1)       { Angular_command =  1;          }
-          else if(msg->data < -1) { Angular_command = -1;          }
-          else                    { Angular_command = msg->data;   }
+  // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
+  private: void On_Linear_command_func(float msg)
+  {
+    Linear_command_mutex.lock();
+        // Recieving referance velocity
+        if(msg > 1)       { Linear_command =  1;          }
+        else if(msg < -1) { Linear_command = -1;          }
+        else                    { Linear_command = msg;   }
 
-          // Reseting timer every time LLC publishes message
-#if GAZEBO_MAJOR_VERSION >= 5
-            command_timer.Reset(); // for ROS Jade
-#endif
-            command_timer.Start();
-
-
-
-
-      Angular_command_mutex.unlock();
-    }
-
-
-    // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
-    private: void On_Linear_command(const std_msgs::Float64ConstPtr &msg)
-    {
-      Linear_command_mutex.lock();
-          // Recieving referance velocity
-          if(msg->data > 1)       { Linear_command =  1;          }
-          else if(msg->data < -1) { Linear_command = -1;          }
-          else                    { Linear_command = msg->data;   }
-
-          // Reseting timer every time LLC publishes message
-#if GAZEBO_MAJOR_VERSION >= 5
-            command_timer.Reset(); // for ROS Jade
-#endif
-            command_timer.Start();
-
-      Linear_command_mutex.unlock();
-
-    }
-
+    Linear_command_mutex.unlock();
+  }
 
      // Defining private Pointer to model
      private: physics::ModelPtr model;
@@ -308,16 +276,8 @@ namespace gazebo
      // Defining private Ros Node Handle
      private: ros::NodeHandle  *Ros_nh;
 
-     // Defining private Ros Subscribers
-     private: ros::Subscriber Steering_rate_sub;
-     private: ros::Subscriber Velocity_rate_sub;
-
      // Defining private Ros Publishers
      ros::Publisher platform_hb_pub_;
-
-
-     // Defining private Timers
-     private: common::Timer command_timer;
 
 
      // Defining private Mutex
@@ -341,6 +301,7 @@ namespace gazebo
      InterpMultilinear<2, double> * Linear_vel_interp;
      InterpMultilinear<2, double> * Angular_vel_interp;
 
+     simQinetiqClient sqc;
   };
 
   // Tell Gazebo about this plugin, so that Gazebo can call Load on this plugin.
