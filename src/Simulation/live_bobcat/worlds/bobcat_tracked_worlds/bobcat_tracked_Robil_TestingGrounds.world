@@ -2,9 +2,9 @@
   <world name='default'>
     <light name='sun' type='directional'>
       <cast_shadows>1</cast_shadows>
-      <pose frame=''>0 0 10 0 -0 0</pose>
-      <diffuse>0.8 0.8 0.8 1</diffuse>
-      <specular>0.3 0.3 0.3 1</specular>
+      <pose>0 0 10 0 -0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.4 0.4 0.4 1</specular>
       <attenuation>
         <range>1000</range>
         <constant>0.9</constant>
@@ -13,35 +13,41 @@
       </attenuation>
       <direction>-0.5 0.1 -0.9</direction>
     </light>
-    <physics name='default_physics' default='0' type='ode'>
-      <max_step_size>0.001</max_step_size>
-      <real_time_factor>1</real_time_factor>
-      <real_time_update_rate>1000</real_time_update_rate>
-      <gravity>0 0 -9.8</gravity>
-      <magnetic_field>5.5645e-06 2.28758e-05 -4.23884e-05</magnetic_field>
-      <ode>
-        <solver>
-          <type>quick</type>
-          <iters>50</iters>
-          <sor>1.4</sor>
-        </solver>
-        <constraints>
-          <cfm>0.0001</cfm>
-          <erp>0.02</erp>
-          <contact_max_correcting_vel>100</contact_max_correcting_vel>
-          <contact_surface_layer>0.001</contact_surface_layer>
-        </constraints>
-      </ode>
-    </physics>
+		<physics type="ode">
+			<gravity>0 0 -9.81</gravity>
+			<max_step_size>0.001</max_step_size>
+			<real_time_factor>1</real_time_factor>
+			<real_time_update_rate>1000</real_time_update_rate>
+			<ode>
+				<solver>
+					<type>quick</type>
+					<iters>50</iters>
+					<sor>1.4</sor>
+				</solver>
+				<constraints>
+					<cfm>0.0001</cfm>
+					<erp>0.02</erp>
+					<contact_max_correcting_vel>100</contact_max_correcting_vel>
+					<contact_surface_layer>0.001</contact_surface_layer>
+				</constraints>
+			</ode>
+		</physics>
     <scene>
       <ambient>0.4 0.4 0.4 1</ambient>
       <background>0.7 0.7 0.7 1</background>
       <shadows>1</shadows>
     </scene>
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>0</latitude_deg>
+      <longitude_deg>0</longitude_deg>
+      <elevation>0</elevation>
+      <heading_deg>0</heading_deg>
+    </spherical_coordinates>
     <model name='Testing_Grounds'>
       <static>1</static>
       <link name='Testing_grounds'>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='terrain1_collision'>
           <geometry>
             <mesh>
@@ -77,12 +83,12 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-4 12 0 0 -0 0</pose>
+      <pose>0 0 0 0 -0 0</pose>
     </model>
     <model name='Testing_Grounds_obj'>
       <static>1</static>
       <link name='Testing_Grounds_obj'>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='Testing_Grounds_obj_collision'>
           <geometry>
             <mesh>
@@ -111,8 +117,14 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>2 -3 0 0 -0 0</pose>
+      <pose>0 0 0 0 -0 0</pose>
     </model>
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose>-19.9271 20.9571 14.1593 0 0.549796 0.044237</pose>
+        <view_controller>orbit</view_controller>
+      </camera>
+    </gui>
     <model name='barrel2'>
       <static>1</static>
       <link name='link'>
@@ -144,7 +156,7 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-49 9 0 0 -0 0</pose>
+      <pose>-2 57 0 0 -0 0</pose>
     </model>
     <model name='barrel2_0'>
       <static>1</static>
@@ -177,7 +189,7 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-49 1 0 0 -0 0</pose>
+      <pose>-10 53.5182 0 0 -0 0</pose>
     </model>
     <model name='barrel2_1'>
       <static>1</static>
@@ -210,7 +222,7 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-49 -5 0 0 -0 0</pose>
+      <pose>-22 52 0 0 -0 0</pose>
     </model>
     <model name='barrel2_2'>
       <static>1</static>
@@ -243,7 +255,7 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-48 -17 0 0 -0 0</pose>
+      <pose>-33 50 0 0 -0 0</pose>
     </model>
     <model name='barrel2_3'>
       <static>1</static>
@@ -276,7 +288,7 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-48 -27 0 0 -0 0</pose>
+      <pose>-34 42 0 0 -0 0</pose>
     </model>
     <model name='barrel2_4'>
       <static>1</static>
@@ -309,7 +321,7 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-41.4817 -32.4456 0 0 -0 0</pose>
+      <pose>-37 28 0 0 -0 0</pose>
     </model>
     <model name='barrel2_5'>
       <static>1</static>
@@ -342,7 +354,7 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-36 -36.4418 0 0 -0 0</pose>
+      <pose>-39 17 0 0 -0 0</pose>
     </model>
     <model name='barrel2_6'>
       <static>1</static>
@@ -375,7 +387,7 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-28 -40 0 0 -0 0</pose>
+      <pose>-42 4 0 0 -0 0</pose>
     </model>
     <model name='barrel2_7'>
       <static>1</static>
@@ -408,7 +420,7 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-22.5645 -41 0 0 -0 0</pose>
+      <pose>-8 31 0 0 -0 0</pose>
     </model>
     <model name='barrel2_8'>
       <static>1</static>
@@ -441,15 +453,16 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-13.4993 -42 0 0 -0 0</pose>
+      <pose>-18.5453 30 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_9'>
+    <model name='fence1_0'>
       <static>1</static>
       <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://fence1/models/fence.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -466,7 +479,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://fence1/models/fence.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -474,15 +487,16 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-1 -42.4451 0 0 -0 0</pose>
+      <pose>10.63 -2.13 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_10'>
+    <model name='fence1'>
       <static>1</static>
       <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://fence1/models/fence.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -499,7 +513,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://fence1/models/fence.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -507,15 +521,16 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-24 -15.5771 0 0 -0 0</pose>
+      <pose>10.63 0.4 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_11'>
+    <model name='fence1_1'>
       <static>1</static>
       <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://fence1/models/fence.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -532,7 +547,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://fence1/models/fence.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -540,7 +555,993 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <pose frame=''>-24 0 0 0 -0 0</pose>
+      <pose>10.63 2.929 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_2'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 12 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_3'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 14.529 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_4'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 17.058 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_5'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 19.587 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_6'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 22.116 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_7'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 24.645 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_8'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 27.174 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_9'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 29.703 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_10'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 32.232 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_11'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 34.761 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_12'>
+      <static>1</static>
+      <link name='link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>10.63 37.29 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_13'>
+      <static>1</static>
+      <link name='link'>
+        <pose >0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose >10.63 39.819 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_14'>
+      <static>1</static>
+      <link name='link'>
+        <pose >0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose >10.63 42.348 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_15'>
+      <static>1</static>
+      <link name='link'>
+        <pose >0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose >10.63 44.877 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_16'>
+      <static>1</static>
+      <link name='link'>
+        <pose >0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose >10.63 47.406 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_16'>
+      <static>1</static>
+      <link name='link'>
+        <pose >0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose >10.63 49.935 0 0 -0 0</pose>
+    </model>
+    <model name='fence1_17'>
+      <static>1</static>
+      <link name='link'>
+        <pose >0 0 0 0 -0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://fence1/models/fence.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose >10.63 52.464 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_0'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>4 57.423 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_1'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-3 64 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_2'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-11 65 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_3'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-19.4666 65 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_4'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-29 62 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_5'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-36 57 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_6'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-39 47.529 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_7'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-44 39.4818 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_8'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-47.4254 31 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_9'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-49 20.4162 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_10'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-51 10 0 0 -0 0</pose>
+    </model>
+    <model name='Testing_Grounds_tree_11'>
+      <static>1</static>
+      <link name='Testing_Grounds_trees'>
+        <pose>0 0 0 0 -0 0</pose>
+        <collision name='Testing_Grounds_tree_collision'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Testing_Grounds_treesvisual'>
+          <geometry>
+            <mesh>
+              <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-53 0 0 0 -0 0</pose>
     </model>
     <include>
       <uri>model://bobcat_tracked</uri>
