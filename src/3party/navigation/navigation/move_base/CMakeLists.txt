@@ -48,7 +48,7 @@ target_link_libraries(move_base
     ${Boost_LIBRARIES}
     ${catkin_LIBRARIES}
     )
-add_dependencies(move_base move_base_gencfg ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(move_base move_base_gencfg)
 add_dependencies(move_base geometry_msgs_gencpp)
 
 add_executable(move_base_node
