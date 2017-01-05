@@ -27,10 +27,11 @@ ${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake
 #  src/roscomm/RosComm.cpp
 #)
 add_library(loc_compMain
-  src/component/ComponentMain.cpp
-  src/component/ekf_class.cpp
-  src/component/noiseless_estimator.cpp
-  src/userHelperFunction/example.cpp
+#  src/component/ComponentMain.cpp
+#  src/component/ekf_class.cpp
+#  src/component/noiseless_estimator.cpp
+#  src/userHelperFunction/example.cpp
+src/localization.cpp
 )
 add_executable(loc_node src/main.cpp)
 add_executable(user_function_example src/userHelperFunction/example.cpp)

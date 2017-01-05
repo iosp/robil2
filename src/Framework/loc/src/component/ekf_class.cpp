@@ -238,6 +238,7 @@ void ekf::time_propagation()
         xk1 = F*xk;
 	P1 = F*P*F.t() + Q;
 }
+
 void ekf::setGasPedalState(std_msgs::Float64 value)
 {
 	if (value.data>0.05)

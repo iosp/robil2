@@ -92,7 +92,7 @@ void Mapper::VisualizeLoop()
             if (debug)
             {
                 HeightMap m = height_map->deriveMap(position.x, position.y, myRot);
-                Mat im = m.generateMat(0,-5,0,1);
+                Mat im = m.generateMat(0,-5,0,1, true);
                 sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", im).toImageMsg();
                 HeightMap m2 = height_map->deriveMap(position.x, position.y, myRot);
                 Mat im2 = m.generateMat(1);
