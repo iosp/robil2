@@ -32,6 +32,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <bobcat_model/bobcat_modelConfig.h>
 #include <boost/bind.hpp> // Boost Bind
+#include "sim_qinetiq_client.cc"
 
 // Interpolation
 #include <ctime>
