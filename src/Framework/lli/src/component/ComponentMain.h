@@ -1,4 +1,3 @@
-
 /*
  * ComponentMain.h
  *
@@ -9,6 +8,13 @@
 #define COMPONENTMAIN_H_
 #include "ros/ros.h"
 #include <std_msgs/String.h>
+
+#include <diagnostic_msgs/DiagnosticArray.h>
+#include <sensor_msgs/JointState.h>
+#include <std_msgs/Float64.h>
+#include <std_msgs/Bool.h>
+#include <std_msgs/String.h>
+
 #include <tf/tf.h>
 #include <time.h>
 #include <signal.h>
@@ -22,23 +28,14 @@
 #include <iostream>     // std::cout
 #include <sstream>
 
-#include <sensor_msgs/JointState.h>
-#include <std_msgs/Float64.h>
-#include <std_msgs/Bool.h>
-#include <diagnostic_msgs/DiagnosticArray.h>
 
 #ifndef COMPONENT
 #define COMPONENT context.parameters<Params>().comp
 #endif
 
-#ifndef HEARTBEAT_FREQUANCY
-#define HEARTBEAT_FREQUANCY 2 //Hz
-#endif
-
 #ifndef HEARTBEAT_FREQUENCY
 #define HEARTBEAT_FREQUENCY 2 //Hz
 #endif
-
 
 typedef enum { State_Off = 0, State_Init, State_Standby, State_Wait_Response, State_Ready } CS_STATE;
 /***********************************
@@ -90,22 +87,24 @@ public:
 
 private:
     bool _inited;
-      ros::NodeHandle _nh;
-      ros::Publisher _pub_diagnostic;
-      boost::thread_group _maintains;
-    	ros::Subscriber _sub_EffortsTh;
-    	ros::Subscriber _sub_EffortsSt;
-    	ros::Subscriber _sub_EffortsJn;
-    	ros::Publisher _pub_connected_to_platform;
+    ros::NodeHandle _nh;
+    ros::Publisher _pub_diagnostic;
+    boost::thread_group _maintains;
+    ros::Subscriber _sub_EffortsTh;
+    ros::Subscriber _sub_EffortsSt;
+    ros::Subscriber _sub_EffortsJn;
+    ros::Publisher _pub_connected_to_platform;
+
+    string IPADDR;
 
 
-      bool init(int argc,char** argv);
-	boost::thread* _driver_thread;
-	CLLI_Ctrl *_clli;
-	static ComponentMain *_this;
-	pthread_t _mythread;
-	bool is_ready;
-	CS_STATE _state;
-	pthread_t _myHeartbeatThread;
+    bool init(int argc,char** argv);
+    boost::thread* _driver_thread;
+    CLLI_Ctrl *_clli;
+    static ComponentMain *_this;
+    pthread_t _mythread;
+    bool is_ready;
+    CS_STATE _state;
+    pthread_t _myHeartbeatThread;
 };
 #endif /* COMPONENTMAIN_H_ */

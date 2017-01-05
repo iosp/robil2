@@ -41,6 +41,7 @@
 #include <ctime>
 #include "linterp.h"
 
+#include "sim_qinetiq_client.cc"
 
 // Maximum time delays
 #define command_MAX_DELAY 0.3
@@ -89,15 +90,7 @@ namespace gazebo
       this->cogwheel_right = this->model->GetJoint("cogwheel_right_joint");
       this->cogwheel_left = this->model->GetJoint("cogwheel_left_joint");
       
-      // Starting Timers
-      Linear_command_timer.Start();
-      Angular_command_timer.Start();
-
       this->Ros_nh = new ros::NodeHandle("bobtankDrivePlugin_node");
-
-      // Subscribe to the topic, and register a callback
-      Steering_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Steering" , 1000, &bobtankDrivePlugin::On_Angular_command, this);
-      Velocity_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Throttle" , 1000, &bobtankDrivePlugin::On_Linear_command, this);
       
       platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform" , 100);
 
@@ -128,6 +121,7 @@ namespace gazebo
           Angular_command_array[i] = 0;
           }
 
+      sqc.Init("127.0.0.1", 4660, 5355);
       }
 
    void calibration_data_setup()
@@ -198,28 +192,12 @@ namespace gazebo
     // Called by the world update start event, This function is the event that will be called every update
     public: void OnUpdate(const common::UpdateInfo & /*_info*/)  // we are not using the pointer to the info so its commanted as an option
     {
+        update_ref_vels();
+        apply_efforts();
 
-           // std::cout << "command_timer = " << command_timer.GetElapsed().Float() << std::endl;
-
-            // Applying effort to the wheels , brakes if no message income
-            if (Linear_command_timer.GetElapsed().Float()> command_MAX_DELAY)
-            {
-                // Brakes
-                   Linear_command = 0;
-            }
-
-            if (Angular_command_timer.GetElapsed().Float()> command_MAX_DELAY)
-            {
-                // Brakes
-                   Angular_command = 0;
-            }
-
-              update_ref_vels();
-              apply_efforts();
-
-              std_msgs::Bool connection;
-              connection.data = true;
-              platform_hb_pub_.publish(connection);
+        std_msgs::Bool connection;
+        connection.data = true;
+        platform_hb_pub_.publish(connection);
     }
 
 
@@ -243,12 +221,9 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
     {
         Linear_command_mutex.lock();
         Angular_command_mutex.lock();
-            array<double,2> args = {Linear_command, Angular_command};
+            array<double,2> args = {sqc.getThrottel(), sqc.getSteering()};
         Linear_command_mutex.unlock();
         Angular_command_mutex.unlock();
-
-        //printf("Linear_command = %f,  Angular_command = %f --->  Linear_vel_interp  = %f  \n", args[0], args[1],  Linear_vel_interp->interp(args.begin()) );
-        //printf("Linear_command = %f,  Angular_command = %f --->  Angular_vel_interp = %f \n", args[0], args[1],  Angular_vel_interp->interp(args.begin()) );
 
         double Linear_nominal_vel = Linear_vel_interp->interp(args.begin());
         double Angular_nominal_vel = Angular_vel_interp->interp(args.begin());
@@ -256,8 +231,8 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
         double Linear_vel = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index , Linear_nominal_vel);
         double Angular_vel = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index , Angular_nominal_vel);
 
-        double LinearNoise  = command_lN * (*Linear_Noise_dist)(generator);  //((std::rand() % 100)-50)/50;
-        double AngularNoise = command_aN * (*Angular_Noise_dist)(generator); //((std::rand() % 100)-50)/50;
+        double LinearNoise  = command_lN * (*Linear_Noise_dist)(generator);
+        double AngularNoise = command_aN * (*Angular_Noise_dist)(generator);
 
         Linear_ref_vel  =  (1 + LinearNoise)  * Linear_vel;
         Angular_ref_vel =  (1 + AngularNoise) * Angular_vel;
@@ -270,16 +245,10 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
         double error = ref_omega - wheel_omega;
 
         double effort_command = (Power*((1.4*MinAngPowerMult-(MinAngPowerMult-MaxAngPowerMult)*fabs(Angular_ref_vel))/1.4) * error);
-        //  double effort_command = (control_P * error);
 
         if(effort_command > WHEEL_EFFORT_LIMIT) effort_command = WHEEL_EFFORT_LIMIT;
         if(effort_command < -WHEEL_EFFORT_LIMIT) effort_command = -WHEEL_EFFORT_LIMIT;
         if(wheel_joint==this->cogwheel_right||wheel_joint==this->cogwheel_left) effort_command=effort_command*0.01;
-
-
-//        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
-//        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
-
 
 
         #if GAZEBO_MAJOR_VERSION >= 6
@@ -294,21 +263,13 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
   private: void apply_efforts()
     {
         
-        // std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
-        
-        // float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel* WHEELS_BASE/2) ;
-        // float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * WHEELS_BASE/2) ;
         float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel* ((1.22*MinAngMult-(MinAngMult-MaxAngMult)*fabs(Angular_ref_vel))/1.22) * WHEELS_BASE/2) ;
         float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel* ((1.22*MinAngMult-(MinAngMult-MaxAngMult)*fabs(Angular_ref_vel))/1.22) * WHEELS_BASE/2) ;
-
-        //std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
 
         float right_wheels_omega_ref = right_side_vel / (0.5 * WHEEL_DIAMETER);
         float left_wheels_omega_ref = left_side_vel / (0.5 * WHEEL_DIAMETER);
         float roller_right_omega_ref=right_side_vel / (0.5 * ROLLER_DIAMETER);
         float roller_left_omega_ref=left_side_vel / (0.5 * ROLLER_DIAMETER);
-
-        //std::cout << " right_wheels_omega_ref = " << right_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
 
         wheel_controller(this->front_right_joint, right_wheels_omega_ref);
         wheel_controller(this->back_right_joint , right_wheels_omega_ref);
@@ -320,55 +281,10 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
         wheel_controller(this->roller_back_left, roller_left_omega_ref);
         wheel_controller(this->roller_mid_left, roller_left_omega_ref);
         wheel_controller(this->roller_front_left, roller_left_omega_ref);
-        // wheel_joint->SetVelocity(0,ref_omega);
         wheel_controller(this->cogwheel_right  , right_wheels_omega_ref);
         wheel_controller(this->cogwheel_left  , left_wheels_omega_ref);
         
     }
-
-
-    // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
-    private: void On_Angular_command(const std_msgs::Float64ConstPtr &msg)
-    {
-      Angular_command_mutex.lock();
-          // Recieving referance steering angle  
-          if(msg->data > 1)       { Angular_command =  1;          }
-          else if(msg->data < -1) { Angular_command = -1;          }
-          else                    { Angular_command = msg->data;   }
-
-          // Reseting timer every time LLC publishes message
-
-#if  GAZEBO_MAJOR_VERSION >= 5 
-
-           Angular_command_timer.Reset();
-#endif
-           Angular_command_timer.Start();
-
-
-      Angular_command_mutex.unlock();
-    }
-
-
-    // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
-    private: void On_Linear_command(const std_msgs::Float64ConstPtr &msg)
-    {
-      Linear_command_mutex.lock();
-          // Recieving referance velocity
-          if(msg->data > 1)       { Linear_command =  1;          }
-          else if(msg->data < -1) { Linear_command = -1;          }
-          else                    { Linear_command = msg->data;   }
-
-          // Reseting timer every time LLC publishes message
-
-#if  GAZEBO_MAJOR_VERSION >= 5 
-
-           Linear_command_timer.Reset();
-#endif
-           Linear_command_timer.Start();
-
-      Linear_command_mutex.unlock();
-    }
-
 
      // Defining private Pointer to model
      private: physics::ModelPtr model;
@@ -397,26 +313,13 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
      // Defining private Ros Node Handle
      private: ros::NodeHandle  *Ros_nh;
 
-     // Defining private Ros Subscribers
-     private: ros::Subscriber Steering_rate_sub;
-     private: ros::Subscriber Velocity_rate_sub;
-
      // Defining private Ros Publishers
      ros::Publisher platform_hb_pub_;
-
-
-     // Defining private Timers
-     private: common::Timer Linear_command_timer;
-     private: common::Timer Angular_command_timer;
-
-
 
      // Defining private Mutex
      private: boost::mutex Angular_command_mutex;
      private: boost::mutex Linear_command_mutex;
 
-     private: float Linear_command;
-     private: float Angular_command;
      private: double Linear_ref_vel;
      private: double Angular_ref_vel;
 
@@ -440,6 +343,7 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
      InterpMultilinear<2, double> * Linear_vel_interp;
      InterpMultilinear<2, double> * Angular_vel_interp;
 
+     simQinetiqClient sqc;
   };
 
   // Tell Gazebo about this plugin, so that Gazebo can call Load on this plugin.

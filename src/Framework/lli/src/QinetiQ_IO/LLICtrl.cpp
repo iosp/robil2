@@ -124,7 +124,7 @@ BYTE LLI_SetJointEffortMsg[] = { 0x06, 0x02, 0x01, 0x06, 0x01, 0x69, 0x01, 0xC8,
 //extern CSharedTimerMeas *		m_glbTimeMeas;
 CLLI_Ctrl::CLLI_Ctrl() {
 
-	clock_gettime(CLOCK_REALTIME, &myTc);
+	SetCurrentTimeTag ();
 
 	m_DriveCurrentState.ctrlDevId = lli_Ctrl_Drive;
 	m_DriveCurrentState.currState = lli_State_Off;
@@ -239,14 +239,15 @@ bool CLLI_Ctrl::Reset() {
 
 void CLLI_Ctrl::SetCurrentTimeTag ()
 {
+	mutex_time.lock();
 	clock_gettime(CLOCK_REALTIME, &myTc);
+	mutex_time.unlock();
 	m_currTT = myTc.tv_sec + myTc.tv_nsec / 1E9;
-
 }
 
 void CLLI_Ctrl::ResetLocalTimeTag (double &l_tt)
 {
-	clock_gettime(CLOCK_REALTIME, &myTc);
+	SetCurrentTimeTag ();
 	l_tt = myTc.tv_sec + myTc.tv_nsec / 1E9;
 
 }
@@ -254,7 +255,7 @@ void CLLI_Ctrl::ResetLocalTimeTag (double &l_tt)
 
 void CLLI_Ctrl::SetReceiveTimeTag ()
 {
-	clock_gettime(CLOCK_REALTIME, &myTc);
+	SetCurrentTimeTag ();
 	m_rxTT = myTc.tv_sec + myTc.tv_nsec / 1E9;
 
 }
@@ -325,8 +326,10 @@ bool CLLI_Ctrl::TransmitData(short bufSize) {
 
 	double currTime;
 
-	clock_gettime(CLOCK_REALTIME, &myTc);
+	SetCurrentTimeTag ();
+	mutex_time.lock();
 	currTime = myTc.tv_sec + myTc.tv_nsec / 1E9;
+	mutex_time.unlock();
 
     sendto(socketFd, txBuf, bufSize, 0,
 			(struct sockaddr *) &si_Remote, sizeof(si_Remote));
@@ -450,12 +453,11 @@ void CLLI_Ctrl::SetThrottelRequest (short reqVal)
 
 	reqThrottel_Val = JausRealToShort (valScaledTmp, -100, 100);
 
-	printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqThrottel_Val);
-
+	//printf ("SetThrotelRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqThrottel_Val);
 	ResetLocalTimeTag (m_DriveCurrentState.effortTT);
+	mutex_time.lock();
 	m_DriveCurrentState.lastCmdTT = m_DriveCurrentState.effortTT;
-
-
+	mutex_time.unlock();
 }
 
 void CLLI_Ctrl::SetSteeringRequest (short reqVal)
@@ -469,11 +471,12 @@ void CLLI_Ctrl::SetSteeringRequest (short reqVal)
 
 	reqSteering_Val = JausRealToShort (valScaledTmp, -100, 100);
 
-	printf ("SetSteeringRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqSteering_Val);
+	//printf ("SetSteeringRequest: %d -> %d -> %d\n", reqVal, valScaledTmp, reqSteering_Val);
 
 	ResetLocalTimeTag (m_DriveCurrentState.effortTT);
+	mutex_time.lock();
 	m_DriveCurrentState.lastCmdTT = m_DriveCurrentState.effortTT;
-
+	mutex_time.unlock();
 }
 
 
@@ -498,9 +501,7 @@ void CLLI_Ctrl::SetJointRequest (short reqVal1, short reqVal2)
 	ResetLocalTimeTag (m_ManipulatorCurrentState.effortTT);
 	m_ManipulatorCurrentState.lastCmdTT = m_ManipulatorCurrentState.effortTT;
 
-
-	printf ("SetJointRequest: Scaling: %d --> %d       %d --> %d\n",
-			reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
+	//printf ("SetJointRequest: Scaling: %d --> %d       %d --> %d\n", reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
 }
 
 
@@ -919,8 +920,10 @@ void CLLI_Ctrl::TransmitResponceHeartBit() {
 	double currTime;
 	static double prevTime = 0;
 
-	clock_gettime(CLOCK_REALTIME, &myTc);
+	SetCurrentTimeTag ();
+	mutex_time.lock();
 	currTime = myTc.tv_sec + myTc.tv_nsec / 1E9;
+	mutex_time.unlock();
 
 	txCount++;
 	txSeqNumber++;
@@ -942,7 +945,9 @@ void CLLI_Ctrl::TransmitWrenchEffortMsg()
 	txSeqNumber++;
 	memcpy(&LLI_SetWrenchEffortMsg[14], &txSeqNumber, sizeof(short));
 	memcpy (txBuf, LLI_SetWrenchEffortMsg, sizeof(LLI_SetWrenchEffortMsg));
+	mutex_time.lock();
 	m_DriveCurrentState.effortTT = m_currTT;
+	mutex_time.unlock();
 	TransmitData (sizeof(LLI_SetWrenchEffortMsg));
 
 }
@@ -1250,8 +1255,10 @@ void CLLI_Ctrl::ThreadFunc() {
 		}
 
 
-		clock_gettime(CLOCK_REALTIME, &myTc);
+		SetCurrentTimeTag ();
+		mutex_time.lock();
 		currentTime = myTc.tv_sec + myTc.tv_nsec / 1E9;
+		mutex_time.unlock();
 		if (lastTime > 0.)
 			cutrentDT = currentTime - lastTime;
 
@@ -1274,9 +1281,6 @@ void CLLI_Ctrl::ThreadFunc() {
 				nRcvDataInBuff = 0; // TBD
 				memcpy(&(rxBuf[nRcvDataInBuff]), bufTmp, retVal);
 				nRcvDataInBuff += retVal;
-
-//				clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &myTc);
-
 
 				if (dbgKey == 'r' || dbgKey == 'f') {
 					lastTime = currentTime;
