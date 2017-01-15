@@ -29,7 +29,8 @@ ComponentMain::ComponentMain(int argc,char** argv)
 		IPADDR = argv[1];
 	}
 	else
-		IPADDR = "127.0.0.1";
+        IPADDR = "127.0.0.1";
+    _reverse = false;
 
 	_pub_GPSPose=ros::Publisher(_nh.advertise<sensor_msgs::NavSatFix>("/SENSORS/GPS",10));
 	_pub_INS=ros::Publisher(_nh.advertise<sensor_msgs::Imu>("/SENSORS/INS",10));
@@ -106,21 +107,45 @@ void ComponentMain::ReadAndPub_ShiphonINS(){
 	INS_msg.angular_velocity.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_rate_Y_PD_Egi * MILS_2_RAD;
 	INS_msg.angular_velocity.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD;
 
-	float Roll  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_PD_Egi * MILS_2_RAD;
-	float Pitch = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_PD_Egi * MILS_2_RAD;
-	float Yaw   = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_PD_geographic * MILS_2_RAD;
+    float Roll  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_PD_Egi * MILS_2_RAD;
+    float Pitch = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_PD_Egi * MILS_2_RAD;
+    float Yaw   = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_PD_geographic * MILS_2_RAD;
 
-	tf::Matrix3x3 obs_mat;
-	obs_mat.setEulerYPR(Yaw,Pitch,Roll);
+    tf::Matrix3x3 obs_mat;
+    obs_mat.setEulerYPR(Yaw,Pitch,Roll);
 
-	tf::Quaternion q_tf;
-	obs_mat.getRotation(q_tf);
+    tf::Quaternion q_tf;
+    obs_mat.getRotation(q_tf);
+    /**
+     * Theory says... q = -q, where q is a quaternion angle.
+     * In order to avoid jumps in angle, when a jump is detected we change q to -q
+     * and vice versa.
+    **/
+    /* Check for a jump in the angle from -180 to +180 or vice versa */
+    if ((q_tf.getX() - _prev_quat.getX()) * (q_tf.getX() - _prev_quat.getX())
+        + (q_tf.getY() - _prev_quat.getY()) * (q_tf.getY() - _prev_quat.getY())
+        + (q_tf.getZ() - _prev_quat.getZ()) * (q_tf.getZ() - _prev_quat.getZ())
+        + (q_tf.getW() - _prev_quat.getW()) * (q_tf.getW() - _prev_quat.getW()) > 0.5)
+        _reverse = !_reverse;
 
-	INS_msg.orientation.x = q_tf.getX();
-	INS_msg.orientation.y = q_tf.getY();
-	INS_msg.orientation.z = q_tf.getZ();
-	INS_msg.orientation.w = q_tf.getW();
-
+    /* Use -q to avoid jumps */
+    if (_reverse)
+    {
+        INS_msg.orientation.x = -q_tf.getX();
+        INS_msg.orientation.y = -q_tf.getY();
+        INS_msg.orientation.z = -q_tf.getZ();
+        INS_msg.orientation.w = -q_tf.getW();
+    }
+    /* Use +q to avoid jumps */
+    else
+    {
+        INS_msg.orientation.x = q_tf.getX();
+        INS_msg.orientation.y = q_tf.getY();
+        INS_msg.orientation.z = q_tf.getZ();
+        INS_msg.orientation.w = q_tf.getW();
+    }
+    /* save quat for next iteration */
+    _prev_quat = q_tf;
 
 	INS_msg.header.stamp = ros::Time::now();
 
