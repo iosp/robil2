@@ -63,6 +63,4 @@
 	<!-- == LOW LEVEL CONTROL == -->
 	<node name="llc_node" type="llc_node" pkg="llc" output="screen" respawn="true"/>
 
-
-
 </launch>

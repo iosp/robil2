@@ -79,6 +79,7 @@ bool is_check_twist_timeout = false;
 
 void set_ziro_prediction()
 {
+	ROS_INFO_ONCE("MLC: Set ZIRO prediction between /ROBOT_CENTER and /ROBOT_CENTER_PREDICTION frames");
 	  static tf::TransformBroadcaster br;
 	  tf::Vector3 location(0,0,0);
 	  double heading=0;
@@ -98,9 +99,11 @@ void on_twist_command( const geometry_msgs::TwistConstPtr& msg )
 		last_twist_update_time = ros::Time::now();
 		if(config.speed_source==2)
 		{
+//			platform_lin_speed = 1.0;
 			platform_lin_speed = msg->linear.x;
 			platform_lin_speed_smoothed = (1-platform_lin_speed_smoothed_coof)*platform_lin_speed_smoothed + (platform_lin_speed_smoothed_coof)*platform_lin_speed;
 
+//			platform_ang_speed = M_PI/4.0;
 			platform_ang_speed = msg->angular.z;
 			platform_ang_speed_smoothed = (1-platform_ang_speed_smoothed_coof)*platform_ang_speed_smoothed + (platform_ang_speed_smoothed_coof)*platform_ang_speed;
 		}
@@ -154,9 +157,10 @@ void prediction()
 	  double step_time = time / (double)number_of_steps;
 	  double lin_dist = platform_lin_speed_smoothed*step_time;
 	  double ang_dist = platform_ang_speed_smoothed*step_time;
-	  std::cout<<"------- P:"<<platform_lin_speed_smoothed<<", "<<platform_ang_speed_smoothed*57.2958<<" D:"<<lin_dist<<", "<<ang_dist*57.2958<<std::endl;
+	  //td::cout<<"------- P:"<<platform_lin_speed_smoothed<<", "<<platform_ang_speed_smoothed*57.2958<<" D:"<<lin_dist<<", "<<ang_dist*57.2958<<std::endl;
 	  for(int i=0;i<number_of_steps;i++)
 	  {
+	      
 		  tf::Vector3 step(lin_dist*cos(heading), lin_dist*sin(heading), 0);
 
 		  location += step;
@@ -164,7 +168,9 @@ void prediction()
 		  heading += ang_dist;
 
 	  }
-	  std::cout<<""<<location.x()<<" "<<location.y()<<" "<<heading*57.2958<<std::endl;
+
+	  //ROS_INFO_STREAM_ONCE( location.x()<<" "<<location.y()<<" "<<heading*57.2958 );
+	  ROS_INFO_STREAM_ONCE( "MLC: Send prediction between /ROBOT_CENTER and /ROBOT_CENTER_PREDICTION frames" );
 
 	  tf::Transform transform;
 	  transform.setOrigin( location );
@@ -263,8 +269,8 @@ void on_platform_lin_speed( const std_msgs::Float32::ConstPtr& msg )
 		platform_lin_speed_smoothed = (1-platform_lin_speed_smoothed_coof)*platform_lin_speed_smoothed + (platform_lin_speed_smoothed_coof)*platform_lin_speed;
 	}
 	if(config.mode != MODE_control_prediction ) return;
-	listen_tf_pose();
-	prediction();
+//	listen_tf_pose();
+//	prediction();
 }
 void on_platform_ang_speed( const std_msgs::Float32::ConstPtr& msg )
 {
@@ -282,14 +288,24 @@ void on_platform_ang_speed( const std_msgs::Float32::ConstPtr& msg )
 
 void check_twist_timeout()
 {
-	if(not is_check_twist_timeout) return;
+	if(not is_check_twist_timeout)
+	{
+		set_ziro_prediction();
+		return;
+	}
+
+
 	ros::Duration d = ros::Time::now() - last_twist_update_time;
-	if(d.toSec() > 1)
+	if(d.toSec() > 0.5)
 	{
 		geometry_msgs::Twist stop;
 		p_cmd_vel.publish(stop);
 		is_check_twist_timeout = false;
+		return;
 	}
+
+	//listen_tf_pose();
+	prediction();
 }
 
 int main(int argc, char **argv) {
@@ -310,16 +326,15 @@ int main(int argc, char **argv) {
   ros::Subscriber s_platform_lin = node.subscribe(topic_name__platform_linear, 1, on_platform_lin_speed);
   ros::Subscriber s_platform_ang = node.subscribe(topic_name__platform_angular, 1, on_platform_ang_speed);
   
-  ROS_INFO("midle_level_control is running...");
+  ROS_INFO("MLC: midle_level_control is running...");
   ros::Rate rate(100);
   while(ros::ok())
   {
-	  check_twist_timeout();
-	  if(config.mode != MODE_control_prediction) set_ziro_prediction();
 	  ros::spinOnce();
+	  check_twist_timeout();
 	  rate.sleep();
   }
-  ROS_INFO("midle_level_control is stopped");
+  ROS_INFO("MLC: midle_level_control is stopped");
   return 0;
 }
 

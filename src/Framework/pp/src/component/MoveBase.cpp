@@ -475,22 +475,23 @@ void on_speed(const geometry_msgs::Twist::ConstPtr& msg){
  * (for standard move_base it won't work - we need Cogniteam's move_base).
  */
 bool checkMoveBaseVersion(){
-	move_base::VersionService version;
-	if(ros::service::call("move_base/version" , version)){
-		std::string wantedPrefix = "Cogniteam";
-		std::string versionPrefix = version.response.version.substr(0, wantedPrefix.size());
-		if(versionPrefix == wantedPrefix){
-			return true;
-		} else {
-			ROS_ERROR("Wrong version for move_base detected: expected prefix %s, found %s" , wantedPrefix.c_str() , versionPrefix.c_str());
-			return false;
-		}
-	}
-	else {
-		// no service found - this is not cogniteam's version.
-		ROS_ERROR("No version for move_base detected");
-		return false;
-	}
+	return true;
+	// move_base::VersionService version;
+	// if(ros::service::call("move_base/version" , version)){
+	// 	std::string wantedPrefix = "Cogniteam";
+	// 	std::string versionPrefix = version.response.version.substr(0, wantedPrefix.size());
+	// 	if(versionPrefix == wantedPrefix){
+	// 		return true;
+	// 	} else {
+	// 		ROS_ERROR("Wrong version for move_base detected: expected prefix %s, found %s" , wantedPrefix.c_str() , versionPrefix.c_str());
+	// 		return false;
+	// 	}
+	// }
+	// else {
+	// 	// no service found - this is not cogniteam's version.
+	// 	ROS_ERROR("No version for move_base detected");
+	// 	return false;
+	// }
 }
 
 void showMoveBaseInstallationInstructions() {

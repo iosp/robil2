@@ -5,21 +5,12 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /Grid1
         - /Grid1/Offset1
-        - /Pose1
-        - /Pose2
-        - /Axes1
-        - /Axes2
         - /TF1/Frames1
-        - /Polygon1
-        - /Polygon2
-        - /Image1
-        - /Image2
-        - /RobotModel1/Links1
-        - /Axes3
-      Splitter Ratio: 0.395911
-    Tree Height: 298
+        - /GLOBAL GOAL1/Status1
+        - /TEMPORAL G.GOAL1/Status1
+      Splitter Ratio: 0.405213
+    Tree Height: 375
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Views
@@ -31,10 +22,12 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: Image
+    SyncSource: ""
   - Class: rviz/Tool Properties
     Expanded:
       - /2D Pose Estimate1
+      - /2D Nav Goal1
+      - /Publish Point1
     Name: Tool Properties
     Splitter Ratio: 0.5
 Visualization Manager:
@@ -63,7 +56,7 @@ Visualization Manager:
       Axes Radius: 0.1
       Class: rviz/Pose
       Color: 255; 25; 0
-      Enabled: true
+      Enabled: false
       Head Length: 0.3
       Head Radius: 0.1
       Name: Pose
@@ -71,13 +64,14 @@ Visualization Manager:
       Shaft Radius: 1
       Shape: Arrow
       Topic: /move_base/current_goal
-      Value: true
+      Unreliable: false
+      Value: false
     - Alpha: 0.5
       Axes Length: 1
       Axes Radius: 0.1
       Class: rviz/Pose
       Color: 85; 170; 127
-      Enabled: true
+      Enabled: false
       Head Length: 0.1
       Head Radius: 0.1
       Name: Pose
@@ -85,124 +79,82 @@ Visualization Manager:
       Shaft Radius: 1.5
       Shape: Arrow
       Topic: /move_base/original_goal
-      Value: true
+      Unreliable: false
+      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
       Color: 19; 255; 15
-      Enabled: true
+      Enabled: false
+      Head Diameter: 0.3
+      Head Length: 0.2
+      Length: 0.3
+      Line Style: Lines
+      Line Width: 0.03
       Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Style: None
+      Radius: 0.03
+      Shaft Diameter: 0.1
+      Shaft Length: 0.1
       Topic: /move_base/TrajectoryPlannerROS/local_plan
-      Value: true
+      Unreliable: false
+      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
       Color: 255; 255; 0
-      Enabled: true
+      Enabled: false
+      Head Diameter: 0.3
+      Head Length: 0.2
+      Length: 0.3
+      Line Style: Lines
+      Line Width: 0.03
       Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Style: None
+      Radius: 0.03
+      Shaft Diameter: 0.1
+      Shaft Length: 0.1
       Topic: /move_base/NavfnROS/plan
-      Value: true
-    - Class: rviz/Axes
-      Enabled: true
-      Length: 5
-      Name: Axes
-      Radius: 0.1
-      Reference Frame: ODOM
-      Value: true
-    - Class: rviz/Axes
-      Enabled: true
-      Length: 10
-      Name: Axes
-      Radius: 0.1
-      Reference Frame: WORLD
-      Value: true
+      Unreliable: false
+      Value: false
     - Class: rviz/TF
-      Enabled: true
+      Enabled: false
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        GPS:
-          Value: true
-        IBEO:
-          Value: true
-        INS:
-          Value: true
-        ODOM:
-          Value: true
-        ROBOT_CENTER:
-          Value: true
-        TRACKS_BOTTOM:
-          Value: true
-        WORLD:
-          Value: true
-        base_arm:
-          Value: true
-        body:
-          Value: true
-        brackets:
-          Value: true
-        cabin:
-          Value: true
-        loader:
-          Value: true
-        main_arm:
-          Value: true
-        supporter:
-          Value: true
-        supporter_hinge:
-          Value: true
-        top_installation:
-          Value: true
-        world_gazebo:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        world_gazebo:
-          WORLD:
-            ODOM:
-              GPS:
-                {}
-              IBEO:
-                {}
-              INS:
-                {}
-              ROBOT_CENTER:
-                {}
-              TRACKS_BOTTOM:
-                {}
-          body:
-            base_arm:
-              main_arm:
-                loader:
-                  brackets:
-                    {}
-                supporter:
-                  {}
-            cabin:
-              top_installation:
-                {}
-            supporter_hinge:
-              {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
     - Alpha: 1
       Class: rviz/Polygon
       Color: 25; 255; 0
-      Enabled: true
+      Enabled: false
       Name: Polygon
       Topic: /move_base/global_costmap/footprint
-      Value: true
+      Unreliable: false
+      Value: false
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 248; 17
-      Enabled: true
+      Enabled: false
       Name: Polygon
       Topic: /move_base/local_costmap/footprint
-      Value: true
+      Unreliable: false
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -215,13 +167,13 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: AxisColor
       Decay Time: 100
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
       Min Color: 0; 0; 0
       Min Intensity: 0
-      Name: PointCloud
+      Name: LASER
       Position Transformer: XYZ
       Queue Size: 1
       Selectable: true
@@ -229,27 +181,60 @@ Visualization Manager:
       Size (m): 0.1
       Style: Points
       Topic: /SENSORS/IBEO/PC
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 0.7
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: GLOBAL MAP
+      Topic: /move_base/global_costmap
+      Unreliable: false
+      Value: true
+    - Alpha: 0.7
+      Class: rviz/Map
+      Color Scheme: costmap
+      Draw Behind: false
+      Enabled: true
+      Name: LOCAL MAP
+      Topic: /move_base/local_costmap
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 3.76266
+        Min Value: 3.23863
+        Value: true
+      Axis: X
+      Channel Name: intensity
+      Class: rviz/PointCloud
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: MAP PointCloud
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 5
+      Size (m): 0.1
+      Style: Points
+      Topic: /map_cloud
+      Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Alpha: 0.7
-      Class: rviz/Map
-      Color Scheme: costmap
-      Draw Behind: false
-      Enabled: true
-      Name: Map
-      Topic: /move_base/global_costmap/costmap
-      Value: true
-    - Alpha: 0.7
-      Class: rviz/Map
-      Color Scheme: costmap
-      Draw Behind: false
-      Enabled: true
-      Name: Map
-      Topic: /move_base/local_costmap/costmap
-      Value: true
     - Class: rviz/Image
-      Enabled: true
+      Enabled: false
       Image Topic: /PER/DEBUG/TYPEMAP
       Max Value: 1
       Median window: 5
@@ -258,9 +243,10 @@ Visualization Manager:
       Normalize Range: true
       Queue Size: 2
       Transport Hint: raw
-      Value: true
+      Unreliable: false
+      Value: false
     - Class: rviz/Image
-      Enabled: true
+      Enabled: false
       Image Topic: /PER/DEBUG/TYPEMAP
       Max Value: 1
       Median window: 5
@@ -269,7 +255,8 @@ Visualization Manager:
       Normalize Range: true
       Queue Size: 2
       Transport Hint: raw
-      Value: true
+      Unreliable: false
+      Value: false
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
@@ -287,15 +274,112 @@ Visualization Manager:
       Value: false
       Visual Enabled: true
     - Class: rviz/Axes
-      Enabled: true
+      Enabled: false
       Length: 7
-      Name: Axes
+      Name: ROBOT
       Radius: 0.1
-      Reference Frame: world_gazebo
+      Reference Frame: WORLD
+      Value: false
+    - Class: rviz/Axes
+      Enabled: true
+      Length: 1
+      Name: ROBOT_PRED
+      Radius: 0.4
+      Reference Frame: ROBOT_CENTER_PREDICTION
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /move_base/trajectories
+      Name: TRAJECTORIES
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 255; 85; 255
+      Enabled: true
+      Head Diameter: 0.3
+      Head Length: 0.2
+      Length: 0.3
+      Line Style: Billboards
+      Line Width: 0.1
+      Name: GLOBAL PATH
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Style: None
+      Radius: 0.03
+      Shaft Diameter: 0.1
+      Shaft Length: 0.1
+      Topic: /move_base/path
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 255; 85; 255
+      Enabled: true
+      Head Diameter: 0.3
+      Head Length: 0.2
+      Length: 0.3
+      Line Style: Lines
+      Line Width: 0.03
+      Name: LOCAL PATH
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Style: None
+      Radius: 0.03
+      Shaft Diameter: 0.1
+      Shaft Length: 0.1
+      Topic: /move_base/local_plan
+      Unreliable: false
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /move_base/navigation_state
+      Name: STATE
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Alpha: 0.5
+      Class: rviz/PointStamped
+      Color: 204; 41; 204
+      Enabled: true
+      History Length: 1
+      Name: LOCAL GOAL
+      Radius: 1
+      Topic: /move_base/local_goal
+      Unreliable: false
+      Value: true
+    - Alpha: 0.5
+      Class: rviz/PointStamped
+      Color: 255; 0; 0
+      Enabled: true
+      History Length: 1
+      Name: GLOBAL GOAL
+      Radius: 0.5
+      Topic: /move_base/global_goal
+      Unreliable: false
+      Value: true
+    - Alpha: 0.5
+      Class: rviz/PointStamped
+      Color: 85; 85; 255
+      Enabled: true
+      History Length: 1
+      Name: TEMPORAL G.GOAL
+      Radius: 1.1
+      Topic: /move_base/global_temporal_goal
+      Unreliable: false
       Value: true
   Enabled: true
   Global Options:
-    Background Color: 48; 48; 48
+    Background Color: 126; 126; 126
     Fixed Frame: WORLD
     Frame Rate: 30
   Name: root
@@ -309,40 +393,37 @@ Visualization Manager:
     - Class: rviz/SetInitialPose
       Topic: /test/location_cov
     - Class: rviz/SetGoal
-      Topic: /move_base_simple/goal
+      Topic: /move_base/simple/goal
     - Class: rviz/PublishPoint
       Single click: true
       Topic: /clicked_point
   Value: true
   Views:
     Current:
-      Class: rviz/Orbit
-      Distance: 83.4801
+      Angle: -9.55004
+      Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
-      Focal Point:
-        X: 52.1728
-        Y: -24.7547
-        Z: 5.94935
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.0398
+      Scale: -18.9686
       Target Frame: WORLD
-      Value: Orbit (rviz)
-      Yaw: 4.25041
+      Value: TopDownOrtho (rviz)
+      X: 66.2723
+      Y: -3.26535
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 560
+  Height: 1056
   Hide Left Dock: false
   Hide Right Dock: false
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001a8000001eafc020000000afb0000001200530065006c0065006300740069006f006e000000003f0000009b0000006400fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afc00000028000001ea000000fb0100001dfa000000000100000002fb0000000a0049006d0061006700650100000000ffffffff0000005c00fffffffb000000100044006900730070006c0061007900730100000000000001a80000010f00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001e0054006f006f006c002000500072006f0070006500720074006900650073000000029a000000b40000006400fffffffb0000000a0049006d00610067006502000002a5000001590000030f00000224fb0000000a0049006d006100670065010000028a000000c40000000000000000000000010000010f00000326fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000002800000326000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000052e00000039fc0100000002fb0000000800540069006d006500000000000000052e000002f600fffffffb0000000800540069006d0065010000000000000450000000000000000000000591000001ea00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001a8000003bffc020000000afb0000001200530065006c0065006300740069006f006e000000003f0000009b0000006700fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afc0000004300000219000000e300fffffffa000000010100000002fb0000000a0049006d0061006700650000000000ffffffff0000005900fffffffb000000100044006900730070006c0061007900730100000000000001a80000016a00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000262000001a00000006700fffffffb0000000a0049006d00610067006502000002a5000001590000030f00000224fb0000000a0049006d006100670065010000028a000000c40000000000000000000000010000010f000001a2fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730000000043000001a2000000b300fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000052e00000039fc0100000002fb0000000800540069006d006500000000000000052e0000023a00fffffffb0000000800540069006d00650100000000000004500000000000000000000005d2000003bf00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -351,6 +432,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1855
-  X: 1655
-  Y: 14
+  Width: 1920
+  X: 1920
+  Y: 0

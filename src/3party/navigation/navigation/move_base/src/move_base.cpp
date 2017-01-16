@@ -48,6 +48,9 @@
 
 #include <fstream>
 
+std::ofstream dbg_log("/tmp/move_base_log");
+#define DBG(x) dbg_log<<"MoveBase: "<<x<<" [from "<<__FILE__<<":"<<__LINE__<<"]"<<std::endl;
+
 namespace move_base {
 
 namespace{
@@ -68,7 +71,8 @@ namespace{
     recovery_loader_("nav_core", "nav_core::RecoveryBehavior"),
     planner_plan_(NULL), latest_plan_(NULL), controller_plan_(NULL),
 	last_path_plan(NULL),
-    runPlanner_(false), setup_(false), p_freq_change_(false), c_freq_change_(false), new_global_plan_(false) {
+    runPlanner_(false), setup_(false), p_freq_change_(false), c_freq_change_(false), new_global_plan_(false)
+{
 
     as_ = new MoveBaseActionServer(ros::NodeHandle(), "move_base", boost::bind(&MoveBase::executeCb, this, _1), false);
 
@@ -90,7 +94,6 @@ namespace{
 
     private_nh.param("oscillation_timeout", oscillation_timeout_, 0.0);
     private_nh.param("oscillation_distance", oscillation_distance_, 0.5);
-
 
 
     //set up plan triple buffer

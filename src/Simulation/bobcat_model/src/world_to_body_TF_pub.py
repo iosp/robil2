@@ -5,7 +5,7 @@ import rospy
 import tf
 from gazebo_msgs.msg import LinkStates
 
-def command_calback(msg):
+def command_callback(msg):
 	names = msg.name
 	if 'Sahar::body' in names:
 		index = names.index('Sahar::body')
@@ -34,12 +34,10 @@ def command_calback(msg):
 rospy.init_node('world_to_body_TF_pub')
 
 def main():
+	sub = rospy.Subscriber("/gazebo/link_states", LinkStates, command_callback)
 	rate = rospy.Rate(100)
 	while not rospy.is_shutdown():
-		msg = rospy.wait_for_message("/gazebo/link_states", LinkStates)
-		command_calback(msg)
 		rate.sleep()
-
 
 main()
 
