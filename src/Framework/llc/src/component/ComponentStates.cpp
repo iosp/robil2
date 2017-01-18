@@ -303,7 +303,7 @@ void getThrottleAndSteering(double &throttle, double &angular)
     WpdSpeedLinear = 0;
     WpdSpeedAngular = 0;
   }
-	printf( "lin = [%3.2f] ang = [%3.2f]\n",currentVelocity,LocVelAngularZ);
+	// printf( "lin = [%3.2f] ang = [%3.2f]\n",currentVelocity,LocVelAngularZ);
   double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
   double linearEffortCMD = P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
   throttle = normalizedValue(linearEffortCMD);//values larger than 1 are meaningless to the platform.
