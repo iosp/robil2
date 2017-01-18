@@ -128,30 +128,28 @@ namespace gazebo
       double Throttle_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
 
       double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.40,     0.00,    0.40,     0.70,      1.00};
+  //                                      s=-1.00 s=-0.70 s=-0.40 s=0 s=0.40  s=0.70  s=1.00
+        double Linear_vel_values_array[] = {-1.20, -1.30, -1.40, -1.50, -1.40, -1.30, -1.20, //t=-1.00
+                                            -0.65, -0.70, -0.75, -0.80, -0.75, -0.70, -0.65, //t=-0.70
+                                            -0.14, -0.16, -0.18, -0.20, -0.18, -0.16, -0.14, //t=-0.40
+                                             0.40,  0.17,  0.00,  0.00,  0.00,  0.17,  0.40,        //t=0.00
+                                             0.14,  0.16,  0.18,  0.20,  0.18,  0.16,  0.14,        //t=0.40
+                                             0.65,  0.70,  0.75,  0.80,  0.75,  0.70,  0.65,        //t=0.70
+                                             1.20,  1.30,  1.40,  1.50,  1.40,  1.30,  1.20};       //t=1.00
 
-                                         //r=-1.00    r=-0.70   r=-0.40   r=0.00   r=0.40     r=0.70    r=1.00
-      double Linear_vell_values_array[] = { -1.20,    -1.30,    -1.40,    -1.50,    -1.40,    -1.30,    -1.20,    //t=-1.00
-                                            -0.65,    -0.70,    -0.75,    -0.80,    -0.75,    -0.70,    -0.65,    //t=-0.70
-                                            -0.14,    -0.16,    -0.18,    -0.20,    -0.18,    -0.16,    -0.14,    //t=-0.40
-                                             0.40,     0.17,     0.00,     0.00,     0.00,     0.17,     0.40,    //t=0.00
-                                             0.14,     0.16,     0.18,     0.20,     0.18,     0.16,     0.14,    //t=0.40
-                                             0.65,     0.70,     0.75,     0.80,     0.75,     0.70,     0.65,    //t=0.70
-                                             1.20,     1.30,     1.40,     1.50,     1.40,     1.30,     1.20};   //t=1.00
-
-                                         //r=-1.00    r=-0.70   r=-0.40   r=0.00    r=0.40    r=0.70    r=1.00
-      double Angular_vell_values_array[] = { 1.40,     0.42,     0.18,     0.00,    -0.18,    -0.42,    -1.40,    //t=-1.00
-                                             1.36,     0.38,     0.14,     0.00,    -0.14,    -0.38,    -1.36,    //t=-0.70
-                                             1.32,     0.34,     0.10,     0.00,    -0.10,    -0.34,    -1.32,    //t=-0.40
-                                            -1.22,    -0.24,     0.00,     0.00,     0.00,     0.24,     1.22,    //t=0.00
-                                            -1.32,    -0.34,    -0.10,     0.00,     0.10,     0.34,     1.32,    //t=0.40
-                                            -1.36,    -0.38,    -0.14,     0.00,     0.14,     0.38,     1.36,    //t=0.70
-                                            -1.40,    -0.42,    -0.18,     0.00,     0.18,     0.42,     1.40};   //t=1.00
-
+        //                                s=-1.00 s=-0.70 s=-0.40 s=0  s=0.40 s=0.70  s=1.00
+        double Angular_vel_values_array[] = {-1.40, -0.42, -0.18, 0.00, 0.18, 0.42, 1.40,  //t=-1.00
+                                             -1.36, -0.38, -0.14, 0.00, 0.14, 0.38, 1.36,  //t=-0.70
+                                             -1.32, -0.34, -0.10, 0.00, 0.10, 0.34, 1.32,  //t=-0.40
+                                             -1.22, -0.24, -0.00, 0.00, 0.00, 0.24, 1.22,   //t=0.00
+                                             -1.32, -0.34, -0.10, 0.00, 0.10, 0.34, 1.32,  //t=0.40
+                                             -1.36, -0.38, -0.14, 0.00, 0.14, 0.38, 1.36,  //t=0.70
+                                             -1.40, -0.42, -0.18, 0.00, 0.18, 0.42, 1.40}; //t=1.00
 
       std::vector<double> Throttle_commands(Throttle_commands_array, Throttle_commands_array+ sizeof(Throttle_commands_array)/sizeof(double));
       std::vector<double> Sttering_commands(Sttering_commands_array, Sttering_commands_array+ sizeof(Sttering_commands_array)/sizeof(double));
-      std::vector<double> Linear_vell_values(Linear_vell_values_array, Linear_vell_values_array+ sizeof(Linear_vell_values_array)/sizeof(double));
-      std::vector<double> Angular_vell_values(Angular_vell_values_array, Angular_vell_values_array+ sizeof(Angular_vell_values_array)/sizeof(double));
+      std::vector<double> Linear_vel_values(Linear_vel_values_array, Linear_vel_values_array+ sizeof(Linear_vel_values_array)/sizeof(double));
+      std::vector<double> Angular_vel_values(Angular_vel_values_array, Angular_vel_values_array+ sizeof(Angular_vel_values_array)/sizeof(double));
 
 
       std::vector< std::vector<double>::iterator > grid_iter_list;
@@ -167,8 +165,8 @@ namespace gazebo
       int num_elements = grid_sizes[0] * grid_sizes[1];
 
       // construct the interpolator. the last two arguments are pointers to the underlying data
-      Linear_vel_interp  =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vell_values.data(), Linear_vell_values.data() + num_elements);
-      Angular_vel_interp =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vell_values.data(), Angular_vell_values.data() + num_elements);
+      Linear_vel_interp  =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vel_values.data(), Linear_vel_values.data() + num_elements);
+      Angular_vel_interp =  new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vel_values.data(), Angular_vel_values.data() + num_elements);
       }
 
     public: void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
@@ -217,17 +215,17 @@ double command_fillter(double prev_commands_array[], int array_size, double& com
         Linear_command_mutex.unlock();
         Angular_command_mutex.unlock();
 
-        double Linear_nominal_vell = Linear_vel_interp->interp(args.begin());
-        double Angular_nominal_vell = Angular_vel_interp->interp(args.begin());
+        double Linear_nominal_vel = Linear_vel_interp->interp(args.begin());
+        double Angular_nominal_vel = Angular_vel_interp->interp(args.begin());
 
-        double Linear_vell = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index , Linear_nominal_vell);
-        double Angular_vell = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index , Angular_nominal_vell);
+        double Linear_vel = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index , Linear_nominal_vel);
+        double Angular_vel = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index , Angular_nominal_vel);
 
         double LinearNoise  = command_lN * (*Linear_Noise_dist)(generator);
         double AngularNoise = command_aN * (*Angular_Noise_dist)(generator);
 
-        Linear_ref_vel  =  (1 + LinearNoise)  * Linear_vell;
-        Angular_ref_vel =  (1 + AngularNoise) * Angular_vell;
+        Linear_ref_vel  =  (1 + LinearNoise)  * Linear_vel;
+        Angular_ref_vel =  (1 + AngularNoise) * Angular_vel;
     }
 
     private: void wheel_controller(physics::JointPtr wheel_joint, double ref_omega)
