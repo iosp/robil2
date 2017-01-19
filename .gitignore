@@ -25,3 +25,4 @@ core
 *.cbp
 *.autosave
 CATKIN_IGNORE
+Robil/
