@@ -1,7 +1,7 @@
 <launch>
 
-    <include file="$(find pp)/launch/navex.launch" />
-	<node name="pp_node" type="pp_node" pkg="pp" output="screen"/>
+    <include file="$(find navex_navigation)/launch/navex.launch" />
+	<node name="pp_node" type="pp_node" pkg="pp"/> 
 	<node name="wpd_node" type="wpd_node" pkg="wpd" output="screen"/>
 
 	<!-- == MIDDLE LEVEL CONTROL === -->
