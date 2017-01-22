@@ -16,7 +16,7 @@
 
 #include <tf_geometry/tf_geometry.h>
 
-#include <move_base/VersionService.h>
+#include <navex_msgs/VersionService.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -235,6 +235,7 @@ namespace{
 
 	struct point_t{
 		int x,y;
+		point_t():x(0),y(0){}
 		point_t(int x,int y):x(x),y(y){}
 		int index(int w,int h)const{return y*w+x;}
 		bool inside(int w,int h)const{ return 0<=x and x<w and 0<=y and y<h; }
@@ -313,7 +314,7 @@ namespace{
 				(res.point.x-map.info.origin.position.x)/map.info.resolution,
 				(res.point.y-map.info.origin.position.y)/map.info.resolution
 				);
-		DBG_INFO("TRANSFORM: "<<str_position(p.point, p)<<" -> "<<str_position(res.point,res)<<" -> "<<r.str()<<"[GRID]")
+		//DBG_INFO("TRANSFORM: "<<str_position(p.point, p)<<" -> "<<str_position(res.point,res)<<" -> "<<r.str()<<"[GRID]")
 		return r;
 	}
 	inline
@@ -415,16 +416,28 @@ namespace{
 		point_t* next;
 		point_t* r;
 		point_t* w;
+
+		static point_t* & points(){ static point_t* v(0); return v; }
+		static size_t& points_size(){ static size_t s(0); return s; }
+
 		points_pool(size_t size)
-			: next ( (point_t*)(new char[sizeof(point_t)*size]) )
-			, r(next)
-			, w(next)
+			: next( 0 ) //(point_t*)(new char[sizeof(point_t)*size])
+			, r(0)
+			, w(0)
 		{
+			if(points_size()<size)
+			{
+				if(points_size()>0){ delete[] points(); }
+				//points() = (point_t*)(new char[sizeof(point_t)*size]); //Note: the allocation in such way prevent execution of constructor.
+				points() = new point_t[size];
+				points_size()=size;
+			}
+			r=w=next = points();
 			memset(next,0,size*sizeof(point_t));
 		}
 		~points_pool()
 		{
-			delete[] next; next=0;
+			//delete[] next; next=0;
 		}
 		void push_back(const point_t& p){ *w = p; w++; }
 		const point_t& front()const{ return *r; }
@@ -689,7 +702,7 @@ void on_speed(const geometry_msgs::Twist::ConstPtr& msg){
  */
 bool checkMoveBaseVersion(){
 //	return true;
-	 move_base::VersionService version;
+	 navex_msgs::VersionService version;
 	 if(ros::service::call("move_base/version" , version)){
 	 	std::string wantedPrefix = "Cogniteam";
 	 	std::string versionPrefix = version.response.version.substr(0, wantedPrefix.size());
