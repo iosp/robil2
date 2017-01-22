@@ -20,6 +20,8 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+long f_counter=0;
+
 #define CREATE_MAP_FOR_NAV 0
 #define CREATE_POINTCLOUD2_FOR_NAV 0
 #define CREATE_POINTCLOUD_FOR_NAV 1
@@ -128,12 +130,18 @@ namespace{
 
 //		static cv::Mat www; double f=10;
 //		www = cv::Mat(1000,1000,CV_8UC3,cv::Scalar::all(200));
-////		cv::namedWindow("WWW", CV_WINDOW_NORMAL);
+//		cv::namedWindow("WWW", CV_WINDOW_NORMAL);
+//		cv::startWindowThread();
 //		static long img_n=0; img_n++;
 //		std::stringstream img_name; img_name<<"/tmp/IMG/img_"<<ex(img_n,5)<<".png";
 
+
+
+
+
 		//cout<<"[i] nearest index = "<<ni<<endl;
 		const geometry_msgs::Pose& c = getPose( pos );
+		static cv::Mat www = cv::Mat(1000,1000,CV_8UC3,cv::Scalar::all(200));
 		//FIRST POINT
 		if(ni==0){
 			const geometry_msgs::Pose& b = getPose( path.poses[0] );
@@ -149,13 +157,14 @@ namespace{
 					<<", angle[deg]="<<angle_deg<<"("<<(angle_ok?"ok":"bad")<<")"
 			<<std::endl;
 
+			double f=10;
 //			cv::line(www, cv::Point(b.position.x*f+www.cols/2,b.position.y*f+www.rows/2), cv::Point(d.position.x*f+www.cols/2,d.position.y*f+www.rows/2), cv::Scalar(0,100,100), 1);
 //			cv::line(www, cv::Point(b.position.x*f+www.cols/2,b.position.y*f+www.rows/2), cv::Point(c.position.x*f+www.cols/2,c.position.y*f+www.rows/2), cv::Scalar(0,100,100), 1);
 //			cv::circle(www, cv::Point(c.position.x*f+www.cols/2,c.position.y*f+www.rows/2), 5, cv::Scalar(0,0,255), 2);
 //			cv::circle(www, cv::Point(b.position.x*f+www.cols/2,b.position.y*f+www.rows/2), 5, cv::Scalar(0,255,0), 2);
-//			cv::circle(www, cv::Point(d.position.x*f+www.cols/2,d.position.y*f+www.rows/2), 5, cv::Scalar(0,255,255), 2);
-////			cv::imshow("WWW",www);
-////			cv::waitKey(1);
+//			cv::circle(www, cv::Point(d.position.x*f+www.cols/2,d.position.y*f+www.rows/2), 5, cv::Scalar(0,255,255), 2);+9
+//////			cv::imshow("WWW",www);
+//////			cv::waitKey(1);
 //			cv::imwrite(img_name.str(), www);
 
 			if(not (angle_ok or distance_ok) ){
@@ -192,8 +201,8 @@ namespace{
 //			cv::circle(www, cv::Point(c.position.x*f+www.cols/2,c.position.y*f+www.rows/2), 5, cv::Scalar(0,0,255), 2);
 //			cv::circle(www, cv::Point(b.position.x*f+www.cols/2,b.position.y*f+www.rows/2), 5, cv::Scalar(0,255,0), 2);
 //			cv::circle(www, cv::Point(a.position.x*f+www.cols/2,a.position.y*f+www.rows/2), 5, cv::Scalar(0,255,255), 2);
-////			cv::imshow("WWW",www);
-////			cv::waitKey(1);
+//////			cv::imshow("WWW",www);
+//////			cv::waitKey(1);
 //			cv::imwrite(img_name.str(), www);
 
 			if(not (angle_ok or distance_ok) ){
@@ -404,14 +413,16 @@ namespace{
 		return false;
 	}
 
-	struct bool_array_manager{
-		bool* &p;
-		bool_array_manager(bool*&p, size_t data_size):p(p){
-			p = new bool[data_size];
-			memset(p,0,data_size*sizeof(bool));
+	template<class T>
+	struct array_manager{
+		T* &p;
+		array_manager(T*&p, size_t data_size):p(p){
+			p = new T[data_size];
+			memset(p,0,data_size*sizeof(T));
 		}
-		~bool_array_manager(){ delete[] p; p=0; }
+		~array_manager(){ delete[] p; p=0; }
 	};
+
 	struct points_pool{
 		point_t* next;
 		point_t* r;
@@ -454,18 +465,23 @@ namespace{
 			const size_t& goal_index,
 			const nav_msgs::OccupancyGrid& global_map,
 			const point_t& center, const point_t& _robot,
-			const bool* reachable,
+			const char* reachable,
 			const bool check_on_way,
 			point_t& best
 	)
 	{
 		bool* search_visited;
-		bool_array_manager sfc(search_visited, data_size);
+		array_manager<bool> sfc(search_visited, data_size);
 		points_pool next_for_search(w*h);
 		point_t current(0,0);
 
 		next_for_search.push_back(goal_cell);
 		while( not next_for_search.empty() ){
+
+			const char REACHABLE=1;
+			const char UNREACHABLE=2;
+			const char UNKNOWN=0;
+
 			current = next_for_search.front();
 			next_for_search.pop_front();
 
@@ -483,7 +499,7 @@ namespace{
 					if( not _on_way )						continue;
 				}
 
-				if( reachable[ nei.index(w, h) ] ){
+				if( reachable[ nei.index(w, h) ] == REACHABLE ){
 					best = nei;
 					return true;
 				}
@@ -512,8 +528,8 @@ namespace{
 		//NOTE: don't use vector<T> or list<T> for "reachable" and "next" arrays;
 		//      them implementation is too slow.
 
-		bool* reachable;
-		bool_array_manager rc(reachable, data_size);
+		char* reachable;
+		array_manager<char> rc(reachable, data_size);
 		points_pool next(w*h);
 
 		/*[PREV_VERSION]*/
@@ -533,21 +549,31 @@ namespace{
 		DBG_INFO_ONCE("Navigation: cells: robot="<<_robot.str()<<", center="<<center.str()<<", goal="<<goal_cell.str() << "[GRID]: pos="<<str_position(pos.pose.pose.position,pos)<<"; goal="<<str_position(goal.pose.position,goal)<<" r="<<global_map.info.resolution);
 
 		try{
-			reachable[center.index(w,h)] = true;																					// select all reachable cells
-			next.push_back(center);
-			while(next.empty()==false){
-				point_t current = next.front(); next.pop_front();
-				//FOR ALL NAIGHBORS
-				for(int iy=-1;iy<=1;iy++)for(int ix=-1;ix<=1;ix++){
-					if( ix==0 and iy==0 ) 						continue;
-					point_t nei(current.x+ix,current.y+iy);
-					if/*outside of map*/	(nei.inside(w,h)==false) 		continue;
-					if/*already checked*/	(reachable[nei.index(w,h)]) 		continue;
-					if/*occupied*/		(global_map.data[nei.index(w,h)]>70) 	continue;
-					/*else*/
-					reachable[nei.index(w,h)] = true;
-					next.push_back(nei);
+			{
+				const char REACHABLE=1;
+				const char UNREACHABLE=2;
+				const char UNKNOWN=0;
+				reachable[center.index(w,h)] = REACHABLE;																					// select all reachable cells
+				next.push_back(center);
+				while(next.empty()==false){
+					point_t current = next.front(); next.pop_front();
+					//FOR ALL NAIGHBORS
+					for(int iy=-1;iy<=1;iy++)for(int ix=-1;ix<=1;ix++){
+						if( ix==0 and iy==0 ) 										continue;
+
+						point_t nei(current.x+ix,current.y+iy);
+
+						if/*outside of map*/	(nei.inside(w,h)==false) 			continue;
+						if/*already checked*/	(reachable[nei.index(w,h)]>UNKNOWN)	continue;
+
+						reachable[nei.index(w,h)] = UNREACHABLE;
+						if/*occupied*/		(global_map.data[nei.index(w,h)]>70) 	continue;
+						/*else*/
+						reachable[nei.index(w,h)] = REACHABLE;
+						next.push_back(nei);
+					}
 				}
+				for(size_t i=0; i<data_size; i++) if(reachable[i]==UNKNOWN) reachable[i]=UNREACHABLE;
 			}
 			for(int y=0;y<h;y++)for(int x=0;x<w;x++){
 				point_t current = point_t(x,y);
@@ -563,7 +589,7 @@ namespace{
 #			if SHOW_CV_RESULTS==1
 				static cv::Mat show; 
 				static ros::NodeHandle pnode("~");
-				static int param_show_cv_results = 0;
+				static int param_show_cv_results = 1;
 				pnode.getParamCached("show_cv_results",param_show_cv_results);
 				if(param_show_cv_results)
 				{
@@ -645,7 +671,8 @@ namespace{
 #				if SHOW_CV_RESULTS==1
 				if(param_show_cv_results)
 				{
-					show.at<cv::Vec3b>(h-best.y-1,best.x) = cv::Vec3b(255,0,0);
+					//show.at<cv::Vec3b>(h-best.y-1,best.x) = cv::Vec3b(255,0,0);
+					cv::circle(show, cv::Point(best.x,h-best.y-1), 5, cv::Scalar(255,0,0), 1);
 				}
 #				endif
 
@@ -657,9 +684,12 @@ namespace{
 			if(param_show_cv_results)
 			{
 				DBG_INFO("Navigation Visualization: rendering");
-				if(show.empty()) cv::namedWindow("REACHABLE", CV_WINDOW_NORMAL);
-				cv::imshow("REACHABLE",show);
-				cv::waitKey(10);
+				//if(show.empty()) cv::namedWindow("REACHABLE", CV_WINDOW_NORMAL);
+				//cv::imshow("REACHABLE",show);
+				//cv::waitKey(10);
+				static long img_n=0; img_n++;
+				std::stringstream img_name; img_name<<"/tmp/IMG/img_"<<ex(img_n,5)<<"_"<<f_counter<<".png";
+				cv::imwrite(img_name.str(), show);
 				DBG_INFO("Navigation Visualization: rendering. done");
 			}
 #			endif
@@ -1135,6 +1165,8 @@ void MoveBase::on_nav_path(const nav_msgs::Path& nav_path){
 //}
 
 void MoveBase::calculate_goal(){
+	f_counter++;
+
 	geometry_msgs::PoseStamped goal;
 	bool is_path_finished;
 	int goal_index=-1;
