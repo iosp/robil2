@@ -519,7 +519,7 @@ namespace{
 		bool& path_is_finished
 	)
 	{
-#		define SHOW_CV_RESULTS 1
+#		define SHOW_CV_RESULTS 0
 		bool result(false);
 		int data_size =global_map.data.size();
 		int w = global_map.info.width;
@@ -589,7 +589,7 @@ namespace{
 #			if SHOW_CV_RESULTS==1
 				static cv::Mat show; 
 				static ros::NodeHandle pnode("~");
-				static int param_show_cv_results = 1;
+				static int param_show_cv_results = 0;
 				pnode.getParamCached("show_cv_results",param_show_cv_results);
 				if(param_show_cv_results)
 				{
@@ -947,7 +947,7 @@ on_position_update_START:
 		DBG_ERROR("Navigation: update of position is rejected. The reason is problems with transformation to WORLD frame.");
 		return;
 	}
-//	DBG_INFO("Navigation: position is updated.");
+	//DBG_INFO("Navigation: position is updated.");
 	gl_defined=true;
 	if(all_data_defined()) calculate_goal();
 }

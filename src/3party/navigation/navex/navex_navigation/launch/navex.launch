@@ -3,7 +3,7 @@
 		<remap from="/navex_navigation/goal" to="/move_base/goal"/>
 		<remap from="/navex_navigation/simple_goal" to="/move_base/simple/goal"/>
 		<remap from="/navex_navigation/cancel" to="/move_base/cancel"/>
-		<remap from="cmd_vel" to="/cmd_vel" />
+		<remap from="cmd_vel" to="/cmd_vel_orig" />
 		<remap from="/scan" to="/map_cloud"/>
 		<remap from="/navigation_state" to="/move_base/navigation_state"/>
 		<remap from="/path" to="/move_base/path"/>
@@ -21,7 +21,7 @@
 
 		<param name="local_costmap/frame_id" value="ROBOT_CENTER"/>
 		<param name="local_costmap/robot_radius" value="3.0" />
-		<param name="local_costmap/inflation_radius" value="1.5" />
+		<param name="local_costmap/inflation_radius" value="3.0" />
 		<param name="local_costmap/width" value="20.0" />
 		<param name="local_costmap/height" value="20.0" />
 		<param name="local_costmap/resolution" value="0.1" />

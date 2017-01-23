@@ -318,9 +318,9 @@ int main(int argc, char **argv) {
   server.setCallback(f);
   
   ros::NodeHandle node;
-  ros::Subscriber s_speed_command = node.subscribe("/cmd_vel_orig", 1, on_twist_command);
+  ros::Subscriber s_speed_command = node.subscribe("/cmd_vel_input", 1, on_twist_command);
   p_trajectory_params = node.advertise<dynamic_reconfigure::Config>("/move_base/TrajectoryPlannerROS/parameter_updates", 1);
-  p_cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
+  p_cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel_output", 1);
   
   
   ros::Subscriber s_platform_lin = node.subscribe(topic_name__platform_linear, 1, on_platform_lin_speed);

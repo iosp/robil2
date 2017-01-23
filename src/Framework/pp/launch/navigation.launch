@@ -1,7 +1,7 @@
 <launch>
 
-    <include file="$(find navex_navigation)/launch/navex.launch" />
-	<node name="pp_node" type="pp_node" pkg="pp"/>
+    <include file="$(find pp)/launch/navex.launch" />
+	<node name="pp_node" type="pp_node" pkg="pp" output="screen"/>
 	<node name="wpd_node" type="wpd_node" pkg="wpd" output="screen"/>
 
 	<!-- == MIDDLE LEVEL CONTROL === -->
@@ -14,6 +14,8 @@
 		<param name="tf_pose_update_time" value="1.0"/>
 		<param name="tf_heading_source" value="2"/>
 		<param name="cmd_vel_smoothing" value="0.1"/>
-		<remap from="cmd_vel" to="/cmd_vel_unused" />
+		
+		<remap from="cmd_vel_input" to="/cmd_vel_navex" />
+		<remap from="cmd_vel_output" to="/cmd_vel" />
 	</node>
 </launch>
