@@ -31,6 +31,7 @@ class HeightMap: public HeightmapObject
 	HeightMap deriveMiniMap(int px, int py, Rotation rot);
         
 private:
+    per::configConfig *_dynamic;
 };
     
     

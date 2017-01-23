@@ -1,6 +1,5 @@
 #ifndef HEIGHTMAP_OBJECT_H
 #define HEIGHTMAP_OBJECT_H
-#include "per/configConfig.h"
 #include <opencv2/opencv.hpp>
 
 using namespace cv;
@@ -360,7 +359,6 @@ protected:
 
     double& _at(int x, int y)
     {
-        //printf("%d\n", y*_width+x);
         return _heights[y*_width+x];
     }
     int& _typeAt(int x, int y)
@@ -372,7 +370,7 @@ protected:
         return _features[y*_width+x];
     }
 
-    vector<double>          _heights;
+    vector<double>          _heights, _probabilities;
     vector<int>		 _types, _features;
     int                     _width;
     int                     _height;
@@ -380,7 +378,6 @@ protected:
     Vec2D			 _refPoint; //(0,0) in heightmap is refPoint(x*5,y*5) on the real world.
     Mat			 _compass;
     Mat			 _arrow;
-    per::configConfig *_dynamic;
 
 };
 

@@ -10,6 +10,7 @@ HeightMap::HeightMap(int width, int height, per::configConfig *p=NULL)
 {
     _dynamic = p;
     _heights.resize(width*height, HEIGHT_UNKNOWN);
+    _probabilities.resize(width*height, 0.0);
     _types.resize(width*height, TYPE_UNSCANNED);
     _features.resize(width*height, FEATURE_UNKNOWN);
     _width = width;
@@ -160,6 +161,25 @@ void HeightMap::calculateTypes()//Vec3D position, Rotation myRot)
 
         }
     }
+    /**
+      Perform smoothing
+      **/
+    for(int i = 1; i < _width-1; i++)
+        for(int j = 1; j < _height-1; j++)
+            if (_types[j*_width+i] == TYPE_OBSTACLE)
+            {
+                int counter = 0;
+                for (int k = -_dynamic->reg_size; k < _dynamic->reg_size+1; k++)
+                    for (int l = -_dynamic->reg_size; l < _dynamic->reg_size+1; l++)
+                    {
+                        if (i+k < 0 || i+k > _width || j+l < 0 || j+l > _height)
+                            continue;
+                        if (_types[(j+l)*_width+(k+i)] == TYPE_OBSTACLE)
+                            counter++;
+                    }
+                if (counter < _dynamic->min_size)
+                    _types[j*_width+i] = TYPE_CLEAR;
+            }
 }
 
 HeightMap HeightMap::deriveMap(int px, int py, Rotation r)
