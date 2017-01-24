@@ -54,6 +54,7 @@ DEF_PUB( SHIFFON2ROS, INS, types::Imu )
 DEF_PUB( SHIFFON2ROS, GPS, types::GPS )
 DEF_PUB( SHIFFON2ROS, GpsSpeed, types::GpsSpeed )
 
+DEF_PUB( VO, Pose, types::PoseWithConf )
 //SUBSCRIPTIONS
 DEF_SUB( IEDSIM, CustomIED, OCU )
 DEF_SUB( IEDSIM, Location, LOC )
@@ -125,6 +126,8 @@ DEF_SUB( PLATFORM, EffortsTh, LLC )
 DEF_SUB( PLATFORM, EffortsSt, LLC )
 DEF_SUB( PLATFORM, EffortsJn, LLC )
 
+DEF_SUB( VO, SensorCamL, SENSORS )
+DEF_SUB( VO, SensorCamR, SENSORS )
 #undef DEF_PUB
 #undef DEF_SUB
 #endif

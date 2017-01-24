@@ -134,3 +134,7 @@ PLATFORM_sub_EffortsTh: 'LLC'
 PLATFORM_sub_EffortsSt: 'LLC'
 PLATFORM_sub_EffortsJn: 'LLC'
 
+#VisualOdometry
+VO_sub_SensorCamL: 'SENSORS'
+VO_sub_SensorCamR: 'SENSORS'
+VO_pub_Pose: '/VO/Pose'
