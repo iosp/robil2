@@ -23,24 +23,36 @@
         </inertia>
       </inertial>
       <collision name='body_collision'>
-        <pose>0 0 0 0 0 0</pose>
+        <pose>-0.83149 0 0.33944 0 0 0</pose>
         <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/body_col.STL</uri>
-          </mesh>
+          <box>
+            <size>1.704 0.889 0.704</size>
+          </box>
         </geometry>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-            </ode>
-          </friction>
-        </surface>
+      </collision>
+       <collision name='body_collision_bd'>
+        <pose>-1.85569 0 0.60871 0 0.08047 0</pose>
+        <geometry>
+          <box>
+            <size>0.511 0.889 1.121</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='body_collision_b'>
+        <pose>-1.85569 0 0.60871 0 0.08047 0</pose>
+        <geometry>
+          <box>
+            <size>0.511 0.889 1.121</size>
+          </box>
+        </geometry>
+      </collision>
+       <collision name='body_collision_d'>
+        <pose>-1.85040 0 0.37362 0 0.15418 0</pose>
+        <geometry>
+          <box>
+            <size>0.511 0.889 0.704</size>
+          </box>
+        </geometry>
       </collision>
       <visual name='body_visual'>
         <pose>0 0 0 0 0 0</pose>
@@ -58,24 +70,12 @@
         </material>
       </visual>
       <collision name='body_collision_cabin'>
-        <pose>-0.11317 0 0.61042 0 8.0491e-16 0</pose>
+        <pose>-1.0253 0 1.24 0 8.0491e-16 0</pose>
         <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/cabin_col.STL</uri>
-          </mesh>
+          <box>
+            <size>1.557 0.889 1.152</size>
+          </box>
         </geometry>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-            </ode>
-          </friction>
-        </surface>
       </collision>
       <visual name='body_visual_cabin'>
         <pose>-0.11317 0 0.61042 0 8.0491e-16 0</pose>
@@ -108,12 +108,11 @@
         </material>
       </visual>
       <collision name='body_collision_top_installation_link'>
-        <pose>-0.29575 0.03227 1.85972 1.5708 -6.10623e-16 1.5708</pose>
+        <pose>-0.92913 0 2.04 0 0 0</pose>
         <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/top_installation.STL</uri>
-          </mesh>
+          <box>
+            <size>0.663 0.598 0.838</size>
+          </box>
         </geometry>
         <surface>
           <contact>
@@ -142,23 +141,6 @@
           </script>
         </material>
       </visual>
-      <collision name='base_arm_collision'>
-        <pose>-1.9776 0 1.1773 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/base_arm.STL</uri>
-          </mesh>
-        </geometry>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <friction>
-            <ode/>
-          </friction>
-        </surface>
-      </collision>
       <visual name='base_arm_visual'>
         <pose>-1.9776 0 1.1773 0 0 0</pose>
         <geometry>
@@ -174,23 +156,6 @@
           </script>
         </material>
       </visual>
-      <collision name='main_arm_collision'>
-        <pose>-1.75456 0 1.7035 0 -0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/main_arm.STL</uri>
-          </mesh>
-        </geometry>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <friction>
-            <ode/>
-          </friction>
-        </surface>
-      </collision>
       <visual name='main_arm_visual'>
         <pose>-1.75456 0 1.7035 0 -0 0</pose>
         <geometry>
@@ -207,24 +172,12 @@
         </material>
       </visual>
       <collision name='loader_collision'>
-        <pose>0.34384 0 0.1465 0 -0.25 0</pose>
+        <pose>0.77778 0 0.55577 0 -0.25273  0</pose>
         <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/loader.STL</uri>
-          </mesh>
+          <box>
+            <size>0.879 1.682 0.720</size>
+          </box>
         </geometry>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-            </ode>
-          </friction>
-        </surface>
       </collision>
       <visual name='loader_visual'>
         <pose>0.34384 0 0.1465 0 -0.25 0</pose>
@@ -241,28 +194,8 @@
           </script>
         </material>
       </visual>
-      <collision name='brackets_collision'>
-        <pose>0.68217 0 0.64099 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/brackets_col.STL</uri>
-          </mesh>
-        </geometry>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-            </ode>
-          </friction>
-        </surface>
-      </collision>
       <visual name='brackets_visual'>
-        <pose>0.68217 0 0.64099 0 0 0</pose>
+        <pose>0.5578 0 0.7242 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
@@ -276,26 +209,6 @@
           </script>
         </material>
       </visual>
-      <collision name='supporter_collision'>
-        <pose>-1.35685 0 0.80864 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/supporter_col.STL</uri>
-          </mesh>
-        </geometry>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-            </ode>
-          </friction>
-        </surface>
-      </collision>
       <visual name='supporter_visual'>
         <pose>-1.35685 0 0.80864 0 0 0</pose>
         <geometry>
@@ -996,9 +909,9 @@
       </axis>
     </joint>
 
-
+ 
  <!--CAM Sensors  <!---->
-    <include>
+    <!-- <include>
       <uri>model://FLEA3_L</uri>
       <pose>-0.3 0.25 2.02 0 0 0</pose>
       <name>left_flea3</name>
@@ -1032,7 +945,7 @@
         <xyz>0 1 0</xyz>
       <dynamics/>
       </axis>
-    </joint>
+    </joint>-->
 
 
 

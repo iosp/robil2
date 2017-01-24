@@ -44,6 +44,8 @@ double LocVelLinearY;
 double LocVelAngularZ;
 double sumOfWpdSpeedLinear;
 double sumOfWpdSpeedAngular;
+double WpdSpeedLinearLimit=1.6;
+double WpdSpeedAngularLimit=1.2;
 double WpdSpeedLinear;
 double WpdSpeedAngular;
 double currentYaw;
@@ -185,13 +187,13 @@ void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t
   linearFactor = config.linearFactor;
   angularFactor = config.angularFactor;
 }
-double normalizedValue(double ValueToNormalize) //A normalizing function that clips the value to -1,1 range
+double normalizedValue(double ValueToNormalize,double lim) //A normalizing function that clips the value to -1,1 range
 {
   double value=0;
-  if (ValueToNormalize > 1)
-    value = 1;
-  else if (ValueToNormalize < -1)
-    value = -1;
+  if (ValueToNormalize > lim)
+    value = lim;
+  else if (ValueToNormalize < -lim)
+    value = -lim;
   else
     value = ValueToNormalize;
 	return value;
@@ -215,7 +217,7 @@ double calcIntegral_linearError(double currError)
 
   if (++indexOf_errorLinearArray >= LENGTH_OF_RECORD_IN_FRAMES)
     indexOf_errorLinearArray = 0;
-  return normalizedValue(sum_linear * DT); //normalizing to prevent illogical integral accumulation that would be meaningless in the given output range(-1,1)
+  return sum_linear * DT; //normalizing to prevent illogical integral accumulation that would be meaningless in the given output range(-1,1)
 }
 
 double calcDiferencial_linearError(double currError)
@@ -236,7 +238,7 @@ double calcIntegral_angularError(double currError)
 
   if (indexOf_errorAngularArray >= LENGTH_OF_RECORD_IN_FRAMES)
     indexOf_errorAngularArray = 0;
-  return normalizedValue(sum_angular * DT); //normalizing to prevent illogical integral accumulation
+  return sum_angular * DT; //normalizing to prevent illogical integral accumulation
 }
 
 double calcDiferencial_angularError(double currError)
@@ -278,12 +280,12 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   wpdSpeedTimeInMilli = ros::Time::now().toSec() * 1000; // toSec() return seconds.milliSecconds
 
   sumOfWpdSpeedLinear -= wpdCmdLinearArray[indexOf_wpdCmdLinearArray];
-  sumOfWpdSpeedLinear += msg.twist.linear.x;
+  sumOfWpdSpeedLinear += normalizedValue(msg.twist.linear.x,WpdSpeedLinearLimit);
   sumOfWpdSpeedAngular -= wpdCmdAngularArray[indexOf_wpdCmdAngularArray];
-  sumOfWpdSpeedAngular += msg.twist.angular.z;
+  sumOfWpdSpeedAngular += normalizedValue(msg.twist.angular.z,WpdSpeedAngularLimit);
 
-  wpdCmdLinearArray[indexOf_wpdCmdLinearArray] = msg.twist.linear.x;
-  wpdCmdAngularArray[indexOf_wpdCmdAngularArray] = msg.twist.angular.z;
+  wpdCmdLinearArray[indexOf_wpdCmdLinearArray] = normalizedValue(msg.twist.linear.x,WpdSpeedLinearLimit);
+  wpdCmdAngularArray[indexOf_wpdCmdAngularArray] = normalizedValue(msg.twist.angular.z,WpdSpeedAngularLimit);
   if (++indexOf_wpdCmdLinearArray >= SIZE_OF_WPD_INTEGRAL)
     indexOf_wpdCmdLinearArray = 0;
   if (++indexOf_wpdCmdAngularArray >= SIZE_OF_WPD_INTEGRAL)
@@ -306,11 +308,11 @@ void getThrottleAndSteering(double &throttle, double &angular)
 	// printf( "lin = [%3.2f] ang = [%3.2f]\n",currentVelocity,LocVelAngularZ);
   double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
   double linearEffortCMD = P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
-  throttle = normalizedValue(linearEffortCMD);//values larger than 1 are meaningless to the platform.
+  throttle = normalizedValue(linearEffortCMD,1);//values larger than 1 are meaningless to the platform.
 
   double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
   double angularEffortCMD = P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
-  angular = normalizedValue(angularEffortCMD);//values larger than 1 are meaningless to the platform.
+  angular = normalizedValue(angularEffortCMD,1);//values larger than 1 are meaningless to the platform.
 }
 
 TaskResult state_READY(string id, const CallContext &context, EventQueue &events)
