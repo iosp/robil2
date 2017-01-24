@@ -225,7 +225,8 @@ match_desc(const KeyPoints& kp1, const KeyPoints& kp2,
            Matches &match, const MatchParams& sp,
            Mat i1, Mat i2, const boost::filesystem::path& dbg_dir, bool dbg=false)
 {
-  
+  cout << "match_desc d1.cols: " << d1.cols << endl;
+  cout << "match_desc d2.cols: " << d2.cols << endl;
   static int iter_num = 0;
   iter_num += 1;
   
@@ -454,9 +455,12 @@ protected:
     assert(d.data);
     assert(image.type() == cv::DataType<unsigned char>::type);
     //Sobel(image, sob, sob.type(), 1, 0, 3, 1, 0, cv::BORDER_REFLECT_101);
+    cout << "kp.size" << kp.size() << endl;
+    cout << "m_descriptor_radius:" << m_descriptor_radius << endl;
     for(int k=0; k<kp.size(); ++k)
       {
 	Point2i p = kp.at(k).pt;
+
 	for(int i=-m_descriptor_radius,col=0; i<=m_descriptor_radius; i+=1)
 	  {
 	    for(int j=-m_descriptor_radius; j<=m_descriptor_radius; j+=1,++col)
@@ -516,7 +520,7 @@ namespace viso_isl {
   
     StereoImageGenerator::result_type stereo_pair;
   
-    Mat d1, d2, X;
+    Mat d1, d2_, X;
     KeyPoints kp1, kp2;
     Matches match_lr;
  
@@ -524,24 +528,33 @@ namespace viso_isl {
 
     HarrisBinnedFeatureDetector detector(5, 1200 /*MAX_FEATURE_NUM*/);
     detector.detect(left, kp1);
-    detector.detect(right, kp2);
-
     cout << " using " << kp1.size() << " keypoints in the 1st image" << endl;
+    detector.detect(right, kp2);
     cout << " using " << kp2.size() << " keypoints in the 2nd image" << endl;
   
-    PatchExtractor extractor(5);
-    extractor.compute(left, kp1, d1);
-    extractor.compute(right, kp2, d2);
+    PatchExtractor extractor1(5), extractor2(5);
+    extractor1.compute(left, kp1, d1);
+    extractor2.compute(right, kp2, d2_);
 
-    match_desc(kp1, kp2, d1, d2, match_lr, MatchParams(F), left, right, dbg_dir);
+    cout << "d1.cols" << d1.cols << endl;
+    cout << "d2.cols" << d2_.cols << endl;
+    match_desc(kp1, kp2, d1, d2_, match_lr, MatchParams(F), left, right, dbg_dir);
     Mat x;
     collect_matches(kp1, kp2, match_lr, x);
     X = triangulate_rectified<double>(x, param.calib.f, param.base, param.calib.cu,
 				      param.calib.cv);
     
     if (first) {
-      first = false;
-      return true;
+        left.copyTo(prev.left);
+        right.copyTo(prev.right);
+        d1.copyTo(prev.d1);
+        d2_.copyTo(prev.d2);
+        prev.kp1 = kp1;
+        prev.kp2 = kp2;
+        prev.match = match_lr;
+        X.copyTo(prev.X);
+        first = false;
+        return true;
     }
         
     /* match left vs. left previous */
@@ -553,7 +566,7 @@ namespace viso_isl {
 
     /* match right vs. right prev */
     Matches match22;
-    match_desc(kp2, prev.kp2, d2, prev.d2, match22, mp, left, right, dbg_dir);
+    match_desc(kp2, prev.kp2, d2_, prev.d2, match22, mp, left, right, dbg_dir);
   
     Matches match_pcl; 
     vector<Vec4i> circ_match;
@@ -615,7 +628,7 @@ namespace viso_isl {
     left.copyTo(prev.left);
     right.copyTo(prev.right);
     d1.copyTo(prev.d1);
-    d2.copyTo(prev.d2);
+    d2_.copyTo(prev.d2);
     prev.kp1 = kp1;
     prev.kp2 = kp2;
     prev.match = match_lr;

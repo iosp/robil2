@@ -38,7 +38,7 @@
 	  <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
 	    <alwaysOn>true</alwaysOn>
 	    <updateRate>30.0</updateRate>
-	    <cameraName>flea3/cameraR</cameraName>
+	    <cameraName>/SENSORS/CAM/R</cameraName>
 	    <imageTopicName>/SENSORS/CAM/R</imageTopicName>
 	    <cameraInfoTopicName>camera_info</cameraInfoTopicName>
 	    <frameName>cameraR_frame</frameName>
