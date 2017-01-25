@@ -1,4 +1,4 @@
-<sdf version='1.5'>
+<sdf version='1.4'>
   <world name='default'>
     <light name='sun' type='directional'>
       <cast_shadows>1</cast_shadows>
@@ -60,7 +60,7 @@
     <include>
       <uri>model://bobcat_tracked_static_arm</uri>
 	   	<name>Sahar</name>
-      <pose>3 0 3 0 0 3.14</pose>
+      <pose>3 0 3 0 0 1.5707</pose>
     </include>
     <model name='Testing_Grounds_2'>
       <static>1</static>
