@@ -911,7 +911,7 @@
 
  
  <!--CAM Sensors  <!---->
-    <!-- <include>
+     <include>
       <uri>model://FLEA3_L</uri>
       <pose>-0.3 0.25 2.02 0 0 0</pose>
       <name>left_flea3</name>
@@ -945,7 +945,7 @@
         <xyz>0 1 0</xyz>
       <dynamics/>
       </axis>
-    </joint>-->
+    </joint>
 
 
 
