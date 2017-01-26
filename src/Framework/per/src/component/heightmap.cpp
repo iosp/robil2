@@ -164,6 +164,7 @@ void HeightMap::calculateTypes()//Vec3D position, Rotation myRot)
     /**
       Perform smoothing
       **/
+//    std::cout << "===================\n";
     for(int i = 1; i < _width-1; i++)
         for(int j = 1; j < _height-1; j++)
             if (_types[j*_width+i] == TYPE_OBSTACLE)
@@ -179,7 +180,15 @@ void HeightMap::calculateTypes()//Vec3D position, Rotation myRot)
                     }
                 if (counter < _dynamic->min_size)
                     _types[j*_width+i] = TYPE_CLEAR;
+                else
+                  {
+                     _probabilities[j*_width+i] += 1;
+                     if (_probabilities[j*_width+i] < _dynamic->repetitions)
+                       _types[j*_width+i] = TYPE_CLEAR;
+                  }
+
             }
+//    std::cout << "===================\n";
 }
 
 HeightMap HeightMap::deriveMap(int px, int py, Rotation r)
