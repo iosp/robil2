@@ -1,6 +1,7 @@
 #ifndef HEIGHTMAP_OBJECT_H
 #define HEIGHTMAP_OBJECT_H
 #include <opencv2/opencv.hpp>
+#include "per/configConfig.h"
 
 using namespace cv;
 using namespace std;
@@ -85,6 +86,8 @@ public:
      */
     void setRelativeHeightAt(int x, int y, double height)
     {
+        if(!_dynamic || !_dynamic->height_filter)
+          return;
 
         if(x >= _width/2) { shiftRight(); return; }
         else if(x <= -_width/2) { shiftLeft(); return; }
@@ -96,7 +99,8 @@ public:
         y = _height/2 - y;
 
         if(_at(x,y) < _min) _at(x,y) = height;
-        else _at(x,y) = _at(x,y)*0.9 + height*0.1;
+        else _at(x,y) = _at(x,y)*(_dynamic->height_filter) + height*(1 - (_dynamic->height_filter));
+//        else _at(x,y) = _at(x,y)*0.9 + height*(1 - 0.9);
     }
     double  getRelativeHeightAt(int x, int y)
     {
@@ -375,10 +379,11 @@ protected:
     int                     _width;
     int                     _height;
     double                  _min, _max;
+    double                *_height_filter;
     Vec2D			 _refPoint; //(0,0) in heightmap is refPoint(x*5,y*5) on the real world.
     Mat			 _compass;
     Mat			 _arrow;
-
+    per::configConfig *_dynamic;
 };
 
 #endif // HEIGHTMAP_OBJECT_H

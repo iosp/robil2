@@ -3,7 +3,6 @@
 #include "helpermath.h"
 #include <vector>
 #include <opencv2/opencv.hpp>
-#include "per/configConfig.h"
 #include "heightmap_object.h"
 // #include <per/roadLanes.h>
 // #include <per/lane.h>
@@ -31,7 +30,7 @@ class HeightMap: public HeightmapObject
 	HeightMap deriveMiniMap(int px, int py, Rotation rot);
         
 private:
-    per::configConfig *_dynamic;
+
 };
     
     
