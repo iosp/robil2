@@ -29,6 +29,8 @@
 #include <diagnostic_msgs/DiagnosticArray.h>
 #include <geometry_msgs/TwistStamped.h>
 
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/NavSatFix.h>
 
 #ifndef HEARTBEAT_FREQUANCY
 #define HEARTBEAT_FREQUANCY 2 //Hz
@@ -38,47 +40,30 @@
 #define HEARTBEAT_FREQUENCY 2 //Hz
 #endif
 
-
+using namespace sensor_msgs;
 //class ComponentMain;
 class ComponentMain {
-	bool _inited;
 
-	  ros::NodeHandle _nh;
-	  ros::Publisher _pub_diagnostic;
-	  boost::thread_group _maintains;
-		ros::Subscriber _sub_PositionUpdate;
-		ros::Subscriber _sub_GPS;
-		ros::Subscriber _sub_INS;
-		ros::Subscriber _sub_VOOdometry;
-		ros::Subscriber _sub_GpsSpeed;
-		ros::Publisher  _pub_Location;
-		ros::Publisher  _pub_PerVelocity;
-
-	  bool init(int argc,char** argv);
 public:
 	ComponentMain(int argc,char** argv);
-	virtual ~ComponentMain();
-    static void performEstimation();
-        void handlePositionUpdate(const geometry_msgs::PoseStamped& msg);
-	void setSteeringInput(double msg);
-	void setThrottleInput(double msg);
-	void handleGPS(const sensor_msgs::NavSatFix& msg);
-	void handleINS(const sensor_msgs::Imu& msg);
-	void handleVOOdometry(const nav_msgs::Odometry& msg);
-    void handleGpsSpeed(const sensor_msgs::NavSatFix& msg);
-        void publishLocation(geometry_msgs::PoseWithCovarianceStamped& msg);
-        void publishPerVelocity(geometry_msgs::TwistStamped& msg);
+    virtual ~ComponentMain();
+    void handlePositionUpdate(const geometry_msgs::PoseStamped& msg);
+    void publishLocation(geometry_msgs::PoseWithCovarianceStamped& msg);
+    void publishPerVelocity(geometry_msgs::TwistStamped& msg);
 	void publishTransform(const tf::Transform& _tf, std::string srcFrame, std::string distFrame);
 	tf::StampedTransform getLastTransform(std::string srcFrame, std::string distFrame);
-	void publishDiagnostic(const diagnostic_msgs::DiagnosticStatus& _report);
-	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
     void configCallback(loc::configConfig &config, uint32_t level);
-    void heartbeat();
+    void callback(const ImuConstPtr& imu, const NavSatFixConstPtr& gps, const NavSatFixConstPtr& speed_msg);
+    ros::NodeHandle _nh;
 private:
-  ekf _estimator;
-  Observer _observer;
-  boost::thread* _estimation_thread;
-  static ComponentMain *_this;
-  loc::configConfig dyn_conf;
+    bool _inited;
+    loc::configConfig dyn_conf;
+    NavSatFix initialGPS;
+
+    ros::Subscriber _sub_PositionUpdate;
+    ros::Publisher  _pub_Location;
+    ros::Publisher  _pub_PerVelocity;
+
+    bool init(int argc,char** argv);
 };
 #endif /* COMPONENTMAIN_H_ */
