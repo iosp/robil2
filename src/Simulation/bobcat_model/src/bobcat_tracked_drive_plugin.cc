@@ -1,5 +1,4 @@
 // Written By : Daniel Meltz, Adapted for the tracked model by: Yossi Cohen.
-#define MY_GAZEBO_VER 5
 
 // If the plugin is not defined then define it
 #ifndef _BOBTANK_DRIVE_PLUGIN_HH_
@@ -32,21 +31,22 @@
 #include <dynamic_reconfigure/server.h>
 #include <bobcat_model/bobcat_modelConfig.h>
 #include <boost/bind.hpp> // Boost Bind
-#include "sim_qinetiq_client.cc"
 
 // Interpolation
 #include <ctime>
 #include "linterp.h"
 
+#include "sim_qinetiq_client.cc"
+
 // Maximum time delays
 #define command_MAX_DELAY 0.3
 
-#define WHEEL_EFFORT_LIMIT 1000
+#define WHEEL_EFFORT_LIMIT 100000
+
 #define WHEELS_BASE 0.95
-#define STEERING_FRICTION_COMPENSATION 2.5; // compensate for the faliure of reaching the angular velocity
+#define STEERING_FRICTION_COMPENSATION 2; // compensate for the faliure of reaching the angular velocity
 
 #define WHEEL_DIAMETER 0.4
-#define ROLLER_DIAMETER 0.4
 #define PI 3.14159265359
 
 #define LINEAR_COMMAND_FILTER_ARRY_SIZE 750
@@ -54,11 +54,13 @@
 
 namespace gazebo
 {
+
 class bobtankDrivePlugin : public ModelPlugin
 {
     ///  Constructor
   public:
     bobtankDrivePlugin() {}
+
     /// The load function is called by Gazebo when the plugin is inserted into simulation
     /// \param[in] _model A pointer to the model that this plugin is attached to.
     /// \param[in] _sdf A pointer to the plugin's SDF element.
@@ -66,6 +68,7 @@ class bobtankDrivePlugin : public ModelPlugin
     void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
         std::cout << "MY_GAZEBO_VER = [" << GAZEBO_MAJOR_VERSION << "]" << std::endl;
+
         // Store the pointer to the model
         this->model = _model;
 
@@ -82,18 +85,14 @@ class bobtankDrivePlugin : public ModelPlugin
         this->roller_front_left = this->model->GetJoint("roller_front_left_joint");
         this->cogwheel_right = this->model->GetJoint("cogwheel_right_joint");
         this->cogwheel_left = this->model->GetJoint("cogwheel_left_joint");
-        // Starting Timers
-        Linear_command_timer.Start();
-        Angular_command_timer.Start();
 
         this->Ros_nh = new ros::NodeHandle("bobtankDrivePlugin_node");
 
-        // Subscribe to the topic, and register a callback
-        Steering_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Steering", 1000, &bobtankDrivePlugin::On_Angular_command, this);
-        Velocity_rate_sub = this->Ros_nh->subscribe("/LLC/EFFORTS/Throttle", 1000, &bobtankDrivePlugin::On_Linear_command, this);
         platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform", 100);
+
         // Listen to the update event. This event is broadcast every simulation iteration.
         this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&bobtankDrivePlugin::OnUpdate, this, _1));
+
         this->model_reconfiguration_server = new dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig>(*(this->Ros_nh));
         this->model_reconfiguration_server->setCallback(boost::bind(&bobtankDrivePlugin::dynamic_Reconfiguration_callback, this, _1, _2));
 
@@ -117,14 +116,17 @@ class bobtankDrivePlugin : public ModelPlugin
         {
             Angular_command_array[i] = 0;
         }
+
+          sqc.Init("127.0.0.1", 4660, 5355);
     }
+
     void calibration_data_setup()
     {
         // construct the grid in each dimension.
         // note that we will pass in a sequence of iterators pointing to the beginning of each grid
         double Throttle_commands_array[] = {-1.00, -0.70, -0.40, 0.00, 0.40, 0.70, 1.00};
-        double Sttering_commands_array[] = {-1.00, -0.70, -0.40, 0.00, 0.40, 0.70, 1.00};
 
+        double Sttering_commands_array[] = {-1.00, -0.70, -0.40, 0.00, 0.40, 0.70, 1.00};
         //                                s=-1.00 s=-0.70 s=-0.40 s=0 s=0.40  s=0.70  s=1.00
         double Linear_vel_values_array[] = {-1.20, -1.30, -1.40, -1.50, -1.40, -1.30, -1.20, //t=-1.00
                                             -0.65, -0.70, -0.75, -0.80, -0.75, -0.70, -0.65, //t=-0.70
@@ -138,7 +140,7 @@ class bobtankDrivePlugin : public ModelPlugin
         double Angular_vel_values_array[] = {-1.40, -0.42, -0.18, 0.00, 0.18, 0.42, 1.40,  //t=-1.00
                                              -1.36, -0.38, -0.14, 0.00, 0.14, 0.38, 1.36,  //t=-0.70
                                              -1.32, -0.34, -0.10, 0.00, 0.10, 0.34, 1.32,  //t=-0.40
-                                             -1.22, -0.24, -0.00, 0.00, 0.00, 0.24, 1.22,   //t=0.00
+                                             -1.22, -0.24, -0.00, 0.00, 0.00, 0.24, 1.22,  //t=0.00
                                              -1.32, -0.34, -0.10, 0.00, 0.10, 0.34, 1.32,  //t=0.40
                                              -1.36, -0.38, -0.14, 0.00, 0.14, 0.38, 1.36,  //t=0.70
                                              -1.40, -0.42, -0.18, 0.00, 0.18, 0.42, 1.40}; //t=1.00
@@ -168,10 +170,6 @@ class bobtankDrivePlugin : public ModelPlugin
   public:
     void dynamic_Reconfiguration_callback(bobcat_model::bobcat_modelConfig &config, uint32_t level)
     {
-        control_P = config.Wheel_conntrol_P;
-        control_I = config.Wheel_conntrol_I;
-        control_D = config.Wheel_conntrol_D;
-        Damping = config.Damping;
         Power = config.Power;
         MinAngMult = config.MinAngMult;           //Rotation speed multiplier on minimal angular velocity.
         MaxAngMult = config.MaxAngMult;           //Rotation speed multiplier on maximal angular velocity.
@@ -185,22 +183,6 @@ class bobtankDrivePlugin : public ModelPlugin
   public:
     void OnUpdate(const common::UpdateInfo & /*_info*/) // we are not using the pointer to the info so its commanted as an option
     {
-
-        // std::cout << "command_timer = " << command_timer.GetElapsed().Float() << std::endl;
-
-        // Applying effort to the wheels , brakes if no message income
-        if (Linear_command_timer.GetElapsed().Float() > command_MAX_DELAY)
-        {
-            // Brakes
-            Linear_command = 0;
-        }
-
-        if (Angular_command_timer.GetElapsed().Float() > command_MAX_DELAY)
-        {
-            // BrakesP
-            Angular_command = 0;
-        }
-
         update_ref_vels();
         apply_efforts();
 
@@ -224,16 +206,14 @@ class bobtankDrivePlugin : public ModelPlugin
         return (filtered_command);
     }
 
+  private:
     void update_ref_vels() // float linear_command, float angular_command)
     {
         Linear_command_mutex.lock();
         Angular_command_mutex.lock();
-        array<double, 2> args = {Linear_command, Angular_command};
+        array<double, 2> args = {sqc.getThrottel(), sqc.getSteering()};
         Linear_command_mutex.unlock();
         Angular_command_mutex.unlock();
-
-        //printf("Linear_command = %f,  Angular_command = %f --->  Linear_vel_interp  = %f  \n", args[0], args[1],  Linear_vel_interp->interp(args.begin()) );
-        //printf("Linear_command = %f,  Angular_command = %f --->  Angular_vel_interp = %f \n", args[0], args[1],  Angular_vel_interp->interp(args.begin()) );
 
         double Linear_nominal_vel = Linear_vel_interp->interp(args.begin());
         double Angular_nominal_vel = Angular_vel_interp->interp(args.begin());
@@ -241,13 +221,14 @@ class bobtankDrivePlugin : public ModelPlugin
         double Linear_vel = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index, Linear_nominal_vel);
         double Angular_vel = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index, Angular_nominal_vel);
 
-        double LinearNoise = command_lN * (*Linear_Noise_dist)(generator);   //((std::rand() % 100)-50)/50;
-        double AngularNoise = command_aN * (*Angular_Noise_dist)(generator); //((std::rand() % 100)-50)/50;
+        double LinearNoise = command_lN * (*Linear_Noise_dist)(generator);
+        double AngularNoise = command_aN * (*Angular_Noise_dist)(generator);
 
         Linear_ref_vel = (1 + LinearNoise) * Linear_vel;
         Angular_ref_vel = (1 + AngularNoise) * Angular_vel;
     }
 
+  private:
     void wheel_controller(physics::JointPtr wheel_joint, double ref_omega)
     {
         double wheel_omega = wheel_joint->GetVelocity(0);
@@ -269,93 +250,41 @@ class bobtankDrivePlugin : public ModelPlugin
         //        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
         //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
         wheel_joint->SetForce(0, effort_command);
-    }
+    }  
+
+    private:
     void apply_efforts()
     {
 
-        // std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
+        //std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
         // float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel* WHEELS_BASE/2) ;
         // float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * WHEELS_BASE/2) ;
         //Compensating for Real target Rotation speeds MinAngMult(higher) and MaxAngMult(lower)
         float RealAngularSpeedCompensation = (1.22 * MinAngMult - (MinAngMult - MaxAngMult) * fabs(Angular_ref_vel)) / 1.22;
         float right_side_vel = Linear_ref_vel + Angular_ref_vel * RealAngularSpeedCompensation * WHEELS_BASE / 2;
         float left_side_vel = Linear_ref_vel - Angular_ref_vel * RealAngularSpeedCompensation * WHEELS_BASE / 2;
-
         //std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
+
         float right_wheels_omega_ref = right_side_vel / (0.5 * WHEEL_DIAMETER);
         float left_wheels_omega_ref = left_side_vel / (0.5 * WHEEL_DIAMETER);
-        float roller_right_omega_ref = right_side_vel / (0.5 * ROLLER_DIAMETER);
-        float roller_left_omega_ref = left_side_vel / (0.5 * ROLLER_DIAMETER);
 
         //std::cout << " right_wheels_omega_ref = " << right_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
+        
         wheel_controller(this->front_right_joint, right_wheels_omega_ref);
         wheel_controller(this->back_right_joint, right_wheels_omega_ref);
         wheel_controller(this->front_left_joint, left_wheels_omega_ref);
         wheel_controller(this->back_left_joint, left_wheels_omega_ref);
-        wheel_controller(this->roller_back_right, roller_right_omega_ref);
-        wheel_controller(this->roller_mid_right, roller_right_omega_ref);
-        wheel_controller(this->roller_front_right, roller_right_omega_ref);
-        wheel_controller(this->roller_back_left, roller_left_omega_ref);
-        wheel_controller(this->roller_mid_left, roller_left_omega_ref);
-        wheel_controller(this->roller_front_left, roller_left_omega_ref);
+        wheel_controller(this->roller_back_right,  right_wheels_omega_ref);
+        wheel_controller(this->roller_mid_right,   right_wheels_omega_ref);
+        wheel_controller(this->roller_front_right, right_wheels_omega_ref);
+        wheel_controller(this->roller_back_left,   left_wheels_omega_ref);
+        wheel_controller(this->roller_mid_left,    left_wheels_omega_ref);
+        wheel_controller(this->roller_front_left,  left_wheels_omega_ref);
         // wheel_joint->SetVelocity(0,ref_omega);
         wheel_controller(this->cogwheel_right, right_wheels_omega_ref);
         wheel_controller(this->cogwheel_left, left_wheels_omega_ref);
     }
 
-    // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
-    void On_Angular_command(const std_msgs::Float64ConstPtr &msg)
-    {
-        Angular_command_mutex.lock();
-        // Recieving referance steering angle
-        if (msg->data > 1)
-        {
-            Angular_command = 1;
-        }
-        else if (msg->data < -1)
-        {
-            Angular_command = -1;
-        }
-        else
-        {
-            Angular_command = msg->data;
-        }
-// Reseting timer every time LLC publishes message
-#if GAZEBO_MAJOR_VERSION >= 5
-        Angular_command_timer.Reset();
-#endif
-        Angular_command_timer.Start();
-        Angular_command_mutex.unlock();
-    }
-
-    // The subscriber callback , each time data is published to the subscriber this function is being called and recieves the data in pointer msg
-    void On_Linear_command(const std_msgs::Float64ConstPtr &msg)
-    {
-        Linear_command_mutex.lock();
-        // Recieving referance velocity
-        if (msg->data > 1)
-        {
-            Linear_command = 1;
-        }
-        else if (msg->data < -1)
-        {
-            Linear_command = -1;
-        }
-        else
-        {
-            Linear_command = msg->data;
-        }
-
-// Reseting timer every time LLC publishes message
-
-#if GAZEBO_MAJOR_VERSION >= 5
-
-        Linear_command_timer.Reset();
-#endif
-        Linear_command_timer.Start();
-
-        Linear_command_mutex.unlock();
-    }
 
     // Defining private Pointer to model
     physics::ModelPtr model;
@@ -381,16 +310,8 @@ class bobtankDrivePlugin : public ModelPlugin
     // Defining private Ros Node Handle
     ros::NodeHandle *Ros_nh;
 
-    // Defining private Ros Subscribers
-    ros::Subscriber Steering_rate_sub;
-    ros::Subscriber Velocity_rate_sub;
-
     // Defining private Ros Publishers
     ros::Publisher platform_hb_pub_;
-
-    // Defining private Timers
-    common::Timer Linear_command_timer;
-    common::Timer Angular_command_timer;
 
     // Defining private Mutex
     boost::mutex Angular_command_mutex;
@@ -400,7 +321,6 @@ class bobtankDrivePlugin : public ModelPlugin
     float Angular_command;
     double Linear_ref_vel;
     double Angular_ref_vel;
-
     double Linear_command_array[LINEAR_COMMAND_FILTER_ARRY_SIZE];
     double Angular_command_array[ANGULAR_COMMAND_FILTER_ARRY_SIZE];
     double Linear_command_sum;
@@ -409,8 +329,9 @@ class bobtankDrivePlugin : public ModelPlugin
     int Angular_command_index;
 
     dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
-    double control_P, control_I, control_D, Damping, Power, MinAngMult, MaxAngMult, MinAngPowerMult, MaxAngPowerMult; // PID constants and dynamic configuration constants
-    double command_lN, command_aN;                                                                                    // command noise factors
+
+    double Power, MinAngMult, MaxAngMult, MinAngPowerMult, MaxAngPowerMult; // PID constants and dynamic configuration constants
+    double command_lN, command_aN; // command noise factors
 
     std::default_random_engine generator;
     std::normal_distribution<double> *Linear_Noise_dist;
@@ -418,6 +339,8 @@ class bobtankDrivePlugin : public ModelPlugin
 
     InterpMultilinear<2, double> *Linear_vel_interp;
     InterpMultilinear<2, double> *Angular_vel_interp;
+    
+    simQinetiqClient sqc;
 };
 
 // Tell Gazebo about this plugin, so that Gazebo can call Load on this plugin.

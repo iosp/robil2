@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <sdf version="1.4">
-  <model name="barrel3">
+  <model name="barrel3_90">
     <static>true</static>
     <link name="link">
       <collision name="collision">
         <geometry>
           <mesh>
-             <uri>model://barrel3/models/model.dae</uri>
+             <uri>model://barrel3_90/models/model.dae</uri>
 
           </mesh>
         </geometry>
@@ -14,7 +14,7 @@
       <visual name="visual">
          <geometry>
           <mesh>
-		<uri>model://barrel3/models/model.dae</uri>
+		<uri>model://barrel3_90/models/model.dae</uri>
 
           </mesh>
         </geometry>

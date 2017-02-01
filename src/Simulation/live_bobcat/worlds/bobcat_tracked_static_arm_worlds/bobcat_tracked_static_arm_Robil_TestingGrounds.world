@@ -125,13 +125,13 @@
         <view_controller>orbit</view_controller>
       </camera>
     </gui>
-    <model name='barrel2'>
+    <model name='barrel3'>
       <static>1</static>
       <link name='link'>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -148,7 +148,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -158,13 +158,13 @@
       </link>
       <pose>-2 57 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_0'>
+    <model name='barrel3_0'>
       <static>1</static>
       <link name='link'>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -181,7 +181,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -191,13 +191,13 @@
       </link>
       <pose>-10 53.5182 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_1'>
+    <model name='barrel3_1'>
       <static>1</static>
       <link name='link'>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -214,7 +214,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -224,13 +224,13 @@
       </link>
       <pose>-22 52 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_2'>
+    <model name='barrel3_2'>
       <static>1</static>
       <link name='link'>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -247,7 +247,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -257,13 +257,13 @@
       </link>
       <pose>-33 50 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_3'>
+    <model name='barrel3_3'>
       <static>1</static>
       <link name='link'>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -280,7 +280,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -290,13 +290,13 @@
       </link>
       <pose>-34 42 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_4'>
+    <model name='barrel3_4'>
       <static>1</static>
       <link name='link'>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -313,7 +313,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -323,13 +323,13 @@
       </link>
       <pose>-37 28 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_5'>
+    <model name='barrel3_5'>
       <static>1</static>
       <link name='link'>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -346,7 +346,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -356,13 +356,13 @@
       </link>
       <pose>-39 17 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_6'>
+    <model name='barrel3_6'>
       <static>1</static>
       <link name='link'>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -379,7 +379,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -389,13 +389,13 @@
       </link>
       <pose>-42 4 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_7'>
+    <model name='barrel3_7'>
       <static>1</static>
       <link name='link'>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -412,7 +412,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
         </visual>
@@ -422,13 +422,13 @@
       </link>
       <pose>-8 31 0 0 -0 0</pose>
     </model>
-    <model name='barrel2_8'>
+    <model name='barrel3_8'>
       <static>1</static>
       <link name='link'>
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -445,7 +445,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://barrel2/models/model.dae</uri>
+              <uri>model://barrel3/models/model.dae</uri>
             </mesh>
           </geometry>
         </visual>
