@@ -41,7 +41,7 @@
 // Maximum time delays
 #define command_MAX_DELAY 0.3
 
-#define WHEEL_EFFORT_LIMIT 100000
+#define WHEEL_EFFORT_LIMIT 1000
 
 #define WHEELS_BASE 0.95
 #define STEERING_FRICTION_COMPENSATION 2; // compensate for the faliure of reaching the angular velocity
@@ -238,7 +238,7 @@ class bobtankDrivePlugin : public ModelPlugin
         //  so a more strict control is achieved on low rotation speeds where achieving the rotation value is harder.
         double FrictionCompensationPowerMultiplier = (1.4 * MinAngPowerMult - (MinAngPowerMult - MaxAngPowerMult) * fabs(Angular_ref_vel)) / 1.4;
 
-        double effort_command = Power * FrictionCompensationPowerMultiplier * error;
+        effort_command = Power * FrictionCompensationPowerMultiplier * error;
         if (ref_omega == 0)
             effort_command = effort_command - 900 * wheel_omega;
         if (effort_command > WHEEL_EFFORT_LIMIT)
@@ -246,9 +246,9 @@ class bobtankDrivePlugin : public ModelPlugin
         if (effort_command < -WHEEL_EFFORT_LIMIT)
             effort_command = -WHEEL_EFFORT_LIMIT;
         if (wheel_joint == this->cogwheel_right || wheel_joint == this->cogwheel_left)
-            effort_command = effort_command * 0.01;
+            effort_command = effort_command * 0.001;
         //        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
-        //        std::cout << "           ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
+               std::cout << "ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
         wheel_joint->SetForce(0, effort_command);
     }  
 
@@ -268,7 +268,7 @@ class bobtankDrivePlugin : public ModelPlugin
         float right_wheels_omega_ref = right_side_vel / (0.5 * WHEEL_DIAMETER);
         float left_wheels_omega_ref = left_side_vel / (0.5 * WHEEL_DIAMETER);
 
-        //std::cout << " right_wheels_omega_ref = " << right_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
+        // std::cout << " right_wheels_omega_ref = " << right_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
         
         wheel_controller(this->front_right_joint, right_wheels_omega_ref);
         wheel_controller(this->back_right_joint, right_wheels_omega_ref);
@@ -317,10 +317,11 @@ class bobtankDrivePlugin : public ModelPlugin
     boost::mutex Angular_command_mutex;
     boost::mutex Linear_command_mutex;
 
-    float Linear_command;
-    float Angular_command;
-    double Linear_ref_vel;
-    double Angular_ref_vel;
+    float Linear_command=0;
+    float Angular_command=0;
+    double Linear_ref_vel=0;
+    double Angular_ref_vel=0;
+    double effort_command=0;
     double Linear_command_array[LINEAR_COMMAND_FILTER_ARRY_SIZE];
     double Angular_command_array[ANGULAR_COMMAND_FILTER_ARRY_SIZE];
     double Linear_command_sum;

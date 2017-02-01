@@ -3,7 +3,7 @@
 <sdf version='1.4'>
   <model name='Sahar'>
     <link name='body'>
-      <pose>0 0 0 0 0 0</pose>
+      <pose>0 0 0.125 0 0 0</pose>
       <gravity>1</gravity>
       <velocity_decay>
         <linear>0</linear>
@@ -108,7 +108,7 @@
         </material>
       </visual>
       <collision name='body_collision_top_installation_link'>
-        <pose>-0.92913 0 2.04 0 0 0</pose>
+        <pose>-1 0 2.04 0 0 0</pose>
         <geometry>
           <box>
             <size>0.663 0.598 0.838</size>
@@ -237,7 +237,7 @@
     </link>
         <!--COGWHEELS-->
     <link name='cogwheel_left'>
-      <pose>-1.35 0.655 0.31 3.14159265358979 0 0</pose>
+      <pose>-1.35 0.655 0.435 3.14159265358979 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.1</mass>
@@ -285,7 +285,7 @@
     </joint>
     <!--<joint name="gear_left" type="gearbox"><parent>back_left_wheel</parent><child>cogwheel_left</child><gearbox_ratio>-1</gearbox_ratio><gearbox_reference_body>body</gearbox_reference_body><axis><xyz>0.000000 1.000000 0.000000</xyz></axis><axis2><xyz>0.000000 1.000000 0.000000</xyz></axis2></joint>-->
     <link name='cogwheel_right'>
-      <pose>-1.35 -0.66 0.31 0 0 0</pose>
+      <pose>-1.35 -0.66 0.435 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.1</mass>
@@ -334,7 +334,7 @@
     <!--WHEELS-->
     <link name='back_left_wheel'>
     <self_collide>0</self_collide>
-      <pose>-1.53739 0.655 -0.025 0 0 0</pose>
+      <pose>-1.53739 0.655 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -387,7 +387,7 @@
     </joint>
     <link name='back_right_wheel'>
     <self_collide>0</self_collide>
-      <pose>-1.535 -0.66 -0.025 0 0 0</pose>
+      <pose>-1.535 -0.66 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -441,7 +441,7 @@
     <!--<joint name="gear_right" type="gearbox"><parent>back_right_wheel</parent><child>cogwheel_right</child><gearbox_ratio>-1</gearbox_ratio><gearbox_reference_body>body</gearbox_reference_body><axis><xyz>0.000000 1.000000 0.000000</xyz></axis><axis2><xyz>0.000000 1.000000 0.000000</xyz></axis2></joint>-->
     <link name='front_left_wheel'>
     <self_collide>0</self_collide>
-      <pose>-0.0535 0.655 -0.025 0 0 0</pose>
+      <pose>-0.0535 0.655 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -494,7 +494,7 @@
     </joint>
     <link name='front_right_wheel'>
     <self_collide>0</self_collide>
-      <pose>-0.0535 -0.66 -0.025 0 0 0</pose>
+      <pose>-0.0535 -0.66 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -546,7 +546,7 @@
     </joint>
     <link name='roller_back_right'>
     <self_collide>0</self_collide>
-      <pose>-1.15 -0.65 -0.025 0 0 0</pose>
+      <pose>-1.15 -0.65 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -599,7 +599,7 @@
     </joint>
     <link name='roller_mid_right'>
     <self_collide>0</self_collide>
-      <pose>-0.81 -0.65 -0.025 0 0 0</pose>
+      <pose>-0.81 -0.65 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -652,7 +652,7 @@
     </joint>
     <link name='roller_front_right'>
     <self_collide>0</self_collide>
-      <pose>-0.46 -0.65 -0.025 0 0 0</pose>
+      <pose>-0.46 -0.65 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -705,7 +705,7 @@
     </joint>
     <link name='roller_back_left'>
     <self_collide>0</self_collide>
-      <pose>-1.15 0.65 -0.025 0 0 0</pose>
+      <pose>-1.15 0.65 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -758,7 +758,7 @@
     </joint>
     <link name='roller_mid_left'>
     <self_collide>0</self_collide>
-      <pose>-0.81 0.65 -0.025 0 0 0</pose>
+      <pose>-0.81 0.65 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -811,7 +811,7 @@
     </joint>
     <link name='roller_front_left'>
     <self_collide>0</self_collide>
-      <pose>-0.46 0.65 -0.025 0 0 0</pose>
+      <pose>-0.46 0.65 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -873,7 +873,7 @@
 <!-- IPON Sensor--> <!---->
     <include>
       <uri>model://IPON</uri>
-      <pose>-0.550 -0.155 2.000 0.000 0.0007 0.000</pose>
+      <pose>-0.550 -0.155 2.125 0.000 0.0007 0.000</pose>
       <name>IPON</name>
     </include>
     <joint name='ipon_joint' type='revolute'>
@@ -893,7 +893,7 @@
 <!-- IBEO Sensor --> <!---->
     <include>
       <uri>model://IBEO</uri>
-      <pose>-0.240 0.015 1.8172 0.000 0.2507 0.107</pose>
+      <pose>-0.240 0.015 1.9422 0.000 0.2507 0.107</pose>
       <name>IBEO</name>
     </include>
     <joint name='ibeo_joint' type='revolute'>
@@ -910,10 +910,10 @@
     </joint>
 
  
- <!--CAM Sensors  <!---->
+ <!--CAM Sensors  <!--
      <include>
       <uri>model://FLEA3_L</uri>
-      <pose>-0.3 0.25 2.02 0 0 0</pose>
+      <pose>-0.3 0.25 2.145 0 0 0</pose>
       <name>left_flea3</name>
     </include>
     <joint name='left_flea3_joint' type='revolute'>
@@ -931,7 +931,7 @@
     
     <include>
       <uri>model://FLEA3_R</uri>
-      <pose>-0.3 -0.25 2.02 0 0 0</pose>
+      <pose>-0.3 -0.25 2.145 0 0 0</pose>
       <name>right_flea3</name>
     </include>    
     <joint name='right_flea3_joint' type='revolute'>
@@ -946,7 +946,7 @@
       <dynamics/>
       </axis>
     </joint>
-
+-->
 
 
 
