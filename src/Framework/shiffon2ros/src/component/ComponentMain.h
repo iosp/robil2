@@ -39,10 +39,10 @@
 #include <iostream>     // std::cout
 #include <sstream>
 #include <boost/thread.hpp>
-
+//#include <Eigen/Eigen>
 
 class ComponentMain {
-	bool _inited;
+    bool _inited, _reverse;
 	  ros::NodeHandle _nh;
 	  ros::Publisher _pub_diagnostic;
 	  boost::thread_group _maintains;
@@ -56,6 +56,7 @@ class ComponentMain {
 	  bool init(int argc,char** argv);
 	Shiphon_Ctrl * 	_shiphonCtrl;
 	pthread_t _myHeartbeatThread;
+    tf::Quaternion _prev_quat;
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
