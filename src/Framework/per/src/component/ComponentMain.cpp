@@ -94,7 +94,7 @@ void ComponentMain::handleSensorINS(const /*config::PER::sub::SensorINS*/sensor_
                    msg.linear_acceleration.y * msg.linear_acceleration.y +
                    msg.linear_acceleration.z * msg.linear_acceleration.z - 9.81 * 9.81;
 
-    if (sqrt(pitch) / 10.0 > _dyn_conf.acc_filter)
+    if (sqrt(pitch) / 10.0 > _dyn_conf.acc_filter || abs(msg.angular_velocity.z) > _dyn_conf.yaw_dot_filter)
     {
         _should_pub = false;
         _should_pub_timeout.stamp = ros::Time::now();

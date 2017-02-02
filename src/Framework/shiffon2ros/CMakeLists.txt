@@ -10,11 +10,13 @@ find_package(catkin REQUIRED COMPONENTS
     robil2conf
     decision_making decision_making_parser
 )
+
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
 	CATKIN_DEPENDS
 	    robil2conf
 	    decision_making decision_making_parser
+        DEPENDS Boost
 )
 ###########
 ## Build ##

@@ -110,6 +110,8 @@ BYTE LLI_SetJointEffortMsg[] = { 0x06, 0x02, 0x01, 0x06, 0x01, 0x69, 0x01, 0xC8,
 // TBD
 #endif
 
+enum connectionState{init, waitToResponse, responsed};
+
 class simQinetiqClient{
 
   float Throttel;
@@ -168,7 +170,7 @@ public:
     si_Remote.sin_port = htons(udpRP);
 
     if (inet_aton(IP.c_str(), &si_Remote.sin_addr) == 0) {
-            printf("SQC: inet_aton() failed\n");
+            printf("simQinetiqClient: inet_aton() failed\n");
             return false;
     }
     return true;
@@ -202,10 +204,19 @@ public:
   {
     while(true)
     {
-        if(!HBRespons)
-          printf("SQC: HeartBeat was not response\n");
         sendto(s, QIN_QueryHeartbeatMsg, sizeof(QIN_QueryHeartbeatMsg), 0, (struct sockaddr *) &si_Remote, sizeof(si_Remote));
-        HBRespons = false;
+        switch (HBRespons) {
+          case waitToResponse:
+            printf("simQinetiqClient: no HeartBeat\n");
+
+            //remark this line if you want one time message
+            //HBRespons = init;
+            break;
+          case responsed:
+            HBRespons = waitToResponse;
+          default:
+            break;
+          }
         sleep(5);
     }
   }
@@ -260,7 +271,7 @@ void limitToAbsOne(float& temp)
         memset(buf,'\0', BUFLEN);
         if (recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_Local, &slen) == -1)
         {
-           //printf("\nSQC: simQinetiqClient: ERROR: recvFunc\n");
+           //printf("simQinetiqClient: simQinetiqClient: ERROR: recvFunc\n");
         }
         else //data recieved
         {
@@ -308,7 +319,7 @@ void limitToAbsOne(float& temp)
                   break;
                 case lli_HeartBeatConfirmId:
                   //response for HB - do nothing
-                  HBRespons = true;
+                  HBRespons = responsed;
                   //printf("lli_HeartBeatConfirmId\n");
                   break;
                 case qin_CtrlRejectId:
@@ -335,7 +346,7 @@ void limitToAbsOne(float& temp)
             }
             else
               {
-                printf("SQC: ERROR in the header\n");
+                printf("simQinetiqClient: ERROR in the header\n");
               }
         }
     }
@@ -358,7 +369,7 @@ void limitToAbsOne(float& temp)
   {
       commConnect(IP, udpLP, udpRP);
       slen=sizeof(si_Local);
-      HBRespons = true;
+      HBRespons = init;
 
       pthread_t recvFunc;
       pthread_create(&recvFunc, NULL, &mainThread, this);
@@ -369,7 +380,7 @@ void limitToAbsOne(float& temp)
   int s, i;
   socklen_t slen;
   unsigned char buf[BUFLEN];
-  bool HBRespons;
+  connectionState HBRespons;
   struct timespec lastUpdateOfCommands;
 
   private: boost::mutex mutex_Throttel;
