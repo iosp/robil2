@@ -367,6 +367,8 @@ void limitToAbsOne(float& temp)
 
   void Init(string IP, int udpLP, int udpRP)
   {
+      Throttel=0;
+      Steering=0;
       commConnect(IP, udpLP, udpRP);
       slen=sizeof(si_Local);
       HBRespons = init;
