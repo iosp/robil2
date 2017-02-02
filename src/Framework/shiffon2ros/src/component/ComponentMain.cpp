@@ -23,7 +23,10 @@ const double PI_2_DEG = 180; //
 ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
-	if ( argc == 2 )
+	if (
+	      argc > 3 || //for roslaunch (min of argc is 3)
+	      (argc < 3 && argc > 1) // for rosrun (min of argc is 1)
+	    )
 	{
 		//if IP received from command line (as parameter), change the default (localhost - 127.0.0.1)
 		IPADDR = argv[1];
