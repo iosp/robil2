@@ -248,7 +248,7 @@ class bobtankDrivePlugin : public ModelPlugin
         if (wheel_joint == this->cogwheel_right || wheel_joint == this->cogwheel_left)
             effort_command = effort_command * 0.001;
         //        std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
-               std::cout << "ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
+        //       std::cout << "ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
         wheel_joint->SetForce(0, effort_command);
     }  
 
