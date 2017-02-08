@@ -1,0 +1,32 @@
+<launch>
+		
+	
+	<!-- == GENERAL ===== -->
+	<!--include file="$(find robil2conf)/launch/parametersLoad.launch" /-->
+	<include file="$(find robil2tf)/launch/robilTFpublisher.launch" />
+	
+
+	<!-- == SENSORS INTERFACEs == -->
+    <node name="ipon2ros" type="shiffon2ros_node" pkg="shiffon2ros" args="127.0.0.1" output="screen" respawn="true"/>
+    <node name="ibeo2ros" type="sickldmrs.py" pkg="sick_ldmrs" args="127.0.0.1" output="screen" respawn="true"/>
+    
+  
+    <!-- == PLATFORM INTERFACE == -->  
+    <node name="ros2qinetiq" type="lli_node" pkg="lli" args="127.0.0.1" output="screen" respawn="true"/>   
+
+	<!-- == MONITORING == -->
+	<node name="ssm_fsm_states_tracker_node" type="ssm_fsm_states_tracker_node" pkg="ssm" output="screen"/>
+	<node name="ssm_heartbeat_monitor_node" type="ssm_heartbeat_monitor_node" pkg="ssm" output="screen"/>
+	<node name="ssm_node" type="ssm_node" pkg="ssm" output="screen"/>
+	
+	
+	<!-- == PERCEPTION == -->
+	<node name="per_node" type="per_node" pkg="per" output="screen" respawn="true"/>
+
+	
+	<!-- == LOCALIZATION == -->
+	<node name="loc_node" type="loc_node" pkg="loc" output="screen" respawn="true"/>
+
+
+
+</launch>

@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <model name="Testing_Grounds_2">
+        <static>true</static>
+        <link name="Testing_Grounds_obj">
+            <pose>0 0 0.25 0 0 0</pose>
+            <collision name="Testing_Grounds_obj_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://Testing_Grounds_2/meshes/Testing_Grounds_2.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="Testing_Grounds_obj_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://Testing_Grounds_2/meshes/Testing_Grounds_2.dae</uri>
+                    </mesh>
+                </geometry>
+        </link>
+    </model>
+</sdf>
