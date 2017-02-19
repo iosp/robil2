@@ -6,13 +6,13 @@ macro(decision_making_parsing _SRC_FILE_LIST)
 	set( SRC_FILE_LIST "${ARGV}" )
 	if( CHECK_SRC_FILE_LIST )
 		message("  -- Generate decision making parser configuration")
-		message("  -- Project name is @PROJECT_NAME@")
+		message("  -- Project name is decision_making_parser")
 
-		#set( CUR_BIN_DIR "${@PROJECT_NAME@_DIR}/../../../lib/@PROJECT_NAME@/" )
-		set( CUR_BIN_DIR "${@PROJECT_NAME@_DEVEL_PREFIX}/lib/@PROJECT_NAME@/" )
+		#set( CUR_BIN_DIR "${decision_making_parser_DIR}/../../../lib/decision_making_parser/" )
+		set( CUR_BIN_DIR "${decision_making_parser_DEVEL_PREFIX}/lib/decision_making_parser/" )
 		message("  -- bin dirs is ${CUR_BIN_DIR}")
-		#message("  -- dir is ${@PROJECT_NAME@_DIR}")
-		message("  -- dev prefix is ${@PROJECT_NAME@_DEVEL_PREFIX}")
+		#message("  -- dir is ${decision_making_parser_DIR}")
+		message("  -- dev prefix is ${decision_making_parser_DEVEL_PREFIX}")
 
 		#find_file(PARSER parse_code) 
 		#FILE(GLOB_RECURSE PARSER parse_code ${CUR_BIN_DIR})
@@ -20,7 +20,7 @@ macro(decision_making_parsing _SRC_FILE_LIST)
 		message("  -- Parser location is ${PARSER}")
 
      
-		#set(SRC_XML_PARSER "${@PROJECT_NAME@_DEVEL_PREFIX}/../src/xml_parser.py")
+		#set(SRC_XML_PARSER "${decision_making_parser_DEVEL_PREFIX}/../src/xml_parser.py")
 		#message("  -- Source of Xml Parser location is ${SRC_XML_PARSER}")
 
 		set( XMLPARSER "${CUR_BIN_DIR}decision_making_xml_parser.py" ) 
