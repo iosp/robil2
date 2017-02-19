@@ -8,6 +8,8 @@
         <rosparam file="$(find pp)/params/local_costmap_params.yaml" command="load" />
         <rosparam file="$(find pp)/params/global_costmap_params.yaml" command="load" />
         <rosparam file="$(find pp)/params/base_local_planner_params.yaml" command="load" />
+        
+        <remap from="/cmd_vel" to="/cmd_vel_orig" />
     </node>
 
 </launch>

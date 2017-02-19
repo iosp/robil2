@@ -115,7 +115,8 @@ void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 	}
 	
 	double angle_scale=5.0;
-	ros::param::param("/wpd/angle_scale",angle_scale,5.0);
+	//ros::param::param("/wpd/angle_scale",angle_scale,5.0);
+	ros::param::param("/wpd/angle_scale",angle_scale,1.0);
 	tw.twist.angular.z*=angle_scale;
 	
 	double lin_scale=1.0;
@@ -124,8 +125,10 @@ void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 	
 	//perform dampening according to last twist message
 	if(published_speed_message_before){
-		ros::param::param("/wpd/angular_dampening_alpha",angular_z_dampening_alpha,0.8);
-		ros::param::param("/wpd/linear_x_dampening_alpha",linear_x_dampening_alpha,0.8);
+//		ros::param::param("/wpd/angular_dampening_alpha",angular_z_dampening_alpha,0.8);
+//		ros::param::param("/wpd/linear_x_dampening_alpha",linear_x_dampening_alpha,0.8);
+		ros::param::param("/wpd/angular_dampening_alpha",angular_z_dampening_alpha,0.0);
+		ros::param::param("/wpd/linear_x_dampening_alpha",linear_x_dampening_alpha,0.0);
 
 		tw.twist.angular.z = (last_published_speed_message.angular.z * angular_z_dampening_alpha) +
 						(tw.twist.angular.z * (1-angular_z_dampening_alpha));
