@@ -1,8 +1,8 @@
 // Written By : Daniel Meltz, Adapted for the tracked model by: Yossi Cohen.
 
 // If the plugin is not defined then define it
-#ifndef _bobcat_DRIVE_PLUGIN_HH_
-#define _bobcat_DRIVE_PLUGIN_HH_
+#ifndef _BOBTANK_DRIVE_PLUGIN_HH_
+#define _BOBTANK_DRIVE_PLUGIN_HH_
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -34,6 +34,7 @@
 
 // Interpolation
 #include <ctime>
+#include "linterp.h"
 
 #include "sim_qinetiq_client.cc"
 
@@ -48,18 +49,17 @@
 #define WHEEL_DIAMETER 0.4
 #define PI 3.14159265359
 
-#define LINEAR_COMMAND_FILTER_ARRAY_SIZE 750
-#define ANGULAR_COMMAND_FILTER_ARRAY_SIZE 500
-#define LINEAR_COMMANDS_ARRAY_SIZE 9
-#define ANGULAR_COMMANDS_ARRAY_SIZE 9
+#define LINEAR_COMMAND_FILTER_ARRY_SIZE 750
+#define ANGULAR_COMMAND_FILTER_ARRY_SIZE 500
+
 namespace gazebo
 {
 
-class bobcatDrivePlugin : public ModelPlugin
+class bobtankDrivePlugin : public ModelPlugin
 {
     ///  Constructor
   public:
-    bobcatDrivePlugin() {}
+    bobtankDrivePlugin() {}
 
     /// The load function is called by Gazebo when the plugin is inserted into simulation
     /// \param[in] _model A pointer to the model that this plugin is attached to.
@@ -86,15 +86,15 @@ class bobcatDrivePlugin : public ModelPlugin
         this->cogwheel_right = this->model->GetJoint("cogwheel_right_joint");
         this->cogwheel_left = this->model->GetJoint("cogwheel_left_joint");
 
-        this->Ros_nh = new ros::NodeHandle("bobcatDrivePlugin_node");
+        this->Ros_nh = new ros::NodeHandle("bobtankDrivePlugin_node");
 
         platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform", 100);
 
         // Listen to the update event. This event is broadcast every simulation iteration.
-        this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&bobcatDrivePlugin::OnUpdate, this, _1));
+        this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&bobtankDrivePlugin::OnUpdate, this, _1));
 
         this->model_reconfiguration_server = new dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig>(*(this->Ros_nh));
-        this->model_reconfiguration_server->setCallback(boost::bind(&bobcatDrivePlugin::dynamic_Reconfiguration_callback, this, _1, _2));
+        this->model_reconfiguration_server->setCallback(boost::bind(&bobtankDrivePlugin::dynamic_Reconfiguration_callback, this, _1, _2));
 
         /* initialize random seed: */
         srand(time(NULL));
@@ -107,95 +107,64 @@ class bobcatDrivePlugin : public ModelPlugin
         Angular_command_sum = 0;
         Linear_command_index = 0;
         Angular_command_index = 0;
-        for (int i = 0; i < LINEAR_COMMAND_FILTER_ARRAY_SIZE; i++)
+        for (int i = 0; i < LINEAR_COMMAND_FILTER_ARRY_SIZE; i++)
         {
             Linear_command_array[i] = 0;
         }
 
-        for (int i = 0; i < ANGULAR_COMMAND_FILTER_ARRAY_SIZE; i++)
+        for (int i = 0; i < ANGULAR_COMMAND_FILTER_ARRY_SIZE; i++)
         {
             Angular_command_array[i] = 0;
         }
 
-        sqc.Init("127.0.0.1", 4660, 5355);
+          sqc.Init("127.0.0.1", 4660, 5355);
     }
-    double mapCommandInArray(double arr[], double command, int size)
-    {
-        for (int i = 0; i < size; i++)
-        {
-            if (command == arr[i])
-                return i;
-            if (i < size - 1 && command > arr[i] && command < arr[i + 1])
-            {
-                return i + (command - arr[i]) / (arr[i + 1] - arr[i]);
-            }
-        }
-    }
-    double BilinearInterpolateArray(double x, double y, double data[][ANGULAR_COMMANDS_ARRAY_SIZE], int Xsize, int Ysize)
-    {
-        int integerX = floor(x);        //the integer part of the x coordinate
-        float fractionX = x - integerX; //the fraction part of the x coordinatesqc.getSteering()
-        int integerY = floor(y);
-        float fractionY = y - integerY;
-        float interpolatedValue = 0;
-        if (integerY < Ysize - 1 && integerX < Xsize - 1)
-            interpolatedValue = (1 - fractionX) *
-                                    ((1 - fractionY) * data[integerX][integerY] +
-                                     fractionY * data[integerX][integerY + 1]) +
-                                fractionX *
-                                    ((1 - fractionY) * data[integerX + 1][integerY] +
-                                     fractionY * data[integerX + 1][integerY + 1]);
-        else if (integerX >= Xsize - 1 && integerY < Ysize - 1)
-            interpolatedValue = (1 - fractionX) *
-                                    ((1 - fractionY) * data[integerX][integerY] +
-                                     fractionY * data[integerX][integerY + 1]) +
-                                fractionX *
-                                    ((1 - fractionY) * data[integerX][integerY] +
-                                     fractionY * data[integerX][integerY + 1]);
-        else if (integerY >= Ysize - 1 && integerX < Ysize - 1)
-            interpolatedValue = (1 - fractionX) *
-                                    ((1 - fractionY) * data[integerX][integerY] +
-                                     fractionY * data[integerX][integerY]) +
-                                fractionX *
-                                    ((1 - fractionY) * data[integerX + 1][integerY] +
-                                     fractionY * data[integerX + 1][integerY]);
-        else interpolatedValue = data[integerX][integerY];
-        return interpolatedValue;
-    }
-    //                                                           Calibrated Inputs
-    double Throttle_commands_array[LINEAR_COMMANDS_ARRAY_SIZE]= {-1.00, -0.70, -0.40, -0.20, 0.00, 0.20, 0.40, 0.70, 1.00};
-    double Steering_commands_array[ANGULAR_COMMANDS_ARRAY_SIZE]= {-1.00, -0.70, -0.40, -0.20, 0.00, 0.20, 0.40, 0.70, 1.00};    
 
-    // Velocities according to the calibrated inputs                            
-    double Linear_vel_values_array[LINEAR_COMMANDS_ARRAY_SIZE][ANGULAR_COMMANDS_ARRAY_SIZE]=
-    //                                  s=-1.00 s=-0.70 s=-0.40 s=-0.2 s=0  s=0.2 s=0.40 s=0.70 s=1.00
-                                     {{-0.80, -1.33, -1.78, -1.83, -2.00, -1.83, -1.78, -1.33, -0.80},    //t=-1.00
-                                      {-0.78, -0.88, -0.98, -0.93, -1.05, -0.93, -0.98, -0.88, -0.78},    //t=-0.70
-                                      {-0.35, -0.28, -0.28, -0.30, -0.30, -0.30, -0.28, -0.28, -0.35},    //t=-0.40
-                                      {-0.10, -0.10, -0.08,  0.00,  0.00,  0.00, -0.08, -0.10, -0.10},    //t=0.20
-                                      { 0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00},    //t=0.00
-                                      { 0.13,  0.10,  0.10,  0.00,  0.00,  0.00,  0.10,  0.10,  0.13},    //t=0.20
-                                      { 0.23,  0.30,  0.25,  0.33,  0.35,  0.33,  0.25,  0.30,  0.23},    //t=0.40
-                                      { 0.53,  0.85,  1.03,  1.10,  1.10,  1.10,  1.03,  0.85,  0.53},    //t=0.70
-                                      { 0.75,  1.25,  1.90,  2.08,  2.10,  2.08,  1.90,  1.25,  0.75}};   //t=1.00
-
-
-
-           
-   double Angular_vel_values_array[LINEAR_COMMANDS_ARRAY_SIZE][ANGULAR_COMMANDS_ARRAY_SIZE] =
-   //                                 s=-1.00 s=-0.70 s=-0.40 s=-0.2 s=0  s=0.2 s=0.40 s=0.70 s=1.00
-                                     {{-1.00, -0.50, -0.18, -0.04, 0.00, 0.04, 0.18, 0.50, 1.00},    //t=-1.00
-                                      {-0.95, -0.50, -0.23, -0.04, 0.00, 0.04, 0.23, 0.50, 0.95},    //t=-0.70
-                                      {-1.23, -0.40, -0.18, -0.02, 0.00, 0.02, 0.18, 0.40, 1.23},    //t=-0.40
-                                      {-1.40, -0.30, -0.02,  0.00, 0.00, 0.00, 0.02, 0.30, 1.40},    //t=0.20
-                                      {-1.50, -0.30,  0.00,  0.00, 0.00, 0.00, 0.00, 0.30, 1.50},    //t=0.00
-                                      {-1.73, -0.33, -0.02,  0.00, 0.00, 0.00, 0.02, 0.33, 1.73},    //t=0.20
-                                      {-1.50, -0.48, -0.15, -0.02, 0.00, 0.02, 0.15, 0.48, 1.50},    //t=0.40
-                                      {-1.23, -0.68, -0.23, -0.05, 0.00, 0.05, 0.23, 0.68, 1.23},    //t=0.70
-                                      {-1.08, -0.73, -0.25, -0.06, 0.00, 0.06, 0.25, 0.73, 1.08}};   //t=1.00
     void calibration_data_setup()
     {
-        // Placeholder functions for initialization from file.
+        // construct the grid in each dimension.
+        // note that we will pass in a sequence of iterators pointing to the beginning of each grid
+        double Throttle_commands_array[] = {-1.00, -0.70, -0.40, 0.00, 0.40, 0.70, 1.00};
+
+        double Sttering_commands_array[] = {-1.00, -0.70, -0.40, 0.00, 0.40, 0.70, 1.00};
+        //                                s=-1.00 s=-0.70 s=-0.40 s=0 s=0.40  s=0.70  s=1.00
+        double Linear_vel_values_array[] = {-0.77, -1.25, -1.95, -2.10, -1.95, -1.25, -0.77, //t=-1.00
+                                            -0.50, -0.86, -1.00, -1.07, -1.00, -0.86, -0.50, //t=-0.70
+                                            -0.20, -0.30, -0.25, -0.35, -0.25, -0.30, -0.20, //t=-0.40
+                                             0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,        //t=0.00
+                                             0.20,  0.30,  0.25,  0.35,  0.25,  0.30,  0.20,        //t=0.40
+                                             0.50,  0.86,  1.00,  1.07,  1.00,  0.86,  0.50,        //t=0.70
+                                             0.77,  1.25,  1.95,  2.10,  1.95,  1.25,  0.77};       //t=1.00
+
+        //                                s=-1.00 s=-0.70 s=-0.40 s=0  s=0.40 s=0.70  s=1.00
+        double Angular_vel_values_array[] = {-1.05, -0.75, -0.25, 0.00, 0.25, 0.75, 1.05,  //t=-1.00
+                                             -1.2, -0.566, -0.20, 0.00, 0.20, 0.566, 1.2,  //t=-0.70
+                                             -1.55, -0.47, -0.16, 0.00, 0.16, 0.47, 1.55,  //t=-0.40
+                                             -1.50, -0.30, -0.00, 0.00, 0.00, 0.30, 1.50,  //t=0.00
+                                             -1.55, -0.47, -0.16, 0.00, 0.16, 0.47, 1.55,  //t=0.40
+                                             -1.2, -0.566, -0.20, 0.00, 0.20, 0.566, 1.2,  //t=0.70
+                                             -1.05, -0.75, -0.25, 0.00, 0.25, 0.75, 1.05}; //t=1.00
+
+        std::vector<double> Throttle_commands(Throttle_commands_array, Throttle_commands_array + sizeof(Throttle_commands_array) / sizeof(double));
+        std::vector<double> Sttering_commands(Sttering_commands_array, Sttering_commands_array + sizeof(Sttering_commands_array) / sizeof(double));
+        std::vector<double> Linear_vel_values(Linear_vel_values_array, Linear_vel_values_array + sizeof(Linear_vel_values_array) / sizeof(double));
+        std::vector<double> Angular_vel_values(Angular_vel_values_array, Angular_vel_values_array + sizeof(Angular_vel_values_array) / sizeof(double));
+
+        std::vector<std::vector<double>::iterator> grid_iter_list;
+        grid_iter_list.push_back(Throttle_commands.begin());
+        grid_iter_list.push_back(Sttering_commands.begin());
+
+        // the size of the grid in each dimension
+        array<int, 2> grid_sizes;
+        grid_sizes[0] = Throttle_commands.size();
+        grid_sizes[1] = Sttering_commands.size();
+
+        // total number of elements
+        int num_elements = grid_sizes[0] * grid_sizes[1];
+
+        // construct the interpolator. the last two arguments are pointers to the underlying data
+        Linear_vel_interp = new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vel_values.data(), Linear_vel_values.data() + num_elements);
+        Angular_vel_interp = new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vel_values.data(), Angular_vel_values.data() + num_elements);
     }
 
   public:
@@ -240,13 +209,17 @@ class bobcatDrivePlugin : public ModelPlugin
   private:
     void update_ref_vels() // float linear_command, float angular_command)
     {
-        double ThrottleIndex=mapCommandInArray(Throttle_commands_array,sqc.getThrottel(),LINEAR_COMMANDS_ARRAY_SIZE);
-        double SteeringIndex=mapCommandInArray(Steering_commands_array,sqc.getSteering(),ANGULAR_COMMANDS_ARRAY_SIZE);
-        double Linear_nominal_vel = BilinearInterpolateArray(ThrottleIndex, SteeringIndex, Linear_vel_values_array,LINEAR_COMMANDS_ARRAY_SIZE, ANGULAR_COMMANDS_ARRAY_SIZE);
-        double Angular_nominal_vel = BilinearInterpolateArray(ThrottleIndex, SteeringIndex, Angular_vel_values_array,LINEAR_COMMANDS_ARRAY_SIZE, ANGULAR_COMMANDS_ARRAY_SIZE);
-        // std::cout << " lin = " <<Linear_nominal_vel<<" ang = " <<  Angular_nominal_vel << std::endl;
-        double Linear_vel = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRAY_SIZE, Linear_command_sum, Linear_command_index, Linear_nominal_vel);
-        double Angular_vel = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRAY_SIZE, Angular_command_sum, Angular_command_index, Angular_nominal_vel);
+        Linear_command_mutex.lock();
+        Angular_command_mutex.lock();
+        array<double, 2> args = {sqc.getThrottel(), sqc.getSteering()};
+        Linear_command_mutex.unlock();
+        Angular_command_mutex.unlock();
+
+        double Linear_nominal_vel = Linear_vel_interp->interp(args.begin());
+        double Angular_nominal_vel = Angular_vel_interp->interp(args.begin());
+
+        double Linear_vel = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index, Linear_nominal_vel);
+        double Angular_vel = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index, Angular_nominal_vel);
 
         double LinearNoise = command_lN * (*Linear_Noise_dist)(generator);
         double AngularNoise = command_aN * (*Angular_Noise_dist)(generator);
@@ -276,11 +249,10 @@ class bobcatDrivePlugin : public ModelPlugin
             effort_command = effort_command * 0.001;
         //   std::cout << " wheel_joint->GetName() = " << wheel_joint->GetName() << std::endl;
         //   std::cout << "ref_omega = " << ref_omega << " wheel_omega = " << wheel_omega  << " error = " << error << " effort_command = " << effort_command <<  std::endl;
-
         wheel_joint->SetForce(0, effort_command);
-    }
+    }  
 
-  private:
+    private:
     void apply_efforts()
     {
 
@@ -297,21 +269,22 @@ class bobcatDrivePlugin : public ModelPlugin
         float left_wheels_omega_ref = left_side_vel / (0.5 * WHEEL_DIAMETER);
 
         // std::cout << " right_wheels_omega_ref = " << right_wheels_omega_ref <<  " left_wheels_omega_ref = " << left_wheels_omega_ref << std::endl;
-
+        
         wheel_controller(this->front_right_joint, right_wheels_omega_ref);
         wheel_controller(this->back_right_joint, right_wheels_omega_ref);
         wheel_controller(this->front_left_joint, left_wheels_omega_ref);
         wheel_controller(this->back_left_joint, left_wheels_omega_ref);
-        wheel_controller(this->roller_back_right, right_wheels_omega_ref);
-        wheel_controller(this->roller_mid_right, right_wheels_omega_ref);
+        wheel_controller(this->roller_back_right,  right_wheels_omega_ref);
+        wheel_controller(this->roller_mid_right,   right_wheels_omega_ref);
         wheel_controller(this->roller_front_right, right_wheels_omega_ref);
-        wheel_controller(this->roller_back_left, left_wheels_omega_ref);
-        wheel_controller(this->roller_mid_left, left_wheels_omega_ref);
-        wheel_controller(this->roller_front_left, left_wheels_omega_ref);
+        wheel_controller(this->roller_back_left,   left_wheels_omega_ref);
+        wheel_controller(this->roller_mid_left,    left_wheels_omega_ref);
+        wheel_controller(this->roller_front_left,  left_wheels_omega_ref);
         // wheel_joint->SetVelocity(0,ref_omega);
         wheel_controller(this->cogwheel_right, right_wheels_omega_ref);
         wheel_controller(this->cogwheel_left, left_wheels_omega_ref);
     }
+
 
     // Defining private Pointer to model
     physics::ModelPtr model;
@@ -344,13 +317,13 @@ class bobcatDrivePlugin : public ModelPlugin
     boost::mutex Angular_command_mutex;
     boost::mutex Linear_command_mutex;
 
-    float Linear_command = 0;
-    float Angular_command = 0;
-    double Linear_ref_vel = 0;
-    double Angular_ref_vel = 0;
-    double effort_command = 0;
-    double Linear_command_array[LINEAR_COMMAND_FILTER_ARRAY_SIZE];
-    double Angular_command_array[ANGULAR_COMMAND_FILTER_ARRAY_SIZE];
+    float Linear_command=0;
+    float Angular_command=0;
+    double Linear_ref_vel=0;
+    double Angular_ref_vel=0;
+    double effort_command=0;
+    double Linear_command_array[LINEAR_COMMAND_FILTER_ARRY_SIZE];
+    double Angular_command_array[ANGULAR_COMMAND_FILTER_ARRY_SIZE];
     double Linear_command_sum;
     double Angular_command_sum;
     int Linear_command_index;
@@ -359,16 +332,19 @@ class bobcatDrivePlugin : public ModelPlugin
     dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
 
     double Power, MinAngMult, MaxAngMult, MinAngPowerMult, MaxAngPowerMult; // PID constants and dynamic configuration constants
-    double command_lN, command_aN;                                          // command noise factors
+    double command_lN, command_aN; // command noise factors
 
     std::default_random_engine generator;
     std::normal_distribution<double> *Linear_Noise_dist;
     std::normal_distribution<double> *Angular_Noise_dist;
 
+    InterpMultilinear<2, double> *Linear_vel_interp;
+    InterpMultilinear<2, double> *Angular_vel_interp;
+    
     simQinetiqClient sqc;
 };
 
 // Tell Gazebo about this plugin, so that Gazebo can call Load on this plugin.
-GZ_REGISTER_MODEL_PLUGIN(bobcatDrivePlugin)
+GZ_REGISTER_MODEL_PLUGIN(bobtankDrivePlugin)
 }
 #endif
