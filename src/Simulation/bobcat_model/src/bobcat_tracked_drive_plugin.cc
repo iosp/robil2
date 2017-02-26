@@ -124,47 +124,52 @@ class bobtankDrivePlugin : public ModelPlugin
     {
         // construct the grid in each dimension.
         // note that we will pass in a sequence of iterators pointing to the beginning of each grid
-        double Throttle_commands_array[] = {-1.00, -0.70, -0.40, 0.00, 0.40, 0.70, 1.00};
+        double Throttle_commands_array[] =  { -1.00,    -0.70,    -0.40,   -0.20,	0.00,    0.20,	0.40,   0.70,    1.00};
 
-        double Sttering_commands_array[] = {-1.00, -0.70, -0.40, 0.00, 0.40, 0.70, 1.00};
-        //                                s=-1.00 s=-0.70 s=-0.40 s=0 s=0.40  s=0.70  s=1.00
-        double Linear_vel_values_array[] = {-0.77, -1.25, -1.95, -2.10, -1.95, -1.25, -0.77, //t=-1.00
-                                            -0.50, -0.86, -1.00, -1.07, -1.00, -0.86, -0.50, //t=-0.70
-                                            -0.20, -0.30, -0.25, -0.35, -0.25, -0.30, -0.20, //t=-0.40
-                                             0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,        //t=0.00
-                                             0.20,  0.30,  0.25,  0.35,  0.25,  0.30,  0.20,        //t=0.40
-                                             0.50,  0.86,  1.00,  1.07,  1.00,  0.86,  0.50,        //t=0.70
-                                             0.77,  1.25,  1.95,  2.10,  1.95,  1.25,  0.77};       //t=1.00
+        double Sttering_commands_array[] =  { -1.00,    -0.70,    -0.40,   -0.20,	0.00,    0.20,	0.40,   0.70,    1.00};
 
-        //                                s=-1.00 s=-0.70 s=-0.40 s=0  s=0.40 s=0.70  s=1.00
-        double Angular_vel_values_array[] = {-1.05, -0.75, -0.25, 0.00, 0.25, 0.75, 1.05,  //t=-1.00
-                                             -1.2, -0.566, -0.20, 0.00, 0.20, 0.566, 1.2,  //t=-0.70
-                                             -1.55, -0.47, -0.16, 0.00, 0.16, 0.47, 1.55,  //t=-0.40
-                                             -1.50, -0.30, -0.00, 0.00, 0.00, 0.30, 1.50,  //t=0.00
-                                             -1.55, -0.47, -0.16, 0.00, 0.16, 0.47, 1.55,  //t=0.40
-                                             -1.2, -0.566, -0.20, 0.00, 0.20, 0.566, 1.2,  //t=0.70
-                                             -1.05, -0.75, -0.25, 0.00, 0.25, 0.75, 1.05}; //t=1.00
+        	  	  	  	  	  	  	  //r=-1.00    r=-0.70   r=-0.40  r=-0.20	 r=0.00    r=0.20	 r=0.40     r=0.70    r=1.00
+  double Linear_vel_values_array[] = {-0.80,    -1.32,    -1.77,    -1.82,	  -2.00,    -1.82,	  -1.77,     -1.32,    -0.80,    //t=-1.00
+  									  -0.77,    -0.87,    -0.97,    -0.92,	  -1.05,    -0.92,	  -0.97,     -0.87,    -0.77,    //t=-0.70
+  									  -0.35,    -0.27,    -0.27,    -0.30,	  -0.30,    -0.30,	  -0.27,     -0.27,    -0.35,    //t=-0.40
+									  -0.10,    -0.10,    -0.07,     0.00,	   0.00,     0.00,	  -0.07,     -0.10,    -0.10,    //t=-0.20
+  									   0.00,     0.00,     0.00,     0.00,	   0.00,     0.00,	   0.00,      0.00,     0.00,    //t=0.00
+  									   0.12,     0.10,     0.10,     0.00,	   0.00,     0.00,	   0.10,      0.10,     0.12,    //t=0.20
+  									   0.22,     0.30,     0.25,     0.32,	   0.35,     0.32,	   0.25,      0.30,     0.22,    //t=0.40
+  									   0.52,     0.85,     1.02,	 1.10,     1.10,	 1.10,     1.02,      0.85,     0.52,    //t=0.70
+  									   0.75,     1.25,     1.90,	 2.07,	   2.10,	 2.07,     1.90,      1.25,     0.75};   //t=1.00
 
-        std::vector<double> Throttle_commands(Throttle_commands_array, Throttle_commands_array + sizeof(Throttle_commands_array) / sizeof(double));
-        std::vector<double> Sttering_commands(Sttering_commands_array, Sttering_commands_array + sizeof(Sttering_commands_array) / sizeof(double));
-        std::vector<double> Linear_vel_values(Linear_vel_values_array, Linear_vel_values_array + sizeof(Linear_vel_values_array) / sizeof(double));
-        std::vector<double> Angular_vel_values(Angular_vel_values_array, Angular_vel_values_array + sizeof(Angular_vel_values_array) / sizeof(double));
+  								  //r=-1.00    r=-0.70   r=-0.40  r=-0.20	  r=0.00    r=0.20	  r=0.40    r=0.70    r=1.00
+  double Angular_vel_values_array[] ={-1.00,    -0.40,     -0.17,   -0.03, 		0.00,     0.03,	   	0.17,     0.40,    	1.00,    //t=-1.00
+  									  -0.95,    -0.40,     -0.23,   -0.03, 		0.00,     0.03,		0.23,     0.40,    	0.95,    //t=-0.70
+  									  -1.22,    -0.40,     -0.17,   -0.02, 		0.00,     0.02,		0.17,     0.40,     1.22,    //t=-0.40
+  									  -1.40,	-0.30,	   -0.02,	 0.00,		0.00,	  0.00,		0.02,	  0.30,		1.40,	 //t=-0.20
+  									  -1.50,    -0.30,     	0.00,	 0.00,     	0.00,	  0.00,   	0.00,     0.30,     1.50,    //t=0.00
+  									  -1.72,	-0.32,	   -0.02,	 0.00,		0.00,	  0.00,		0.02,	  0.32,		1.72,	 //t=0.20
+  									  -1.50,    -0.47,     -0.14,	-0.02,     	0.00,     0.02,		0.14,     0.47,     1.50,    //t=0.40
+  									  -1.22,    -0.67,     -0.22,   -0.04, 		0.00,     0.04,		0.22,     0.67,     1.22,    //t=0.70
+  									  -1.07,    -0.72,     -0.25,   -0.06, 		0.00,     0.06,		0.25,     0.72,     1.07};   //t=1.00
 
-        std::vector<std::vector<double>::iterator> grid_iter_list;
-        grid_iter_list.push_back(Throttle_commands.begin());
-        grid_iter_list.push_back(Sttering_commands.begin());
+          std::vector<double> Throttle_commands(Throttle_commands_array, Throttle_commands_array + sizeof(Throttle_commands_array) / sizeof(double));
+          std::vector<double> Sttering_commands(Sttering_commands_array, Sttering_commands_array + sizeof(Sttering_commands_array) / sizeof(double));
+          std::vector<double> Linear_vel_values(Linear_vel_values_array, Linear_vel_values_array + sizeof(Linear_vel_values_array) / sizeof(double));
+          std::vector<double> Angular_vel_values(Angular_vel_values_array, Angular_vel_values_array + sizeof(Angular_vel_values_array) / sizeof(double));
 
-        // the size of the grid in each dimension
-        array<int, 2> grid_sizes;
-        grid_sizes[0] = Throttle_commands.size();
-        grid_sizes[1] = Sttering_commands.size();
+          std::vector<std::vector<double>::iterator> grid_iter_list;
+          grid_iter_list.push_back(Throttle_commands.begin());
+          grid_iter_list.push_back(Sttering_commands.begin());
 
-        // total number of elements
-        int num_elements = grid_sizes[0] * grid_sizes[1];
+          // the size of the grid in each dimension
+          array<int, 2> grid_sizes;
+          grid_sizes[0] = Throttle_commands.size();
+          grid_sizes[1] = Sttering_commands.size();
 
-        // construct the interpolator. the last two arguments are pointers to the underlying data
-        Linear_vel_interp = new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vel_values.data(), Linear_vel_values.data() + num_elements);
-        Angular_vel_interp = new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vel_values.data(), Angular_vel_values.data() + num_elements);
+          // total number of elements
+          int num_elements = grid_sizes[0] * grid_sizes[1];
+
+          // construct the interpolator. the last two arguments are pointers to the underlying data
+          Linear_vel_interp = new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Linear_vel_values.data(), Linear_vel_values.data() + num_elements);
+          Angular_vel_interp = new InterpMultilinear<2, double>(grid_iter_list.begin(), grid_sizes.begin(), Angular_vel_values.data(), Angular_vel_values.data() + num_elements);
     }
 
   public:
