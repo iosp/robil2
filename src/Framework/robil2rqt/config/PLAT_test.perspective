@@ -143,11 +143,11 @@
                 }, 
                 "y_limits": {
                   "type": "repr", 
-                  "repr": "[-2.0, 2.0]"
+                  "repr": "[-0.5, 0.5]"
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[124.64699999999999, 149.647]"
+                  "repr": "[65.008, 90.008]"
                 }
               }, 
               "groups": {}
@@ -194,7 +194,7 @@
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[126.94, 151.94]"
+                  "repr": "[56.473, 81.473]"
                 }
               }, 
               "groups": {}
@@ -241,7 +241,7 @@
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[128.192, 153.192]"
+                  "repr": "[57.69199999999999, 82.692]"
                 }
               }, 
               "groups": {}
@@ -284,11 +284,11 @@
                 }, 
                 "y_limits": {
                   "type": "repr", 
-                  "repr": "[-2.0, 2.0]"
+                  "repr": "[-2.0, 3.0]"
                 }, 
                 "x_limits": {
                   "type": "repr", 
-                  "repr": "[126.36500000000001, 151.365]"
+                  "repr": "[66.717, 91.717]"
                 }
               }, 
               "groups": {}
@@ -319,7 +319,7 @@
               "keys": {
                 "publishers": {
                   "type": "repr", 
-                  "repr": "u\"[{'type_name': 'geometry_msgs/TwistStamped', 'topic_name': '/WPD/Speed', 'enabled': False, 'rate': 100.0, 'expressions': {u'/WPD/Speed/twist/linear/z': '0', u'/WPD/Speed/twist/linear/x': '0', u'/WPD/Speed/twist/linear/y': '0', u'/WPD/Speed/twist/angular/z': '0', u'/WPD/Speed/twist/angular/x': '0', u'/WPD/Speed/twist/angular/y': '0'}, 'publisher_id': 0, 'counter': 0}, {'topic_name': '/LLC/EFFORTS/Throttle', 'type_name': 'std_msgs/Float64', 'enabled': False, 'rate': 100.0, 'expressions': {u'/LLC/EFFORTS/Throttle/data': '5'}, 'publisher_id': 1, 'counter': 0}, {'topic_name': '/LLC/EFFORTS/Steering', 'type_name': 'std_msgs/Float64', 'enabled': False, 'rate': 100.0, 'expressions': {u'/LLC/EFFORTS/Steering/data': '0'}, 'publisher_id': 2, 'counter': 0}]\""
+                  "repr": "u\"[{'topic_name': '/WPD/Speed', 'type_name': 'geometry_msgs/TwistStamped', 'enabled': False, 'rate': 100.0, 'expressions': {u'/WPD/Speed/twist/linear/z': '0', u'/WPD/Speed/twist/linear/x': '0', u'/WPD/Speed/twist/linear/y': '0', u'/WPD/Speed/twist/angular/z': '0', u'/WPD/Speed/twist/angular/x': '0', u'/WPD/Speed/twist/angular/y': '0'}, 'publisher_id': 0, 'counter': 0}, {'type_name': 'std_msgs/Float64', 'topic_name': '/LLC/EFFORTS/Throttle', 'enabled': False, 'rate': 100.0, 'expressions': {u'/LLC/EFFORTS/Throttle/data': '5'}, 'publisher_id': 1, 'counter': 0}, {'type_name': 'std_msgs/Float64', 'topic_name': '/LLC/EFFORTS/Steering', 'enabled': False, 'rate': 100.0, 'expressions': {u'/LLC/EFFORTS/Steering/data': '0'}, 'publisher_id': 2, 'counter': 0}]\""
                 }
               }, 
               "groups": {}
