@@ -12,7 +12,7 @@
   
   <link name="top_installation"/>
   <joint name="top_installation_joint" type="fixed">
-    <parent link="cabin" />
+    <parent link="body" />
     <child link="top_installation" />
     <origin xyz="-0.295 0.032 1.859" rpy="1.570 0 1.570" />
     <axis xyz="0 0 0" />
@@ -36,7 +36,7 @@
 
   <link name="main_arm"/>
   <joint name="main_arm_joint" type="fixed">
-    <parent link="base_arm" />
+    <parent link="body" />
     <child link="main_arm" />
     <origin xyz="-1.754 0 1.703" rpy="0 0 0" />
     <axis xyz="0 1 0" />
@@ -44,7 +44,7 @@
 
   <link name="supporter"/>
   <joint name="supporter_joint" type="fixed">
-    <parent link="main_arm" />
+    <parent link="body" />
     <child link="supporter" />
     <origin xyz="-1.356 0 0.808" rpy="0 0 0" />
     <axis xyz="0 1 0" />
@@ -52,7 +52,7 @@
 
   <link name="loader"/>
   <joint name="loader_joint" type="fixed">
-    <parent link="main_arm" />
+    <parent link="body" />
     <child link="loader" />
     <origin xyz="0.343 0 0.146" rpy="0 -0.25 0" />
     <axis xyz="0 1 0" />
@@ -60,7 +60,7 @@
   
   <link name="brackets"/>
   <joint name="brackets_joint" type="fixed">
-    <parent link="loader" />
+    <parent link="body" />
     <child link="brackets" />
     <origin xyz="0.558 0 0.724" rpy="0 0 0" />
     <axis xyz="0 1 0" />
@@ -68,7 +68,7 @@
 
   <link name="tracks"/>
   <joint name="tracks_joint" type="fixed">
-    <parent link="loader" />
+    <parent link="body" />
     <child link="tracks" />
     <origin xyz="0 0 0" rpy="0 0 0" />
     <axis xyz="0 1 0" />
