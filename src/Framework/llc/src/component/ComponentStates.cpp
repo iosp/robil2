@@ -44,8 +44,8 @@ double LocVelLinearY;
 double LocVelAngularZ;
 double sumOfWpdSpeedLinear;
 double sumOfWpdSpeedAngular;
-double WpdSpeedLinearLimit=1.6;
-double WpdSpeedAngularLimit=1.2;
+double WpdSpeedLinearLimit = 1.6;
+double WpdSpeedAngularLimit = 1.2;
 double WpdSpeedLinear;
 double WpdSpeedAngular;
 double currentYaw;
@@ -66,8 +66,8 @@ FSM(llc_ON)
   FSM_STATES
   {
     INIT,
-	READY,
-	STANDBY
+        READY,
+        STANDBY
   }
   FSM_START(INIT);
   FSM_BGN
@@ -77,7 +77,7 @@ FSM(llc_ON)
       FSM_CALL_TASK(INIT)
       FSM_TRANSITIONS
       {
-	FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
+        FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
       }
     }
     FSM_STATE(READY)
@@ -85,7 +85,7 @@ FSM(llc_ON)
       FSM_CALL_TASK(READY)
       FSM_TRANSITIONS
       {
-	FSM_ON_EVENT("/llc/Standby", FSM_NEXT(STANDBY));
+        FSM_ON_EVENT("/llc/Standby", FSM_NEXT(STANDBY));
       }
     }
     FSM_STATE(STANDBY)
@@ -93,7 +93,7 @@ FSM(llc_ON)
       FSM_CALL_TASK(STANDBY)
       FSM_TRANSITIONS
       {
-	FSM_ON_EVENT("/llc/Resume", FSM_NEXT(READY));
+        FSM_ON_EVENT("/llc/Resume", FSM_NEXT(READY));
       }
     }
   }
@@ -105,7 +105,7 @@ FSM(llc)
   FSM_STATES
   {
     OFF,
-	ON
+        ON
   }
   FSM_START(ON);
   FSM_BGN
@@ -115,8 +115,8 @@ FSM(llc)
       FSM_CALL_TASK(OFF)
       FSM_TRANSITIONS
       {
-	FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-	FSM_ON_EVENT("/llc/Activation", FSM_NEXT(ON));
+        FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
+        FSM_ON_EVENT("/llc/Activation", FSM_NEXT(ON));
       }
     }
     FSM_STATE(ON)
@@ -124,8 +124,8 @@ FSM(llc)
       FSM_CALL_FSM(llc_ON)
       FSM_TRANSITIONS
       {
-	FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-	FSM_ON_EVENT("/llc/Shutdown", FSM_NEXT(OFF));
+        FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
+        FSM_ON_EVENT("/llc/Shutdown", FSM_NEXT(OFF));
       }
     }
   }
@@ -187,16 +187,16 @@ void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t
   linearFactor = config.linearFactor;
   angularFactor = config.angularFactor;
 }
-double normalizedValue(double ValueToNormalize,double lim) //A normalizing function that clips the value to -1,1 range
+double normalizedValue(double ValueToNormalize, double lim) //A normalizing function that clips the value to -1,1 range
 {
-  double value=0;
+  double value = 0;
   if (ValueToNormalize > lim)
     value = lim;
   else if (ValueToNormalize < -lim)
     value = -lim;
   else
     value = ValueToNormalize;
-	return value;
+  return value;
 }
 void cb_currentYaw(geometry_msgs::PoseWithCovarianceStamped msg)
 {
@@ -280,12 +280,12 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   wpdSpeedTimeInMilli = ros::Time::now().toSec() * 1000; // toSec() return seconds.milliSecconds
 
   sumOfWpdSpeedLinear -= wpdCmdLinearArray[indexOf_wpdCmdLinearArray];
-  sumOfWpdSpeedLinear += normalizedValue(msg.twist.linear.x,WpdSpeedLinearLimit);
+  sumOfWpdSpeedLinear += normalizedValue(msg.twist.linear.x, WpdSpeedLinearLimit);
   sumOfWpdSpeedAngular -= wpdCmdAngularArray[indexOf_wpdCmdAngularArray];
-  sumOfWpdSpeedAngular += normalizedValue(msg.twist.angular.z,WpdSpeedAngularLimit);
+  sumOfWpdSpeedAngular += normalizedValue(msg.twist.angular.z, WpdSpeedAngularLimit);
 
-  wpdCmdLinearArray[indexOf_wpdCmdLinearArray] = normalizedValue(msg.twist.linear.x,WpdSpeedLinearLimit);
-  wpdCmdAngularArray[indexOf_wpdCmdAngularArray] = normalizedValue(msg.twist.angular.z,WpdSpeedAngularLimit);
+  wpdCmdLinearArray[indexOf_wpdCmdLinearArray] = normalizedValue(msg.twist.linear.x, WpdSpeedLinearLimit);
+  wpdCmdAngularArray[indexOf_wpdCmdAngularArray] = normalizedValue(msg.twist.angular.z, WpdSpeedAngularLimit);
   if (++indexOf_wpdCmdLinearArray >= SIZE_OF_WPD_INTEGRAL)
     indexOf_wpdCmdLinearArray = 0;
   if (++indexOf_wpdCmdAngularArray >= SIZE_OF_WPD_INTEGRAL)
@@ -305,16 +305,19 @@ void getThrottleAndSteering(double &throttle, double &angular)
     WpdSpeedLinear = 0;
     WpdSpeedAngular = 0;
   }
-	// printf( "lin = [%3.2f] ang = [%3.2f]\n",currentVelocity,LocVelAngularZ);
+  // printf( "lin = [%3.2f] ang = [%3.2f]\n",currentVelocity,LocVelAngularZ);
+  //  y = 0.00085 + 0.9690*x + 0.000130*x^2 - 0.138*x^3
+  double baseLinCommand = 0.00085 + 0.9690 * WpdSpeedLinear + 0.000130 * pow(WpdSpeedLinear, 2) - 0.138 * pow(WpdSpeedLinear, 3);
   double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
-  double linearEffortCMD = P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
-  throttle = normalizedValue(linearEffortCMD,1);//values larger than 1 are meaningless to the platform.
+  double linearEffortCMD = baseLinCommand + P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
+  throttle = normalizedValue(linearEffortCMD, 1); //values larger than 1 are meaningless to the platform.
 
+  double absAng = fabs(​WpdSpeedAngular);
+  double baseAngCommand = 0.913 * pow(absAng, ​0.3986) * WpdSpeedAngular / absAng;
   double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
-  double angularEffortCMD = P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
-  angular = normalizedValue(angularEffortCMD,1);//values larger than 1 are meaningless to the platform.
+  double angularEffortCMD = baseAngCommand + P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
+  angular = normalizedValue(angularEffortCMD, 1); //values larger than 1 are meaningless to the platform.
 }
-
 TaskResult state_READY(string id, const CallContext &context, EventQueue &events)
 {
 
