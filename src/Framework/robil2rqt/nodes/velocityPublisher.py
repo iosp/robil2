@@ -15,9 +15,13 @@ def command_calback(msg):
 	if 'Sahar' in names:
 		index = names.index('Sahar')
 		velocityToPub = Float32()
+		AngularVel = Float32()
+		
+		AngularVel.data = msg.twist[index].angular.z
+		
 		squareOfX = math.pow(msg.twist[index].linear.x,2)
 		squareOfY = math.pow(msg.twist[index].linear.y,2)
-		V_size = math.sqrt(squareOfX + squareOfY)
+		V_size = math.sqrt(squareOfX + squareOfY)   #+abs(AngularVel.data)*0.3
 
 		quaternion = (msg.pose[index].orientation.x, msg.pose[index].orientation.y, msg.pose[index].orientation.z, msg.pose[index].orientation.w)
 		euler = tf.transformations.euler_from_quaternion(quaternion)
@@ -43,7 +47,7 @@ def command_calback(msg):
 
 
 		velocity_linear_command_pub.publish(velocityToPub)
-		velocity_angular_command_pub.publish(msg.twist[index].angular.z)
+		velocity_angular_command_pub.publish(AngularVel)
 	else:
 		print 'Sahar dosn\'t exist in the Gazebo'
 
