@@ -263,7 +263,7 @@ class bobcatDrivePlugin : public ModelPlugin
         double error = ref_omega - wheel_omega;
         //  Compensating for friction using a value that is between MinAngPowerMult(higher) and MaxAngPowerMult(lower)
         //  so a more strict control is achieved on low rotation speeds where achieving the rotation value is harder.
-        double FrictionCompensationPowerMultiplier = (1.4 * MinAngPowerMult - (MinAngPowerMult - MaxAngPowerMult) * fabs(Angular_ref_vel)) / 1.4;
+        double FrictionCompensationPowerMultiplier = MinAngPowerMult-fabs(Angular_ref_vel)*(MinAngPowerMult-MaxAngPowerMult)/1.4;
 
         effort_command = Power * FrictionCompensationPowerMultiplier * error;
         if (ref_omega == 0)
@@ -288,7 +288,7 @@ class bobcatDrivePlugin : public ModelPlugin
         // float right_side_vel = ( Linear_ref_vel ) + (Angular_ref_vel* WHEELS_BASE/2) ;
         // float left_side_vel  = ( Linear_ref_vel ) - (Angular_ref_vel * WHEELS_BASE/2) ;
         //Compensating for Real target Rotation speeds MinAngMult(higher) and MaxAngMult(lower)
-        float RealAngularSpeedCompensation = (1.22 * MinAngMult - (MinAngMult - MaxAngMult) * fabs(Angular_ref_vel)) / 1.22;
+        float RealAngularSpeedCompensation = MinAngMult-fabs(Angular_ref_vel)*(MinAngMult-MaxAngMult)/1.4;
         float right_side_vel = Linear_ref_vel + Angular_ref_vel * RealAngularSpeedCompensation * WHEELS_BASE / 2;
         float left_side_vel = Linear_ref_vel - Angular_ref_vel * RealAngularSpeedCompensation * WHEELS_BASE / 2;
         //std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;

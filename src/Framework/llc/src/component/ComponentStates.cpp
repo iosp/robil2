@@ -44,8 +44,8 @@ double LocVelLinearY;
 double LocVelAngularZ;
 double sumOfWpdSpeedLinear;
 double sumOfWpdSpeedAngular;
-double WpdSpeedLinearLimit = 1.6;
-double WpdSpeedAngularLimit = 1.2;
+double WpdSpeedLinearLimit = 2.1;
+double WpdSpeedAngularLimit = 1.5;
 double WpdSpeedLinear;
 double WpdSpeedAngular;
 double currentYaw;
@@ -176,7 +176,6 @@ TaskResult state_INIT(string id, const CallContext &context, EventQueue &events)
 
 void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t level)
 {
-
   P_linear = config.linearVelocity_P;
   I_linear = config.linearVelocity_I;
   D_linear = config.linearVelocity_D;
@@ -307,16 +306,25 @@ void getThrottleAndSteering(double &throttle, double &angular)
   }
   // printf( "lin = [%3.2f] ang = [%3.2f]\n",currentVelocity,LocVelAngularZ);
   //  y = 0.00085 + 0.9690*x + 0.000130*x^2 - 0.138*x^3
-  double baseLinCommand = 0.00085 + 0.9690 * WpdSpeedLinear + 0.000130 * pow(WpdSpeedLinear, 2) - 0.138 * pow(WpdSpeedLinear, 3);
+  //y= -5e-2*x^3 + 7e-1*x
+  double baseLinCommand = 0.7*pow(fabs(WpdSpeedLinear),0.5)*WpdSpeedLinear/fabs(WpdSpeedLinear);
   double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
-  double linearEffortCMD = baseLinCommand + P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
+  double linearEffortCMD = P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
+  if(WpdSpeedLinear>=0&&linearEffortCMD<baseLinCommand*0.6)linearEffortCMD=baseLinCommand*0.6;
+  else if(WpdSpeedLinear<=0&&linearEffortCMD>baseLinCommand*0.6)linearEffortCMD=baseLinCommand*0.6;
   throttle = normalizedValue(linearEffortCMD, 1); //values larger than 1 are meaningless to the platform.
 
-  double absAng = fabs(​WpdSpeedAngular);
-  double baseAngCommand = 0.913 * pow(absAng, ​0.3986) * WpdSpeedAngular / absAng;
+  double absAng =fabs(WpdSpeedAngular); //fabs(​WpdSpeedAngular);
+  double baseAngCommand =0.9*pow(absAng,0.3)*WpdSpeedAngular/absAng;
+  
   double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
-  double angularEffortCMD = baseAngCommand + P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
+  double angularEffortCMD = P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
+
+  if(WpdSpeedAngular>=0&&angularEffortCMD<baseLinCommand/2)angularEffortCMD=baseAngCommand/2;
+  else if(WpdSpeedAngular<0&&angularEffortCMD>baseLinCommand/2)angularEffortCMD=baseAngCommand/2;
+  else if(WpdSpeedAngular==0)angularEffortCMD=0;
   angular = normalizedValue(angularEffortCMD, 1); //values larger than 1 are meaningless to the platform.
+  
 }
 TaskResult state_READY(string id, const CallContext &context, EventQueue &events)
 {
