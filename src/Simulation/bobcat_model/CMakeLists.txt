@@ -19,8 +19,10 @@ find_package(Boost REQUIRED COMPONENTS
 
 find_package(gazebo REQUIRED)
 
-generate_dynamic_reconfigure_options(cfg/bobcat_model.cfg)  
-
+generate_dynamic_reconfigure_options(
+       cfg/bobcat_model.cfg  
+       cfg/bobcat_tracked_model.cfg
+)  
 
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
