@@ -33,7 +33,7 @@
 
 
 // Platform Constants
-#define WHEELS_BASE 0.95
+#define WHEELS_BASE 1.32
 #define WHEEL_DIAMETER 0.4
 #define MAX_PLAT_ROTATION_SPEED 1.5
 
@@ -140,17 +140,17 @@ double Linear_vel_values_array[] = {  -0.80,    -1.32,    -1.77,    -1.82,	  -2.
                                        0.00,     0.00,     0.00,     0.00,	   0.00,     0.00,	   0.00,      0.00,     0.00,    //t=0.00
                                        0.12,     0.10,     0.10,     0.00,	   0.00,     0.00,	   0.10,      0.10,     0.12,    //t=0.20
                                        0.22,     0.30,     0.25,     0.32,	   0.35,     0.32,	   0.25,      0.30,     0.22,    //t=0.40
-                                       0.52,     0.85,     1.02,	 1.10,     1.10,	 1.10,     1.02,      0.85,     0.52,    //t=0.70
-                                       0.75,     1.25,     1.90,	 2.07,	   2.10,	 2.07,     1.90,      1.25,     0.75};   //t=1.00
+                                       0.52,     0.85,     1.02,		 1.10,     1.10,		 1.10,     1.02,      0.85,     0.52,    //t=0.70
+                                       0.75,     1.25,     1.90,		 2.07,	   2.10,		 2.07,     1.90,      1.25,     0.75};   //t=1.00
 
                                   //r=-1.00    r=-0.70   r=-0.40  r=-0.20	  r=0.00    r=0.20	  r=0.40    r=0.70    r=1.00
-double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.00,     0.03,	   	0.17,     0.40,    	1.00,    //t=-1.00
+double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.00,     0.03,	  0.17,     0.40,    	1.00,    //t=-1.00
                                       -0.95,    -0.40,     -0.23,   -0.03, 		0.00,     0.03,		0.23,     0.40,    	0.95,    //t=-0.70
                                       -1.22,    -0.40,     -0.17,   -0.02, 		0.00,     0.02,		0.17,     0.40,     1.22,    //t=-0.40
-                                      -1.40,	-0.30,	   -0.02,	 0.00,		0.00,	  0.00,		0.02,	  0.30,		1.40,	 //t=-0.20
-                                      -1.50,    -0.30,     	0.00,	 0.00,     	0.00,	  0.00,   	0.00,     0.30,     1.50,    //t=0.00
-                                      -1.72,	-0.32,	   -0.02,	 0.00,		0.00,	  0.00,		0.02,	  0.32,		1.72,	 //t=0.20
-                                      -1.50,    -0.47,     -0.14,	-0.02,     	0.00,     0.02,		0.14,     0.47,     1.50,    //t=0.40
+                                      -1.40,		-0.30,	   -0.02,		 0.00,		0.00,			0.00,		0.02,			0.30,			1.40,	 //t=-0.20
+                                      -1.50,    -0.30,   		0.00,		 0.00,    0.00,			0.00,		0.00,     0.30,     1.50,    //t=0.00
+                                      -1.72,		-0.32,	   -0.02,		 0.00,		0.00,	 	 	0.00,		0.02,	  	0.32,			1.72,	 //t=0.20
+                                      -1.50,    -0.47,     -0.14,		-0.02,    0.00,     0.02,		0.14,     0.47,     1.50,    //t=0.40
                                       -1.22,    -0.67,     -0.22,   -0.04, 		0.00,     0.04,		0.22,     0.67,     1.22,    //t=0.70
                                       -1.07,    -0.72,     -0.25,   -0.06, 		0.00,     0.06,		0.25,     0.72,     1.07};   //t=1.00
 
@@ -184,6 +184,8 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
         control_D = config.Wheel_conntrol_D;
         MinSteerMult = config.MinSteerMult;
         MaxSteerMult = config.MaxSteerMult;
+        MinAngPowerMult = config.MinAngPowerMult; //Control power multiplier on minimal angular velocity.
+        MaxAngPowerMult = config.MaxAngPowerMult; //Control power multiplier on maximal angular velocity.
 
 
         command_lN = config.Command_Linear_Noise;
@@ -282,23 +284,20 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
     void wheel_controller(physics::JointPtr wheel_joint, double ref_omega)
     {
         double wheel_omega = wheel_joint->GetVelocity(0);
-
+	double FrictionCompensationPowerMultiplier = MinAngPowerMult + (MaxAngPowerMult - MinAngPowerMult)/MAX_PLAT_ROTATION_SPEED * fabs(Angular_ref_vel) ;
         double error = ref_omega - wheel_omega;
-        double effort_command = (control_P * error);
+        double effort_command = (FrictionCompensationPowerMultiplier*control_P * error);
 
         if (effort_command > WHEEL_EFFORT_LIMIT)
             effort_command = WHEEL_EFFORT_LIMIT;
         if (effort_command < -WHEEL_EFFORT_LIMIT)
             effort_command = -WHEEL_EFFORT_LIMIT;
-	
+
 	//std::cout << "error = " << error << std::endl;
 	//std::cout << "effort_command = " << effort_command << std::endl;
-
     if (ref_omega == 0)
           effort_command = (10 * control_P * error);
 
-
-	
     if (wheel_joint == this->cogwheel_right || wheel_joint == this->cogwheel_left)
           effort_command = effort_command * 0.001;
 	
@@ -338,7 +337,6 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
 
         wheel_controller(this->cogwheel_right, right_wheels_omega_ref);
         wheel_controller(this->cogwheel_left, left_wheels_omega_ref);
-
     }
 
 
@@ -396,7 +394,7 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
     dynamic_reconfigure::Server<bobcat_model::bobcat_tracked_modelConfig> *model_reconfiguration_server;
 
     double control_P, control_I, control_D; // PID constants
-    double MinSteerMult, MaxSteerMult;
+    double MinSteerMult, MaxSteerMult, MinAngPowerMult, MaxAngPowerMult;
 
     double command_lN, command_aN; // command noise factors
     double command_lD, command_aD; // command delay
