@@ -261,7 +261,7 @@ void cb_LocVelocityUpdate(geometry_msgs::TwistStamped msg)
     double x_normal = LocVelLinearX / V_normal;
     double y_noraml = LocVelLinearY / V_normal;
     double theta = atan2(y_noraml, x_normal);
-    if (abs(theta - currentYaw) - 3.0 / 8.0 * M_PI < 0.01)
+    if (abs(theta - currentYaw) - 3.0 / 8.0 * M_PI < 0.01||abs(theta - currentYaw)>5)
     {
       currentVelocity = V_normal;
     }
@@ -290,10 +290,11 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   if (++indexOf_wpdCmdAngularArray >= SIZE_OF_WPD_INTEGRAL)
     indexOf_wpdCmdAngularArray = 0;
 
-  WpdSpeedLinear = sumOfWpdSpeedLinear / SIZE_OF_WPD_INTEGRAL;
-  WpdSpeedAngular = sumOfWpdSpeedAngular / SIZE_OF_WPD_INTEGRAL;
+  WpdSpeedLinear = normalizedValue(msg.twist.linear.x, WpdSpeedLinearLimit);
+  WpdSpeedAngular = normalizedValue(msg.twist.angular.z, WpdSpeedAngularLimit);
 }
-
+double linearEffortCMD=0;
+double angularEffortCMD=0;
 void getThrottleAndSteering(double &throttle, double &angular)
 {
   double RosTimeNowInMilli = ros::Time::now().toSec() * 1000; // toSec() return seconds.milliSecconds
@@ -309,7 +310,8 @@ void getThrottleAndSteering(double &throttle, double &angular)
   //y= -5e-2*x^3 + 7e-1*x
   double baseLinCommand = 0.7*pow(fabs(WpdSpeedLinear),0.5)*WpdSpeedLinear/fabs(WpdSpeedLinear);
   double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
-  double linearEffortCMD = P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
+   linearEffortCMD =linearEffortCMD + P_linear * linearError * fabs(linearError) + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
+
   if(WpdSpeedLinear>=0&&linearEffortCMD<baseLinCommand*0.6)linearEffortCMD=baseLinCommand*0.6;
   else if(WpdSpeedLinear<=0&&linearEffortCMD>baseLinCommand*0.6)linearEffortCMD=baseLinCommand*0.6;
   throttle = normalizedValue(linearEffortCMD, 1); //values larger than 1 are meaningless to the platform.
@@ -318,7 +320,7 @@ void getThrottleAndSteering(double &throttle, double &angular)
   double baseAngCommand =0.9*pow(absAng,0.3)*WpdSpeedAngular/absAng;
   
   double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
-  double angularEffortCMD = P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
+   angularEffortCMD =angularEffortCMD + P_angular * angularError* fabs(angularError) + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
 
   if(WpdSpeedAngular>=0&&angularEffortCMD<baseLinCommand/2)angularEffortCMD=baseAngCommand/2;
   else if(WpdSpeedAngular<0&&angularEffortCMD>baseLinCommand/2)angularEffortCMD=baseAngCommand/2;
