@@ -904,7 +904,7 @@
 <!-- IPON Sensor--> <!---->
     <include>
       <uri>model://IPON</uri>   
-      <pose>-0.550 -0.155 2.000 0.000 0.023 0.000</pose>  <!-- position of the GPS antena , orintation of the INS sensor-->
+      <pose>-0.550 -0.155 2.125 0.000 0.0007 0.000</pose>  <!-- position of the GPS antena , orintation of the INS sensor-->
       <name>IPON</name>
     </include>
     <joint name='ipon_joint' type='revolute'>
@@ -926,7 +926,7 @@
 <!-- IBEO Sensor --> <!---->
     <include>
       <uri>model://IBEO</uri>
-      <pose>-0.240 0.015 1.770 0.000 0.273 0.107</pose>
+      <pose>-0.240 0.015 1.9422 0.000 0.2507 0.107</pose>
       <name>IBEO</name>
     </include>
     <joint name='ibeo_joint' type='revolute'>
