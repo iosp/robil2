@@ -290,8 +290,8 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   if (++indexOf_wpdCmdAngularArray >= SIZE_OF_WPD_INTEGRAL)
     indexOf_wpdCmdAngularArray = 0;
 
-  WpdSpeedLinear = normalizedValue(msg.twist.linear.x, WpdSpeedLinearLimit);
-  WpdSpeedAngular = normalizedValue(msg.twist.angular.z, WpdSpeedAngularLimit);
+  WpdSpeedLinear = sumOfWpdSpeedLinear / SIZE_OF_WPD_INTEGRAL;
+  WpdSpeedAngular = sumOfWpdSpeedAngular / SIZE_OF_WPD_INTEGRAL;
 }
 double linearEffortCMD=0;
 double angularEffortCMD=0;
@@ -312,8 +312,10 @@ void getThrottleAndSteering(double &throttle, double &angular)
   double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
    linearEffortCMD =linearEffortCMD + P_linear * linearError * fabs(linearError) + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
 
-  if(WpdSpeedLinear>=0&&linearEffortCMD<baseLinCommand*0.6)linearEffortCMD=baseLinCommand*0.6;
-  else if(WpdSpeedLinear<=0&&linearEffortCMD>baseLinCommand*0.6)linearEffortCMD=baseLinCommand*0.6;
+  // if(WpdSpeedLinear>=0&&linearEffortCMD<baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.7;
+  // else if(WpdSpeedLinear>=0&&linearEffortCMD>baseLinCommand*1.5)linearEffortCMD=baseLinCommand*1.5;
+  // else if(WpdSpeedLinear<0&&linearEffortCMD>baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.7;
+  // else if(WpdSpeedLinear<0&&linearEffortCMD<baseLinCommand*1.5)linearEffortCMD=baseLinCommand*1.5;
   throttle = normalizedValue(linearEffortCMD, 1); //values larger than 1 are meaningless to the platform.
 
   double absAng =fabs(WpdSpeedAngular); //fabs(​WpdSpeedAngular);
@@ -322,9 +324,9 @@ void getThrottleAndSteering(double &throttle, double &angular)
   double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
    angularEffortCMD =angularEffortCMD + P_angular * angularError* fabs(angularError) + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
 
-  if(WpdSpeedAngular>=0&&angularEffortCMD<baseLinCommand/2)angularEffortCMD=baseAngCommand/2;
-  else if(WpdSpeedAngular<0&&angularEffortCMD>baseLinCommand/2)angularEffortCMD=baseAngCommand/2;
-  else if(WpdSpeedAngular==0)angularEffortCMD=0;
+  // if(WpdSpeedAngular>=0&&angularEffortCMD<baseLinCommand*0.6)angularEffortCMD=baseAngCommand*0.6;
+  // else if(WpdSpeedAngular<0&&angularEffortCMD>baseLinCommand*0.6)angularEffortCMD=baseAngCommand*0.6;
+  // else if(WpdSpeedAngular==0)angularEffortCMD=0;
   angular = normalizedValue(angularEffortCMD, 1); //values larger than 1 are meaningless to the platform.
   
 }
