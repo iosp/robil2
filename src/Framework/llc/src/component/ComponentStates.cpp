@@ -307,9 +307,9 @@ void getThrottleAndSteering(double &throttle, double &angular)
   double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
   double linearEffortCMD =baseLinCommand + P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
   //clamping output
-  if(WpdSpeedLinear>=0&&linearEffortCMD<baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.8;
+  if(WpdSpeedLinear>=0&&linearEffortCMD<baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.7;
   else if(WpdSpeedLinear>=0&&linearEffortCMD>baseLinCommand*1.5)linearEffortCMD=baseLinCommand*1.5;
-  else if(WpdSpeedLinear<0&&linearEffortCMD>baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.8;
+  else if(WpdSpeedLinear<0&&linearEffortCMD>baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.7;
   else if(WpdSpeedLinear<0&&linearEffortCMD<baseLinCommand*1.5)linearEffortCMD=baseLinCommand*1.5;
   if(WpdSpeedLinear==0)linearEffortCMD=0;
   throttle = normalizedValue(linearEffortCMD, 1); //values larger than 1 are meaningless to the platform.
@@ -317,7 +317,7 @@ void getThrottleAndSteering(double &throttle, double &angular)
   //Calculatin angular baseline given 2 working states, static and moving.
   double baseAngCommand;
   double absAng =fabs(WpdSpeedAngular); //fabs(​WpdSpeedAngular);
-  if(WpdSpeedLinear<0.15)
+  if(fabs(WpdSpeedLinear)<0.15)
     baseAngCommand =0.904*pow(absAng,0.21)*WpdSpeedAngular/absAng;
   else
     baseAngCommand =0.884*pow(absAng,0.532)*WpdSpeedAngular/absAng;
@@ -325,8 +325,8 @@ void getThrottleAndSteering(double &throttle, double &angular)
   double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
   double angularEffortCMD =baseAngCommand+ P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
   //clamping output
-  if(WpdSpeedAngular>=0&&angularEffortCMD<baseAngCommand*0.8)angularEffortCMD=baseAngCommand*0.9;
-  else if(WpdSpeedAngular<0&&angularEffortCMD>baseAngCommand*0.8)angularEffortCMD=baseAngCommand*0.9;
+  if(WpdSpeedAngular>=0&&angularEffortCMD<baseAngCommand*0.75)angularEffortCMD=baseAngCommand*0.85;
+  else if(WpdSpeedAngular<0&&angularEffortCMD>baseAngCommand*0.75)angularEffortCMD=baseAngCommand*0.85;
   else if(WpdSpeedAngular<0&&angularEffortCMD<baseAngCommand*1.4)angularEffortCMD=baseAngCommand*1.4;
   else if(WpdSpeedAngular>0&&angularEffortCMD>baseAngCommand*1.4)angularEffortCMD=baseAngCommand*1.4;
   else if(WpdSpeedAngular==0)angularEffortCMD=0;
