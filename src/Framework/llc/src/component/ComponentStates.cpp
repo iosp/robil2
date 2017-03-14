@@ -308,27 +308,30 @@ void getThrottleAndSteering(double &throttle, double &angular)
   // printf( "lin = [%3.2f] ang = [%3.2f]\n",currentVelocity,LocVelAngularZ);
   //  y = 0.00085 + 0.9690*x + 0.000130*x^2 - 0.138*x^3
   //y= -5e-2*x^3 + 7e-1*x
-  double baseLinCommand = 0.7*pow(fabs(WpdSpeedLinear),0.5)*WpdSpeedLinear/fabs(WpdSpeedLinear);
+  double baseLinCommand = 0.7*pow(fabs(WpdSpeedLinear),0.491)*WpdSpeedLinear/fabs(WpdSpeedLinear);
   double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
    linearEffortCMD =linearEffortCMD + P_linear * linearError * fabs(linearError) + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
 
-  if(WpdSpeedLinear>=0&&linearEffortCMD<baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.7;
+  if(WpdSpeedLinear>=0&&linearEffortCMD<baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.8;
   else if(WpdSpeedLinear>=0&&linearEffortCMD>baseLinCommand*1.5)linearEffortCMD=baseLinCommand*1.5;
-  else if(WpdSpeedLinear<0&&linearEffortCMD>baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.7;
+  else if(WpdSpeedLinear<0&&linearEffortCMD>baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.8;
   else if(WpdSpeedLinear<0&&linearEffortCMD<baseLinCommand*1.5)linearEffortCMD=baseLinCommand*1.5;
   if(WpdSpeedLinear==0)linearEffortCMD=0;
   throttle = normalizedValue(linearEffortCMD, 1); //values larger than 1 are meaningless to the platform.
-
+  double baseAngCommand;
   double absAng =fabs(WpdSpeedAngular); //fabs(​WpdSpeedAngular);
-  double baseAngCommand =0.9*pow(absAng,0.3)*WpdSpeedAngular/absAng;
+  if(WpdSpeedLinear<0.15)
+    baseAngCommand =0.904*pow(absAng,0.21)*WpdSpeedAngular/absAng;
+  else
+    baseAngCommand =0.884*pow(absAng,0.532)*WpdSpeedAngular/absAng;
   
   double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
    angularEffortCMD =angularEffortCMD + P_angular * angularError* fabs(angularError) + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
 
-  if(WpdSpeedAngular>=0&&angularEffortCMD<baseLinCommand*0.6)angularEffortCMD=baseAngCommand*0.6;
-  else if(WpdSpeedAngular<0&&angularEffortCMD>baseLinCommand*0.6)angularEffortCMD=baseAngCommand*0.6;
-  else if(WpdSpeedAngular<0&&angularEffortCMD<baseLinCommand*1.5)angularEffortCMD=baseAngCommand*1.5;
-  else if(WpdSpeedAngular>0&&angularEffortCMD>baseLinCommand*1.5)angularEffortCMD=baseAngCommand*1.5;
+  if(WpdSpeedAngular>=0&&angularEffortCMD<baseAngCommand*0.8)angularEffortCMD=baseAngCommand*0.9;
+  else if(WpdSpeedAngular<0&&angularEffortCMD>baseAngCommand*0.8)angularEffortCMD=baseAngCommand*0.9;
+  else if(WpdSpeedAngular<0&&angularEffortCMD<baseAngCommand*1.4)angularEffortCMD=baseAngCommand*1.4;
+  else if(WpdSpeedAngular>0&&angularEffortCMD>baseAngCommand*1.4)angularEffortCMD=baseAngCommand*1.4;
   else if(WpdSpeedAngular==0)angularEffortCMD=0;
   angular = normalizedValue(angularEffortCMD, 1); //values larger than 1 are meaningless to the platform.
   

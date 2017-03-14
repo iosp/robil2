@@ -350,10 +350,10 @@
       <collision name='back_left_wheel_collision'>
         <pose>0 0 0 -1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -403,10 +403,10 @@
       <collision name='back_right_wheel_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -457,10 +457,10 @@
       <collision name='front_left_wheel_collision'>
         <pose>0 0 0 -1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -510,10 +510,10 @@
       <collision name='front_right_wheel_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -562,10 +562,10 @@
       <collision name='roller_back_right_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -615,10 +615,10 @@
       <collision name='roller_mid_right_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -668,10 +668,10 @@
       <collision name='roller_front_right_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -721,10 +721,10 @@
       <collision name='roller_back_left_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -774,10 +774,10 @@
       <collision name='roller_mid_left_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -827,10 +827,10 @@
       <collision name='roller_front_left_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -910,7 +910,7 @@
     </joint>
 
  
- <!--CAM Sensors  <!--
+ <!--CAM Sensors  -->
      <include>
       <uri>model://FLEA3_L</uri>
       <pose>-0.3 0.25 2.145 0 0 0</pose>
@@ -946,7 +946,7 @@
       <dynamics/>
       </axis>
     </joint>
--->
+
 
 
 
