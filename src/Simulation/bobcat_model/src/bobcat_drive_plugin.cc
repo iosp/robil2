@@ -12,17 +12,9 @@
 // Gazebo Libraries
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
-#include <gazebo/common/common.hh>
-#include <gazebo/common/Time.hh>
-#include <gazebo/transport/transport.hh>
-#include <gazebo/msgs/msgs.hh>
-#include <gazebo/math/gzmath.hh>
-#include <gazebo/gazebo_config.h>
 
-// ROS Communication
+// ROS
 #include "ros/ros.h"
-#include "std_msgs/Float64.h"
-#include "std_msgs/Bool.h"
 
 // Boost Thread Mutex
 #include <boost/thread/mutex.hpp>
@@ -36,19 +28,19 @@
 #include <ctime>
 #include "linterp.h"
 
+// Qinetiq UDP Conection Emulator
 #include "sim_qinetiq_client.cc"
 
-// Maximum time delays
-#define command_MAX_DELAY 0.3
+
+// Platform Constants
+#define WHEELS_BASE 0.95
+#define WHEEL_DIAMETER 0.77
 
 #define WHEEL_EFFORT_LIMIT 100000
+#define COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE 10000
 
-#define WHEELS_BASE 0.95
-
-#define WHEEL_DIAMETER 0.77
 #define PI 3.14159265359
 
-#define COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE 10000
 
 namespace gazebo
 {
@@ -85,14 +77,14 @@ class bobtankDrivePlugin : public ModelPlugin
         this->model = _model;
 
         // Store the pointers to the joints
-        this->back_left_joint = this->model->GetJoint("back_left_wheel_joint");
+
+
+        this->front_right_joint = this->model->GetJoint("front_right_wheel_joint");
         this->back_right_joint = this->model->GetJoint("back_right_wheel_joint");
         this->front_left_joint = this->model->GetJoint("front_left_wheel_joint");
-        this->front_right_joint = this->model->GetJoint("front_right_wheel_joint");
+        this->back_left_joint = this->model->GetJoint("back_left_wheel_joint");
 
         this->Ros_nh = new ros::NodeHandle("bobtankDrivePlugin_node");
-
-        platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform", 100);
 
         // Listen to the update event. This event is broadcast every simulation iteration.
         this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&bobtankDrivePlugin::OnUpdate, this, _1));
@@ -179,6 +171,7 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
         control_D = config.Wheel_conntrol_D;
         steering_enforce_multiplier = config.Steering_enforce_multiplier;
 
+
         command_lN = config.Command_Linear_Noise;
         command_aN = config.Command_Angular_Noise;
 
@@ -191,7 +184,6 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
                 command_aD = config.Command_Angular_Delay;
                 array_initilization(Angular_command_delay_array, (int)command_aD, Angular_command_delay_index, Angular_delay_mutex);
                 }
-
 
         if ( command_lF != config.Command_Linear_Filter ) {
                 command_lF = config.Command_Linear_Filter;
@@ -213,12 +205,7 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
     {
         update_ref_vels();
         apply_efforts();
-
-        std_msgs::Bool connection;
-        connection.data = true;
-        platform_hb_pub_.publish(connection);
     }
-
 
     double command_delay(double prev_commands_array[], int array_size, int &command_index, boost::mutex &array_mutex, double new_command)
     {
@@ -291,11 +278,7 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
         if (effort_command < -WHEEL_EFFORT_LIMIT)
             effort_command = -WHEEL_EFFORT_LIMIT;
 
-#if GAZEBO_MAJOR_VERSION >= 6
-        wheel_joint->SetVelocity(0, ref_omega);
-#else
         wheel_joint->SetForce(0, effort_command);
-#endif
     }
 
   private:
@@ -336,9 +319,6 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
     // Defining private Ros Node Handle
     ros::NodeHandle *Ros_nh;
 
-    // Defining private Ros Publishers
-    ros::Publisher platform_hb_pub_;
-
     // Defining private Mutex
     boost::mutex Linear_command_mutex;
     boost::mutex Angular_command_mutex;
@@ -348,7 +328,6 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
 
     boost::mutex Linear_filter_mutex;
     boost::mutex Angular_filter_mutex;
-
 
 
     float Linear_command;

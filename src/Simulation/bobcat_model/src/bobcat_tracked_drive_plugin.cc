@@ -338,7 +338,6 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
 
         wheel_controller(this->cogwheel_right, right_wheels_omega_ref);
         wheel_controller(this->cogwheel_left, left_wheels_omega_ref);
-
     }
 
 
