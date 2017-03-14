@@ -19,7 +19,7 @@ using namespace std;
 using namespace decision_making;
 using namespace ros;
 
-#define DT 0.01
+#define DT 0.1
 #define LENGTH_OF_RECORD_IN_SECONDS 3
 #define LENGTH_OF_RECORD_IN_FRAMES (1 / DT) * LENGTH_OF_RECORD_IN_SECONDS
 #define SIZE_OF_WPD_INTEGRAL 3
@@ -44,8 +44,8 @@ double LocVelLinearY;
 double LocVelAngularZ;
 double sumOfWpdSpeedLinear;
 double sumOfWpdSpeedAngular;
-double WpdSpeedLinearLimit = 2.1;
-double WpdSpeedAngularLimit = 1.5;
+double WpdSpeedLinearLimit=2;
+double WpdSpeedAngularLimit=1.6;
 double WpdSpeedLinear;
 double WpdSpeedAngular;
 double currentYaw;
@@ -66,8 +66,8 @@ FSM(llc_ON)
   FSM_STATES
   {
     INIT,
-        READY,
-        STANDBY
+	READY,
+	STANDBY
   }
   FSM_START(INIT);
   FSM_BGN
@@ -77,7 +77,7 @@ FSM(llc_ON)
       FSM_CALL_TASK(INIT)
       FSM_TRANSITIONS
       {
-        FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
+	FSM_ON_EVENT("/EndOfInit", FSM_NEXT(READY));
       }
     }
     FSM_STATE(READY)
@@ -85,7 +85,7 @@ FSM(llc_ON)
       FSM_CALL_TASK(READY)
       FSM_TRANSITIONS
       {
-        FSM_ON_EVENT("/llc/Standby", FSM_NEXT(STANDBY));
+	FSM_ON_EVENT("/llc/Standby", FSM_NEXT(STANDBY));
       }
     }
     FSM_STATE(STANDBY)
@@ -93,7 +93,7 @@ FSM(llc_ON)
       FSM_CALL_TASK(STANDBY)
       FSM_TRANSITIONS
       {
-        FSM_ON_EVENT("/llc/Resume", FSM_NEXT(READY));
+	FSM_ON_EVENT("/llc/Resume", FSM_NEXT(READY));
       }
     }
   }
@@ -105,7 +105,7 @@ FSM(llc)
   FSM_STATES
   {
     OFF,
-        ON
+	ON
   }
   FSM_START(ON);
   FSM_BGN
@@ -115,8 +115,8 @@ FSM(llc)
       FSM_CALL_TASK(OFF)
       FSM_TRANSITIONS
       {
-        FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
-        FSM_ON_EVENT("/llc/Activation", FSM_NEXT(ON));
+	FSM_ON_EVENT("/Activation", FSM_NEXT(ON));
+	FSM_ON_EVENT("/llc/Activation", FSM_NEXT(ON));
       }
     }
     FSM_STATE(ON)
@@ -124,8 +124,8 @@ FSM(llc)
       FSM_CALL_FSM(llc_ON)
       FSM_TRANSITIONS
       {
-        FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
-        FSM_ON_EVENT("/llc/Shutdown", FSM_NEXT(OFF));
+	FSM_ON_EVENT("/Shutdown", FSM_NEXT(OFF));
+	FSM_ON_EVENT("/llc/Shutdown", FSM_NEXT(OFF));
       }
     }
   }
@@ -176,6 +176,7 @@ TaskResult state_INIT(string id, const CallContext &context, EventQueue &events)
 
 void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t level)
 {
+
   P_linear = config.linearVelocity_P;
   I_linear = config.linearVelocity_I;
   D_linear = config.linearVelocity_D;
@@ -186,16 +187,16 @@ void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t
   linearFactor = config.linearFactor;
   angularFactor = config.angularFactor;
 }
-double normalizedValue(double ValueToNormalize, double lim) //A normalizing function that clips the value to -1,1 range
+double normalizedValue(double ValueToNormalize,double lim) //A normalizing function that clips the value to -1,1 range
 {
-  double value = 0;
+  double value=0;
   if (ValueToNormalize > lim)
     value = lim;
   else if (ValueToNormalize < -lim)
     value = -lim;
   else
     value = ValueToNormalize;
-  return value;
+	return value;
 }
 void cb_currentYaw(geometry_msgs::PoseWithCovarianceStamped msg)
 {
@@ -206,45 +207,39 @@ void cb_currentYaw(geometry_msgs::PoseWithCovarianceStamped msg)
 
   currentYaw = yaw;
 }
-
+double EMAa_prior=0;
+double EMAl_prior=0;
 double calcIntegral_linearError(double currError)
 {
-  sum_linear -= errorLinearArray[indexOf_errorLinearArray];
-  sum_linear += currError;
-
-  errorLinearArray[indexOf_errorLinearArray] = currError;
-
-  if (++indexOf_errorLinearArray >= LENGTH_OF_RECORD_IN_FRAMES)
-    indexOf_errorLinearArray = 0;
-  return sum_linear * DT; //normalizing to prevent illogical integral accumulation that would be meaningless in the given output range(-1,1)
+  sum_linear += currError*DT;
+  sum_linear=normalizedValue(sum_linear,100);
+  return sum_linear; //normalizing to prevent illogical integral accumulation that would be meaningless in the given output range(-1,1)
 }
 
 double calcDiferencial_linearError(double currError)
 {
-  double diff = currError - lastLinearError;
+  double EMAl=EMAl_prior+0.3*(currError-EMAl_prior);
+  double diff = EMAl - EMAl_prior;
   double result = diff / DT;
+  EMAl_prior=EMAl;
   lastLinearError = currError;
   return result;
 }
 
 double calcIntegral_angularError(double currError)
 {
-  sum_angular -= errorAngularArray[indexOf_errorAngularArray];
-  sum_angular += currError;
-
-  errorAngularArray[indexOf_errorAngularArray] = currError;
-  indexOf_errorAngularArray++;
-
-  if (indexOf_errorAngularArray >= LENGTH_OF_RECORD_IN_FRAMES)
-    indexOf_errorAngularArray = 0;
-  return sum_angular * DT; //normalizing to prevent illogical integral accumulation
+  sum_angular += currError/DT;
+  sum_angular=normalizedValue(sum_angular,1000);
+  return sum_angular; //normalizing to prevent illogical integral accumulation
 }
 
 double calcDiferencial_angularError(double currError)
 {
-  double diff = currError - lastAngularError;
+  double EMAa=EMAa_prior+0.3*(currError-EMAa_prior);
+  double diff = EMAa - EMAa_prior;
   double result = diff / DT;
   lastAngularError = currError;
+  EMAa_prior=EMAa;
   return result;
 }
 
@@ -261,7 +256,7 @@ void cb_LocVelocityUpdate(geometry_msgs::TwistStamped msg)
     double x_normal = LocVelLinearX / V_normal;
     double y_noraml = LocVelLinearY / V_normal;
     double theta = atan2(y_noraml, x_normal);
-    if (abs(theta - currentYaw) - 3.0 / 8.0 * M_PI < 0.01||abs(theta - currentYaw)>5)
+    if (abs(theta - currentYaw) - 3.0 / 8.0 * M_PI < 0.01 or abs(theta - currentYaw)>5)
     {
       currentVelocity = V_normal;
     }
@@ -279,12 +274,12 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   wpdSpeedTimeInMilli = ros::Time::now().toSec() * 1000; // toSec() return seconds.milliSecconds
 
   sumOfWpdSpeedLinear -= wpdCmdLinearArray[indexOf_wpdCmdLinearArray];
-  sumOfWpdSpeedLinear += normalizedValue(msg.twist.linear.x, WpdSpeedLinearLimit);
+  sumOfWpdSpeedLinear += normalizedValue(msg.twist.linear.x,WpdSpeedLinearLimit);
   sumOfWpdSpeedAngular -= wpdCmdAngularArray[indexOf_wpdCmdAngularArray];
-  sumOfWpdSpeedAngular += normalizedValue(msg.twist.angular.z, WpdSpeedAngularLimit);
+  sumOfWpdSpeedAngular += normalizedValue(msg.twist.angular.z,WpdSpeedAngularLimit);
 
-  wpdCmdLinearArray[indexOf_wpdCmdLinearArray] = normalizedValue(msg.twist.linear.x, WpdSpeedLinearLimit);
-  wpdCmdAngularArray[indexOf_wpdCmdAngularArray] = normalizedValue(msg.twist.angular.z, WpdSpeedAngularLimit);
+  wpdCmdLinearArray[indexOf_wpdCmdLinearArray] = normalizedValue(msg.twist.linear.x,WpdSpeedLinearLimit);
+  wpdCmdAngularArray[indexOf_wpdCmdAngularArray] = normalizedValue(msg.twist.angular.z,WpdSpeedAngularLimit);
   if (++indexOf_wpdCmdLinearArray >= SIZE_OF_WPD_INTEGRAL)
     indexOf_wpdCmdLinearArray = 0;
   if (++indexOf_wpdCmdAngularArray >= SIZE_OF_WPD_INTEGRAL)
@@ -293,8 +288,7 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   WpdSpeedLinear = sumOfWpdSpeedLinear / SIZE_OF_WPD_INTEGRAL;
   WpdSpeedAngular = sumOfWpdSpeedAngular / SIZE_OF_WPD_INTEGRAL;
 }
-double linearEffortCMD=0;
-double angularEffortCMD=0;
+
 void getThrottleAndSteering(double &throttle, double &angular)
 {
   double RosTimeNowInMilli = ros::Time::now().toSec() * 1000; // toSec() return seconds.milliSecconds
@@ -306,28 +300,31 @@ void getThrottleAndSteering(double &throttle, double &angular)
     WpdSpeedAngular = 0;
   }
   // printf( "lin = [%3.2f] ang = [%3.2f]\n",currentVelocity,LocVelAngularZ);
-  //  y = 0.00085 + 0.9690*x + 0.000130*x^2 - 0.138*x^3
-  //y= -5e-2*x^3 + 7e-1*x
-  double baseLinCommand = 0.7*pow(fabs(WpdSpeedLinear),0.491)*WpdSpeedLinear/fabs(WpdSpeedLinear);
-  double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
-   linearEffortCMD =linearEffortCMD + P_linear * linearError * fabs(linearError) + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
 
+  //Calculatin linear baseline  using the Y=a*x^b power function calculated from trials.
+  double baseLinCommand = 0.7*pow(fabs(WpdSpeedLinear),0.491)*WpdSpeedLinear/fabs(WpdSpeedLinear);
+  //PID
+  double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
+  double linearEffortCMD =baseLinCommand + P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
+  //clamping output
   if(WpdSpeedLinear>=0&&linearEffortCMD<baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.8;
   else if(WpdSpeedLinear>=0&&linearEffortCMD>baseLinCommand*1.5)linearEffortCMD=baseLinCommand*1.5;
   else if(WpdSpeedLinear<0&&linearEffortCMD>baseLinCommand*0.7)linearEffortCMD=baseLinCommand*0.8;
   else if(WpdSpeedLinear<0&&linearEffortCMD<baseLinCommand*1.5)linearEffortCMD=baseLinCommand*1.5;
   if(WpdSpeedLinear==0)linearEffortCMD=0;
   throttle = normalizedValue(linearEffortCMD, 1); //values larger than 1 are meaningless to the platform.
+
+  //Calculatin angular baseline given 2 working states, static and moving.
   double baseAngCommand;
   double absAng =fabs(WpdSpeedAngular); //fabs(​WpdSpeedAngular);
   if(WpdSpeedLinear<0.15)
     baseAngCommand =0.904*pow(absAng,0.21)*WpdSpeedAngular/absAng;
   else
     baseAngCommand =0.884*pow(absAng,0.532)*WpdSpeedAngular/absAng;
-  
+  //PID
   double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
-   angularEffortCMD =angularEffortCMD + P_angular * angularError* fabs(angularError) + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
-
+  double angularEffortCMD =baseAngCommand+ P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
+  //clamping output
   if(WpdSpeedAngular>=0&&angularEffortCMD<baseAngCommand*0.8)angularEffortCMD=baseAngCommand*0.9;
   else if(WpdSpeedAngular<0&&angularEffortCMD>baseAngCommand*0.8)angularEffortCMD=baseAngCommand*0.9;
   else if(WpdSpeedAngular<0&&angularEffortCMD<baseAngCommand*1.4)angularEffortCMD=baseAngCommand*1.4;
