@@ -44,6 +44,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 add_library(bobtank_drive_plugin SHARED src/bobtank_drive_plugin.cc)
 target_link_libraries(bobtank_drive_plugin ${catkin_LIBRARIES}  ${Boost_LIBRARIES} )
 
+
 add_library(bobcat_drive_plugin SHARED src/bobcat_drive_plugin.cc)
 target_link_libraries(bobcat_drive_plugin ${catkin_LIBRARIES}  ${Boost_LIBRARIES} )
 add_dependencies(bobcat_drive_plugin ${PROJECT_NAME}_gencfg)
