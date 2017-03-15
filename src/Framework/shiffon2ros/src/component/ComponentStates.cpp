@@ -111,9 +111,10 @@ TaskResult state_READY(string id, const CallContext& context, EventQueue& events
 
 	ros::Rate IPON_rate(100);
 	while (ros::ok()) {
-		COMPONENT->ReadAndPub_ShiphonGPS();
-		COMPONENT->ReadAndPub_ShiphonINS();
-		COMPONENT->ReadAndPub_ShiphonGpsSpeed();
+        ros::Time now = ros::Time::now();
+        COMPONENT->ReadAndPub_ShiphonGPS(now);
+        COMPONENT->ReadAndPub_ShiphonINS(now);
+        COMPONENT->ReadAndPub_ShiphonGpsSpeed(now);
 		IPON_rate.sleep();
 	}
 	return TaskResult::SUCCESS();
