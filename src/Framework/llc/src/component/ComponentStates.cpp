@@ -278,6 +278,16 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   WpdSpeedAngular = sumOfWpdSpeedAngular / SIZE_OF_WPD_INTEGRAL;
 }
 
+
+int sign(double value)
+{
+    if (value >= 0)
+        return(1);
+    else
+        return(-1);
+}
+
+
 void getThrottleAndSteering(double &throttle, double &angular)
 {
   double RosTimeNowInMilli = ros::Time::now().toSec() * 1000; // toSec() return seconds.milliSecconds
@@ -292,7 +302,7 @@ void getThrottleAndSteering(double &throttle, double &angular)
 
   // ----- LINEAR ----
   //Calculating linear baseline  using the Y=a*x^b power function calculated from trials.
-  double baseLinCommand = 0.7*pow(fabs(WpdSpeedLinear),0.491)*signbit(WpdSpeedLinear);
+  double baseLinCommand = 0.7*pow(fabs(WpdSpeedLinear),0.491)*sign(WpdSpeedLinear);
   //PID
   double linearError = WpdSpeedLinear - currentVelocity;
   double linearEffortCMD =baseLinCommand + P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
@@ -309,9 +319,9 @@ void getThrottleAndSteering(double &throttle, double &angular)
   //Calculating angular baseline given 2 working states, linear velocity static and moving.
   double baseAngCommand;
   if(fabs(WpdSpeedLinear)<0.15)
-    baseAngCommand = 0.904*pow(fabs(WpdSpeedAngular),0.210)*signbit(WpdSpeedAngular);
+    baseAngCommand = 0.904*pow(fabs(WpdSpeedAngular),0.210)*sign(WpdSpeedAngular);
   else
-    baseAngCommand = 0.884*pow(fabs(WpdSpeedAngular),0.532)*signbit(WpdSpeedAngular);
+    baseAngCommand = 0.884*pow(fabs(WpdSpeedAngular),0.532)*sign(WpdSpeedAngular);
   //PID
   double angularError = WpdSpeedAngular - LocVelAngularZ;
   double angularEffortCMD =baseAngCommand+ P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
@@ -320,7 +330,6 @@ void getThrottleAndSteering(double &throttle, double &angular)
   else if(WpdSpeedAngular<0&&angularEffortCMD>baseAngCommand*0.75) angularEffortCMD=baseAngCommand*0.85;
   else if(WpdSpeedAngular<0&&angularEffortCMD<baseAngCommand*1.4)  angularEffortCMD=baseAngCommand*1.4;
   else if(WpdSpeedAngular>0&&angularEffortCMD>baseAngCommand*1.4)  angularEffortCMD=baseAngCommand*1.4;
-
   angular = clampValue(angularEffortCMD, 1); //values larger than 1 are meaningless to the platform.
 }
 
