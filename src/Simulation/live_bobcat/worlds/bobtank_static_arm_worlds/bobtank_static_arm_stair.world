@@ -1,149 +1,113 @@
 <?xml version="1.0" ?>
 <sdf version="1.4">
-    <world name="default">
-        <include>
-            <uri>model://sun</uri>
-        </include>
-        <scene>
-            <sky>
-                <time>10</time>
-                <clouds>
-                    <speed>5</speed>
-                    <direction>1.14</direction>
-                    <humidity>0.3</humidity>
-                </clouds>
-            </sky>
-        </scene>
-        <gui>
-            <camera name="camera_pose">
-                <pose>80 -60 60 0 0.5 2</pose>
-            </camera>
-        </gui>
-
-    <include>
-      <name>robil_ground_plane</name>
-      <uri>model://robil_ground_plane</uri>
-      <pose>0.0 0.0 0.0 0 0 0</pose>
-    </include>
-    
-    
-        <include>
-      	    <uri>model://bobtank_static_arm</uri>
-	    <name>Sahar</name>
-            <pose>0 0 0.5 0 0 0</pose>
-        </include>
-	
-	
-	
-
-	
-        <include>
-      	    <uri>model://step</uri>
-	    <name>step_5cm_center</name>
-            <pose>20 0 0.05 0 0 0</pose>
-        </include>	
-	
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>15 -2.5 0 0 0 0</pose>
-	</include>
-	
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>20 2.5 0 0 0 0</pose>
-	</include>
-    
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>35 -2.5 0 0 0 0</pose>
-	</include>	
-	
-	
-		
-
-
-
-
-
-	
-	<include>
-      	    <uri>model://step</uri>
-	    <name>step_5cm_left</name>
-            <pose>50 5 0.05 0 0 0.785</pose>
-        </include>	
-	
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>45 -2.5 0 0 0 0</pose>
-	</include>
-
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>50 2.5 0 0 0 0</pose>
-	</include>
-	
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>65 -2.5 0 0 0 0</pose>
-	</include>
-	
-	
-
-	
-	
-	<include>
-      	    <uri>model://step</uri>
-	    <name>step_5cm_right</name>
-            <pose>80 -5 0.05 0 0 -0.785</pose>
-        </include>
-
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>75 -2.5 0 0 0 0</pose>
-	</include>	
-	
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>80 2.5 0 0 0 0</pose>
-	</include>
-    
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>95 -2.5 0 0 0 0</pose>
-	</include>
-	
-	
-	
-	
-	
-
-	
-	
-	
-
-		
-	<include>
-      	    <uri>model://step</uri>
-	    <name>step_10cm_center</name>
-            <pose>110 0 0.10 0 0 0</pose>
-        </include>
-
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>115 -2.5 0 0 0 0</pose>
-	</include>	
-	
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>110 2.5 0 0 0 0</pose>
-	</include>
-    
-	<include>
-	  <uri>model://barrel1</uri>
-	  <pose>125 -2.5 0 0 0 0</pose>
-	</include>
-	
-
-    </world>
+	<world name="default">
+		<include>
+			<uri>model://sun</uri>
+		</include>
+		<scene>
+			<sky>
+				<time>10</time>
+				<clouds>
+					<speed>5</speed>
+					<direction>1.14</direction>
+					<humidity>0.3</humidity>
+				</clouds>
+			</sky>
+		</scene>
+		<gui>
+			<camera name="camera_pose">
+				<pose>80 -60 60 0 0.5 2</pose>
+			</camera>
+		</gui>
+		<include>
+			<name>robil_ground_plane</name>
+			<uri>model://robil_ground_plane</uri>
+			<pose>0.0 0.0 0.0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://bobtank_static_arm</uri>
+			<name>Sahar</name>
+			<pose>0 0 0.5 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://step</uri>
+			<name>step_5cm_center</name>
+			<pose>20 0 0.05 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel1</name>
+			<pose>15 -2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel2</name>
+			<pose>20 2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel3</name>
+			<pose>35 -2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://step</uri>
+			<name>step_5cm_left</name>
+			<pose>50 5 0.05 0 0 0.785</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel4</name>
+			<pose>45 -2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel5</name>
+			<pose>50 2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel6</name>
+			<pose>65 -2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://step</uri>
+			<name>step_5cm_right</name>
+			<pose>80 -5 0.05 0 0 -0.785</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel7</name>
+			<pose>75 -2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel8</name>
+			<pose>80 2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel9</name>
+			<pose>95 -2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://step</uri>
+			<name>step_10cm_center</name>
+			<pose>110 0 0.10 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel10</name>
+			<pose>115 -2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel11</name>
+			<pose>110 2.5 0 0 0 0</pose>
+		</include>
+		<include>
+			<uri>model://barrel1</uri>
+			<name>barrel12</name>
+			<pose>125 -2.5 0 0 0 0</pose>
+		</include>
+	</world>
 </sdf>
-

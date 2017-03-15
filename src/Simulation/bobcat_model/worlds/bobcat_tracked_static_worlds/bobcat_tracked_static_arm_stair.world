@@ -55,14 +55,17 @@
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel1</name>
 			<pose>15 -2.5 0 0 0 0</pose>
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel2</name>
 			<pose>20 2.5 0 0 0 0</pose>
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel3</name>
 			<pose>35 -2.5 0 0 0 0</pose>
 		</include>
 		<include>
@@ -72,14 +75,17 @@
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel4</name>
 			<pose>45 -2.5 0 0 0 0</pose>
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel5</name>
 			<pose>50 2.5 0 0 0 0</pose>
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel6</name>
 			<pose>65 -2.5 0 0 0 0</pose>
 		</include>
 		<include>
@@ -89,14 +95,17 @@
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel7</name>
 			<pose>75 -2.5 0 0 0 0</pose>
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel8</name>
 			<pose>80 2.5 0 0 0 0</pose>
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel9</name>
 			<pose>95 -2.5 0 0 0 0</pose>
 		</include>
 		<include>
@@ -106,14 +115,17 @@
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel10</name>
 			<pose>115 -2.5 0 0 0 0</pose>
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel11</name>
 			<pose>110 2.5 0 0 0 0</pose>
 		</include>
 		<include>
 			<uri>model://barrel1</uri>
+			<name>barrel12</name>
 			<pose>125 -2.5 0 0 0 0</pose>
 		</include>
 	</world>

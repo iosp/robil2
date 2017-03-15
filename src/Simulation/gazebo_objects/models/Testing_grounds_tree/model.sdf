@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <model name="Testing_Grounds_tree">
+        <static>true</static>
+        <link name="Testing_Grounds_trees">
+            <pose>0 0 0 0 0 0</pose>
+            <collision name="Testing_Grounds_tree_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="Testing_Grounds_treesvisual">
+                <geometry>
+                    <mesh>
+                        <uri>model://Testing_grounds_tree/meshes/testing_grounds_tree.dae</uri>
+                    </mesh>
+                </geometry>
+        </link>
+    </model>
+</sdf>
