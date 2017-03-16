@@ -23,32 +23,32 @@
         </inertia>
       </inertial>
       
-      <collision name='body_collision'>
-        <pose>-0.83149 0 0.33944 0 0 0</pose>
+            <collision name='body_collision'>
+        <pose>-0.82136 0 0.36982 0 -0.02 0</pose>
         <geometry>
           <box>
             <size>1.704 0.889 0.704</size>
           </box>
         </geometry>
       </collision>
-      <collision name='body_collision_bd'>
-        <pose>-1.85569 0 0.60871 0 0.08047 0</pose>
+      <collision name='body_collision_bb'>
+        <pose>-2.14939 0 0.68567 0 0.08047 0</pose>
         <geometry>
           <box>
-            <size>0.511 0.889 1.121</size>
+            <size>0.120 0.952 0.900</size>
           </box>
         </geometry>
       </collision>
       <collision name='body_collision_b'>
-        <pose>-1.85569 0 0.60871 0 0.08047 0</pose>
+        <pose>-1.87754 0 0.671 0 0.08047 0</pose>
         <geometry>
           <box>
-            <size>0.511 0.889 1.121</size>
+            <size>0.4 1.182 1.121</size>
           </box>
         </geometry>
       </collision>
-      <collision name='body_collision_d'>
-        <pose>-1.85040 0 0.37362 0 0.15418 0</pose>
+      <collision name='body_collision_bd'>
+        <pose>-1.81524 0 0.37981 0 0.1318 0</pose>
         <geometry>
           <box>
             <size>0.511 0.889 0.704</size>
@@ -60,15 +60,9 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/body.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/Bobcat_Assembly.dae</uri>
           </mesh>
         </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Wood</name>
-            <uri>__default__</uri>
-          </script>
-        </material>
       </visual>
       
       <collision name='body_collision_cabin'>
@@ -79,38 +73,6 @@
           </box>
         </geometry>
       </collision>
-      <visual name='body_visual_cabin'>
-        <pose>-0.113 0 0.610 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/cabin.STL</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Grey</name>
-            <uri>__default__</uri>
-          </script>
-        </material>
-      </visual>
-      
-      <visual name='body_visual_supporter_hinge'>
-        <pose>-0.31547 0 0.68593 1.5708 0 1.5708</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/supporter_hinge.STL</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/GreyTransparent</name>
-            <uri>__default__</uri>
-          </script>
-        </material>
-      </visual>
-      
       <collision name='body_collision_top_installation_link'>
         <pose>-0.92913 0 2.04 0 0 0</pose>
         <geometry>
@@ -118,130 +80,15 @@
             <size>0.663 0.598 0.838</size>
           </box>
         </geometry>
-        <surface>
-          <contact>
-            <ode/>
-          </contact>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-            </ode>
-          </friction>
-        </surface>
       </collision>
-      <visual name='body_visual_top_installation_link'>
-        <pose>-0.29575 0.03227 1.85972 1.5708 0 1.5708</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/top_installation.STL</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Grey</name>
-            <uri>__default__</uri>
-          </script>
-        </material>
-      </visual>
-      
-      <visual name='base_arm_visual'>
-        <pose>-1.9776 0 1.1773 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/base_arm.STL</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Grey</name>
-            <uri>__default__</uri>
-          </script>
-        </material>
-      </visual>
-      
-      <visual name='main_arm_visual'>
-        <pose>-1.75456 0 1.7035 0 -0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/main_arm.STL</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/PaintedWall</name>
-            <uri>__default__</uri>
-          </script>
-        </material>
-      </visual>
-      
       <collision name='loader_collision'>
-        <pose>0.77778 0 0.55577 0 -0.25273  0</pose>
+        <pose>0.782 0 0.58109 0 -0.25273  0</pose>
         <geometry>
           <box>
             <size>0.879 1.682 0.720</size>
           </box>
         </geometry>
       </collision>
-      <visual name='loader_visual'>
-        <pose>0.34384 0 0.1465 0 -0.25 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/loader.STL</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Gold</name>
-            <uri>__default__</uri>
-          </script>
-        </material>
-      </visual>
-      
-      <visual name='brackets_visual'>
-        <pose>0.5578 0 0.7242 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/brackets.STL</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Grey</name>
-            <uri>__default__</uri>
-          </script>
-        </material>
-      </visual>
-      <visual name='supporter_visual'>
-        <pose>-1.35685 0 0.80864 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/supporter.STL</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Grey</name>
-            <uri>__default__</uri>
-          </script>
-        </material>
-      </visual>
-      <visual name='body_tracks_visual'>
-        <pose>-0 0 0 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/tracks.dae</uri>
-          </mesh>
-        </geometry>
-        <!--        <material><ambient>0.2 0.2 0.2 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse><specular>1 1 1 1</specular><emissive>0 0 0 1</emissive></material>-->
-      </visual>
     </link>
     
     
