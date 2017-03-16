@@ -22,6 +22,7 @@
           <izz>1018.05</izz>
         </inertia>
       </inertial>
+      
       <collision name='body_collision'>
         <pose>-0.83149 0 0.33944 0 0 0</pose>
         <geometry>
@@ -30,7 +31,7 @@
           </box>
         </geometry>
       </collision>
-       <collision name='body_collision_bd'>
+      <collision name='body_collision_bd'>
         <pose>-1.85569 0 0.60871 0 0.08047 0</pose>
         <geometry>
           <box>
@@ -46,7 +47,7 @@
           </box>
         </geometry>
       </collision>
-       <collision name='body_collision_d'>
+      <collision name='body_collision_d'>
         <pose>-1.85040 0 0.37362 0 0.15418 0</pose>
         <geometry>
           <box>
@@ -69,6 +70,7 @@
           </script>
         </material>
       </visual>
+      
       <collision name='body_collision_cabin'>
         <pose>-1.0253 0 1.24 0 8.0491e-16 0</pose>
         <geometry>
@@ -78,7 +80,7 @@
         </geometry>
       </collision>
       <visual name='body_visual_cabin'>
-        <pose>-0.11317 0 0.61042 0 8.0491e-16 0</pose>
+        <pose>-0.113 0 0.610 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
@@ -92,8 +94,9 @@
           </script>
         </material>
       </visual>
+      
       <visual name='body_visual_supporter_hinge'>
-        <pose>-0.31547 0 0.68593 1.5708 -5.55112e-17 1.5708</pose>
+        <pose>-0.31547 0 0.68593 1.5708 0 1.5708</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
@@ -107,8 +110,9 @@
           </script>
         </material>
       </visual>
+      
       <collision name='body_collision_top_installation_link'>
-        <pose>-1 0 2.04 0 0 0</pose>
+        <pose>-0.92913 0 2.04 0 0 0</pose>
         <geometry>
           <box>
             <size>0.663 0.598 0.838</size>
@@ -127,7 +131,7 @@
         </surface>
       </collision>
       <visual name='body_visual_top_installation_link'>
-        <pose>-0.29575 0.03227 1.85972 1.5708 -6.10623e-16 1.5708</pose>
+        <pose>-0.29575 0.03227 1.85972 1.5708 0 1.5708</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
@@ -141,6 +145,7 @@
           </script>
         </material>
       </visual>
+      
       <visual name='base_arm_visual'>
         <pose>-1.9776 0 1.1773 0 0 0</pose>
         <geometry>
@@ -156,6 +161,7 @@
           </script>
         </material>
       </visual>
+      
       <visual name='main_arm_visual'>
         <pose>-1.75456 0 1.7035 0 -0 0</pose>
         <geometry>
@@ -171,6 +177,7 @@
           </script>
         </material>
       </visual>
+      
       <collision name='loader_collision'>
         <pose>0.77778 0 0.55577 0 -0.25273  0</pose>
         <geometry>
@@ -194,6 +201,7 @@
           </script>
         </material>
       </visual>
+      
       <visual name='brackets_visual'>
         <pose>0.5578 0 0.7242 0 0 0</pose>
         <geometry>
@@ -235,7 +243,9 @@
         <!--        <material><ambient>0.2 0.2 0.2 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse><specular>1 1 1 1</specular><emissive>0 0 0 1</emissive></material>-->
       </visual>
     </link>
-        <!--COGWHEELS-->
+    
+    
+    <!--COGWHEELS-->
     <link name='cogwheel_left'>
       <pose>-1.35 0.655 0.435 3.14159265358979 0 0</pose>
       <inertial>
@@ -250,12 +260,12 @@
           <izz>0.01</izz>
         </inertia>
       </inertial>
-      <visual name='COGL'>
+      <visual name='cogwheel_left_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel_left.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -284,8 +294,9 @@
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
     <!--<joint name="gear_left" type="gearbox"><parent>back_left_wheel</parent><child>cogwheel_left</child><gearbox_ratio>-1</gearbox_ratio><gearbox_reference_body>body</gearbox_reference_body><axis><xyz>0.000000 1.000000 0.000000</xyz></axis><axis2><xyz>0.000000 1.000000 0.000000</xyz></axis2></joint>-->
+
     <link name='cogwheel_right'>
-      <pose>-1.35 -0.66 0.435 0 0 0</pose>
+      <pose>-1.35 -0.655 0.435 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.1</mass>
@@ -298,12 +309,12 @@
           <izz>0.01</izz>
         </inertia>
       </inertial>
-      <visual name='COGR'>
+      <visual name='cogwheel_right_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel_right.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -331,10 +342,13 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
+
+
+
     <!--WHEELS-->
     <link name='back_left_wheel'>
     <self_collide>0</self_collide>
-      <pose>-1.53739 0.655 0.1 0 0 0</pose>
+      <pose>-1.53739 0.650 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -350,10 +364,10 @@
       <collision name='back_left_wheel_collision'>
         <pose>0 0 0 -1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -385,9 +399,10 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
+
     <link name='back_right_wheel'>
     <self_collide>0</self_collide>
-      <pose>-1.535 -0.66 0.1 0 0 0</pose>
+      <pose>-1.535 -0.650 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -403,10 +418,10 @@
       <collision name='back_right_wheel_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -439,6 +454,7 @@
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
     <!--<joint name="gear_right" type="gearbox"><parent>back_right_wheel</parent><child>cogwheel_right</child><gearbox_ratio>-1</gearbox_ratio><gearbox_reference_body>body</gearbox_reference_body><axis><xyz>0.000000 1.000000 0.000000</xyz></axis><axis2><xyz>0.000000 1.000000 0.000000</xyz></axis2></joint>-->
+
     <link name='front_left_wheel'>
     <self_collide>0</self_collide>
       <pose>-0.0535 0.655 0.1 0 0 0</pose>
@@ -457,10 +473,10 @@
       <collision name='front_left_wheel_collision'>
         <pose>0 0 0 -1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -492,9 +508,10 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
+
     <link name='front_right_wheel'>
     <self_collide>0</self_collide>
-      <pose>-0.0535 -0.66 0.1 0 0 0</pose>
+      <pose>-0.0535 -0.65 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -510,10 +527,10 @@
       <collision name='front_right_wheel_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -544,6 +561,11 @@
         <xyz>0 1 0</xyz>
       </axis>
     </joint>
+
+    
+    
+    
+    
     <link name='roller_back_right'>
     <self_collide>0</self_collide>
       <pose>-1.15 -0.65 0.1 0 0 0</pose>
@@ -562,10 +584,10 @@
       <collision name='roller_back_right_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -597,6 +619,7 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
+
     <link name='roller_mid_right'>
     <self_collide>0</self_collide>
       <pose>-0.81 -0.65 0.1 0 0 0</pose>
@@ -615,10 +638,10 @@
       <collision name='roller_mid_right_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -650,6 +673,7 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
+
     <link name='roller_front_right'>
     <self_collide>0</self_collide>
       <pose>-0.46 -0.65 0.1 0 0 0</pose>
@@ -668,10 +692,10 @@
       <collision name='roller_front_right_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -703,6 +727,7 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
+
     <link name='roller_back_left'>
     <self_collide>0</self_collide>
       <pose>-1.15 0.65 0.1 0 0 0</pose>
@@ -721,10 +746,10 @@
       <collision name='roller_back_left_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -756,6 +781,7 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
+
     <link name='roller_mid_left'>
     <self_collide>0</self_collide>
       <pose>-0.81 0.65 0.1 0 0 0</pose>
@@ -774,10 +800,10 @@
       <collision name='roller_mid_left_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -809,6 +835,7 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
+
     <link name='roller_front_left'>
     <self_collide>0</self_collide>
       <pose>-0.46 0.65 0.1 0 0 0</pose>
@@ -827,10 +854,10 @@
       <collision name='roller_front_left_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <cylinder>
-            <length>0.4</length>
+          <sphere>
+            <!--<length>0.4</length>-->
             <radius>0.2</radius>
-          </cylinder>
+          </sphere>
         </geometry>
         <surface>
           <contact>
@@ -862,18 +889,22 @@
       </axis>
       <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
+
+
     <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so"/>
     <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
       <robotNamespace>/Sahar</robotNamespace>
-      <jointName>back_left_wheel_joint, back_right_wheel_joint, front_left_wheel_joint, front_right_wheel_joint</jointName>
+      <jointName>back_left_wheel_joint, back_right_wheel_joint, front_left_wheel_joint, front_right_wheel_joint, cogwheel_right_joint, cogwheel_left_joint</jointName>
       <updateRate>50.0</updateRate>
       <alwaysOn>true</alwaysOn>
     </plugin>
-
+    
+    
+    
 <!-- IPON Sensor--> <!---->
     <include>
-      <uri>model://IPON</uri>
-      <pose>-0.550 -0.155 2.125 0.000 0.0007 0.000</pose>
+      <uri>model://IPON</uri>   
+      <pose>-0.550 -0.155 2.125 0.000 0.0007 0.000</pose>  <!-- position of the GPS antena , orintation of the INS sensor-->
       <name>IPON</name>
     </include>
     <joint name='ipon_joint' type='revolute'>
@@ -881,11 +912,13 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
+        
         <limit>
           <lower>0</lower>
           <upper>0</upper>
         </limit>
-      <dynamics/>
+        
+        <dynamics/>
       </axis>
     </joint>    
        
@@ -900,6 +933,47 @@
       <child>IBEO::link</child>
       <parent>body</parent>
       <axis>
+        <xyz>0 1 0</xyz>                                                                                                                                                                                        
+        
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        
+        <dynamics/>
+      </axis>
+    </joint>
+
+    
+ <!--CAM Sensors  -->
+    <include>
+      <uri>model://FLEA3_L</uri>
+      <pose>-0.3 0.25 2.02 0 0 0</pose>
+      <name>left_flea3</name>
+    </include>
+    <joint name='left_flea3_joint' type='revolute'>
+      <child>left_flea3::camera_link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+    
+    <include>
+      <uri>model://FLEA3_R</uri>
+      <pose>-0.3 -0.25 2.02 0 0 0</pose>
+      <name>right_flea3</name>
+    </include>    
+    <joint name='right_flea3_joint' type='revolute'>
+      <child>right_flea3::camera_link</child>
+      <parent>body</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
         <limit>
           <lower>0</lower>
           <upper>0</upper>
@@ -909,44 +983,6 @@
       </axis>
     </joint>
 
- 
- <!--CAM Sensors  <!--
-     <include>
-      <uri>model://FLEA3_L</uri>
-      <pose>-0.3 0.25 2.145 0 0 0</pose>
-      <name>left_flea3</name>
-    </include>
-    <joint name='left_flea3_joint' type='revolute'>
-      <child>left_flea3::camera_link</child>
-      <parent>body</parent>
-      <axis>
-        <limit>
-          <lower>0</lower>
-          <upper>0</upper>
-        </limit>
-        <xyz>0 1 0</xyz>
-      <dynamics/>
-      </axis>
-    </joint>
-    
-    <include>
-      <uri>model://FLEA3_R</uri>
-      <pose>-0.3 -0.25 2.145 0 0 0</pose>
-      <name>right_flea3</name>
-    </include>    
-    <joint name='right_flea3_joint' type='revolute'>
-      <child>right_flea3::camera_link</child>
-      <parent>body</parent>
-      <axis>
-        <limit>
-          <lower>0</lower>
-          <upper>0</upper>
-        </limit>
-        <xyz>0 1 0</xyz>
-      <dynamics/>
-      </axis>
-    </joint>
--->
 
 
 
@@ -1015,41 +1051,11 @@
       <noise>0.1</noise>
     </plugin>    
     
-        
-    <include>
-      <uri>model://wire_sensor_mount</uri>
-      <pose>0.59 0.3 0.52 0 -1 0</pose>
-      <name>blade_wire_sensor_mount</name>
-    </include> 
-    <joint name='blade_wire_sensor_mount_joint' type='revolute'>
-      <child>blade_wire_sensor_mount::link</child>
-      <parent>loader</parent>
-      <axis>
-        <xyz>0 1 0</xyz>
-      <dynamics/>
-      </axis>
-    </joint>
 
-    <include>
-      <uri>model://wire_sensor</uri>
-      <pose>0.3 0.3 0.85 0 -0.83 3.14</pose>
-      <name>blade_wire_sensor</name>
-    </include>    
-    <joint name='blade_wire_sensor_joint' type='revolute'>
-      <child>blade_wire_sensor::link</child>
-      <parent>main_arm</parent>
-      <axis>
-        <xyz>0 1 0</xyz>
-      <dynamics/>
+        
+        <dynamics/>
       </axis>
     </joint>
-    
-    <plugin name="blade_wire_sensor_plugin" filename="libwire_sensor.so">
-      <sensor_name>Sahar::blade_wire_sensor::link</sensor_name>
-      <mount_name>Sahar::blade_wire_sensor_mount::link</mount_name>
-      <noise>0.1</noise>
-    </plugin>
--->
 
   </model>
 </sdf>
