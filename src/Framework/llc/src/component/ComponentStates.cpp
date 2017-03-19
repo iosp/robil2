@@ -219,7 +219,7 @@ double calcDiferencial_linearError(double currError)
 
 double calcIntegral_angularError(double currError)
 {
-  sum_angular += currError/DT;
+  sum_angular += currError*DT;
   sum_angular=clampValue(sum_angular,100);
   return sum_angular; //normalizing to prevent illogical integral accumulation
 }
