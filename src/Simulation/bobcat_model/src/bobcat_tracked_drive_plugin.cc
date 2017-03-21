@@ -30,6 +30,7 @@
 
 // Qinetiq UDP Conection Emulator
 #include "sim_qinetiq_client.cc"
+#include "noise.cc"
 
 
 // Platform Constants
@@ -189,8 +190,8 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
         MaxAngPowerMult = config.MaxAngPowerMult; //Control power multiplier on maximal angular velocity.
 
 
-        command_lN = config.Command_Linear_Noise;
-        command_aN = config.Command_Angular_Noise;
+        Noise_Linear.init(config.frequencyInHz_Linear_Noise, 0, config.Command_Linear_Noise);
+        Noise_Angular.init(config.frequencyInHz_Angular_Noise, 0, config.Command_Angular_Noise);
 
         if ( command_lD != config.Command_Linear_Delay ) {
                 command_lD = config.Command_Linear_Delay;
@@ -218,10 +219,12 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
 
     // Called by the world update start event, This function is the event that will be called every update
   public:
-    void OnUpdate(const common::UpdateInfo & /*_info*/) // we are not using the pointer to the info so its commanted as an option
+    void OnUpdate(const common::UpdateInfo & _info) // we are not using the pointer to the info so its commanted as an option
     {
         update_ref_vels();
         apply_efforts();
+        Noise_Linear.onUpdate(_info.simTime.Double());
+        Noise_Angular.onUpdate(_info.simTime.Double());
     }
 
     double command_delay(double prev_commands_array[], int array_size, int &command_index, boost::mutex &array_mutex, double new_command)
@@ -274,11 +277,14 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
         double Linear_vel = command_fillter(Linear_command_filter_array, command_lF, Linear_command_filter_index, Linear_filter_mutex, Linear_command_sum, Linear_vel_deleyed);
         double Angular_vel = command_fillter(Angular_command_filter_array, command_aF,  Angular_command_filter_index,Angular_filter_mutex,Angular_command_sum, Angular_vel_deleyed);
 
-        double LinearNoise = command_lN * (*Linear_Noise_dist)(generator);
-        double AngularNoise = command_aN * (*Angular_Noise_dist)(generator);
+//        double LinearNoise = command_lN * (*Linear_Noise_dist)(generator);
+//        double AngularNoise = command_aN * (*Angular_Noise_dist)(generator);
 
-        Linear_ref_vel = (1 + LinearNoise) * Linear_vel;
-        Angular_ref_vel = (1 + AngularNoise) * Angular_vel;
+//        Linear_ref_vel = (1 + LinearNoise) * Linear_vel;
+//        Angular_ref_vel = (1 + AngularNoise) * Angular_vel;
+
+        Linear_ref_vel = (1 + Noise_Linear.getCurrentNoise()) * Linear_vel;
+        Angular_ref_vel = (1 + Noise_Angular.getCurrentNoise()) * Angular_vel;
     }
 
   private:
@@ -410,6 +416,8 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
     InterpMultilinear<2, double> *Angular_vel_interp;
 
     simQinetiqClient sqc;
+    noise Noise_Linear;
+    noise Noise_Angular;
 };
 
 // Tell Gazebo about this plugin, so that Gazebo can call Load on this plugin.
