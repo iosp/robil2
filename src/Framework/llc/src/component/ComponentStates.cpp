@@ -25,7 +25,6 @@ using namespace ros;
 #define SIZE_OF_WPD_INTEGRAL 3
 static double P_linear, D_linear, I_linear;    /* PID constants of linear x */
 static double P_angular, D_angular, I_angular; /* PID constants of angular z */
-static double linearnormalizedValuer;
 double sum_linear;
 double sum_angular;
 
@@ -37,22 +36,20 @@ double wpdCmdLinearArray[SIZE_OF_WPD_INTEGRAL];
 int indexOf_wpdCmdLinearArray;
 double wpdCmdAngularArray[SIZE_OF_WPD_INTEGRAL];
 int indexOf_wpdCmdAngularArray;
-double lastLinearError;
-double lastAngularError;
+double EMAang=0; //Exponential moving average for Linear command
+double EMAlin=0; // and angular , these are basically part of a low pass filter.
 double LocVelLinearX;
 double LocVelLinearY;
 double LocVelAngularZ;
 double sumOfWpdSpeedLinear;
 double sumOfWpdSpeedAngular;
-double WpdSpeedLinearLimit=1.6;
-double WpdSpeedAngularLimit=1.2;
+double WpdSpeedLinearLimit=2;
+double WpdSpeedAngularLimit=1.6;
 double WpdSpeedLinear;
 double WpdSpeedAngular;
 double currentYaw;
 double currentVelocity;
 double wpdSpeedTimeInMilli;
-double linearFactor;
-double angularFactor;
 
 class Params : public CallContextParameters
 {
@@ -156,7 +153,6 @@ TaskResult state_INIT(string id, const CallContext &context, EventQueue &events)
   sumOfWpdSpeedAngular = 0;
   currentYaw = 0;
   currentVelocity = 0;
-  linearnormalizedValuer = 1;
   wpdSpeedTimeInMilli = 0;
 
   for (int i = 0; i < 1000; i++)
@@ -176,18 +172,15 @@ TaskResult state_INIT(string id, const CallContext &context, EventQueue &events)
 
 void dynamic_Reconfiguration_callback(llc::ControlParamsConfig &config, uint32_t level)
 {
-
   P_linear = config.linearVelocity_P;
   I_linear = config.linearVelocity_I;
   D_linear = config.linearVelocity_D;
   P_angular = config.angularVelocity_P;
   I_angular = config.angularVelocity_I;
   D_angular = config.angularVelocity_D;
-
-  linearFactor = config.linearFactor;
-  angularFactor = config.angularFactor;
 }
-double normalizedValue(double ValueToNormalize,double lim) //A normalizing function that clips the value to -1,1 range
+
+double clampValue(double ValueToNormalize,double lim) //A normalizing function that clips the value to -1,1 range
 {
   double value=0;
   if (ValueToNormalize > lim)
@@ -198,6 +191,7 @@ double normalizedValue(double ValueToNormalize,double lim) //A normalizing funct
     value = ValueToNormalize;
 	return value;
 }
+
 void cb_currentYaw(geometry_msgs::PoseWithCovarianceStamped msg)
 {
   double roll, pitch, yaw = 0;
@@ -210,43 +204,32 @@ void cb_currentYaw(geometry_msgs::PoseWithCovarianceStamped msg)
 
 double calcIntegral_linearError(double currError)
 {
-  sum_linear -= errorLinearArray[indexOf_errorLinearArray];
-  sum_linear += currError;
-
-  errorLinearArray[indexOf_errorLinearArray] = currError;
-
-  if (++indexOf_errorLinearArray >= LENGTH_OF_RECORD_IN_FRAMES)
-    indexOf_errorLinearArray = 0;
-  return sum_linear * DT; //normalizing to prevent illogical integral accumulation that would be meaningless in the given output range(-1,1)
+  sum_linear += currError*DT;
+  sum_linear=clampValue(sum_linear,100);
+  return sum_linear; //normalizing to prevent illogical integral accumulation that would be meaningless in the given output range(-1,1)
 }
 
 double calcDiferencial_linearError(double currError)
 {
-  double diff = currError - lastLinearError;
-  double result = diff / DT;
-  lastLinearError = currError;
-  return result;
+  double diff = 0.3*(currError-EMAlin);
+  EMAlin = EMAlin + diff;
+
+  return (diff / DT);
 }
 
 double calcIntegral_angularError(double currError)
 {
-  sum_angular -= errorAngularArray[indexOf_errorAngularArray];
-  sum_angular += currError;
-
-  errorAngularArray[indexOf_errorAngularArray] = currError;
-  indexOf_errorAngularArray++;
-
-  if (indexOf_errorAngularArray >= LENGTH_OF_RECORD_IN_FRAMES)
-    indexOf_errorAngularArray = 0;
-  return sum_angular * DT; //normalizing to prevent illogical integral accumulation
+  sum_angular += currError*DT;
+  sum_angular=clampValue(sum_angular,100);
+  return sum_angular; //normalizing to prevent illogical integral accumulation
 }
 
 double calcDiferencial_angularError(double currError)
 {
-  double diff = currError - lastAngularError;
-  double result = diff / DT;
-  lastAngularError = currError;
-  return result;
+  double diff = 0.3*(currError-EMAang);
+  EMAang = EMAang + diff;
+
+  return (diff / DT);
 }
 
 void cb_LocVelocityUpdate(geometry_msgs::TwistStamped msg)
@@ -262,7 +245,7 @@ void cb_LocVelocityUpdate(geometry_msgs::TwistStamped msg)
     double x_normal = LocVelLinearX / V_normal;
     double y_noraml = LocVelLinearY / V_normal;
     double theta = atan2(y_noraml, x_normal);
-    if (abs(theta - currentYaw) - 3.0 / 8.0 * M_PI < 0.01)
+    if (abs(theta - currentYaw) - 3.0 / 8.0 * M_PI < 0.01 or abs(theta - currentYaw)>5)
     {
       currentVelocity = V_normal;
     }
@@ -280,12 +263,12 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   wpdSpeedTimeInMilli = ros::Time::now().toSec() * 1000; // toSec() return seconds.milliSecconds
 
   sumOfWpdSpeedLinear -= wpdCmdLinearArray[indexOf_wpdCmdLinearArray];
-  sumOfWpdSpeedLinear += normalizedValue(msg.twist.linear.x,WpdSpeedLinearLimit);
+  sumOfWpdSpeedLinear += clampValue(msg.twist.linear.x,WpdSpeedLinearLimit);
   sumOfWpdSpeedAngular -= wpdCmdAngularArray[indexOf_wpdCmdAngularArray];
-  sumOfWpdSpeedAngular += normalizedValue(msg.twist.angular.z,WpdSpeedAngularLimit);
+  sumOfWpdSpeedAngular += clampValue(msg.twist.angular.z,WpdSpeedAngularLimit);
 
-  wpdCmdLinearArray[indexOf_wpdCmdLinearArray] = normalizedValue(msg.twist.linear.x,WpdSpeedLinearLimit);
-  wpdCmdAngularArray[indexOf_wpdCmdAngularArray] = normalizedValue(msg.twist.angular.z,WpdSpeedAngularLimit);
+  wpdCmdLinearArray[indexOf_wpdCmdLinearArray] = clampValue(msg.twist.linear.x,WpdSpeedLinearLimit);
+  wpdCmdAngularArray[indexOf_wpdCmdAngularArray] = clampValue(msg.twist.angular.z,WpdSpeedAngularLimit);
   if (++indexOf_wpdCmdLinearArray >= SIZE_OF_WPD_INTEGRAL)
     indexOf_wpdCmdLinearArray = 0;
   if (++indexOf_wpdCmdAngularArray >= SIZE_OF_WPD_INTEGRAL)
@@ -294,6 +277,16 @@ void cb_WpdSpeed(geometry_msgs::TwistStamped msg)
   WpdSpeedLinear = sumOfWpdSpeedLinear / SIZE_OF_WPD_INTEGRAL;
   WpdSpeedAngular = sumOfWpdSpeedAngular / SIZE_OF_WPD_INTEGRAL;
 }
+
+
+int sign(double value)
+{
+    if (value >= 0)
+        return(1);
+    else
+        return(-1);
+}
+
 
 void getThrottleAndSteering(double &throttle, double &angular)
 {
@@ -305,14 +298,39 @@ void getThrottleAndSteering(double &throttle, double &angular)
     WpdSpeedLinear = 0;
     WpdSpeedAngular = 0;
   }
-	// printf( "lin = [%3.2f] ang = [%3.2f]\n",currentVelocity,LocVelAngularZ);
-  double linearError = (linearFactor * WpdSpeedLinear) - currentVelocity;
-  double linearEffortCMD = P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
-  throttle = normalizedValue(linearEffortCMD,1);//values larger than 1 are meaningless to the platform.
 
-  double angularError = (angularFactor * WpdSpeedAngular) - LocVelAngularZ;
-  double angularEffortCMD = P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
-  angular = normalizedValue(angularEffortCMD,1);//values larger than 1 are meaningless to the platform.
+
+  // ----- LINEAR ----
+  //Calculating linear baseline  using the Y=a*x^b power function calculated from trials.
+  double baseLinCommand = 0.7*pow(fabs(WpdSpeedLinear),0.491)*sign(WpdSpeedLinear);
+  //PID
+  double linearError = WpdSpeedLinear - currentVelocity;
+  double linearEffortCMD =baseLinCommand + P_linear * linearError + I_linear * calcIntegral_linearError(linearError) + D_linear * calcDiferencial_linearError(linearError);
+  //clamping output
+  if(WpdSpeedLinear>=0 && linearEffortCMD<baseLinCommand*0.7)      linearEffortCMD=baseLinCommand*0.7;
+  else if(WpdSpeedLinear>=0 && linearEffortCMD>baseLinCommand*1.5) linearEffortCMD=baseLinCommand*1.5;
+  else if(WpdSpeedLinear<0 && linearEffortCMD>baseLinCommand*0.7)  linearEffortCMD=baseLinCommand*0.7;
+  else if(WpdSpeedLinear<0 && linearEffortCMD<baseLinCommand*1.5)  linearEffortCMD=baseLinCommand*1.5;
+
+  throttle = clampValue(linearEffortCMD, 1); //values larger than 1 are meaningless to the platform.
+
+
+  // ----- ANGULAR ----
+  //Calculating angular baseline given 2 working states, linear velocity static and moving.
+  double baseAngCommand;
+  if(fabs(WpdSpeedLinear)<0.15)
+    baseAngCommand = 0.904*pow(fabs(WpdSpeedAngular),0.210)*sign(WpdSpeedAngular);
+  else
+    baseAngCommand = 0.884*pow(fabs(WpdSpeedAngular),0.532)*sign(WpdSpeedAngular);
+  //PID
+  double angularError = WpdSpeedAngular - LocVelAngularZ;
+  double angularEffortCMD =baseAngCommand+ P_angular * angularError + I_angular * calcIntegral_angularError(angularError) + D_angular * calcDiferencial_angularError(angularError);
+  //clamping output
+  if(WpdSpeedAngular>=0&&angularEffortCMD<baseAngCommand*0.75)     angularEffortCMD=baseAngCommand*0.85;
+  else if(WpdSpeedAngular<0&&angularEffortCMD>baseAngCommand*0.75) angularEffortCMD=baseAngCommand*0.85;
+  else if(WpdSpeedAngular<0&&angularEffortCMD<baseAngCommand*1.4)  angularEffortCMD=baseAngCommand*1.4;
+  else if(WpdSpeedAngular>0&&angularEffortCMD>baseAngCommand*1.4)  angularEffortCMD=baseAngCommand*1.4;
+  angular = clampValue(angularEffortCMD, 1); //values larger than 1 are meaningless to the platform.
 }
 
 TaskResult state_READY(string id, const CallContext &context, EventQueue &events)

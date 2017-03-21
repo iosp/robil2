@@ -19,8 +19,10 @@ find_package(Boost REQUIRED COMPONENTS
 
 find_package(gazebo REQUIRED)
 
-generate_dynamic_reconfigure_options(cfg/bobcat_model.cfg)  
-
+generate_dynamic_reconfigure_options(
+       cfg/bobcat_model.cfg  
+       cfg/bobcat_tracked_model.cfg
+)  
 
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
@@ -54,6 +56,10 @@ add_dependencies(bobcat_tracked_drive_plugin ${PROJECT_NAME}_gencfg)
 add_library(sim_qinetiq_client SHARED src/sim_qinetiq_client.cc)
 target_link_libraries(sim_qinetiq_client ${catkin_LIBRARIES}  ${Boost_LIBRARIES} )
 add_dependencies(sim_qinetiq_client ${PROJECT_NAME}_gencfg)
+
+add_library(noise SHARED src/noise.cc)
+target_link_libraries(noise ${catkin_LIBRARIES}  ${Boost_LIBRARIES} )
+add_dependencies(noise ${PROJECT_NAME}_gencfg)
 
 add_library(chain_gazebo_plugin src/chain_plugin.cpp )
 target_link_libraries(chain_gazebo_plugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} ${Boost_LIBRARIES} )
