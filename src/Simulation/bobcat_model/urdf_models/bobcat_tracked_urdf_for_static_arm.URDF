@@ -1,86 +1,23 @@
 <?xml version="1.0"?>
 <robot name="Sahar">
-  <link name="body"/>
-
-  <link name="cabin"/>
-  <joint name="cabin_joint" type="fixed">
-    <parent link="body" />
-    <child  link="cabin" />
-    <origin xyz="-0.113 0 0.610" rpy="0 0 0" />
-    <axis   xyz="0 1 0" />
-  </joint>
-  
-  <link name="top_installation"/>
-  <joint name="top_installation_joint" type="fixed">
-    <parent link="body" />
-    <child link="top_installation" />
-    <origin xyz="-0.295 0.032 1.859" rpy="1.570 0 1.570" />
-    <axis xyz="0 0 0" />
-  </joint>
-  
-  <link name="supporter_hinge"/>
-  <joint name="supporter_hinge_joint" type="fixed">
-    <parent link="body" />
-    <child link="supporter_hinge" />
-    <origin xyz="-0.315 0 0.685" rpy="1.570 0 1.570" />
-    <axis xyz="1 0 0" />
-  </joint>
-
-  <link name="base_arm"/>
-  <joint name="base_arm_joint" type="fixed">
-    <parent link="body" />
-    <child link="base_arm" />
-    <origin xyz="-1.977 0 1.177" rpy="0 0 0" />
-    <axis xyz="0 1 0" />
-  </joint>
-
-  <link name="main_arm"/>
-  <joint name="main_arm_joint" type="fixed">
-    <parent link="body" />
-    <child link="main_arm" />
-    <origin xyz="-1.754 0 1.703" rpy="0 0 0" />
-    <axis xyz="0 1 0" />
-  </joint>
-
-  <link name="supporter"/>
-  <joint name="supporter_joint" type="fixed">
-    <parent link="body" />
-    <child link="supporter" />
-    <origin xyz="-1.356 0 0.808" rpy="0 0 0" />
-    <axis xyz="0 1 0" />
-  </joint>
-
-  <link name="loader"/>
-  <joint name="loader_joint" type="fixed">
-    <parent link="body" />
-    <child link="loader" />
-    <origin xyz="0.343 0 0.146" rpy="0 -0.25 0" />
-    <axis xyz="0 1 0" />
-  </joint>
-  
-  <link name="brackets"/>
-  <joint name="brackets_joint" type="fixed">
-    <parent link="body" />
-    <child link="brackets" />
-    <origin xyz="0.558 0 0.724" rpy="0 0 0" />
-    <axis xyz="0 1 0" />
-  </joint>
-
-  <link name="tracks"/>
-  <joint name="tracks_joint" type="fixed">
-    <parent link="body" />
-    <child link="tracks" />
-    <origin xyz="0 0 0" rpy="0 0 0" />
-    <axis xyz="0 1 0" />
-  </joint>  
-  
-  
-  
+  <link name="body">
+  <inertial>
+     <origin xyz="0 0 0.125" rpy="0 0 0"/>>
+     <mass value="1"/>
+     <inertia ixx="1"  ixy="0"  ixz="0" iyy="1" iyz="0" izz="1" />
+   </inertial>
+    <visual>
+     <origin xyz="0 0 0" rpy="0 0 0" />
+     <geometry>
+          <mesh filename="package://sdf_models/bobcat_tracked_static_arm/meshes/body.dae"/>
+      </geometry>
+   </visual>
+   </link>  
   <link name="cogwheel_left"/>
   <joint name="cogwheel_left_joint" type="continuous">
     <parent link="body" />
     <child link="cogwheel_left" />
-    <origin xyz="-1.35 0.655 0.435" rpy="3.141 0 0" />
+    <origin xyz="-1.35 0.655 0.435" rpy="0 0 0" />
     <axis xyz="0 1 0" />
   </joint>  
   
@@ -91,11 +28,8 @@
     <origin xyz="-1.35 -0.655 0.435" rpy="0 0 0" />
     <axis xyz="0 1 0" />
   </joint>    
-  
-  
-  
 
-  <link name="back_left_wheel"/>
+  <!--<link name="back_left_wheel"/>
   <joint name="back_left_wheel_joint" type="continuous">
     <parent link="body" />
     <child link="back_left_wheel" />
@@ -125,7 +59,7 @@
     <child link="front_right_wheel" />
     <origin xyz="-0.053 -0.650 0.1" rpy="0 0 0" />
     <axis xyz="0 1 0" />
-  </joint>
+  </joint>-->
  
   
   <!--link name="roller_back_right"/>
