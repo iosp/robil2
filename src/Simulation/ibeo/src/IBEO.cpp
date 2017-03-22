@@ -103,6 +103,23 @@ namespace gazebo
 			gzthrow(error);
 			return;
       	  }
+#if GAZEBO_MAJOR_VERSION >= 7
+#ifdef USE_GPU
+          {
+              _sensorB1 = std::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB1);
+              _sensorB2 = std::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB2);
+              _sensorT1 = std::static_pointer_cast<sensors::GpuRaySensor>(sensorT1);
+              _sensorT2 = std::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorT2);
+          }
+#else
+	  {
+		  _sensorB1 = std::dynamic_pointer_cast<sensors::RaySensor>(sensorB1);
+		  _sensorB2 = std::dynamic_pointer_cast<sensors::RaySensor>(sensorB2);
+		  _sensorT1 = std::static_pointer_cast<sensors::RaySensor>(sensorT1);
+		  _sensorT2 = std::dynamic_pointer_cast<sensors::RaySensor>(sensorT2);
+	  }
+#endif
+#else
 #ifdef USE_GPU
           {
               _sensorB1 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB1);
@@ -117,6 +134,7 @@ namespace gazebo
 		  _sensorT1 = boost::static_pointer_cast<sensors::RaySensor>(sensorT1);
 		  _sensorT2 = boost::dynamic_pointer_cast<sensors::RaySensor>(sensorT2);
 	  }
+#endif
 #endif
 	      if(!_sensorB1 || !_sensorB2 || !_sensorT1 || !_sensorT2)
     	  {
@@ -169,9 +187,11 @@ namespace gazebo
 	      loadParametersFromSDFFile(_sdf);
 
 	      initSensors();
-
+#if GAZEBO_MAJOR_VERSION >= 7
+	      numOfIbeoPoints = _sensorB1->RangeCount()+_sensorB2->RangeCount()+_sensorT1->RangeCount()+_sensorT2->RangeCount();
+#else
 	      numOfIbeoPoints = _sensorB1->GetRangeCount()+_sensorB2->GetRangeCount()+_sensorT1->GetRangeCount()+_sensorT2->GetRangeCount();
-
+#endif
 	      this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&IBEO::OnUpdate, this, _1));
 	      _marker_pub = _nodeHandle.advertise<visualization_msgs::Marker>(_Robot_Name_Space+"/"+_Sensor_Name+"/markers", 10);
 
@@ -364,10 +384,10 @@ namespace gazebo
     //getRanges
     void getRanges(vector<double>& rangesT1, vector<double>& rangesT2, vector<double>& rangesB1, vector<double>& rangesB2)
     {
-        _sensorB1->GetRanges(rangesB1);
-        _sensorB2->GetRanges(rangesB2);
-        _sensorT1->GetRanges(rangesT1);
-        _sensorT2->GetRanges(rangesT2);
+        _sensorB1->Ranges(rangesB1);
+        _sensorB2->Ranges(rangesB2);
+        _sensorT1->Ranges(rangesT1);
+        _sensorT2->Ranges(rangesT2);
 
         float Dm = _distance_min;
         float Dr = _distance_sample_resolution;
@@ -479,10 +499,10 @@ namespace gazebo
     	  flag_fillMsg = true;
       }
 
-      double diff_update_B1 = _sensorB1->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
-      double diff_update_B2 = _sensorB2->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
-      double diff_update_T1 = _sensorT1->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
-      double diff_update_T2 = _sensorT2->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+      double diff_update_B1 = _sensorB1->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+      double diff_update_B2 = _sensorB2->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+      double diff_update_T1 = _sensorT1->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+      double diff_update_T2 = _sensorT2->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
 
 
       if ( (diff_update_B1 >= -0.0001 ) &&

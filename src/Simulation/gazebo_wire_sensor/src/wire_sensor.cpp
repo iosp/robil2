@@ -1,10 +1,11 @@
 #include <boost/bind.hpp>
-
-#include <stdio.h>
-#include <gazebo/common/Plugin.hh>
+#include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
-#include "gazebo/gazebo.hh"
+
+#include <stdio.h>
+//#include <gazebo/common/Plugin.hh>
+
 #include <ros/ros.h>
 #include <iostream>
 #include <cmath>
@@ -70,8 +71,11 @@ namespace gazebo
 		gzthrow(string("Wire Sensor Load Error: Cannot find the model \"")+_mount_name+"\" in the sdf. Please make sure it is loaded.");
 		return;
 		}
-
+#if GAZEBO_MAJOR_VERSION >= 7
 		this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&WIRE_SENSOR::OnUpdate, this, _1));
+#else
+		this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&WIRE_SENSOR::OnUpdate, this, _1));
+#endif
 		_publisher = _nodeHandle.advertise<std_msgs::Float64>(TOPIC_NAME, 10);
 
 	}
@@ -116,6 +120,6 @@ namespace gazebo
     common::Time		_lastTime;
   };
 
-// Register this plugin with the simulator
-GZ_REGISTER_MODEL_PLUGIN(WIRE_SENSOR)
+ // Register this plugin with the simulator
+ GZ_REGISTER_MODEL_PLUGIN(WIRE_SENSOR)
 }

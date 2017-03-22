@@ -141,8 +141,11 @@ namespace gazebo
       }
       
       //_gps = boost::dynamic_pointer_cast<sensors::GpsSensor>(sensorGPS);
+#if GAZEBO_MAJOR_VERSION >= 7
+      _imu = std::dynamic_pointer_cast<sensors::ImuSensor>(sensorIMU);
+#else
       _imu = boost::dynamic_pointer_cast<sensors::ImuSensor>(sensorIMU);
-      
+#endif      
       // Listen to the update event. This event is broadcast every
       // simulation iteration.
       this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&GPS_INS::OnUpdate, this, _1));
@@ -221,7 +224,15 @@ namespace gazebo
         msg_imu.orientation.y = q.y();
         msg_imu.orientation.z = q.z();
         msg_imu.orientation.w = q.w();
+#if GAZEBO_MAJOR_VERSION >= 6		
+		msg_imu.angular_velocity.x = _imu->AngularVelocity().X()+(_gy_bias+_gy_noise*sampleNormal())*noise;
+		msg_imu.angular_velocity.y = _imu->AngularVelocity().Y()+(_gy_bias+_gy_noise*sampleNormal())*noise;
+		msg_imu.angular_velocity.z = _imu->AngularVelocity().Z()+(_gy_bias+_gy_noise*sampleNormal())*noise;
 		
+		msg_imu.linear_acceleration.x = _imu->LinearAcceleration().X()+(_acc_bias+_acc_noise*sampleNormal())*noise;
+		msg_imu.linear_acceleration.y = _imu->LinearAcceleration().Y()+(_acc_bias+_acc_noise*sampleNormal())*noise;
+		msg_imu.linear_acceleration.z = _imu->LinearAcceleration().Z()+(_acc_bias+_acc_noise*sampleNormal())*noise;
+#else
 		msg_imu.angular_velocity.x = _imu->GetAngularVelocity().x+(_gy_bias+_gy_noise*sampleNormal())*noise;
 		msg_imu.angular_velocity.y = _imu->GetAngularVelocity().y+(_gy_bias+_gy_noise*sampleNormal())*noise;
 		msg_imu.angular_velocity.z = _imu->GetAngularVelocity().z+(_gy_bias+_gy_noise*sampleNormal())*noise;
@@ -229,7 +240,7 @@ namespace gazebo
 		msg_imu.linear_acceleration.x = _imu->GetLinearAcceleration().x+(_acc_bias+_acc_noise*sampleNormal())*noise;
 		msg_imu.linear_acceleration.y = _imu->GetLinearAcceleration().y+(_acc_bias+_acc_noise*sampleNormal())*noise;
 		msg_imu.linear_acceleration.z = _imu->GetLinearAcceleration().z+(_acc_bias+_acc_noise*sampleNormal())*noise;
-
+#endif
 		msg_spd.header.seq = _seq;
 		msg_spd.header.stamp = ros::Time::now();
 		msg_spd.header.frame_id = "gps_ins";

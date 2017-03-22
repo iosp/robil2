@@ -98,8 +98,11 @@ namespace gazebo
 		gzthrow(error);
 		return;
       }
+#if GAZEBO_MAJOR_VERSION >= 7
+      _imu = std::dynamic_pointer_cast<sensors::ImuSensor>(sensorIMU);
+#else
       _imu = boost::dynamic_pointer_cast<sensors::ImuSensor>(sensorIMU);
-
+#endif
 	  UDPSocketIsConnected = initUDPConnection();
 	  initTCPConnection();
 
@@ -721,7 +724,16 @@ namespace gazebo
         insertBetweenRanges<double, double>(IPON_MsgToSend.Azimuth_PD_geographic, yaw*Rad2Mills, 0, 6399.9);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Pitch_PD_Egi, (-pitch) * Rad2Mills, -1600, 1600);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Roll_PD_Egi, roll * Rad2Mills, -1600, 1600);
+#if GAZEBO_MAJOR_VERSION >= 6
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Azimuth_rate_Z_PD_Egi, ((math::Vector3(_imu->AngularVelocity())).z+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Pitch_rate_Y_PD_Egi, ((math::Vector3(_imu->AngularVelocity())).y+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Roll_rate_X_PD_Egi, ((math::Vector3(_imu->AngularVelocity())).x+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
+    	//ROS_INFO("Azimuth_rate_Z_PD_Egi: %f, Pitch_rate_Y_PD_Egi: %f, Roll_rate_X_PD_Egi: %f", IPON_MsgToSend.Azimuth_rate_Z_PD_Egi, IPON_MsgToSend.Pitch_rate_Y_PD_Egi, IPON_MsgToSend.Roll_rate_X_PD_Egi);
 
+        insertBetweenRanges<double, double>(IPON_MsgToSend.ECC_X_Egi, (math::Vector3(_imu->LinearAcceleration())).x+_acc_bias+_acc_noise*sampleNormal(), -50, 50);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.ECC_Y_Egi, (math::Vector3(_imu->LinearAcceleration())).y+_acc_bias+_acc_noise*sampleNormal(), -50, 50);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.ECC_Z_Egi, (math::Vector3(_imu->LinearAcceleration())).z+_acc_bias+_acc_noise*sampleNormal(), -50, 50);
+#else
         insertBetweenRanges<double, double>(IPON_MsgToSend.Azimuth_rate_Z_PD_Egi, (_imu->GetAngularVelocity().z+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Pitch_rate_Y_PD_Egi, (_imu->GetAngularVelocity().y+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Roll_rate_X_PD_Egi, (_imu->GetAngularVelocity().x+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
@@ -730,6 +742,7 @@ namespace gazebo
         insertBetweenRanges<double, double>(IPON_MsgToSend.ECC_X_Egi, _imu->GetLinearAcceleration().x+_acc_bias+_acc_noise*sampleNormal(), -50, 50);
         insertBetweenRanges<double, double>(IPON_MsgToSend.ECC_Y_Egi, _imu->GetLinearAcceleration().y+_acc_bias+_acc_noise*sampleNormal(), -50, 50);
         insertBetweenRanges<double, double>(IPON_MsgToSend.ECC_Z_Egi, _imu->GetLinearAcceleration().z+_acc_bias+_acc_noise*sampleNormal(), -50, 50);
+#endif
         //ROS_INFO("ECC_X_Egi: %f, ECC_Y_Egi: %f, ECC_Z_Egi: %f", IPON_MsgToSend.ECC_X_Egi, IPON_MsgToSend.ECC_Y_Egi, IPON_MsgToSend.ECC_Z_Egi);
 
     	IPON_MsgToSend.Alt_correction_Egi				= 18; // defiantly not used in SAHAR				//value from the real IPON
