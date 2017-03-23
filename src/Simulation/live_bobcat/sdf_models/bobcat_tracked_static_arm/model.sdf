@@ -11,7 +11,7 @@
       </velocity_decay>
       <self_collide>1</self_collide>
       <inertial>
-        <pose>-0.873221 -0.0104657 0.683626 0 -0 0</pose>
+        <pose>-0.9 -0.0 0.68 0 -0 0</pose>
         <mass>2646.54</mass>
         <inertia>
           <ixx>818.884</ixx>
@@ -210,10 +210,10 @@
       <collision name='back_left_wheel_collision'>
         <pose>0 0 0 -1.5708 -0 0</pose>
         <geometry>
-          <sphere>
-            <!--<length>0.4</length>-->
+          <cylinder>
+            <length>0.4</length>
             <radius>0.2</radius>
-          </sphere>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
@@ -264,10 +264,10 @@
       <collision name='back_right_wheel_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <sphere>
-            <!--<length>0.4</length>-->
+          <cylinder>
+            <length>0.4</length>
             <radius>0.2</radius>
-          </sphere>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
@@ -319,10 +319,10 @@
       <collision name='front_left_wheel_collision'>
         <pose>0 0 0 -1.5708 -0 0</pose>
         <geometry>
-          <sphere>
-            <!--<length>0.4</length>-->
+          <cylinder>
+            <length>0.4</length>
             <radius>0.2</radius>
-          </sphere>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
@@ -373,10 +373,10 @@
       <collision name='front_right_wheel_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <sphere>
-            <!--<length>0.4</length>-->
+          <cylinder>
+            <length>0.4</length>
             <radius>0.2</radius>
-          </sphere>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
@@ -430,10 +430,10 @@
       <collision name='roller_back_right_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <sphere>
-            <!--<length>0.4</length>-->
+          <cylinder>
+            <length>0.4</length>
             <radius>0.2</radius>
-          </sphere>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
@@ -484,10 +484,10 @@
       <collision name='roller_mid_right_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <sphere>
-            <!--<length>0.4</length>-->
+          <cylinder>
+            <length>0.4</length>
             <radius>0.2</radius>
-          </sphere>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
@@ -538,10 +538,10 @@
       <collision name='roller_front_right_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <sphere>
-            <!--<length>0.4</length>-->
+          <cylinder>
+            <length>0.4</length>
             <radius>0.2</radius>
-          </sphere>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
@@ -592,10 +592,10 @@
       <collision name='roller_back_left_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <sphere>
-            <!--<length>0.4</length>-->
+          <cylinder>
+            <length>0.4</length>
             <radius>0.2</radius>
-          </sphere>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
@@ -646,10 +646,10 @@
       <collision name='roller_mid_left_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <sphere>
-            <!--<length>0.4</length>-->
+          <cylinder>
+            <length>0.4</length>
             <radius>0.2</radius>
-          </sphere>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
@@ -700,10 +700,10 @@
       <collision name='roller_front_left_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
-          <sphere>
-            <!--<length>0.4</length>-->
+          <cylinder>
+            <length>0.4</length>
             <radius>0.2</radius>
-          </sphere>
+          </cylinder>
         </geometry>
         <surface>
           <contact>
