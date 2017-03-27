@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+
+  <node name="world_to_body_TF_pub" pkg="bobcat_model" type="world_to_body_TF_pub.py" respawn="true" output="screen"/>
+  
+  
+  <param name="robot_description" command="cat $(find bobcat_model)/urdf_models/bobcat_tracked_urdf_for_static_arm.URDF" />
+  
+  <!-- convert joint states to TF transforms for rviz, etc   -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+	respawn="false" output="screen">
+     <remap from="/joint_states" to="/Sahar/joint_states" /> 
+  </node>
+
+  
+</launch>

@@ -12,17 +12,9 @@
 // Gazebo Libraries
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
-#include <gazebo/common/common.hh>
-#include <gazebo/common/Time.hh>
-#include <gazebo/transport/transport.hh>
-#include <gazebo/msgs/msgs.hh>
-#include <gazebo/math/gzmath.hh>
-#include <gazebo/gazebo_config.h>
 
-// ROS Communication
+// ROS
 #include "ros/ros.h"
-#include "std_msgs/Float64.h"
-#include "std_msgs/Bool.h"
 
 // Boost Thread Mutex
 #include <boost/thread/mutex.hpp>
@@ -36,21 +28,19 @@
 #include <ctime>
 #include "linterp.h"
 
+// Qinetiq UDP Conection Emulator
 #include "sim_qinetiq_client.cc"
 
-// Maximum time delays
-#define command_MAX_DELAY 0.3
+
+// Platform Constants
+#define WHEELS_BASE 0.95
+#define WHEEL_DIAMETER 0.77
 
 #define WHEEL_EFFORT_LIMIT 100000
+#define COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE 10000
 
-#define WHEELS_BASE 0.95
-#define STEERING_FRICTION_COMPENSATION 2; // compensate for the faliure of reaching the angular velocity
-
-#define WHEEL_DIAMETER 0.77
 #define PI 3.14159265359
 
-#define LINEAR_COMMAND_FILTER_ARRY_SIZE 750
-#define ANGULAR_COMMAND_FILTER_ARRY_SIZE 500
 
 namespace gazebo
 {
@@ -65,6 +55,20 @@ class bobtankDrivePlugin : public ModelPlugin
     /// \param[in] _model A pointer to the model that this plugin is attached to.
     /// \param[in] _sdf A pointer to the plugin's SDF element.
   public:
+
+
+    void array_initilization(double array[], int array_size, int array_index, boost::mutex &array_mutex)
+    {
+        array_index = 0;
+        array_mutex.lock();
+        for (int i = 0; i < array_size; i++)
+        {
+            array[i] = 0;
+        }
+        array_mutex.unlock();
+    }
+
+
     void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
         std::cout << "MY_GAZEBO_VER = [" << GAZEBO_MAJOR_VERSION << "]" << std::endl;
@@ -73,14 +77,14 @@ class bobtankDrivePlugin : public ModelPlugin
         this->model = _model;
 
         // Store the pointers to the joints
-        this->back_left_joint = this->model->GetJoint("back_left_wheel_joint");
+
+
+        this->front_right_joint = this->model->GetJoint("front_right_wheel_joint");
         this->back_right_joint = this->model->GetJoint("back_right_wheel_joint");
         this->front_left_joint = this->model->GetJoint("front_left_wheel_joint");
-        this->front_right_joint = this->model->GetJoint("front_right_wheel_joint");
+        this->back_left_joint = this->model->GetJoint("back_left_wheel_joint");
 
         this->Ros_nh = new ros::NodeHandle("bobtankDrivePlugin_node");
-
-        platform_hb_pub_ = this->Ros_nh->advertise<std_msgs::Bool>("/Sahar/link_with_platform", 100);
 
         // Listen to the update event. This event is broadcast every simulation iteration.
         this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&bobtankDrivePlugin::OnUpdate, this, _1));
@@ -97,17 +101,11 @@ class bobtankDrivePlugin : public ModelPlugin
 
         Linear_command_sum = 0;
         Angular_command_sum = 0;
-        Linear_command_index = 0;
-        Angular_command_index = 0;
-        for (int i = 0; i < LINEAR_COMMAND_FILTER_ARRY_SIZE; i++)
-        {
-            Linear_command_array[i] = 0;
-        }
+        array_initilization(Linear_command_filter_array, COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE, Linear_command_filter_index, Linear_filter_mutex);
+        array_initilization(Angular_command_filter_array, COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE, Angular_command_filter_index, Angular_delay_mutex);
 
-        for (int i = 0; i < ANGULAR_COMMAND_FILTER_ARRY_SIZE; i++)
-        {
-            Angular_command_array[i] = 0;
-        }
+        array_initilization(Linear_command_delay_array, COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE, Linear_command_delay_index ,Linear_delay_mutex);
+        array_initilization(Angular_command_delay_array, COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE, Angular_command_delay_index, Angular_delay_mutex);
 
         sqc.Init("127.0.0.1", 4660, 5355);
     }
@@ -171,9 +169,34 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
         control_P = config.Wheel_conntrol_P;
         control_I = config.Wheel_conntrol_I;
         control_D = config.Wheel_conntrol_D;
+        steering_enforce_multiplier = config.Steering_enforce_multiplier;
+
 
         command_lN = config.Command_Linear_Noise;
         command_aN = config.Command_Angular_Noise;
+
+        if ( command_lD != config.Command_Linear_Delay ) {
+                command_lD = config.Command_Linear_Delay;
+                array_initilization(Linear_command_delay_array, (int)command_lD, Linear_command_delay_index, Linear_delay_mutex);
+                }
+
+        if ( command_aD != config.Command_Angular_Delay ) {
+                command_aD = config.Command_Angular_Delay;
+                array_initilization(Angular_command_delay_array, (int)command_aD, Angular_command_delay_index, Angular_delay_mutex);
+                }
+
+        if ( command_lF != config.Command_Linear_Filter ) {
+                command_lF = config.Command_Linear_Filter;
+                Linear_command_sum = 0;
+                array_initilization(Linear_command_filter_array, (int)command_lF, Linear_command_filter_index, Linear_filter_mutex);
+                }
+
+        if ( command_aF != config.Command_Angular_Filter ) {
+                command_aF = config.Command_Angular_Filter;
+                Angular_command_sum = 0;
+                array_initilization(Angular_command_filter_array, (int)command_aF, Angular_command_filter_index, Angular_filter_mutex);
+                }
+
     }
 
     // Called by the world update start event, This function is the event that will be called every update
@@ -182,18 +205,31 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
     {
         update_ref_vels();
         apply_efforts();
-
-        std_msgs::Bool connection;
-        connection.data = true;
-        platform_hb_pub_.publish(connection);
     }
 
-    double command_fillter(double prev_commands_array[], int array_size, double &commmand_sum, int &command_index, double command)
+    double command_delay(double prev_commands_array[], int array_size, int &command_index, boost::mutex &array_mutex, double new_command)
+    {
+       double delayed_command;
+       delayed_command = prev_commands_array[command_index];
+
+       array_mutex.lock();
+       prev_commands_array[command_index] = new_command;
+       array_mutex.unlock();
+
+       if (++command_index == array_size)
+           command_index = 0;
+
+       return(delayed_command);
+    }
+
+    double command_fillter(double prev_commands_array[], int array_size, int &command_index, boost::mutex &array_mutex, double &commmand_sum, double command)
     {
         commmand_sum -= prev_commands_array[command_index];
         commmand_sum += command;
 
+        array_mutex.lock();
         prev_commands_array[command_index] = command;
+        array_mutex.unlock();
 
         if (++command_index == array_size)
             command_index = 0;
@@ -215,8 +251,11 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
         double Linear_nominal_vel = Linear_vel_interp->interp(args.begin());
         double Angular_nominal_vel = Angular_vel_interp->interp(args.begin());
 
-        double Linear_vel = command_fillter(Linear_command_array, LINEAR_COMMAND_FILTER_ARRY_SIZE, Linear_command_sum, Linear_command_index, Linear_nominal_vel);
-        double Angular_vel = command_fillter(Angular_command_array, ANGULAR_COMMAND_FILTER_ARRY_SIZE, Angular_command_sum, Angular_command_index, Angular_nominal_vel);
+        double Linear_vel_deleyed = command_delay(Linear_command_delay_array, command_lD, Linear_command_delay_index, Linear_delay_mutex, Linear_nominal_vel);
+        double Angular_vel_deleyed = command_delay(Angular_command_delay_array, command_aD, Angular_command_delay_index, Angular_delay_mutex, Angular_nominal_vel);
+
+        double Linear_vel = command_fillter(Linear_command_filter_array, command_lF, Linear_command_filter_index, Linear_filter_mutex, Linear_command_sum, Linear_vel_deleyed);
+        double Angular_vel = command_fillter(Angular_command_filter_array, command_aF,  Angular_command_filter_index,Angular_filter_mutex,Angular_command_sum, Angular_vel_deleyed);
 
         double LinearNoise = command_lN * (*Linear_Noise_dist)(generator);
         double AngularNoise = command_aN * (*Angular_Noise_dist)(generator);
@@ -239,11 +278,7 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
         if (effort_command < -WHEEL_EFFORT_LIMIT)
             effort_command = -WHEEL_EFFORT_LIMIT;
 
-#if GAZEBO_MAJOR_VERSION >= 6
-        wheel_joint->SetVelocity(0, ref_omega);
-#else
         wheel_joint->SetForce(0, effort_command);
-#endif
     }
 
   private:
@@ -252,8 +287,8 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
 
         //std::cout << " Linear_ref_vel = " << Linear_ref_vel << " Angular_ref_vel = " << Angular_ref_vel << std::endl;
 
-        float right_side_vel = (Linear_ref_vel) + (Angular_ref_vel * WHEELS_BASE / 2) * STEERING_FRICTION_COMPENSATION;
-        float left_side_vel = (Linear_ref_vel) - (Angular_ref_vel * WHEELS_BASE / 2) * STEERING_FRICTION_COMPENSATION;
+        float right_side_vel = (Linear_ref_vel) + (Angular_ref_vel * WHEELS_BASE / 2) * steering_enforce_multiplier;
+        float left_side_vel = (Linear_ref_vel) - (Angular_ref_vel * WHEELS_BASE / 2) * steering_enforce_multiplier;
 
         //std::cout << " right_side_vel = " << right_side_vel <<  " left_side_vel = " << left_side_vel << std::endl;
 
@@ -273,7 +308,6 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
     physics::ModelPtr model;
 
     // Defining private Pointer to joints
-    physics::JointPtr steering_joint;
     physics::JointPtr back_left_joint;
     physics::JointPtr back_right_joint;
     physics::JointPtr front_left_joint;
@@ -285,28 +319,43 @@ double Angular_vel_values_array[] = { -1.00,    -0.40,     -0.17,   -0.03, 		0.0
     // Defining private Ros Node Handle
     ros::NodeHandle *Ros_nh;
 
-    // Defining private Ros Publishers
-    ros::Publisher platform_hb_pub_;
-
     // Defining private Mutex
-    boost::mutex Angular_command_mutex;
     boost::mutex Linear_command_mutex;
+    boost::mutex Angular_command_mutex;
+
+    boost::mutex Linear_delay_mutex;
+    boost::mutex Angular_delay_mutex;
+
+    boost::mutex Linear_filter_mutex;
+    boost::mutex Angular_filter_mutex;
+
 
     float Linear_command;
     float Angular_command;
     double Linear_ref_vel;
     double Angular_ref_vel;
-    double Linear_command_array[LINEAR_COMMAND_FILTER_ARRY_SIZE];
-    double Angular_command_array[ANGULAR_COMMAND_FILTER_ARRY_SIZE];
+    double Linear_command_filter_array[COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE];
+    double Angular_command_filter_array[COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE];
     double Linear_command_sum;
     double Angular_command_sum;
-    int Linear_command_index;
-    int Angular_command_index;
+    int Linear_command_filter_index;
+    int Angular_command_filter_index;
+
+    double Linear_command_delay_array[COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE];
+    double Angular_command_delay_array[COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE];
+    int Linear_command_delay_index;
+    int Angular_command_delay_index;
+
 
     dynamic_reconfigure::Server<bobcat_model::bobcat_modelConfig> *model_reconfiguration_server;
 
     double control_P, control_I, control_D; // PID constants
+    double steering_enforce_multiplier;
+
     double command_lN, command_aN; // command noise factors
+    double command_lD, command_aD; // command delay
+    double command_lF, command_aF; // command filter
+
 
     std::default_random_engine generator;
     std::normal_distribution<double> *Linear_Noise_dist;

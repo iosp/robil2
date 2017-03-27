@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<robot name="Sahar">
+  <link name="body">
+  <inertial>
+     <origin xyz="0 0 0.125" rpy="0 0 0"/>>
+     <mass value="1"/>
+     <inertia ixx="1"  ixy="0"  ixz="0" iyy="1" iyz="0" izz="1" />
+   </inertial>
+    <visual>
+     <origin xyz="0 0 0" rpy="0 0 0" />
+     <geometry>
+          <mesh filename="package://sdf_models/bobcat_tracked_static_arm/meshes/body.dae"/>
+      </geometry>
+   </visual>
+   </link>  
+  <link name="cogwheel_left"/>
+  <joint name="cogwheel_left_joint" type="continuous">
+    <parent link="body" />
+    <child link="cogwheel_left" />
+    <origin xyz="-1.35 0.655 0.435" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>  
+  
+  <link name="cogwheel_right"/>
+  <joint name="cogwheel_right_joint" type="continuous">
+    <parent link="body" />
+    <child link="cogwheel_right" />
+    <origin xyz="-1.35 -0.655 0.435" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>    
+
+  <!--<link name="back_left_wheel"/>
+  <joint name="back_left_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="back_left_wheel" />
+    <origin xyz="-1.537 0.650 0.100" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+  
+  <link name="back_right_wheel"/>
+  <joint name="back_right_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="back_right_wheel" />
+    <origin xyz="-1.535 -0.650 0.100" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <link name="front_left_wheel"/>
+  <joint name="front_left_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="front_left_wheel" />
+    <origin xyz="-0.053 0.650 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <link name="front_right_wheel"/>
+  <joint name="front_right_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="front_right_wheel" />
+    <origin xyz="-0.053 -0.650 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>-->
+ 
+  
+  <!--link name="roller_back_right"/>
+  <joint name="roller_back_right_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_back_right" />
+    <origin xyz="-1.15 -0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
+  <link name="roller_mid_right"/>
+  <joint name="roller_mid_right_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_mid_right" />
+    <origin xyz="-0.81 -0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
+  <link name="roller_front_right"/>
+  <joint name="roller_front_right_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_front_right" />
+    <origin xyz="-0.46 -0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
+  <link name="roller_back_left"/>
+  <joint name="roller_back_left_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_back_left" />
+    <origin xyz="-1.15 0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
+  <link name="roller_mid_left"/>
+  <joint name="roller_mid_left_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_mid_left" />
+    <origin xyz="-0.81 0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
+  <link name="roller_front_left"/>
+  <joint name="roller_front_left_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_front_left" />
+    <origin xyz="-0.46 0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint-->
+ 
+  
+  
+  
+  
+</robot>
+
