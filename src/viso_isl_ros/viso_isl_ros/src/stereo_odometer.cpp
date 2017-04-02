@@ -67,7 +67,7 @@ protected:
     local_nh.param("approximate_sync", approximate_sync, false);
     image_geometry::StereoCameraModel model;
     model.fromCameraInfo(*left_info_msg, *right_info_msg);
-    engine_params.base       = model.baseline();
+    engine_params.base      = model.baseline();
     engine_params.calib.cu  = model.left().cx();
     engine_params.calib.cv  = model.left().cy();
     engine_params.calib.f   = model.left().fx();
@@ -106,12 +106,17 @@ protected:
         integrateAndPublish(delta_transform, left_image_msg->header.stamp);
       }
     } else {
+#ifdef DEMO
+      if (true || success) {
+#else
       if (success) {
-	cv::Mat motion = engine->getMotion().inv();
-        ROS_DEBUG_STREAM("libviso_isl returned the following motion:\n" << motion);
+#endif
+	cv::Mat motion = engine->getMotion();
+	motion.inv();
+        ROS_INFO_STREAM("libviso_isl returned the following motion:\n" << motion);
         reference = motion; // store last motion as reference
         tf::Matrix3x3 rot_mat(motion.at<double>(0,0), motion.at<double>(0,1), motion.at<double>(0,2),
-			      motion.at<double>(1,0), motion.at<double>(1,1), motion.at<double>(2,2),
+			      motion.at<double>(1,0), motion.at<double>(1,1), motion.at<double>(1,2),
 			      motion.at<double>(2,0), motion.at<double>(2,1), motion.at<double>(2,2));
         tf::Vector3 t(motion.at<double>(0,3), motion.at<double>(1,3), motion.at<double>(2,3));
         tf::Transform delta_transform(rot_mat, t);

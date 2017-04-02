@@ -1,9 +1,9 @@
 In order to run:
 
-rosrun viso_isl_ros stereo_odometer
+rosrun viso_isl_ros stereo_odometer or
 rosrun viso_isl_ros stereo_odometer stereo:=narrow_stereo image:=image_rect
 
-works with gazebo:
+Works with gazebo:
 
 connects to:
 	/SENSORS/CAM/L
@@ -16,4 +16,10 @@ This package needs rectified images, meaning that the "y" of both images is the 
 Debug:
 catkin_make -DCMAKE_BUILD_TYPE=Debug
 rosrun --prefix "xterm -e gdb --args"  viso_isl_ros stereo_odometer
+
+Testing ROS:
+In order to test the infrastructure, set #define DEBUG in files:
+	./viso_isl_ros/src/odometer_base.h
+	./viso_isl_ros/src/stereo_odometer.cpp
+
 

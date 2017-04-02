@@ -506,8 +506,15 @@ namespace viso_isl {
   cv::Mat
   StereoVO::getMotion()
   {
-    Mat motion(4, 4, DataType<double>::type);
+    Mat motion = Mat::zeros(4, 4, DataType<double>::type);
+#ifdef DEMO
+    motion.at<double>(0,0) = 1.;
+    motion.at<double>(1,1) = 1.;
+    motion.at<double>(2,2) = 1.;
+    motion.at<double>(0,3) = 1.;
+#else
     tr2mat(prev.tr, motion);
+#endif
     return motion;
   }
   

@@ -235,7 +235,7 @@ class GuiHandler(object):
                 msg=messageFromYAML(msg_class,yamlfile)
                 self.TaskPublishers[msg_class].publish(msg)
             if not len(listTarget.curselection()):
-                tkMessageBox.showinfo("Not assignd", "please choose a value form the list before assigning")
+                tkMessageBox.showinfo("Not assigned", "please choose a value form the list before assigning")
         return assignMethod
          
         
