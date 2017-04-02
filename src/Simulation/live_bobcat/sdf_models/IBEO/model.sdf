@@ -6,17 +6,7 @@
     <link name="link">
       <pose>0 0 0 0 0 0</pose>
       <gravity>0</gravity>
-          <inertial>
-        <mass>0.5</mass>
-        <inertia>
-          <ixx>0.0005291667</ixx>
-          <ixy>-0</ixy>
-          <ixz>0</ixz>
-          <iyy>0.0005291667</iyy>
-          <iyz>0</iyz>
-          <izz>0.000225</izz>
-        </inertia>
-      </inertial>
+      
       <visual name='visual'>
 	<pose>0 0 0 1.57079633 0 1.57079633</pose>
 	<geometry>
@@ -37,7 +27,7 @@
   -->   
 
 <!-- Top Planes -->
-      <sensor name='ibeo-t1' type='gpu_ray'> 	<!-- first top plane -->
+      <sensor name='ibeo-t1' type='ray'> 	<!-- first top plane -->
 	<pose>0.044 0.01045 0.000 0 -0.00698132 0</pose> <!-- laser beam origin at (x,y,z) = (440mm,104.5mm,0mm) , beam center direction 0.4deg up (pitch = -0.4deg = -0.007rad) -->
 	<ray>
 	  <scan>
@@ -64,7 +54,7 @@
 	<visualize>1</visualize>
       </sensor>
 
-      <sensor name='ibeo-t2' type='gpu_ray'>	<!-- second top plane -->
+      <sensor name='ibeo-t2' type='ray'>	<!-- second top plane -->
 	<pose>0.044 0.01045 0.000 0 -0.02094395 0</pose> <!-- beam center direction 0.8deg up (pitch = -0.8deg = -0.0209rad) -->
 	<ray>
 	  <scan>
@@ -92,7 +82,7 @@
       </sensor>
 
 <!-- Bottom Planes -->      
-      <sensor name='ibeo-b1' type='gpu_ray'>
+      <sensor name='ibeo-b1' type='ray'>
 	<pose>0.044 0.01045 0.000 0 0.00698132 0</pose> <!-- beam center direction -0.4deg up (pitch = 0.4deg = 0.007rad) -->
 	<ray>
 	  <scan>
@@ -119,7 +109,7 @@
 	<visualize>1</visualize>
       </sensor>
       
-      <sensor name='ibeo-b2' type='gpu_ray'>
+      <sensor name='ibeo-b2' type='ray'>
 	<pose>0.044 0.01045 0.000 0 0.02094395 0</pose> <!-- beam center direction -0.8deg up (pitch = 0.8deg = 0.0209rad) -->
 	<ray>
 	  <scan>
