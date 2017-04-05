@@ -2,6 +2,7 @@
 <!-- -*- mode: XML -*- -->
 <sdf version='1.4'>
   <model name='Sahar'>
+
     <link name='body'>
       <pose>0 0 0.125 0 0 0</pose>
       <gravity>1</gravity>
@@ -22,8 +23,8 @@
           <izz>1018.05</izz>
         </inertia>
       </inertial>
-      
-            <collision name='body_collision'>
+     
+      <collision name='body_collision'>
         <pose>-0.82136 0 0.36982 0 -0.02 0</pose>
         <geometry>
           <box>
@@ -89,10 +90,12 @@
           </box>
         </geometry>
       </collision>
+    
     </link>
     
+    
     <!--COGWHEELS-->
-    <link name='cogwheel_left'>
+        <link name='cogwheel_left'>
       <pose>-1.35 0.655 0.435 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
@@ -137,9 +140,7 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
-    <!--<joint name="gear_left" type="gearbox"><parent>back_left_wheel</parent><child>cogwheel_left</child><gearbox_ratio>-1</gearbox_ratio><gearbox_reference_body>body</gearbox_reference_body><axis><xyz>0.000000 1.000000 0.000000</xyz></axis><axis2><xyz>0.000000 1.000000 0.000000</xyz></axis2></joint>-->
 
     <link name='cogwheel_right'>
       <pose>-1.35 -0.655 0.435 0 0 0</pose>
@@ -186,9 +187,7 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
-
 
 
     <!--WHEELS-->
@@ -243,7 +242,6 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
 
     <link name='back_right_wheel'>
@@ -297,9 +295,7 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
-    <!--<joint name="gear_right" type="gearbox"><parent>back_right_wheel</parent><child>cogwheel_right</child><gearbox_ratio>-1</gearbox_ratio><gearbox_reference_body>body</gearbox_reference_body><axis><xyz>0.000000 1.000000 0.000000</xyz></axis><axis2><xyz>0.000000 1.000000 0.000000</xyz></axis2></joint>-->
 
     <link name='front_left_wheel'>
     <self_collide>0</self_collide>
@@ -352,7 +348,6 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
 
     <link name='front_right_wheel'>
@@ -407,8 +402,6 @@
         <xyz>0 1 0</xyz>
       </axis>
     </joint>
-
-    
     
     
     
@@ -463,7 +456,6 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
 
     <link name='roller_mid_right'>
@@ -517,7 +509,6 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
 
     <link name='roller_front_right'>
@@ -571,7 +562,6 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
 
     <link name='roller_back_left'>
@@ -625,7 +615,6 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
 
     <link name='roller_mid_left'>
@@ -679,7 +668,6 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
 
     <link name='roller_front_left'>
@@ -733,11 +721,13 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
     </joint>
 
-
+    
+    
+    
     <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so"/>
+   
     <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
       <robotNamespace>/Sahar</robotNamespace>
       <jointName>cogwheel_right_joint, cogwheel_left_joint</jointName>
@@ -746,11 +736,10 @@
     </plugin>
     
     
-    
 <!-- IPON Sensor--> <!---->
     <include>
       <uri>model://IPON</uri>   
-      <pose>-0.550 -0.155 2.125 0.000 0.0007 0.000</pose>  <!-- position of the GPS antena , orintation of the INS sensor-->
+      <pose>-0.550 -0.155 2.125 0.000 0.0007 0.000</pose>  <!- position of the GPS antena , orientation of the INS sensor ->
       <name>IPON</name>
     </include>
     <joint name='ipon_joint' type='revolute'>
@@ -902,6 +891,6 @@
         <dynamics/>
       </axis>
     </joint>
-
+      -->
   </model>
 </sdf>

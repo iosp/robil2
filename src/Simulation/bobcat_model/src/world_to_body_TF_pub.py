@@ -28,7 +28,8 @@ def command_calback(msg):
                                   "world_gazebo")
 	
 	else:
-		print 'Sahar::body dosn\'t exist in the Gazebo'
+		print 'Sahar::body doesn\'t exist in the Gazebo'
+		exit
 
 
 rospy.init_node('world_to_body_TF_pub')

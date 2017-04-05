@@ -725,9 +725,15 @@ namespace gazebo
         insertBetweenRanges<double, double>(IPON_MsgToSend.Pitch_PD_Egi, (-pitch) * Rad2Mills, -1600, 1600);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Roll_PD_Egi, roll * Rad2Mills, -1600, 1600);
 #if GAZEBO_MAJOR_VERSION >= 6
+	//Will be deprecated Gazebo 8
+	/*
         insertBetweenRanges<double, double>(IPON_MsgToSend.Azimuth_rate_Z_PD_Egi, ((math::Vector3(_imu->AngularVelocity())).z+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Pitch_rate_Y_PD_Egi, ((math::Vector3(_imu->AngularVelocity())).y+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
         insertBetweenRanges<double, double>(IPON_MsgToSend.Roll_rate_X_PD_Egi, ((math::Vector3(_imu->AngularVelocity())).x+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
+	*/
+	insertBetweenRanges<double, double>(IPON_MsgToSend.Azimuth_rate_Z_PD_Egi, ((_imu->AngularVelocity()).Z()+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Pitch_rate_Y_PD_Egi, ((_imu->AngularVelocity()).Y()+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
+        insertBetweenRanges<double, double>(IPON_MsgToSend.Roll_rate_X_PD_Egi, ((_imu->AngularVelocity()).X()+_gy_bias+_gy_noise*sampleNormal()) * Rad2Mills, -1600, 1600);
     	//ROS_INFO("Azimuth_rate_Z_PD_Egi: %f, Pitch_rate_Y_PD_Egi: %f, Roll_rate_X_PD_Egi: %f", IPON_MsgToSend.Azimuth_rate_Z_PD_Egi, IPON_MsgToSend.Pitch_rate_Y_PD_Egi, IPON_MsgToSend.Roll_rate_X_PD_Egi);
 
         insertBetweenRanges<double, double>(IPON_MsgToSend.ECC_X_Egi, (math::Vector3(_imu->LinearAcceleration())).x+_acc_bias+_acc_noise*sampleNormal(), -50, 50);

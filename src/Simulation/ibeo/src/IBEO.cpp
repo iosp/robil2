@@ -9,8 +9,8 @@
  * Author: Daniel Meltz
  */
 #include "../include/IBEO.h"
-//#ifndef USE_GPU
-//#define USE_GPU 0
+#ifndef USE_GPU
+#define USE_GPU 1
 
 //using namespace gazebo;
 using namespace std;
@@ -387,11 +387,17 @@ namespace gazebo
 	//getRanges
 	void getRanges(vector<double>& rangesT1, vector<double>& rangesT2, vector<double>& rangesB1, vector<double>& rangesB2)
 	{
+#if GAZEBO_MAJOR_VERSION >= 7
         _sensorB1->Ranges(rangesB1);
         _sensorB2->Ranges(rangesB2);
         _sensorT1->Ranges(rangesT1);
         _sensorT2->Ranges(rangesT2);
-
+#else
+	_sensorB1->GetRanges(rangesB1);
+        _sensorB2->GetRanges(rangesB2);
+        _sensorT1->GetRanges(rangesT1);
+        _sensorT2->GetRanges(rangesT2);
+#endif
         float Dm = _distance_min;
         float Dr = _distance_sample_resolution;
 
@@ -501,13 +507,17 @@ namespace gazebo
 	    LastSensorUpdateTime = sim_Time;
 	    flag_fillMsg = true;
 	  }
-
+#if GAZEBO_MAJOR_VERSION >= 7
 	  double diff_update_B1 = _sensorB1->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
 	  double diff_update_B2 = _sensorB2->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
 	  double diff_update_T1 = _sensorT1->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
 	  double diff_update_T2 = _sensorT2->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
-
-
+#else
+	  double diff_update_B1 = _sensorB1->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+	  double diff_update_B2 = _sensorB2->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+	  double diff_update_T1 = _sensorT1->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+	  double diff_update_T2 = _sensorT2->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+#endif
 	  if ( (diff_update_B1 >= -0.0001 ) &&
     	   (diff_update_B2 >= -0.0001 ) &&
 		   (diff_update_T1 >= -0.0001 ) &&
@@ -692,4 +702,4 @@ namespace gazebo
 GZ_REGISTER_MODEL_PLUGIN(IBEO)
 }
 
-//#endif
+#endif
