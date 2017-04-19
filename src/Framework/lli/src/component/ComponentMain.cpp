@@ -186,7 +186,7 @@ void ComponentMain::handleEffortsSt(const std_msgs::Float64& msg)
 		return;
 	}
 	short data;
-	data = 100*msg.data;
+    data = -100*msg.data;  // Qinetiq uses positive valuese for Right turn and negative for Left turn, it receives values between -100 and 100
 	_clli->SetSteeringRequest(data);
 }
 
