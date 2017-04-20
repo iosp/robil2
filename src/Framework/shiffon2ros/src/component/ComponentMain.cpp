@@ -107,8 +107,8 @@ void ComponentMain::ReadAndPub_ShiphonINS(ros::Time now){
 	INS_msg.linear_acceleration.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Z_Egi;
 	
 	INS_msg.angular_velocity.x  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_rate_X_PD_Egi * MILS_2_RAD;
-	INS_msg.angular_velocity.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_rate_Y_PD_Egi * MILS_2_RAD;
-	INS_msg.angular_velocity.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD;
+    INS_msg.angular_velocity.y  =  -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_rate_Y_PD_Egi * MILS_2_RAD;
+    INS_msg.angular_velocity.z  =  -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD;
 
     float Roll  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_PD_Egi * MILS_2_RAD;
     float Pitch = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_PD_Egi * MILS_2_RAD;
