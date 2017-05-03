@@ -45,7 +45,7 @@ void Mapper::MainLoop(per::configConfig *p)
     height_map = new HeightMap(500,500, p);
     per::configConfig *dynamic_param = p;
     int i = 0;
-    ros::Duration rate(0.1);
+    ros::Duration rate(1);
     while(ros::ok())
     {
 
@@ -148,7 +148,7 @@ void Mapper::handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pc
 {
     if(!loc_received) return;
     //return;
-    tf::TransformListener listener;
+    static tf::TransformListener listener;
     lock.lock();
 
     ros::Time now = ros::Time(0);
@@ -192,13 +192,13 @@ void Mapper::handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pc
         }
     }
     try{
-        listener.waitForTransform("WORLD", "IBEO", now, ros::Duration(0.5));
+//        listener.waitForTransform("WORLD", "IBEO", now, ros::Duration(0.5));
         listener.transformPointCloud("WORLD", ibeo_points, base_point);
         geometry_msgs::PoseStamped tracks_height, world_height;
         world_height.header.frame_id = "TRACKS_BOTTOM";
         world_height.header.stamp = now;
         world_height.pose.orientation.w = 1;
-        listener.waitForTransform("WORLD", "TRACKS_BOTTOM", now, ros::Duration(0.5));
+//        listener.waitForTransform("WORLD", "TRACKS_BOTTOM", now, ros::Duration(0.5));
         listener.transformPose("WORLD", world_height, tracks_height);
         pcpubworld.publish(base_point);
         pcpub.publish(ibeo_points);
@@ -259,7 +259,7 @@ void Mapper::handleSickR(const sensor_msgs::LaserScan& msg)
     lock.unlock();
 }
 
-void Mapper::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
+void Mapper::handleLocation(const nav_msgs::Odometry& msg)
 {
     lock.lock();
     geometry_msgs::Pose pose = msg.pose.pose;

@@ -127,7 +127,7 @@ class ComponentMain {
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
+    void handleLocation(const nav_msgs::Odometry& msg);
 	void handlePerVelocity(const geometry_msgs::TwistStamped& msg);
 	void handleSensorINS(const sensor_msgs::Imu& msg);
 	void handleSensorGPS(const sensor_msgs::NavSatFix& msg);
