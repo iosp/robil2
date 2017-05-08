@@ -83,14 +83,14 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::ReadAndPub_ShiphonGPS(){
+void ComponentMain::ReadAndPub_ShiphonGPS(ros::Time now){
 	sensor_msgs::NavSatFix GPS_msg;
 
 	GPS_msg.latitude  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LAT_Egi * PI_2_DEG;
 	GPS_msg.longitude =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).LONG_Egi * PI_2_DEG;
 	GPS_msg.altitude  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Altitude_MSL_EGI;
 
-	GPS_msg.header.stamp = ros::Time::now();
+    GPS_msg.header.stamp = now;
 
 	publishGPS(GPS_msg);
 }
@@ -100,15 +100,15 @@ void ComponentMain::publishGPS(sensor_msgs::NavSatFix& msg) {
 }
 
 
-void ComponentMain::ReadAndPub_ShiphonINS(){
+void ComponentMain::ReadAndPub_ShiphonINS(ros::Time now){
 	sensor_msgs::Imu INS_msg;
 	INS_msg.linear_acceleration.x  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_X_Egi;
 	INS_msg.linear_acceleration.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Y_Egi;
 	INS_msg.linear_acceleration.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Acc_Z_Egi;
 	
 	INS_msg.angular_velocity.x  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_rate_X_PD_Egi * MILS_2_RAD;
-	INS_msg.angular_velocity.y  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_rate_Y_PD_Egi * MILS_2_RAD;
-	INS_msg.angular_velocity.z  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD;
+    INS_msg.angular_velocity.y  =  -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_rate_Y_PD_Egi * MILS_2_RAD;
+    INS_msg.angular_velocity.z  =  -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Azimuth_rate_Z_PD_Egi * MILS_2_RAD;
 
     float Roll  =  (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Roll_PD_Egi * MILS_2_RAD;
     float Pitch = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Pitch_PD_Egi * MILS_2_RAD;
@@ -150,7 +150,7 @@ void ComponentMain::ReadAndPub_ShiphonINS(){
     /* save quat for next iteration */
     _prev_quat = q_tf;
 
-	INS_msg.header.stamp = ros::Time::now();
+    INS_msg.header.stamp = now;
 
 	publishINS(INS_msg);
 
@@ -164,7 +164,7 @@ void ComponentMain::publishINS(sensor_msgs::Imu& msg) {
 }
 
 
-void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
+void ComponentMain::ReadAndPub_ShiphonGpsSpeed(ros::Time now) {
 
 	robil_msgs::GpsSpeed GpsSpeed_msg;
 
@@ -172,7 +172,7 @@ void ComponentMain::ReadAndPub_ShiphonGpsSpeed() {
 	GpsSpeedVec_msg.latitude  = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_north_Egi;
 	GpsSpeedVec_msg.longitude = (_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_East_Egi;
 	GpsSpeedVec_msg.altitude  = -(_shiphonCtrl->get_PERIODIC100HZMESSAGE()).Velocity_down_Egi;
-	GpsSpeedVec_msg.header.stamp = ros::Time::now();
+    GpsSpeedVec_msg.header.stamp = now;
 	_pub_GpsSpeed.publish(GpsSpeedVec_msg);
 
 }

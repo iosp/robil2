@@ -69,9 +69,9 @@ public:
 	void publishDiagnostic(const std_msgs::Header& header, const diagnostic_msgs::DiagnosticStatus& _report);
 
 	void InitShiphonConection();
-	void ReadAndPub_ShiphonGPS();
-	void ReadAndPub_ShiphonINS();
-	void ReadAndPub_ShiphonGpsSpeed();
+    void ReadAndPub_ShiphonGPS(ros::Time now);
+    void ReadAndPub_ShiphonINS(ros::Time now);
+    void ReadAndPub_ShiphonGpsSpeed(ros::Time now);
 	void heartbeat();
 	static void *callHeartbeat(void *pThis);
 
