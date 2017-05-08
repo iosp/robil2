@@ -5,7 +5,7 @@
 <sdf version='1.4'>
 <model name='Sahar'>
    <link name='body'>
-      <pose>0 0 0 0 0 0</pose>
+      <pose>0 0 0.125 0 0 0</pose>
       <gravity>1</gravity>
       <velocity_decay>
         <linear>0</linear>
@@ -95,7 +95,7 @@
 
 
 <link name='back_left_wheel'>
-      <pose>-1.227 0.47558 0.14772 0 2.1164e-16 0</pose>
+      <pose>-1.227 0.47558 0.300 0 0 0</pose>
       <inertial>
 	    <pose>7.7344e-08 0.19645 1.8868e-07 0 -0 0</pose>
 	    <mass>333.358</mass>
@@ -159,7 +159,7 @@
 </joint>
 
 <link name='back_right_wheel'>
-    <pose>-1.227 -0.47558 0.14772 0 2.1164e-16 0</pose>
+    <pose>-1.227 -0.47558 0.300 0 0 0</pose>
     <inertial>
 	<pose>-1.4894e-07 -0.19645 1.3751e-07 0 -0 0</pose>
 	<mass>333.36</mass>
@@ -224,7 +224,7 @@
 </joint>
 
 <link name='front_left_wheel'>
-    <pose>-0.22722 0.47558 0.125 0 2.1164e-16 0</pose>
+    <pose>-0.22722 0.47558 0.300 0 0 0</pose>
     <inertial>
 	<pose>2.0502e-07 0.19645 -3.6566e-09 0 -0 0</pose>
 	<mass>333.358</mass>
@@ -289,7 +289,7 @@
 </joint>
 
 <link name='front_right_wheel'>
-    <pose>-0.22722 -0.47558 0.125 0 2.1164e-16 0</pose>
+    <pose>-0.22722 -0.47558 0.300 0 0 0</pose>
     <inertial>
 	<pose>-2.0519e-07 -0.19645 -4.3198e-09 0 -0 0</pose>
 	<mass>333.358</mass>
