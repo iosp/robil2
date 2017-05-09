@@ -5,7 +5,7 @@
 <sdf version='1.4'>
 <model name='Sahar'>
    <link name='body'>
-      <pose>0 0 0 0 0 0</pose>
+      <pose>0 0 0.125 0 0 0</pose>
       <gravity>1</gravity>
       <velocity_decay>
         <linear>0</linear>
@@ -95,7 +95,7 @@
 
 
 <link name='back_left_wheel'>
-      <pose>-1.227 0.47558 0.14772 0 2.1164e-16 0</pose>
+      <pose>-1.227 0.47558 0.300 0 0 0</pose>
       <inertial>
 	    <pose>7.7344e-08 0.19645 1.8868e-07 0 -0 0</pose>
 	    <mass>333.358</mass>
@@ -159,7 +159,7 @@
 </joint>
 
 <link name='back_right_wheel'>
-    <pose>-1.227 -0.47558 0.14772 0 2.1164e-16 0</pose>
+    <pose>-1.227 -0.47558 0.300 0 0 0</pose>
     <inertial>
 	<pose>-1.4894e-07 -0.19645 1.3751e-07 0 -0 0</pose>
 	<mass>333.36</mass>
@@ -224,9 +224,9 @@
 </joint>
 
 <link name='front_left_wheel'>
-    <pose>-0.22722 0.47558 0.125 0 2.1164e-16 0</pose>
+    <pose>-0.22722 0.47558 0.300 0 0 0</pose>
     <inertial>
-	<pose>2.0502e-07 0.19645 -3.6566e-09 0 -0 0</pose>
+	<pose>2.0502e-07 0.19645 0 0 -0 0</pose>
 	<mass>333.358</mass>
 	<inertia>
 	    <ixx>17.0765</ixx>
@@ -289,7 +289,7 @@
 </joint>
 
 <link name='front_right_wheel'>
-    <pose>-0.22722 -0.47558 0.125 0 2.1164e-16 0</pose>
+    <pose>-0.22722 -0.47558 0.300 0 0 0</pose>
     <inertial>
 	<pose>-2.0519e-07 -0.19645 -4.3198e-09 0 -0 0</pose>
 	<mass>333.358</mass>
@@ -367,7 +367,7 @@
 <!-- IPON Sensor--> <!---->
     <include>
       <uri>model://IPON</uri>   
-      <pose>-0.550 -0.155 2.000 0.000 0.023 0.000</pose>  <!-- position of the GPS antena , orintation of the INS sensor-->
+      <pose>-0.790 -0.155 2.000 0.000 0.000 0.000</pose>  <!-- position of the GPS antena , orintation of the INS sensor-->
       <name>IPON</name>
     </include>
     <joint name='ipon_joint' type='revolute'>
@@ -375,7 +375,6 @@
       <parent>body</parent>
       <axis>
         <xyz>0 1 0</xyz>
-        
         <limit>
           <lower>0</lower>
           <upper>0</upper>
@@ -389,15 +388,14 @@
 <!-- IBEO Sensor --> <!---->
     <include>
       <uri>model://IBEO</uri>
-      <pose>-0.240 0.015 1.770 0.000 0.273 0.107</pose>
+      <pose>-0.400 0.020 2.000 0.000 0.215 0.149</pose>
       <name>IBEO</name>
     </include>
     <joint name='ibeo_joint' type='revolute'>
       <child>IBEO::link</child>
       <parent>body</parent>
       <axis>
-        <xyz>0 1 0</xyz>                                                                                                                                                                                        
-        
+        <xyz>0 1 0</xyz>  
         <limit>
           <lower>0</lower>
           <upper>0</upper>
