@@ -11,7 +11,7 @@
       </velocity_decay>
       <self_collide>1</self_collide>
       <inertial>
-        <pose>-0.9 -0.0 0.68 0 -0 0</pose>
+        <pose>-0.79545 -0.0 0.68 0 -0 0</pose>
         <mass>2646.54</mass>
         <inertia>
           <ixx>818.884</ixx>
@@ -22,8 +22,16 @@
           <izz>1018.05</izz>
         </inertia>
       </inertial>
-      
-            <collision name='body_collision'>
+      <visual name='body_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://bobcat_tracked_static_arm/meshes/body.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name='body_collision'>
         <pose>-0.82136 0 0.36982 0 -0.02 0</pose>
         <geometry>
           <box>
@@ -55,16 +63,6 @@
           </box>
         </geometry>
       </collision>
-      <visual name='body_visual'>
-        <pose>0 0 0 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/body.dae</uri>
-          </mesh>
-        </geometry>
-      </visual>
-      
       <collision name='body_collision_cabin'>
         <pose>-1.0253 0 1.24 0 8.0491e-16 0</pose>
         <geometry>

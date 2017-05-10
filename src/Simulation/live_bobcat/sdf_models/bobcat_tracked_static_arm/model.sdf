@@ -11,7 +11,7 @@
       </velocity_decay>
       <self_collide>1</self_collide>
       <inertial>
-        <pose>-0.9 -0.0 0.68 0 -0 0</pose>
+        <pose>-0.79545 -0.0 0.68 0 -0 0</pose>
         <mass>2646.54</mass>
         <inertia>
           <ixx>818.884</ixx>
@@ -771,7 +771,7 @@
      IBEO Sensor    
     <include>
       <uri>model://IBEO</uri>
-      <pose>-0.400 0.020 2.000 0.000 0.215 0.149</pose>
+      <pose>-0.400 0.020 2.013 0.000 0.215 0.149</pose>
       <name>IBEO</name>
     </include>
     <joint name='ibeo_joint' type='revolute'>
@@ -787,7 +787,7 @@
       </axis>
     </joint>
 -->
-    
+ <!--   
      CAM Sensors  
     <include>
       <uri>model://FLEA3_L</uri>
