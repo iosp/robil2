@@ -4,8 +4,9 @@ import roslib
 import rospy
 import tf
 from gazebo_msgs.msg import LinkStates
-
-def command_calback(msg):
+rospy.init_node('world_to_body_TF_pub')
+br = tf.TransformBroadcaster()
+def command_callback(msg):
 	names = msg.name
 	if 'Sahar::body' in names:
 		index = names.index('Sahar::body')
@@ -20,7 +21,7 @@ def command_calback(msg):
 		ori_w = msg.pose[index].orientation.w
 		
 		
-		br = tf.TransformBroadcaster()
+
 		br.sendTransform( (pos_x, pos_y, pos_z),
 				  (ori_x, ori_y ,ori_z, ori_w),
 				  rospy.Time.now(),
@@ -31,16 +32,17 @@ def command_calback(msg):
 		print 'Sahar::body dosn\'t exist in the Gazebo'
 
 
-rospy.init_node('world_to_body_TF_pub')
-
-def main():
-	rate = rospy.Rate(100)
-	while not rospy.is_shutdown():
-		msg = rospy.wait_for_message("/gazebo/link_states", LinkStates)
-		command_calback(msg)
-		rate.sleep()
 
 
-main()
+if __name__ == '__main__':
+		# rate = rospy.Rate(100)
+		# while not rospy.is_shutdown():
+		# 	msg = rospy.wait_for_message("/gazebo/link_states", LinkStates)
+		# 	command_callback(msg)
+		# 	rate.sleep()
+    rospy.Subscriber('/gazebo/link_states',
+                     LinkStates,
+                     command_callback)
+    rospy.spin()
 
 
