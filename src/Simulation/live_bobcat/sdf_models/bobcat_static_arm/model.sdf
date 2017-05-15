@@ -68,7 +68,7 @@
       </visual>
       
       <collision name='body_collision_cabin'>
-        <pose>-1.0253 0 1.24 0 8.0491e-16 0</pose>
+        <pose>-1.0253 0 1.24 0 0 0</pose>
         <geometry>
           <box>
             <size>1.557 0.889 1.152</size>
