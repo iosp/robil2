@@ -11,7 +11,11 @@
       </velocity_decay>
       <self_collide>1</self_collide>
       <inertial>
+<<<<<<< HEAD
         <pose>-0.79545 -0.0 0.68 0 -0 0</pose>
+=======
+        <pose>-0.795445 -0.0 0.68 0 -0 0</pose>
+>>>>>>> 7ca9de8e9db1abac82742d21ecc7a9f6bd9e8d00
         <mass>2646.54</mass>
         <inertia>
           <ixx>818.884</ixx>
