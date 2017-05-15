@@ -85,7 +85,8 @@ double clampValue(double ValueToNormalize,double lim) //A normalizing function t
         H_P = config.hydraulics_control_P;
         H_I = config.hydraulics_control_I;
         H_D = config.hydraulics_control_D;
-        TargetRate = config.TargetRate;
+        HydraulicSpeed = config.HydraulicSpeed;
+        JointSpeed = config.JointSpeed;
     }
 
     // Called by the world update start event, This function is the event that will be called every update
@@ -121,17 +122,16 @@ double clampValue(double ValueToNormalize,double lim) //A normalizing function t
     void CalculateTargets()
     {
 // Adding input to the spring-damper control target:
-        Hydraulics_target += Hydraulics_command * TargetRate * deltaSimTime;
-        Loader_target += Loader_command * TargetRate *2* deltaSimTime;
-        Brackets_target += Brackets_command * TargetRate *2* deltaSimTime;
+        Hydraulics_target += Hydraulics_command * HydraulicSpeed * deltaSimTime;
+        Loader_target += Loader_command * JointSpeed * deltaSimTime;
+        Brackets_target += Brackets_command * JointSpeed * deltaSimTime;
 // Limits:
         if(Hydraulics_target>0.39)Hydraulics_target=0.39;
         if(Hydraulics_target<-0.1)Hydraulics_target=-0.1;
-                if(Loader_target>0.5)Loader_target=0.5;
+        if(Loader_target>0.5)Loader_target=0.5;
         if(Loader_target<-0.5)Loader_target=-0.5;
-                if(Brackets_target>1)Brackets_target=1;
+        if(Brackets_target>1)Brackets_target=1;
         if(Brackets_target<-0.5)Brackets_target=-0.5;
-        
     }
     void apply_efforts()
     {
@@ -173,18 +173,7 @@ double clampValue(double ValueToNormalize,double lim) //A normalizing function t
     {
         Hydraulics_command_mutex.lock();
         // Recieving referance velocity
-        if (msg->data > 1)
-        {
-            Hydraulics_command = 1;
-        }
-        else if (msg->data < -1)
-        {
-            Hydraulics_command = -1;
-        }
-        else
-        {
-            Hydraulics_command = msg->data;
-        }
+        Hydraulics_command = clampValue(msg->data,1);
 
 // Reseting timer every time LLC publishes message
 #if GAZEBO_MAJOR_VERSION >= 5
@@ -194,23 +183,12 @@ double clampValue(double ValueToNormalize,double lim) //A normalizing function t
 
         Hydraulics_command_mutex.unlock();
     }
+
     void On_Loader_command(const std_msgs::Float64ConstPtr &msg)
     {
-
         Loader_command_mutex.lock();
         // Recieving referance velocity
-        if (msg->data > 1)
-        {
-            Loader_command = 1;
-        }
-        else if (msg->data < -1)
-        {
-            Loader_command = -1;
-        }
-        else
-        {
-            Loader_command = msg->data;
-        }
+        Loader_command = clampValue(msg->data,1);
 
 // Reseting timer every time LLC publishes message
 #if GAZEBO_MAJOR_VERSION >= 5
@@ -219,24 +197,13 @@ double clampValue(double ValueToNormalize,double lim) //A normalizing function t
         Loader_command_timer.Start();
 
         Loader_command_mutex.unlock();
-    }
-        void On_Brackets_command(const std_msgs::Float64ConstPtr &msg)
-    {
+}
 
+    void On_Brackets_command(const std_msgs::Float64ConstPtr &msg)
+    {
         Brackets_command_mutex.lock();
         // Recieving referance velocity
-        if (msg->data > 1)
-        {
-            Brackets_command = 1;
-        }
-        else if (msg->data < -1)
-        {
-            Brackets_command = -1;
-        }
-        else
-        {
-            Brackets_command = msg->data;
-        }
+        Brackets_command = clampValue(msg->data,1);
 
 // Reseting timer every time LLC publishes message
 #if GAZEBO_MAJOR_VERSION >= 5
@@ -263,10 +230,10 @@ double clampValue(double ValueToNormalize,double lim) //A normalizing function t
     ros::Subscriber Loader_sub;
     ros::Subscriber Brackets_sub;
     // Defining private Timers
-  common::Timer Hydraulics_command_timer;
-  common::Timer Loader_command_timer;
-  common::Timer Brackets_command_timer;
-  common::Time simTime;
+    common::Timer Hydraulics_command_timer;
+    common::Timer Loader_command_timer;
+    common::Timer Brackets_command_timer;
+    common::Time simTime;
 
     // Defining private Mutex
     boost::mutex Hydraulics_command_mutex;
@@ -276,7 +243,7 @@ double clampValue(double ValueToNormalize,double lim) //A normalizing function t
     float Hydraulics_command = 0;
     float Loader_command = 0;
     float Brackets_command = 0;
-    float Hydraulics_target = 0.075, TargetRate = 0.1, IerH = 0;
+    float Hydraulics_target = 0.075, HydraulicSpeed = 0.1,JointSpeed=0.25, IerH = 0;
     float Loader_target = 0;
     float Brackets_target = 0.5;
 
