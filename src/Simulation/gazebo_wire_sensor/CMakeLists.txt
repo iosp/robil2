@@ -19,6 +19,7 @@ add_library(wire_sensor SHARED src/wire_sensor.cpp)
 target_link_libraries(wire_sensor ${GAZEBO_libraries})
 
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(

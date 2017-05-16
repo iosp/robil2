@@ -14,6 +14,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 find_package(tf REQUIRED)
 find_package(gazebo REQUIRED)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 link_directories(${GAZEBO_LIBRARY_DIRS})
 include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
