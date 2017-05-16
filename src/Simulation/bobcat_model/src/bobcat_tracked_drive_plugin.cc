@@ -34,7 +34,7 @@
 
 
 // Platform Constants
-#define WHEELS_BASE 1.32
+#define WHEELS_BASE 1.26
 #define WHEEL_DIAMETER 0.4
 #define MAX_PLAT_ROTATION_SPEED 1.5
 

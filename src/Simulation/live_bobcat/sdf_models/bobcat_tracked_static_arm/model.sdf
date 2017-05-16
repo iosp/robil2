@@ -12,7 +12,7 @@
       </velocity_decay>
       <self_collide>1</self_collide>
       <inertial>
-        <pose>-0.9 -0.0 0.68 0 -0 0</pose>
+        <pose>-0.795445 -0.0 0.68 0 -0 0</pose>
         <mass>2646.54</mass>
         <inertia>
           <ixx>818.884</ixx>
@@ -94,8 +94,8 @@
     </link>
     
     
-    <!--COGWHEELS-->
-        <link name='cogwheel_left'>
+   <!--COGWHEELS-->
+    <link name='cogwheel_left'>
       <pose>-1.35 0.655 0.435 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
@@ -140,6 +140,7 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
     <link name='cogwheel_right'>
@@ -187,13 +188,14 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
 
     <!--WHEELS-->
     <link name='back_left_wheel'>
     <self_collide>0</self_collide>
-      <pose>-1.53739 0.650 0.1 0 0 0</pose>
+      <pose>-1.53739 0.63 0.1 0  0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -242,11 +244,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
     <link name='back_right_wheel'>
     <self_collide>0</self_collide>
-      <pose>-1.535 -0.650 0.1 0 0 0</pose>
+      <pose>-1.535 -0.63 0.1 0  0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -295,11 +298,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
     <link name='front_left_wheel'>
     <self_collide>0</self_collide>
-      <pose>-0.0535 0.655 0.1 0 0 0</pose>
+      <pose>-0.0535 0.63 0.1 0  0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -348,11 +352,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
     <link name='front_right_wheel'>
     <self_collide>0</self_collide>
-      <pose>-0.0535 -0.65 0.1 0 0 0</pose>
+      <pose>-0.0535 -0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -401,13 +406,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
-    
-    
-    
+
     <link name='roller_back_right'>
     <self_collide>0</self_collide>
-      <pose>-1.15 -0.65 0.1 0 0 0</pose>
+      <pose>-1.16582 -0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -456,11 +460,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
     <link name='roller_mid_right'>
     <self_collide>0</self_collide>
-      <pose>-0.81 -0.65 0.1 0 0 0</pose>
+      <pose>-0.79545 -0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -509,11 +514,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
     <link name='roller_front_right'>
     <self_collide>0</self_collide>
-      <pose>-0.46 -0.65 0.1 0 0 0</pose>
+      <pose>-0.42447 -0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -562,11 +568,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
     <link name='roller_back_left'>
     <self_collide>0</self_collide>
-      <pose>-1.15 0.65 0.1 0 0 0</pose>
+      <pose>-1.16582 0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -615,11 +622,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
     <link name='roller_mid_left'>
     <self_collide>0</self_collide>
-      <pose>-0.81 0.65 0.1 0 0 0</pose>
+      <pose>-0.79545 0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -668,11 +676,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
     <link name='roller_front_left'>
     <self_collide>0</self_collide>
-      <pose>-0.46 0.65 0.1 0 0 0</pose>
+      <pose>-0.42447 0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -721,11 +730,9 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
-    
-    
-    
     <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so"/>
    
     <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
