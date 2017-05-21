@@ -145,26 +145,26 @@
       </geometry>
     </visual>
   </link>
-  <link name="Hydraulic_bottom">
+  <link name="Hydraulics_bottom">
     <inertial>
       <mass value="65.29"/>
       <origin rpy="0 0 0" xyz="0 0 0.5"/>
       <inertia ixx="10" ixy="0" ixz="0" iyy="10" iyz="0" izz="1"/>
     </inertial>
-    <visual name="Hydraulic_bottom_vis">
+    <visual name="Hydraulics_bottom_vis">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/Hydraulics_bottom.dae" scale="1 1 1"/>
       </geometry>
     </visual>
   </link>
-  <link name="Hydraulic_top">
+  <link name="Hydraulics_top">
     <inertial>
       <mass value="65.29"/>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <inertia ixx="10" ixy="0" ixz="0" iyy="10" iyz="0" izz="1"/>
     </inertial>
-    <visual name="Hydraulic_bottom_vis">
+    <visual name="Hydraulics_bottom_vis">
       <origin rpy="0 0 0" xyz="0 0 0.5"/>
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/Hydraulics_top.dae" scale="1 1 1"/>
@@ -241,17 +241,17 @@
     <axis xyz="0 1 0"/>
     <limit effort="0" lower="0" upper="0" velocity="0"/>
   </joint>
-  <joint name="Hydraulic_bottom_rot" type="revolute">
+  <joint name="Hydraulics_bottom_rot" type="revolute">
     <parent link="body"/>
-    <child link="Hydraulic_bottom"/>
+    <child link="Hydraulics_bottom"/>
     <origin rpy=" 0 0.34907 0" xyz="-1.781 0 0.393"/>
     <axis xyz="0 1 0"/>
     <limit effort="0" lower="0" upper="0" velocity="0"/>
   </joint>
-  <joint name="Hydraulic_top_rot" type="revolute"><parent link="main_arm"/><child link="Hydraulic_top"/><origin rpy=" 0 0.34907 0" xyz="0.27456 0   -0.4835"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint>
+  <joint name="Hydraulics_top_rot" type="revolute"><parent link="main_arm"/><child link="Hydraulics_top"/><origin rpy=" 0 0.34907 0" xyz="0.27456 0   -0.4835"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint>
   <joint name="Hydraulics_joint" type="prismatic">
-    <parent link="Hydraulic_bottom"/>
-    <child link="Hydraulic_top"/>
+    <parent link="Hydraulics_bottom"/>
+    <child link="Hydraulics_top"/>
     <origin rpy="0 0 0" xyz=" 0 0 0.38007"/>
     <axis xyz="0 0 1"/>
     <limit effort="0" lower="0" upper="0" velocity="0"/>
