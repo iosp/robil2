@@ -71,7 +71,7 @@
   <link name="main_arm">
     <inertial>
       <mass value="300"/>
-      <origin rpy="0 0 0" xyz="1.1865 0   -0.60466"/>
+      <origin rpy="0 0 0" xyz="1.1865 0 -0.60466"/>
       <inertia ixx="133.74" ixy="0" ixz="-68.753" iyy="216.24" iyz="0" izz="268.55"/>
     </inertial>
     <collision name="main_arm_collision">
@@ -144,26 +144,26 @@
       </geometry>
     </visual>
   </link>
-  <link name="Hydraulic_bottom">
+  <link name="Hydraulics_bottom">
     <inertial>
       <mass value="65.29"/>
       <origin rpy="0 0 0" xyz="0 0 0.5"/>
       <inertia ixx="10" ixy="0" ixz="0" iyy="10" iyz="0" izz="1"/>
     </inertial>
-    <visual name="Hydraulic_bottom_vis">
+    <visual name="Hydraulics_bottom_vis">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/Hydraulics_bottom.dae" scale="1 1 1"/>
       </geometry>
     </visual>
   </link>
-  <link name="Hydraulic_top">
+  <link name="Hydraulics_top">
     <inertial>
       <mass value="65.29"/>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <inertia ixx="10" ixy="0" ixz="0" iyy="10" iyz="0" izz="1"/>
     </inertial>
-    <visual name="Hydraulic_bottom_vis">
+    <visual name="Hydraulics_bottom_vis">
       <origin rpy="0 0 0" xyz="0 0 0.5"/>
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/Hydraulics_top.dae" scale="1 1 1"/>
@@ -205,7 +205,7 @@
   <joint name="supporter_joint" type="revolute">
     <parent link="main_arm"/>
     <child link="supporter"/>
-    <origin rpy="0 -0.12 0" xyz="0.39771 0   -0.89486"/>
+    <origin rpy="0 -0.12 0" xyz="0.39771 0 -0.89486"/>
     <axis xyz="0 1 0"/>
     <limit effort="0" lower="0" upper="0" velocity="0"/>
   </joint>
@@ -216,80 +216,126 @@
     <axis xyz="0 1 0"/>
     <limit effort="0" lower="0" upper="0" velocity="0"/>
   </joint>
-  <joint name="Hydraulic_bottom_rot" type="revolute">
+  <joint name="Hydraulics_bottom_rot" type="revolute">
     <parent link="body"/>
-    <child link="Hydraulic_bottom"/>
+    <child link="Hydraulics_bottom"/>
     <origin rpy=" 0 0.34907 0" xyz="-1.781 0 0.393"/>
     <axis xyz="0 1 0"/>
     <limit effort="0" lower="0" upper="0" velocity="0"/>
   </joint>
-  <joint name="Hydraulic_top_rot" type="revolute"><parent link="main_arm"/><child link="Hydraulic_top"/><origin rpy=" 0 0.34907 0" xyz="0.27456 0   -0.4835"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint>
+  <joint name="Hydraulics_top_rot" type="revolute"><parent link="main_arm"/><child link="Hydraulics_top"/><origin rpy=" 0 0.34907 0" xyz="0.27456 0 -0.4835"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint>
   <joint name="Hydraulics_joint" type="prismatic">
-    <parent link="Hydraulic_bottom"/>
-    <child link="Hydraulic_top"/>
+    <parent link="Hydraulics_bottom"/>
+    <child link="Hydraulics_top"/>
     <origin rpy="0 0 0" xyz=" 0 0 0.38007"/>
     <axis xyz="0 0 1"/>
     <limit effort="0" lower="0" upper="0" velocity="0"/>
   </joint>
   <link name="back_left_wheel">
-      <visual name="back_left_wheel_visual">
-      <origin rpy="0 0 0" xyz="0 0 0.125"/>
+    <inertial>
+      <mass value="333.358"/>
+      <origin rpy="0 0 0" xyz="0 0.19645 0"/>
+      <inertia ixx="17.0765" ixy="-2.79367e-06" ixz="-6.68629e-05" iyy="29.6158" iyz="-1.33651e-05" izz="17.0765"/>
+    </inertial>
+    <collision name="back_left_wheel_collision">
+      <origin rpy="1.5708 0 0" xyz="0 0.2 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_left_wheel.stl" scale="1 1 1"/>
+        <cylinder length="0.4" radius="0.4"/>
+      </geometry>
+    </collision>
+    <visual name="back_left_wheel_visual">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_left_wheel.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </visual>
-    </link>
-  <joint name="back_left_wheel_joint" type="continuous">
-    <parent link="body" />
-    <child link="back_left_wheel" />
-    <origin xyz="-1.227 0.475 0.147" rpy="0 0 0" />
-    <axis xyz="0 1 0" />
-  </joint>
-
+  </link>
   <link name="back_right_wheel">
-        <visual name="back_right_wheel_visual">
-      <origin rpy="0 0 0" xyz="0 0 0.125"/>
+    <inertial>
+      <mass value="333.36"/>
+      <origin rpy="0 0 0" xyz="0   -0.19645 0"/>
+      <inertia ixx="17.0765" ixy="-1.87699e-05" ixz="1.23277e-05" iyy="29.6158" iyz="3.1578e-05" izz="17.0765"/>
+    </inertial>
+    <collision name="back_right_wheel_collision">
+      <origin rpy="1.5708 0 0" xyz="0 -0.2 0"/>
+      <geometry>
+        <cylinder length="0.4" radius="0.4"/>
+      </geometry>
+    </collision>
+    <visual name="back_right_wheel_visual">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_right_wheel.stl" scale="1 1 1"/>
       </geometry>
     </visual>
-   </link>
-  <joint name="back_right_wheel_joint" type="continuous">
-    <parent link="body" />
-    <child link="back_right_wheel" />
-    <origin xyz="-1.227 -0.475 0.147" rpy="0 0 0" />
-    <axis xyz="0 1 0" />
-  </joint>
-
+  </link>
   <link name="front_left_wheel">
-      <visual name="back_left_wheel_visual">
-      <origin rpy="0 0 0" xyz="0 0 0.125"/>
+    <inertial>
+      <mass value="333.358"/>
+      <origin rpy="0 0 0" xyz="0 0.19645 0"/>
+      <inertia ixx="17.0765" ixy="-4.02019e-05" ixz="7.57982e-05" iyy="29.6158" iyz="-6.64195e-06" izz="17.0765"/>
+    </inertial>
+    <collision name="front_left_wheel_collision">
+      <origin rpy="1.5708 0 0" xyz="0 0.2 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_left_wheel.stl" scale="1 1 1"/>
+        <cylinder length="0.4" radius="0.4"/>
+      </geometry>
+    </collision>
+    <visual name="front_left_wheel_visual">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/front_left_wheel.stl" scale="1 1 1"/>
       </geometry>
     </visual>
-   </link>
-  <joint name="front_left_wheel_joint" type="continuous">
-    <parent link="body" />
-    <child link="front_left_wheel" />
-    <origin xyz="-0.227 0.475 0.125" rpy="0 0 0" />
-    <axis xyz="0 1 0" />
-  </joint>
-
+  </link>
   <link name="front_right_wheel">
-          <visual name="back_right_wheel_visual">
-      <origin rpy="0 0 0" xyz="0 0 0.125"/>
+    <inertial>
+      <mass value="333.358"/>
+      <origin rpy="0 0 0" xyz="0   -0.19645 0"/>
+      <inertia ixx="17.0765" ixy="-3.66954e-05" ixz="-7.5494e-05" iyy="29.6158" iyz="1.22098e-05" izz="17.0765"/>
+    </inertial>
+    <collision name="front_right_wheel_collision">
+      <origin rpy="1.5708 0 0" xyz="0 -0.2 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_right_wheel.stl" scale="1 1 1"/>
+        <cylinder length="0.4" radius="0.4"/>
+      </geometry>
+    </collision>
+    <visual name="front_right_wheel_visual">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/front_right_wheel.stl" scale="1 1 1"/>
       </geometry>
     </visual>
-   </link>
-  <joint name="front_right_wheel_joint" type="continuous">
-    <parent link="body" />
-    <child link="front_right_wheel" />
-    <origin xyz="-0.227 -0.475 0.125" rpy="0 0 0" />
-    <axis xyz="0 1 0" />
+  </link>
+  <joint name="back_left_wheel_joint" type="revolute">
+    <parent link="body"/>
+    <child link="back_left_wheel"/>
+    <origin rpy="0  0  0" xyz="-1.227    0.47558  0.3"/>
+    <axis xyz="0  1  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
   </joint>
- 
+  <joint name="back_right_wheel_joint" type="revolute">
+    <parent link="body"/>
+    <child link="back_right_wheel"/>
+    <origin rpy="0  0  0" xyz="-1.227   -0.47558  0.3"/>
+    <axis xyz="0  1  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <joint name="front_left_wheel_joint" type="revolute">
+    <parent link="body"/>
+    <child link="front_left_wheel"/>
+    <origin rpy="0  0  0" xyz="-0.22722  0.47558  0.3"/>
+    <axis xyz="0  1  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <joint name="front_right_wheel_joint" type="revolute">
+    <parent link="body"/>
+    <child link="front_right_wheel"/>
+    <origin rpy="0  0  0" xyz="-0.22722 -0.47558  0.3"/>
+    <axis xyz="0  1  0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
 </robot>
+ 
+
 
