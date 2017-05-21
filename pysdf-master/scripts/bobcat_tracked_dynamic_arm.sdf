@@ -506,7 +506,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked/meshes/cogwheel_left.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel_left.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -555,7 +555,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked/meshes/cogwheel_right.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel_right.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -1129,11 +1129,12 @@
       <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
+
     <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so"/>
     <plugin name="bobcat_arm" filename="libbobcat_arm_plugin.so"/>
     <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
       <robotNamespace>/Sahar</robotNamespace>
-      <jointName>base_arm_joint, main_arm_joint, Hydraulic_bottom_rot, Hydraulics_joint, Hydraulic_top_rot, loader_joint, brackets_joint, supporter_joint, supporter_joint2, cogwheel_right_joint, cogwheel_left_joint</jointName>
+      <jointName>cogwheel_right_joint, cogwheel_left_joint</jointName>
       <updateRate>50.0</updateRate>
       <alwaysOn>true</alwaysOn>
     </plugin>

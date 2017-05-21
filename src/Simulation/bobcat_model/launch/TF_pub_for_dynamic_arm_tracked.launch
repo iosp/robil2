@@ -4,7 +4,10 @@
 
   <node name="world_to_body_TF_pub" pkg="bobcat_model" type="world_to_body_TF_pub.py" respawn="true" output="screen"/>
   
-  
+  <arg name="robot_models" default="$(find bobcat_model)/sdf_models"/>
+
+<!-- setting gazebo path for platform and sensors models -->
+  <env name="ROS_PACKAGE_PATH" value="$(arg robot_models)" />
   <param name="robot_description" command="cat $(find bobcat_model)/urdf_models/bobcat_tracked_urdf_for_dynamic_arm.URDF" />
   
   <!-- convert joint states to TF transforms for rviz, etc   -->

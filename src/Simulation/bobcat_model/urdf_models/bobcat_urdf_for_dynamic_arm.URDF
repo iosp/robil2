@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <robot name="Sahar">
-  <!--<link name="body"><inertial><origin xyz="0 0 0.125" rpy="0 0 0"/>><mass value="1"/><inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" /></inertial><visual><origin xyz="0 0 0" rpy="0 0 0" /><geometry><mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/body.dae"/></geometry></visual>-->
   <link name="body">
     <inertial>
       <mass value="2000"/>
@@ -46,7 +45,7 @@
     <visual name="body_visual">
       <origin rpy="0 0 0" xyz="0 0 0.125"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/body.dae" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/body.dae" scale="1 1 1"/>
       </geometry>
     </visual>
   </link>
@@ -59,13 +58,13 @@
     <collision name="base_arm_collision">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/base_arm_col.STL" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/base_arm_col.STL" scale="1 1 1"/>
       </geometry>
     </collision>
     <visual name="base_arm_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/base_arm.STL" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/base_arm.STL" scale="1 1 1"/>
       </geometry>
     </visual>
   </link>
@@ -78,13 +77,13 @@
     <collision name="main_arm_collision">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/main_arm_col.STL" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/main_arm_col.STL" scale="1 1 1"/>
       </geometry>
     </collision>
     <visual name="main_arm_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/main_arm.STL" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/main_arm.STL" scale="1 1 1"/>
       </geometry>
     </visual>
   </link>
@@ -97,13 +96,13 @@
     <collision name="loader_collision">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/loader_col.STL" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/loader_col.STL" scale="1 1 1"/>
       </geometry>
     </collision>
     <visual name="loader_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/loader.STL" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/loader.STL" scale="1 1 1"/>
       </geometry>
     </visual>
   </link>
@@ -116,13 +115,13 @@
     <collision name="brackets_collision">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/brackets_col.STL" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/brackets_col.STL" scale="1 1 1"/>
       </geometry>
     </collision>
     <visual name="brackets_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/brackets.STL" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/brackets.STL" scale="1 1 1"/>
       </geometry>
     </visual>
   </link>
@@ -135,13 +134,13 @@
     <collision name="supporter_collision">
       <origin rpy="0 0 0" xyz="-1.04 0 0.122"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/supporter.STL" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/supporter.STL" scale="1 1 1"/>
       </geometry>
     </collision>
     <visual name="supporter_visual">
       <origin rpy="0 0 0" xyz="-1.04 0 0.122"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/supporter.STL" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/supporter.STL" scale="1 1 1"/>
       </geometry>
     </visual>
   </link>
@@ -154,7 +153,7 @@
     <visual name="Hydraulic_bottom_vis">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/Hydraulics_bottom.dae" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/Hydraulics_bottom.dae" scale="1 1 1"/>
       </geometry>
     </visual>
   </link>
@@ -167,36 +166,12 @@
     <visual name="Hydraulic_bottom_vis">
       <origin rpy="0 0 0" xyz="0 0 0.5"/>
       <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/Hydraulics_top.dae" scale="1 1 1"/>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/Hydraulics_top.dae" scale="1 1 1"/>
       </geometry>
     </visual>
   </link>
-  <link name="cogwheel_left">
-    <inertial>
-      <mass value="1.1"/>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <inertia ixx="0.01" ixy="-0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
-    </inertial>
-    <visual name="cogwheel_left_visual">
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/cogwheel_left.STL" scale="1 1 1"/>
-      </geometry>
-    </visual>
-  </link>
-  <link name="cogwheel_right">
-    <inertial>
-      <mass value="1.1"/>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <inertia ixx="0.01" ixy="-0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
-    </inertial>
-    <visual name="cogwheel_right_visual">
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/cogwheel_right.STL" scale="1 1 1"/>
-      </geometry>
-    </visual>
-  </link>
+
+
   <!--
     <link name="back_left_wheel"><inertial><mass value="50"/><origin rpy="0 0 0" xyz="0 0 0"/><inertia ixx="1.175" ixy="-0" ixz="0" iyy="1" iyz="0" izz="1.175"/></inertial><collision name="back_left_wheel_collision"><origin rpy="-1.5708 0 0" xyz="0 0 0"/><geometry><cylinder length="0.4" radius="0.2"/></geometry></collision></link><link name="back_right_wheel"><inertial><mass value="50"/><origin rpy="0 0 0" xyz="0 0 0"/><inertia ixx="1.175" ixy="-0" ixz="0" iyy="1" iyz="0" izz="1.175"/></inertial><collision name="back_right_wheel_collision"><origin rpy="1.5708 0 0" xyz="0 0 0"/><geometry><cylinder length="0.4" radius="0.2"/></geometry></collision></link><link name="front_left_wheel"><inertial><mass value="50"/><origin rpy="0 0 0" xyz="0 0 0"/><inertia ixx="1.175" ixy="-0" ixz="0" iyy="1" iyz="0" izz="1.175"/></inertial><collision name="front_left_wheel_collision"><origin rpy="-1.5708 0 0" xyz="0 0 0"/><geometry><cylinder length="0.4" radius="0.2"/></geometry></collision></link><link name="front_right_wheel"><inertial><mass value="50"/><origin rpy="0 0 0" xyz="0 0 0"/><inertia ixx="1.175" ixy="-0" ixz="0" iyy="1" iyz="0" izz="1.175"/></inertial><collision name="front_right_wheel_collision"><origin rpy="1.5708 0 0" xyz="0 0 0"/><geometry><cylinder length="0.4" radius="0.2"/></geometry></collision></link><link name="roller_back_right"><inertial><mass value="50"/><origin rpy="0 0 0" xyz="0 0 0"/><inertia ixx="1.175" ixy="-0" ixz="0" iyy="1" iyz="0" izz="1.175"/></inertial><collision name="roller_back_right_collision"><origin rpy="1.5708 0 0" xyz="0 0 0"/><geometry><cylinder length="0.4" radius="0.2"/></geometry></collision></link><link name="roller_mid_right"><inertial><mass value="50"/><origin rpy="0 0 0" xyz="0 0 0"/><inertia ixx="1.175" ixy="-0" ixz="0" iyy="1" iyz="0" izz="1.175"/></inertial><collision name="roller_mid_right_collision"><origin rpy="1.5708 0 0" xyz="0 0 0"/><geometry><cylinder length="0.4" radius="0.2"/></geometry></collision></link><link name="roller_front_right"><inertial><mass value="50"/><origin rpy="0 0 0" xyz="0 0 0"/><inertia ixx="1.175" ixy="-0" ixz="0" iyy="1" iyz="0" izz="1.175"/></inertial><collision name="roller_front_right_collision"><origin rpy="1.5708 0 0" xyz="0 0 0"/><geometry><cylinder length="0.4" radius="0.2"/></geometry></collision></link><link name="roller_back_left"><inertial><mass value="50"/><origin rpy="0 0 0" xyz="0 0 0"/><inertia ixx="1.175" ixy="-0" ixz="0" iyy="1" iyz="0" izz="1.175"/></inertial><collision name="roller_back_left_collision"><origin rpy="1.5708 0 0" xyz="0 0 0"/><geometry><cylinder length="0.4" radius="0.2"/></geometry></collision></link><link name="roller_mid_left"><inertial><mass value="50"/><origin rpy="0 0 0" xyz="0 0 0"/><inertia ixx="1.175" ixy="-0" ixz="0" iyy="1" iyz="0" izz="1.175"/></inertial><collision name="roller_mid_left_collision"><origin rpy="1.5708 0 0" xyz="0 0 0"/><geometry><cylinder length="0.4" radius="0.2"/></geometry></collision></link><link name="roller_front_left"><inertial><mass value="50"/><origin rpy="0 0 0" xyz="0 0 0"/><inertia ixx="1.175" ixy="-0" ixz="0" iyy="1" iyz="0" izz="1.175"/></inertial><collision name="roller_front_left_collision"><origin rpy="1.5708 0 0" xyz="0 0 0"/><geometry><cylinder length="0.4" radius="0.2"/></geometry></collision></link>-->
   <joint name="base_arm_joint" type="revolute">
@@ -256,19 +231,65 @@
     <axis xyz="0 0 1"/>
     <limit effort="0" lower="0" upper="0" velocity="0"/>
   </joint>
-  <joint name="cogwheel_left_joint" type="revolute">
-    <parent link="body"/>
-    <child link="cogwheel_left"/>
-    <origin rpy="0 0 0" xyz="-1.35 0.655 0.435"/>
-    <axis xyz="0 1 0"/>
-    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  <link name="back_left_wheel">
+      <visual name="back_left_wheel_visual">
+      <origin rpy="0 0 0" xyz="0 0 0.125"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_left_wheel.stl" scale="1 1 1"/>
+      </geometry>
+    </visual>
+    </link>
+  <joint name="back_left_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="back_left_wheel" />
+    <origin xyz="-1.227 0.475 0.147" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
   </joint>
-  <joint name="cogwheel_right_joint" type="revolute">
-    <parent link="body"/>
-    <child link="cogwheel_right"/>
-    <origin rpy="0 0 0" xyz="-1.35 -0.655 0.435"/>
-    <axis xyz="0 1 0"/>
-    <limit effort="0" lower="0" upper="0" velocity="0"/>
+
+  <link name="back_right_wheel">
+        <visual name="back_right_wheel_visual">
+      <origin rpy="0 0 0" xyz="0 0 0.125"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_right_wheel.stl" scale="1 1 1"/>
+      </geometry>
+    </visual>
+   </link>
+  <joint name="back_right_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="back_right_wheel" />
+    <origin xyz="-1.227 -0.475 0.147" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
   </joint>
-  <!--<joint name="back_left_wheel_joint" type="revolute"><parent link="body"/><child link="back_left_wheel"/><origin rpy="0 0 0" xyz="-1.53739 0.63 0.1"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint><joint name="back_right_wheel_joint" type="revolute"><parent link="body"/><child link="back_right_wheel"/><origin rpy="0 0 0" xyz="-1.535 -0.63 0.1"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint><joint name="front_left_wheel_joint" type="revolute"><parent link="body"/><child link="front_left_wheel"/><origin rpy="0 0 0" xyz="-0.0535 0.63 0.1"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint><joint name="front_right_wheel_joint" type="revolute"><parent link="body"/><child link="front_right_wheel"/><origin rpy="0 0 0" xyz="-0.0535 -0.63 0.1"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint><joint name="roller_back_right_joint" type="revolute"><parent link="body"/><child link="roller_back_right"/><origin rpy="0 0 0" xyz="-1.16582 -0.63 0.1"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint><joint name="roller_mid_right_joint" type="revolute"><parent link="body"/><child link="roller_mid_right"/><origin rpy="0 0 0" xyz="-0.79545 -0.63 0.1"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint><joint name="roller_front_right_joint" type="revolute"><parent link="body"/><child link="roller_front_right"/><origin rpy="0 0 0" xyz="-0.42447 -0.63 0.1"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint><joint name="roller_back_left_joint" type="revolute"><parent link="body"/><child link="roller_back_left"/><origin rpy="0 0 0" xyz="-1.16582 0.63 0.1"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint><joint name="roller_mid_left_joint" type="revolute"><parent link="body"/><child link="roller_mid_left"/><origin rpy="0 0 0" xyz="-0.79545 0.63 0.1"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint><joint name="roller_front_left_joint" type="revolute"><parent link="body"/><child link="roller_front_left"/><origin rpy="0 0 0" xyz="-0.42447 0.63 0.1"/><axis xyz="0 1 0"/><limit effort="0" lower="0" upper="0" velocity="0"/></joint>-->
+
+  <link name="front_left_wheel">
+      <visual name="back_left_wheel_visual">
+      <origin rpy="0 0 0" xyz="0 0 0.125"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_left_wheel.stl" scale="1 1 1"/>
+      </geometry>
+    </visual>
+   </link>
+  <joint name="front_left_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="front_left_wheel" />
+    <origin xyz="-0.227 0.475 0.125" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <link name="front_right_wheel">
+          <visual name="back_right_wheel_visual">
+      <origin rpy="0 0 0" xyz="0 0 0.125"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_right_wheel.stl" scale="1 1 1"/>
+      </geometry>
+    </visual>
+   </link>
+  <joint name="front_right_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="front_right_wheel" />
+    <origin xyz="-0.227 -0.475 0.125" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
 </robot>
+

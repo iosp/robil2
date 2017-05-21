@@ -406,7 +406,7 @@
     </joint>
 
 
-<!-- CAM Sensors --> <!---->
+<!-- CAM Sensors --> <!--
     <include>
       <uri>model://FLEA3_L</uri>
       <pose>-0.3 0.25 2.02 0 0 0</pose>
@@ -446,7 +446,7 @@
         <dynamics/>
       </axis>
     </joint>
-
+-->
 
 
 
