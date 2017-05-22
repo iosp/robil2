@@ -78,7 +78,8 @@
 #include <sensor_msgs/JointState.h>
 #include <robil_msgs/MultiLaserScan.h>
 #include <robil_msgs/GpsSpeed.h>
-
+#include <tf/tf.h>
+#include <tf/transform_listener.h>
 
 
 
@@ -169,6 +170,7 @@ private:
       HeightMap* height_map;
       bool _should_pub;
       std_msgs::Header _should_pub_timeout;
+      tf::TransformListener listener;
 
       
       

@@ -55,7 +55,7 @@ class Mapper
     
     static void VisualizeLoop();
     
-    static void handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pcpubworld, ros::Publisher pcpub);
+    static void handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pcpubworld, ros::Publisher pcpub,tf::TransformListener& listener);
      
     static void handleSickL(const sensor_msgs::LaserScan& msg);
     

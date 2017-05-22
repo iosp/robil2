@@ -45,16 +45,18 @@ void Mapper::MainLoop(per::configConfig *p)
     height_map = new HeightMap(500,500, p);
     per::configConfig *dynamic_param = p;
     int i = 0;
-    ros::Duration rate(1);
+//    ros::Duration rate(1);
     while(ros::ok())
     {
 
 //        boost::this_thread::sleep(boost::posix_time::milliseconds(100)); //10hz cycle
-        rate.sleep();
+        double rate_hz;
+        ros::param::param("/PER/RATE", rate_hz, 5.0);
+        ros::Duration(1.0 / rate_hz).sleep();
         int check; ros::param::param("/LOC/Ready",check,0); if(!check) continue;
         if(++i < 30) continue;
         //printf("MAPPER\n");
-        lock.lock();
+//        lock.lock();
 
         height_map->calculateTypes();//position, myRot);
 
@@ -75,7 +77,7 @@ void Mapper::MainLoop(per::configConfig *p)
             delete(height_map);
             height_map = new HeightMap(500,500, p);
         }
-        lock.unlock();
+//        lock.unlock();
     }
     delete(height_map);
 }
@@ -86,7 +88,7 @@ void Mapper::VisualizeLoop()
     {
         if(height_map != NULL)// && visualize > 0)
         {
-            lock.lock();
+//            lock.lock();
             bool debug;
             ros::param::param("/PER/DEBUG", debug, false);
             if (debug)
@@ -126,8 +128,8 @@ void Mapper::VisualizeLoop()
             }
             if (!visualize)
                 destroyAllWindows();
-            lock.unlock();
-            waitKey(20);
+//            lock.unlock();
+            waitKey(100);
         }
     }
 }
@@ -144,12 +146,12 @@ void Mapper::setLanes(Mat lanes)
 }
 
 /** Until Here**/
-void Mapper::handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pcpubworld, ros::Publisher pcpub)
+void Mapper::handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pcpubworld, ros::Publisher pcpub, tf::TransformListener& listener)
 {
     if(!loc_received) return;
     //return;
-    static tf::TransformListener listener;
-    lock.lock();
+
+//    lock.lock();
 
     ros::Time now = ros::Time(0);
     sensor_msgs::PointCloud ibeo_points, base_point;
@@ -188,7 +190,7 @@ void Mapper::handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pc
             p.y = p.x * tan(theta);
             p.z = array[i] * alfa * sin(phi);
             ibeo_points.points.push_back(p);
-            ibeo_points.channels[0].values.push_back(100.0);
+            ibeo_points.channels[0].values.push_back(p.z);
         }
     }
     try{
@@ -208,13 +210,13 @@ void Mapper::handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pc
         ROS_ERROR("PER: %s", ex.what());
     }
 
-    lock.unlock();
+//    lock.unlock();
 }
 
 void Mapper::handleSickL(const sensor_msgs::LaserScan& msg)
 {
     if(!loc_received) return;
-    lock.lock();
+//    lock.lock();
     Quaternion q = GetFromRPY(leftSickRot);
     Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
     Vec3D right = GetRightVector(q.x,q.y,q.z,q.w);
@@ -231,13 +233,13 @@ void Mapper::handleSickL(const sensor_msgs::LaserScan& msg)
                         pos,
                         msg.ranges[i],
                         msg.angle_min + i*msg.angle_increment);
-    lock.unlock();
+//    lock.unlock();
 }
 
 void Mapper::handleSickR(const sensor_msgs::LaserScan& msg)
 {
     if(!loc_received) return;
-    lock.lock();
+//    lock.lock();
 
     Quaternion q = GetFromRPY(rightSickRot);
     Vec3D front = GetFrontVector(q.x,q.y,q.z,q.w);
@@ -256,12 +258,12 @@ void Mapper::handleSickR(const sensor_msgs::LaserScan& msg)
                         msg.ranges[i],
                         msg.angle_min + i*msg.angle_increment);
 
-    lock.unlock();
+//    lock.unlock();
 }
 
 void Mapper::handleLocation(const nav_msgs::Odometry& msg)
 {
-    lock.lock();
+//    lock.lock();
     geometry_msgs::Pose pose = msg.pose.pose;
     position = Vec3D(pose.position.x, pose.position.y, pose.position.z);
     myQuat = Quaternion(pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w);
@@ -274,13 +276,13 @@ void Mapper::handleLocation(const nav_msgs::Odometry& msg)
     rightSickRot = Rotation(-myRot.pitch, -myRot.roll, myRot.yaw-1.57);
     loc_received = true;
 
-    lock.unlock();
+//    lock.unlock();
 
 }
 
 void Mapper::handleCamR(const sensor_msgs::Image& msg)
 {
-    lock.lock();
+//    lock.lock();
     camR = true;
     cv_bridge::CvImagePtr cv_ptr;
     try
@@ -297,12 +299,12 @@ void Mapper::handleCamR(const sensor_msgs::Image& msg)
     camRImg = cv_ptr->image;
 
 
-    lock.unlock();
+//    lock.unlock();
 }
 
 void Mapper::handleCamL(const sensor_msgs::Image& msg)
 {
-    lock.lock();
+//    lock.lock();
     camL = true;
     cv_bridge::CvImagePtr cv_ptr;
     try
@@ -318,7 +320,7 @@ void Mapper::handleCamL(const sensor_msgs::Image& msg)
     //rdbg("leftcam");
     camLImg = cv_ptr->image;
 
-    lock.unlock();
+//    lock.unlock();
 }
 
 void Mapper::publishMap()
@@ -402,9 +404,9 @@ void Mapper::publishMiniMap()
 
 void Mapper::setVisualize(unsigned char flags)
 {
-    lock.lock();
+//    lock.lock();
     Mapper::visualize = flags;
-    lock.unlock();
+//    lock.unlock();
 }
 
 
@@ -416,7 +418,7 @@ void Mapper::StereoThread()
     {
         boost::this_thread::sleep(boost::posix_time::milliseconds(1000/MAPPING_FREQUENCY));
         Mat _stereo;
-        lock.lock();
+//        lock.lock();
         if(!camR || !camL) //all data arrived at least once
         {
             lock.unlock();
@@ -424,7 +426,7 @@ void Mapper::StereoThread()
         }
 
         _stereo = handleStereo(camLImg, camRImg);
-        lock.unlock();
+//        lock.unlock();
         disparity.lock();
         stereo = _stereo;
         disparity.unlock();

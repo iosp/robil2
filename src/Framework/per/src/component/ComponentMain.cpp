@@ -173,7 +173,7 @@ void ComponentMain::handleSensorIBEO(const robil_msgs::MultiLaserScan& msgIBEO)
     ros::param::param("/LOC/Ready",check,0);
     if(!check) return;
     if (_should_pub)
-        Mapper::handleIBEO(msgIBEO, this->_pub_PC_world, this->_pub_PC);
+        Mapper::handleIBEO(msgIBEO, this->_pub_PC_world, this->_pub_PC, listener);
 }
 
 
@@ -313,6 +313,7 @@ void ComponentMain::configCallback(per::configConfig &config, uint32_t level)
         ros::param::set("/PER/DEBUG",true);
     else
         ros::param::set("/PER/DEBUG", false);
+    ros::param::set("/PER/RATE", config.map_pub_rate);
     Mapper::setVisualize((unsigned char)flags);
 }
 void ComponentMain::heartbeat(){
