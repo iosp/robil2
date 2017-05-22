@@ -744,8 +744,13 @@
 				<dynamics/>
 			</axis>
 		</joint>
-		<plugin name="bobcat_drive_control" filename="libbobcat_drive_plugin.so"/>
 		<plugin name="bobcat_arm" filename="libbobcat_arm_plugin.so"/>>
+		<plugin name="bobcat_drive_control" filename="libbobcat_drive_plugin.so">
+		      <IP>127.0.0.1</IP>
+		      <PortUDPLP>4660</PortUDPLP>
+		      <PortUDPRP>5355</PortUDPRP>
+		</plugin>
+		<plugin name="bobcat_arm" filename="libbobcat_arm_plugin.so">
 		<plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
 			<robotNamespace>/Sahar</robotNamespace>
 			<jointName>base_arm_joint, main_arm_joint, Hydraulics_bottom_rot, Hydraulics_joint, Hydraulics_top_rot, loader_joint, brackets_joint, supporter_joint, supporter_joint2, back_left_wheel_joint, back_right_wheel_joint, front_left_wheel_joint, front_right_wheel_joint</jointName>
