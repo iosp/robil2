@@ -84,8 +84,13 @@ namespace gazebo
 		sElement e;
                 e._child =_sdf->GetElement(ss.str()+"frame")->Get<std::string>();
 		e._parent = _sdf->GetElement(ss.str()+"parent")->Get<std::string>();
+#if GAZEBO_MAJOR_VERSION >= 7
+		ignition::math::Pose3d sPose=_sdf->Get<ignition::math::Pose3d>("pose");
+		e._pose = gazebo::math::Pose(sPose);
+#else
 		sdf::Pose sPose=_sdf->GetElement(ss.str()+"pose")->GetValuePose();
 		e._pose.Set(sPose.pos.x,sPose.pos.y,sPose.pos.z,sPose.rot.GetAsEuler().x,sPose.rot.GetAsEuler().y,sPose.rot.GetAsEuler().z);
+#endif
 
 		i++;
 		_staticElements.push_back(e);
@@ -126,7 +131,7 @@ namespace gazebo
   	  param_update_rate = 0;
 	}
     
-	else param_update_rate = _sdf->GetElement("update_rate")->GetValueDouble();
+	else param_update_rate = _sdf->Get<double>("update_rate");
         //locate all the parameters
 	this->updateRate = 1.0/ param_update_rate;
 // initialize the prevUpdateTime

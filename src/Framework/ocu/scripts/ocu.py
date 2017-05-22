@@ -187,6 +187,13 @@ class GuiHandler(object):
             if not yamlfile: return
             if messageFromYAML(AssignNavTask,yamlfile):
                 self.lists["NavTasks"].insert(END,init_filename)
+        if init_dialog :
+            init_filename=fullpath+"Nav_12.yaml"
+        #init_filename="/home/michele/robil2/src/Framework/ocu/scripts/Nav_11.yaml"
+            yamlfile=parseYAML(init_filename)
+            if not yamlfile: return
+            if messageFromYAML(AssignNavTask,yamlfile):
+                self.lists["NavTasks"].insert(END,init_filename)
                 
         self.setMessageList(TaskListLabel,"ManipulatorTasks",1,0,AssignManipulatorTask)
         #init_filename="/home/michele/robil2/src/Framework/ocu/scripts/WSM_23.yaml"

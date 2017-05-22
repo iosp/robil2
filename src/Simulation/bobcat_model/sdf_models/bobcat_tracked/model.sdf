@@ -3,172 +3,94 @@
 <sdf version='1.4'>
 	<model name='Sahar'>
 		<link name='body'>
-			<pose>0 0 0 0 -0 0</pose>
+			<pose>0 0 0.125 0 -0 0</pose>
 			<gravity>1</gravity>
 			<velocity_decay>
 				<linear>0</linear>
 				<angular>0</angular>
 			</velocity_decay>
 			<self_collide>1</self_collide>
-			<inertial>
-				<pose>-0.873221 -0.0104657 0.683626 0 -0 0</pose>
-        <mass>2646.54</mass>
+      <inertial>
+        <pose>-0.79545 -0.0 0.68 0 -0 0</pose>
+        <mass>2000</mass>
         <inertia>
-          <ixx>818.884</ixx>
+          <ixx>750</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>1500</iyy>
+          <iyy>1200</iyy>
           <iyz>0</iyz>
-          <izz>1018.05</izz>
+          <izz>900</izz>
         </inertia>
       </inertial>
-			<collision name='body_collision'>
-				<pose>0 0 0 0 -0 0</pose>
-				<geometry>
-					<mesh>
-						<scale>1 1 1</scale>
-						<uri>model://bobcat_tracked/meshes/body_col.STL</uri>
-					</mesh>
-				</geometry>
-				<surface>
-					<contact>
-						<ode/>
-					</contact>
-					<friction>
-						<ode>
-							<mu>1</mu>
-							<mu2>1</mu2>
-						</ode>
-					</friction>
-				</surface>
-			</collision>
-			<visual name='body_visual'>
-				<pose>0 0 0 0 -0 0</pose>
-				<geometry>
-					<mesh>
-						<scale>1 1 1</scale>
-						<uri>model://bobcat_tracked/meshes/body.STL</uri>
-					</mesh>
-				</geometry>
-				<material>
-					<script>
-						<name>Gazebo/Wood</name>
-						<uri>__default__</uri>
-					</script>
-				</material>
-			</visual>
-			<collision name='body_collision_cabin'>
-				<pose>-0.11317 0 0.61042 0 8.0491e-16 0</pose>
-				<geometry>
-					<mesh>
-						<scale>1 1 1</scale>
-						<uri>model://bobcat_tracked/meshes/cabin_col.STL</uri>
-					</mesh>
-				</geometry>
-				<surface>
-					<contact>
-						<ode/>
-					</contact>
-					<friction>
-						<ode>
-							<mu>1</mu>
-							<mu2>1</mu2>
-						</ode>
-					</friction>
-				</surface>
-			</collision>
-			<visual name='body_visual_cabin'>
-				<pose>-0.11317 0 0.61042 0 8.0491e-16 0</pose>
-				<geometry>
-					<mesh>
-						<scale>1 1 1</scale>
-						<uri>model://bobcat_tracked/meshes/cabin.STL</uri>
-					</mesh>
-				</geometry>
-				<material>
-					<script>
-						<name>Gazebo/Grey</name>
-						<uri>__default__</uri>
-					</script>
-				</material>
-			</visual>
-			<visual name='body_tracks_visual'>
-				<pose>-0 0 0 0 0 0</pose>
-				<geometry>
-					<mesh>
-						<scale>1 1 1</scale>
-						<uri>model://bobcat_tracked/meshes/tracks.STL</uri>
-					</mesh>
-				</geometry>
-				<material>
-					<ambient>0.2 0.2 0.2 1</ambient>
-					<diffuse>0.1 0.1 0.1 1</diffuse>
-					<specular>1 1 1 1</specular>
-					<emissive>0 0 0 1</emissive>
-				</material>
-			</visual>
-			<visual name='body_visual_supporter_hinge'>
-				<pose>-0.31547 0 0.68593 1.5708 -5.55112e-17 1.5708</pose>
-				<geometry>
-					<mesh>
-						<scale>1 1 1</scale>
-						<uri>model://bobcat_tracked/meshes/supporter_hinge.STL</uri>
-					</mesh>
-				</geometry>
-				<material>
-					<script>
-						<name>Gazebo/Grey</name>
-						<uri>__default__</uri>
-					</script>
-				</material>
-			</visual>
-			<collision name='body_collision_top_installation_link'>
-				<pose>-0.29575 0.03227 1.85972 1.5708 -6.10623e-16 1.5708</pose>
-				<geometry>
-					<mesh>
-						<scale>1 1 1</scale>
-						<uri>model://bobcat_tracked/meshes/top_installation.STL</uri>
-					</mesh>
-				</geometry>
-				<surface>
-					<contact>
-						<ode/>
-					</contact>
-					<friction>
-						<ode>
-							<mu>1</mu>
-							<mu2>1</mu2>
-						</ode>
-					</friction>
-				</surface>
-			</collision>
-			<visual name='body_visual_top_installation_link'>
-				<pose>-0.29575 0.03227 1.85972 1.5708 -6.10623e-16 1.5708</pose>
-				<geometry>
-					<mesh>
-						<scale>1 1 1</scale>
-						<uri>model://bobcat_tracked/meshes/top_installation.STL</uri>
-					</mesh>
-				</geometry>
-				<material>
-					<script>
-						<name>Gazebo/Grey</name>
-						<uri>__default__</uri>
-					</script>
-				</material>
-			</visual>
+			  <visual name='body_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://bobcat_tracked/meshes/body.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name='body_collision'>
+        <pose>-0.82136 0 0.36982 0 -0.02 0</pose>
+        <geometry>
+          <box>
+            <size>1.704 0.889 0.704</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='body_collision_bb'>
+        <pose>-2.14939 0 0.68567 0 0.08047 0</pose>
+        <geometry>
+          <box>
+            <size>0.120 0.952 0.900</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='body_collision_b'>
+        <pose>-1.87754 0 0.671 0 0.08047 0</pose>
+        <geometry>
+          <box>
+            <size>0.4 1.182 1.121</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='body_collision_bd'>
+        <pose>-1.81524 0 0.37981 0 0.1318 0</pose>
+        <geometry>
+          <box>
+            <size>0.511 0.889 0.704</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='body_collision_cabin'>
+        <pose>-1.0253 0 1.24 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.557 0.889 1.152</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='body_collision_top_installation_link'>
+        <pose>-0.92913 0 2.04 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.663 0.598 0.838</size>
+          </box>
+        </geometry>
+      </collision>
 		</link>
 		<link name='base_arm'>
-			<pose>-1.9776 0 1.1773 0 2.1164e-16 0</pose>
+			<pose>-1.9776 0 1.1773 0 0 0</pose>
 			<inertial>
-				<pose>0.066509 1.9771e-12 0.25686 0 -0 0</pose>
-				<mass>194.91</mass>
+				<pose>0.066509 0 0.25686 0 -0 0</pose>
+				<mass>400</mass>
 				<inertia>
 					<ixx>50.76</ixx>
-					<ixy>-2.9264e-11</ixy>
+					<ixy>0</ixy>
 					<ixz>0.66798</ixz>
 					<iyy>4.8017</iyy>
-					<iyz>7.0403e-12</iyz>
+					<iyz>0</iyz>
 					<izz>47.388</izz>
 				</inertia>
 			</inertial>
@@ -216,27 +138,20 @@
 			<parent>body</parent>
 			<axis>
 				<xyz>0 1 0</xyz>
-				<limit>
-					<lower>-1.57</lower>
-					<upper>0.0</upper>
-					<!--<upper>1.57</upper>-->
-					<effort>1e+06</effort>
-					<velocity>100</velocity>
-				</limit>
 				<!--<dynamics><friction>1</friction></dynamics>-->
 			</axis>
 		</joint>
 		<link name='main_arm'>
 			<pose>-1.75456 0 1.7035 0 -0 0</pose>
 			<inertial>
-				<pose>1.1865 -4.0206e-07 -0.60466 0 -0 0</pose>
-				<mass>369.05</mass>
+				<pose>1.1865 0 -0.60466 0 -0 0</pose>
+				<mass>300</mass>
 				<inertia>
 					<ixx>133.74</ixx>
-					<ixy>0.00012791</ixy>
+					<ixy>0</ixy>
 					<ixz>-68.753</ixz>
 					<iyy>216.24</iyy>
-					<iyz>-4.6593e-05</iyz>
+					<iyz>0</iyz>
 					<izz>268.55</izz>
 				</inertia>
 			</inertial>
@@ -266,10 +181,8 @@
 					</mesh>
 				</geometry>
 				<material>
-					<script>
-						<name>Gazebo/PaintedWall</name>
-						<uri>__default__</uri>
-					</script>
+          <diffuse>0.9 0.9 0.89 1</diffuse>
+          <ambient>0.85 0.85 0.78 1</ambient>
 				</material>
 			</visual>
 			<gravity>1</gravity>
@@ -284,19 +197,13 @@
 			<parent>base_arm</parent>
 			<axis>
 				<xyz>0 1 0</xyz>
-				<limit>
-					<lower>-1.57</lower>
-					<upper>1.57</upper>
-					<effort>1e+06</effort>
-					<velocity>100</velocity>
-				</limit>
 				<!--<dynamics><friction>1</friction></dynamics>-->
 			</axis>
 		</joint>
 		<link name='loader'>
-			<pose>0.34384 0 0.1465 0 2.5362e-15 0</pose>
+			<pose>0.34384 0 0.1465 0 0 0</pose>
 			<inertial>
-				<pose>0.37894 2.192e-15 0.067409 0 -0 0</pose>
+				<pose>0.37894 0 0.067409 0 -0 0</pose>
 				<mass>98.03</mass>
 				<inertia>
 					<ixx>29.346</ixx>
@@ -336,10 +243,8 @@
 					</mesh>
 				</geometry>
 				<material>
-					<script>
-						<name>Gazebo/Gold</name>
-						<uri>__default__</uri>
-					</script>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <ambient>0.2 0.2 0.2 1</ambient>
 				</material>
 			</visual>
 			<gravity>1</gravity>
@@ -353,7 +258,7 @@
 			<child>loader</child>
 			<parent>main_arm</parent>
 			<axis>
-				<xyz>0 1 0</xyz>
+				<xyz>0 -1 0</xyz>
 				<limit>
 					<lower>-0.5</lower>
 					<upper>0.5</upper>
@@ -365,16 +270,16 @@
 			</axis>
 		</joint>
 		<link name='brackets'>
-			<pose>0.68217 0 0.64099 0 2.5362e-15 0</pose>
+			<pose>0.68217 0 0.64099 0 0 0</pose>
 			<inertial>
-				<pose>0.14213 -1.579e-16 0.33109 0 -0 0</pose>
+				<pose>0.14213 0 0.33109 0 -0 0</pose>
 				<mass>12.857</mass>
 				<inertia>
 					<ixx>2.9339</ixx>
-					<ixy>-2.9653e-16</ixy>
+					<ixy>0</ixy>
 					<ixz>0.23718</ixz>
 					<iyy>0.67251</iyy>
-					<iyz>3.0656e-16</iyz>
+					<iyz>0</iyz>
 					<izz>2.738</izz>
 				</inertia>
 			</inertial>
@@ -407,10 +312,8 @@
 					</mesh>
 				</geometry>
 				<material>
-					<script>
-						<name>Gazebo/Grey</name>
-						<uri>__default__</uri>
-					</script>
+          <diffuse>0.1 0.1 0.1 1</diffuse>
+          <ambient>0.1 0.1 0.1 1</ambient>
 				</material>
 			</visual>
 			<gravity>1</gravity>
@@ -426,7 +329,7 @@
 			<axis>
 				<xyz>0 1 0</xyz>
 				<limit>
-					<lower>0</lower>
+					<lower>-0.5</lower>
 					<upper>1</upper>
 					<effort>1e+06</effort>
 					<velocity>1e+06</velocity>
@@ -435,16 +338,16 @@
 			</axis>
 		</joint>
 		<link name='supporter'>
-			<pose>-1.35685 0 0.80864 0 8.0491e-16 0</pose>
+			<pose>-1.35685 0 0.80864 0 -0.12 0</pose>
 			<inertial>
-				<pose>0.51341 -4.9085e-16 -0.060486 0 -0 0</pose>
-				<mass>65.29</mass>
+				<pose>0.51341 0 -0.060486 0 -0 0</pose>
+				<mass>30</mass>
 				<inertia>
 					<ixx>16.898</ixx>
-					<ixy>-2.3004e-13</ixy>
-					<ixz>-0.76501</ixz>
+					<ixy>0</ixy>
+					<ixz>0</ixz>
 					<iyy>6.6127</iyy>
-					<iyz>-2.4072e-13</iyz>
+					<iyz>0</iyz>
 					<izz>23.301</izz>
 				</inertia>
 			</inertial>
@@ -477,10 +380,8 @@
 					</mesh>
 				</geometry>
 				<material>
-					<script>
-						<name>Gazebo/GreyTransparent</name>
-						<uri>__default__</uri>
-					</script>
+          <diffuse>0.8 0.1 0.1 1</diffuse>
+          <ambient>0.8 0.1 0.1 1</ambient>
 				</material>
 			</visual>
 			<gravity>1</gravity>
@@ -495,12 +396,6 @@
 			<parent>main_arm</parent>
 			<axis>
 				<xyz>0 1 0</xyz>
-				<limit>
-					<lower>-0.5</lower>
-					<upper>1.5</upper>
-					<effort>1e+06</effort>
-					<velocity>100</velocity>
-				</limit>
 				<!--<dynamics><friction>1</friction></dynamics>-->
 			</axis>
 		</joint>
@@ -510,18 +405,90 @@
 			<parent>body</parent>
 			<axis>
 				<xyz>0 1 0</xyz>
-				<limit>
-					<lower>-0.5</lower>
-					<upper>1.5</upper>
-					<effort>1e+06</effort>
-					<velocity>100</velocity>
-				</limit>
 				<!--<dynamics><friction>1</friction></dynamics>-->
 			</axis>
 		</joint>
-        <!--COGWHEELS-->
+ <!--HYDRAULICS-->
+		<link name='Hydraulic_bottom'>
+			<pose>-1.781 0 0.393 0 0.34907 0</pose>
+			<inertial>
+				<pose>0 0 0.5 0 -0 0</pose>
+				<mass>65.29</mass>
+				<inertia>
+					<ixx>10</ixx>
+					<ixy>0</ixy>
+					<ixz>0</ixz>
+					<iyy>10</iyy>
+					<iyz>0</iyz>
+					<izz>1</izz>
+				</inertia>
+			</inertial>
+			<self_collide>0</self_collide>
+      <visual name='Hydraulic_bottom_vis'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://bobcat_tracked/meshes/Hydraulics_bottom.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+		</link>
+    <joint name='Hydraulic_bottom_rot' type='revolute'>
+			<pose>0 0 0 0 0 0</pose>
+			<child>Hydraulic_bottom</child>
+			<parent>body</parent>
+			<axis>
+				<xyz>0 1 0</xyz>
+				<!--<dynamics><friction>1</friction></dynamics>-->
+			</axis>
+		</joint>
+    <link name='Hydraulic_top'>
+			<pose>-1.480 0 1.220 0 0.34907 0</pose>
+			<inertial>
+				<pose>0 0 -0.5 0 -0 0</pose>
+				<mass>65.29</mass>
+				<inertia>
+					<ixx>10</ixx>
+					<ixy>0</ixy>
+					<ixz>0</ixz>
+					<iyy>10</iyy>
+					<iyz>0</iyz>
+					<izz>1</izz>
+				</inertia>
+			</inertial>
+			<self_collide>0</self_collide>
+      <visual name='Hydraulic_bottom_vis'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://bobcat_tracked/meshes/Hydraulics_top.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+		</link>
+    <joint name='Hydraulic_top_rot' type='revolute'>
+			<pose>0 0 0 0 0 0</pose>
+			<child>Hydraulic_top</child>
+			<parent>main_arm</parent>
+			<axis>
+				<xyz>0 1 0</xyz>
+				<!--<dynamics><friction>1</friction></dynamics>-->
+			</axis>
+		</joint>
+    <joint name='Hydraulics_joint' type='prismatic'>
+			<pose>0 0 -0.5 0 0 0</pose>
+			<child>Hydraulic_top</child>
+			<parent>Hydraulic_bottom</parent>
+			<axis>
+				<xyz>.342024 0 0.939691</xyz>
+				<!--<dynamics><friction>1</friction></dynamics>-->
+			</axis>
+		</joint>
+ <!--COGWHEELS-->
     <link name='cogwheel_left'>
-      <pose>-1.35 0.655 0.31 3.14159265358979 0 0</pose>
+      <pose>-1.35 0.655 0.435 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.1</mass>
@@ -534,12 +501,12 @@
           <izz>0.01</izz>
         </inertia>
       </inertial>
-      <visual name='COGL'>
+      <visual name='cogwheel_left_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel_left.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -565,11 +532,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
     <!--<joint name="gear_left" type="gearbox"><parent>back_left_wheel</parent><child>cogwheel_left</child><gearbox_ratio>-1</gearbox_ratio><gearbox_reference_body>body</gearbox_reference_body><axis><xyz>0.000000 1.000000 0.000000</xyz></axis><axis2><xyz>0.000000 1.000000 0.000000</xyz></axis2></joint>-->
+
     <link name='cogwheel_right'>
-      <pose>-1.35 -0.66 0.31 0 0 0</pose>
+      <pose>-1.35 -0.655 0.435 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.1</mass>
@@ -582,12 +550,12 @@
           <izz>0.01</izz>
         </inertia>
       </inertial>
-      <visual name='COGR'>
+      <visual name='cogwheel_right_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel.STL</uri>
+            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel_right.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -613,12 +581,15 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
+
+
+
     <!--WHEELS-->
     <link name='back_left_wheel'>
     <self_collide>0</self_collide>
-      <pose>-1.53739 0.655 -0.025 0 0 0</pose>
+      <pose>-1.53739 0.63 0.1 0  0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -667,11 +638,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
+
     <link name='back_right_wheel'>
     <self_collide>0</self_collide>
-      <pose>-1.535 -0.66 -0.025 0 0 0</pose>
+      <pose>-1.535 -0.63 0.1 0  0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -720,12 +692,13 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
     <!--<joint name="gear_right" type="gearbox"><parent>back_right_wheel</parent><child>cogwheel_right</child><gearbox_ratio>-1</gearbox_ratio><gearbox_reference_body>body</gearbox_reference_body><axis><xyz>0.000000 1.000000 0.000000</xyz></axis><axis2><xyz>0.000000 1.000000 0.000000</xyz></axis2></joint>-->
+
     <link name='front_left_wheel'>
     <self_collide>0</self_collide>
-      <pose>-0.0535 0.655 -0.025 0 0 0</pose>
+      <pose>-0.0535 0.63 0.1 0  0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -774,11 +747,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
+
     <link name='front_right_wheel'>
     <self_collide>0</self_collide>
-      <pose>-0.0535 -0.66 -0.025 0 0 0</pose>
+      <pose>-0.0535 -0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -827,10 +801,13 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
+
+
     <link name='roller_back_right'>
     <self_collide>0</self_collide>
-      <pose>-1.15 -0.65 -0.025 0 0 0</pose>
+      <pose>-1.16582 -0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -879,11 +856,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
+
     <link name='roller_mid_right'>
     <self_collide>0</self_collide>
-      <pose>-0.81 -0.65 -0.025 0 0 0</pose>
+      <pose>-0.79545 -0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -932,11 +910,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
+
     <link name='roller_front_right'>
     <self_collide>0</self_collide>
-      <pose>-0.46 -0.65 -0.025 0 0 0</pose>
+      <pose>-0.42447 -0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -985,11 +964,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
+
     <link name='roller_back_left'>
     <self_collide>0</self_collide>
-      <pose>-1.15 0.65 -0.025 0 0 0</pose>
+      <pose>-1.16582 0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -1038,11 +1018,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
+
     <link name='roller_mid_left'>
     <self_collide>0</self_collide>
-      <pose>-0.81 0.65 -0.025 0 0 0</pose>
+      <pose>-0.79545 0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -1091,11 +1072,12 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
+
     <link name='roller_front_left'>
     <self_collide>0</self_collide>
-      <pose>-0.46 0.65 -0.025 0 0 0</pose>
+      <pose>-0.42447 0.63 0.1 0 0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>50</mass>
@@ -1144,12 +1126,20 @@
         </dynamics>
         <xyz>0 1 0</xyz>
       </axis>
-      <!--<physics><ode><cfm>0.001</cfm><erp>0.01</erp></ode></physics>-->
+      <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
-    <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so"/>
+
+
+    <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so">
+      <IP>127.0.0.1</IP>
+      <PortUDPLP>4660</PortUDPLP>
+      <PortUDPRP>5355</PortUDPRP>
+    </plugin>
+
+    <plugin name="bobcat_arm" filename="libbobcat_arm_plugin.so">
     <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
       <robotNamespace>/Sahar</robotNamespace>
-      <jointName>back_left_wheel_joint, back_right_wheel_joint, front_left_wheel_joint, front_right_wheel_joint</jointName>
+      <jointName>cogwheel_right_joint, cogwheel_left_joint</jointName>
       <updateRate>50.0</updateRate>
       <alwaysOn>true</alwaysOn>
     </plugin>
