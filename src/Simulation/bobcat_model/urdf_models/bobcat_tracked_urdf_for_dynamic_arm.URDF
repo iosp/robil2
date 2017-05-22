@@ -67,6 +67,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/base_arm.STL" scale="1 1 1"/>
       </geometry>
+      <material name="white"> <color rgba="0.8 0.8 0.79 1.0"/> </material>
     </visual>
   </link>
   <link name="main_arm">
@@ -86,6 +87,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/main_arm.STL" scale="1 1 1"/>
       </geometry>
+      <material name="white"> <color rgba="0.8 0.8 0.79 1.0"/> </material>
     </visual>
   </link>
   <link name="loader">
@@ -105,6 +107,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/loader.STL" scale="1 1 1"/>
       </geometry>
+      <material name="dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <link name="brackets">
@@ -124,6 +127,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/brackets.STL" scale="1 1 1"/>
       </geometry>
+      <material name="dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <link name="supporter">
@@ -182,6 +186,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/cogwheel_left.STL" scale="1 1 1"/>
       </geometry>
+       <material name="dark white"> <color rgba="0.2 0.2 0.2 1.0"/> </material>
     </visual>
   </link>
   <link name="cogwheel_right">
@@ -195,6 +200,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked/meshes/cogwheel_right.STL" scale="1 1 1"/>
       </geometry>
+       <material name="dark white"> <color rgba="0.2 0.2 0.2 1.0"/> </material>
     </visual>
   </link>
   <!--

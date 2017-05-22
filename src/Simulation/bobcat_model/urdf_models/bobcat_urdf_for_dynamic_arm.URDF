@@ -66,6 +66,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/base_arm.STL" scale="1 1 1"/>
       </geometry>
+      <material name="white"> <color rgba="0.8 0.8 0.79 1.0"/> </material>
     </visual>
   </link>
   <link name="main_arm">
@@ -85,6 +86,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/main_arm.STL" scale="1 1 1"/>
       </geometry>
+      <material name="white"> <color rgba="0.8 0.8 0.79 1.0"/> </material>
     </visual>
   </link>
   <link name="loader">
@@ -104,6 +106,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/loader.STL" scale="1 1 1"/>
       </geometry>
+      <material name="Dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <link name="brackets">
@@ -123,6 +126,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/brackets.STL" scale="1 1 1"/>
       </geometry>
+      <material name="Dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <link name="supporter">
@@ -248,6 +252,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_left_wheel.stl" scale="1.0 1.0 1.0"/>
       </geometry>
+      <material name="Dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <link name="back_right_wheel">
@@ -267,6 +272,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/back_right_wheel.stl" scale="1 1 1"/>
       </geometry>
+      <material name="Dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <link name="front_left_wheel">
@@ -286,6 +292,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/front_left_wheel.stl" scale="1 1 1"/>
       </geometry>
+      <material name="Dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <link name="front_right_wheel">
@@ -305,6 +312,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat/meshes/front_right_wheel.stl" scale="1 1 1"/>
       </geometry>
+      <material name="Dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <joint name="back_left_wheel_joint" type="revolute">

@@ -49,6 +49,19 @@
       </geometry>
     </visual>
   </link>
+  <link name="cogwheel_left">
+    <inertial>
+      <mass value="1.1"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="0.01" ixy="-0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+    <visual name="cogwheel_left_visual">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked_static_arm/meshes/cogwheel_left.STL" scale="1 1 1"/>
+      </geometry>
+    </visual>
+  </link>
   <link name="cogwheel_right">
     <inertial>
       <mass value="1.1"/>

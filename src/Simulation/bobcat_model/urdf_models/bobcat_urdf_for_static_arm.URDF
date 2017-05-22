@@ -66,6 +66,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_static_arm/meshes/back_left_wheel.stl" scale="1.0 1.0 1.0"/>
       </geometry>
+      <material name="Dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <link name="back_right_wheel">
@@ -85,6 +86,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_static_arm/meshes/back_right_wheel.stl" scale="1 1 1"/>
       </geometry>
+      <material name="Dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <link name="front_left_wheel">
@@ -104,6 +106,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_static_arm/meshes/front_left_wheel.stl" scale="1 1 1"/>
       </geometry>
+      <material name="Dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <link name="front_right_wheel">
@@ -123,6 +126,7 @@
       <geometry>
         <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_static_arm/meshes/front_right_wheel.stl" scale="1 1 1"/>
       </geometry>
+            <material name="Dark"> <color rgba="0.1 0.1 0.1 1.0"/> </material>
     </visual>
   </link>
   <joint name="back_left_wheel_joint" type="revolute">
