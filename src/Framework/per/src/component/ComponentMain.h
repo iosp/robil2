@@ -78,7 +78,8 @@
 #include <sensor_msgs/JointState.h>
 #include <robil_msgs/MultiLaserScan.h>
 #include <robil_msgs/GpsSpeed.h>
-
+#include <tf/tf.h>
+#include <tf/transform_listener.h>
 
 
 
@@ -127,7 +128,7 @@ class ComponentMain {
 public:
 	ComponentMain(int argc,char** argv);
 	virtual ~ComponentMain();
-	void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
+    void handleLocation(const nav_msgs::Odometry& msg);
 	void handlePerVelocity(const geometry_msgs::TwistStamped& msg);
 	void handleSensorINS(const sensor_msgs::Imu& msg);
 	void handleSensorGPS(const sensor_msgs::NavSatFix& msg);
@@ -169,6 +170,7 @@ private:
       HeightMap* height_map;
       bool _should_pub;
       std_msgs::Header _should_pub_timeout;
+      tf::TransformListener listener;
 
       
       
