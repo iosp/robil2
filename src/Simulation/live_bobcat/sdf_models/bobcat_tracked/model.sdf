@@ -409,7 +409,7 @@
 			</axis>
 		</joint>
  <!--HYDRAULICS-->
-		<link name='Hydraulic_bottom'>
+		<link name='Hydraulics_bottom'>
 			<pose>-1.781 0 0.393 0 0.34907 0</pose>
 			<inertial>
 				<pose>0 0 0.5 0 -0 0</pose>
@@ -424,7 +424,7 @@
 				</inertia>
 			</inertial>
 			<self_collide>0</self_collide>
-      <visual name='Hydraulic_bottom_vis'>
+      <visual name='Hydraulics_bottom_vis'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
@@ -434,16 +434,16 @@
         </geometry>
       </visual>
 		</link>
-    <joint name='Hydraulic_bottom_rot' type='revolute'>
+    <joint name='Hydraulics_bottom_rot' type='revolute'>
 			<pose>0 0 0 0 0 0</pose>
-			<child>Hydraulic_bottom</child>
+			<child>Hydraulics_bottom</child>
 			<parent>body</parent>
 			<axis>
 				<xyz>0 1 0</xyz>
 				<!--<dynamics><friction>1</friction></dynamics>-->
 			</axis>
 		</joint>
-    <link name='Hydraulic_top'>
+    <link name='Hydraulics_top'>
 			<pose>-1.480 0 1.220 0 0.34907 0</pose>
 			<inertial>
 				<pose>0 0 -0.5 0 -0 0</pose>
@@ -458,7 +458,7 @@
 				</inertia>
 			</inertial>
 			<self_collide>0</self_collide>
-      <visual name='Hydraulic_bottom_vis'>
+      <visual name='Hydraulics_bottom_vis'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
@@ -468,9 +468,9 @@
         </geometry>
       </visual>
 		</link>
-    <joint name='Hydraulic_top_rot' type='revolute'>
+    <joint name='Hydraulics_top_rot' type='revolute'>
 			<pose>0 0 0 0 0 0</pose>
-			<child>Hydraulic_top</child>
+			<child>Hydraulics_top</child>
 			<parent>main_arm</parent>
 			<axis>
 				<xyz>0 1 0</xyz>
@@ -479,8 +479,8 @@
 		</joint>
     <joint name='Hydraulics_joint' type='prismatic'>
 			<pose>0 0 -0.5 0 0 0</pose>
-			<child>Hydraulic_top</child>
-			<parent>Hydraulic_bottom</parent>
+			<child>Hydraulics_top</child>
+			<parent>Hydraulics_bottom</parent>
 			<axis>
 				<xyz>.342024 0 0.939691</xyz>
 				<!--<dynamics><friction>1</friction></dynamics>-->
@@ -506,7 +506,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel_left.STL</uri>
+            <uri>model://bobcat_tracked/meshes/cogwheel_left.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -555,7 +555,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://bobcat_tracked_static_arm/meshes/cogwheel_right.STL</uri>
+            <uri>model://bobcat_tracked/meshes/cogwheel_right.STL</uri>
           </mesh>
         </geometry>
         <material>
@@ -1137,7 +1137,7 @@
     <plugin name="bobcat_arm" filename="libbobcat_arm_plugin.so"/>>
     <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
       <robotNamespace>/Sahar</robotNamespace>
-      <jointName>cogwheel_right_joint, cogwheel_left_joint</jointName>
+      <jointName>base_arm_joint, main_arm_joint, Hydraulics_bottom_rot, Hydraulics_joint, Hydraulics_top_rot, loader_joint, brackets_joint, supporter_joint, supporter_joint2, cogwheel_right_joint, cogwheel_left_joint</jointName>
       <updateRate>50.0</updateRate>
       <alwaysOn>true</alwaysOn>
     </plugin>
