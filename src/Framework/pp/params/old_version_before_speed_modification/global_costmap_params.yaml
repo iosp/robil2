@@ -1,0 +1,15 @@
+global_costmap:
+  publish_voxel_map: false
+  global_frame: /WORLD
+  robot_base_frame: /ROBOT_CENTER
+  update_frequency: 1.0
+  publish_frequency: 1.0
+  transform_tolerance: 10
+  static_map: false
+  rolling_window: true
+  width: 300
+  height: 300
+  origin_x: -150
+  origin_y: -150
+  resolution: 0.60
+  

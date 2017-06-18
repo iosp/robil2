@@ -5,7 +5,7 @@ SET(CMAKE_CXX_FLAGS "-std=c++0x")
 
 
 find_package(catkin REQUIRED COMPONENTS
-  gazebo_plugins
+  # gazebo_plugins
   gazebo_ros
   roscpp
   std_msgs

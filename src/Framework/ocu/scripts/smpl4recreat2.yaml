@@ -1,0 +1,27 @@
+header:
+  seq: 0
+  stamp: {secs: 0, nsecs: 0}
+  frame_id: ''
+task_id: '42'
+task_description: ''
+heading_at_last_point: 0.0
+waypoints:
+- header:
+    seq: 0
+    stamp: {secs: 0, nsecs: 0}
+    frame_id: ''
+  child_frame_id: ''
+  pose:
+    pose:
+      position: {x: 20.0, y: 20.0, z: 0.0}
+      orientation: {x: 0.0, y: 0.0, z: 0.0, w: 0.0}
+    covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  twist:
+    twist:
+      linear: {x: 3.0, y: 0.0, z: 0.0}
+      angular: {x: 0.0, y: 0.0, z: 0.0}
+    covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
