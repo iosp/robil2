@@ -1129,7 +1129,8 @@
       <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
     <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so">
-      <IP>127.0.0.1</IP>
+      <IP>127.0.0.1</IP> <!-- IP used for pure simulated tests (everything runs on the same comp) -->
+      <!-- <IP>192.168.101.100</IP> --> <!-- real IP used for HIL simulation (real laptops) -->
       <PortUDPLP>4660</PortUDPLP>
       <PortUDPRP>5355</PortUDPRP>
     </plugin>
@@ -1144,7 +1145,7 @@
 
 
 
-<!-- IPON Sensor--> <!---->
+<!-- IPON Sensor-->  <!---->
     <include>
       <uri>model://IPON</uri>   
       <pose>-0.790 -0.155 2.000 0.000 0.000 0.000</pose>  <!-- position of the GPS antena , orintation of the INS sensor-->
@@ -1166,7 +1167,7 @@
     </joint>    
        
 
-     IBEO Sensor    
+<!-- IBEO Sensor -->   
     <include>
       <uri>model://IBEO</uri>
       <pose>-0.400 0.020 2.012 0.000 0.215 0.149</pose>
@@ -1186,7 +1187,7 @@
     </joint>
 
     
-    <!-- CAM Sensors  -->
+<!-- CAM Sensors  -->
    <!-- <include>
       <uri>model://FLEA3_L</uri>
       <pose>-0.3 0.25 2.02 0 0 0</pose>
