@@ -1,0 +1,69 @@
+<launch>	
+	<node pkg="navex_navigation" type="navex_navigation_node" name="navex_navigation" output="screen" respawn="true">
+		<remap from="/navex_navigation/goal" to="/move_base/goal"/>
+		<remap from="/navex_navigation/simple_goal" to="/move_base/simple/goal"/>
+		<remap from="/navex_navigation/cancel" to="/move_base/cancel"/>
+		<remap from="cmd_vel" to="/cmd_vel_orig" />
+		<remap from="/scan" to="/map_cloud"/>
+		<remap from="/navigation_state" to="/move_base/navigation_state"/>
+		<remap from="/path" to="/move_base/path"/>
+		<remap from="/trajectories" to="/move_base/trajectories"/>
+
+		<remap from="/local_costmap" to="/move_base/local_costmap"/>
+		<remap from="/local_goal" to="/move_base/local_goal"/>
+		<remap from="/local_plan" to="/move_base/local_plan"/>
+
+		<remap from="/global_costmap" to="/move_base/global_costmap"/>		
+		<remap from="/global_goal" to="/move_base/global_goal"/>
+		<remap from="/global_temporal_goal" to="/move_base/global_temporal_goal"/>
+
+		<remap from="/move_base/NavfnROS/make_plan" to="/move_base/make_plan"/>
+
+		<param name="local_costmap/frame_id" value="ROBOT_CENTER"/>
+		<param name="local_costmap/robot_radius" value="3.0" />
+		<param name="local_costmap/inflation_radius" value="3.0" />
+		<param name="local_costmap/width" value="20.0" />
+		<param name="local_costmap/height" value="20.0" />
+		<param name="local_costmap/resolution" value="0.1" />
+
+		<param name="local_costmap/update_rate" value="20.0" />
+
+		<param name="local_costmap/data/data_frame_id" value="WORLD"/>
+		<param name="local_costmap/data/decay_time" value="0.0" />
+
+		<param name="global_costmap/frame_id" value="ROBOT_CENTER"/>
+		<param name="global_costmap/robot_radius" value="4" />
+		<param name="global_costmap/inflation_radius" value="1.0" />
+		<param name="global_costmap/width" value="100.0" />
+		<param name="global_costmap/height" value="100.0" />
+		<param name="global_costmap/resolution" value="0.3" />
+
+		<param name="global_costmap/update_rate" value="20.0" />
+
+		<param name="global_costmap/data/data_frame_id" value="WORLD"/>
+		<param name="global_costmap/data/decay_time" value="0.0" />
+		
+		<param name="navigation/global_frame_id" value="WORLD"/>
+		<param name="navigation/scale_angular" value="1.0" />
+		<param name="navigation/scale_linear" value="1.0" />
+		<param name="navigation/goal_tolerance" value="2.0"/>
+
+		<param name="local_planner/local_goal_distance" value="3.0" />
+
+		<param name="local_planner/max_speed" value="1.0"/>
+		<param name="local_planner/min_speed" value="-0.4"/>
+		<param name="local_planner/speed_step" value="0.25"/>
+
+		<param name="local_planner/min_angular_speed" value="-0.5"/>
+		<param name="local_planner/max_angular_speed" value="0.5"/>
+		<param name="local_planner/angular_speed_step" value="0.025" />
+
+		<param name="local_planner/inplace_angular_speed" value="0.7"/>
+
+		<param name="local_planner/simulation_time" value="5.0"/>
+		<param name="local_planner/granularity" value="0.1"/>
+		<param name="local_planner/trajectory_score_color" value="true"/>
+
+		<param name="goal_matcher/last_point" value="true" />
+	</node>
+</launch>

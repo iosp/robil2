@@ -1,0 +1,54 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
+PROJECT(navex)
+
+FIND_PACKAGE(catkin REQUIRED)
+
+CATKIN_PACKAGE()
+
+# Get OS
+EXECUTE_PROCESS(COMMAND lsb_release -sc COMMAND tr -d '\n' OUTPUT_VARIABLE OS)
+
+# Get Ubuntu Version
+EXECUTE_PROCESS(COMMAND lsb_release -sr COMMAND tr -d '\n' OUTPUT_VARIABLE VER)
+
+# Get Arch (64 / 32 bit)
+EXECUTE_PROCESS(COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCH)
+
+# Get ROS Distro Version
+SET(ROS_DISTRO $ENV{ROS_DISTRO})
+
+SET(ARCH_FOLDER NO_ARCH)
+
+IF(${OS} STREQUAL "trusty" )
+  IF(${VER} STREQUAL "14.04")
+    IF(${ARCH} STREQUAL "x86_64")
+      IF(${ROS_DISTRO} STREQUAL "indigo")
+        SET(ARCH_FOLDER "trusty_amd64_indigo")
+	
+      ELSEIF(${ROS_DISTRO} STREQUAL "jade")
+        	SET(ARCH_FOLDER "trusty_amd64_jade")
+      ENDIF()
+    ENDIF()
+  ENDIF()
+
+ELSEIF(${OS} STREQUAL "xenial")
+  IF(${VER} STREQUAL "16.04")
+    IF(${ARCH} STREQUAL "x86_64")
+      	IF(${ROS_DISTRO} STREQUAL "kinetic")
+        	SET(ARCH_FOLDER "xenial_amd64_kinetic")
+      	ENDIF()
+    ENDIF()
+  ENDIF()
+
+ENDIF()
+
+IF(${ARCH_FOLDER} STREQUAL NO_ARCH)
+  MESSAGE(FATAL_ERROR "No Navex for this architecture. - ${OS}_${VER}_${ARCH}_${ROS_DISTRO}")
+ENDIF()
+
+FILE(COPY arch/${ARCH_FOLDER}/lib/libnavex.so
+     DESTINATION ${CATKIN_DEVEL_PREFIX}/lib/
+     FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+
+INSTALL(DIRECTORY arch/${ARCH_FOLDER}/lib/
+        DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
