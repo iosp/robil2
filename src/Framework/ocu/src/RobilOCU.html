@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RobilOCU</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        bottom:0px;
+        height: 100%;
+        left: 362px;
+        position: absolute;
+        right: 0px;
+        border: 5px solid black;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #form {
+        width: 27%;
+        position: relative;
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+  <body style="background-color:#ffcc99; border:5px solid black;">
+  <div class="container">
+  
+   <h1 title="Everything we want to know about the current mission"> Info </h1>
+   <hr>
+   <p id="currentMissionStatus" title="Current Mission"><b> Current Mission:</b></p>
+    <form id="frm1" action="/action_page.php">
+      Mission ID: <input type="text" name="midname" value="N/A"><br>
+      Mission Status: <input type="text" name="msname" value="N/A"><br><br>  
+   </form> 
+   <hr>
+    <div id="statusIndicator">
+	<p id="rosBridgeTitle" title="Status of the connection to the server"><b> ROS Bridge:</b></p>
+	<p id="connecting">
+	    Connecting to rosbridge...
+	</p>
+	<p id="connected" style="color:#00D600; display:none; background-color:#ffcc66;">
+	  Connected
+	</p>
+	<p id="error" style="color:#FF0000; display:none">
+	  Error in the backend!
+	</p>
+	<p id="closed" style="display:none">
+	  Connection closed.
+	</p>
+    </div>
+    <div id="map"></div>
+   </div>
+    <script src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script src="../../../3party/roslibjs/build/roslib.js"></script>
+    <!--script src="/home/michele/roslibjs/build/roslib.js"></script -->
+
+    <script>
+      // This example requires the Drawing library. Include the libraries=drawing
+      // parameter when you first load the API. For example:
+      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=drawing">
+      var polyline=null;
+      var map;
+      var ros = new ROSLIB.Ros();
+      // startMarker is the last position of the bobcat
+      // movingMarker is the arrow for the bobcat
+      var movingMarker, startMarker;
+      // coordinates of the bobcat relatively to the North (WORLD)
+      var robilZero = {lat: 32.01113995444289, lng: 34.91199996669593};
+      var start_orientation= {roll:0, pitch:0, yaw:0};
+      var yaw_deg;
+      var symb_rotation;
+      var earthRadiusInKMs= 6378.137;
+      var bobcatOrientation;
+      //var myLatLng = robilZero;
+      var start_robil = robilZero;
+      var deltaX, deltaY;
+      var robilPosition;
+      //Mission global management
+      var currMissionId = 111;
+      var missionStateRead = false;
+      var missionIsRunning = false;
+      var missionIsFinished = false;
+      var reportMissionState = false;
+      var ourMission;
+      
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: robilZero,
+          zoom: 16,
+          mapTypeId: 'satellite'
+        });
+        
+        bobcatOrientation = {
+	  //path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
+	  path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
+	  fillColor: 'gold',
+	  //fillOpacity: 0.8,
+	  scale: 3,
+	  strokeColor: 'gold',
+	  strokeWeight: 3,
+	  rotation: symb_rotation
+	};
+        startMarker = new google.maps.Marker({
+	  position: robilZero,
+	  map: map,
+	  title: 'Start Point',
+	  label: 'S'
+	});
+	movingMarker = new google.maps.Marker({
+	  position: robilZero,
+	  map: map,
+	  title: 'RobilIcon',
+	  label: 'R',
+	  icon: bobcatOrientation //'Another_Bobcat_tracked_side.png'
+      });  
+	// Connecting to ROS
+	// -----------------
+	// If there is an error on the backend, an 'error' emit will be emitted.
+	ros.on('error', function(error) {
+	  document.getElementById('connecting').style.display = 'none';
+	  document.getElementById('connected').style.display = 'none';
+	  document.getElementById('closed').style.display = 'none';
+	  document.getElementById('error').style.display = 'inline';
+	  console.log(error);
+	});
+
+	// Find out exactly when we made a connection.
+	ros.on('connection', function() {
+	  console.log('Connection made!');
+	  document.getElementById('connecting').style.display = 'none';
+	  document.getElementById('error').style.display = 'none';
+	  document.getElementById('closed').style.display = 'none';
+	  document.getElementById('connected').style.display = 'inline';
+	});
+
+	ros.on('close', function() {
+	  console.log('Connection closed.');
+	  document.getElementById('connecting').style.display = 'none';
+	  document.getElementById('connected').style.display = 'none';
+	  document.getElementById('closed').style.display = 'inline';
+	});
+
+	// Create a connection to the rosbridge WebSocket server.
+	ros.connect('ws://localhost:9090');
+	
+	//get initial position of Robil
+	// TF Client
+	// ---------
+	var tfClient = new ROSLIB.TFClient({
+	  ros : ros,
+	  fixedFrame : 'WORLD',
+	  angularThres : 0.01,
+	  transThres : 0.01
+	});
+
+	// Subscribe to ODOM.
+	tfClient.subscribe('ODOM', function(tf) {	      
+	  console.log(tf);
+	  deltaX = tf.translation.x;
+	  deltaY = tf.translation.y;
+	  tfClient.unsubscribe('ODOM');
+	  getRobilOrigin(deltaX, deltaY, robilPosition.lat(), robilPosition.lng());
+	      
+	});
+	//while (tfOn == false){
+	    //do nothing
+	//}
+	var init_pos_gps = new ROSLIB.Topic({
+	  ros: ros,
+	  name: '/SENSORS/GPS',
+	  messageType: 'sensor_msgs/NavSatFix'
+	})
+
+	init_pos_gps.subscribe(function(message) {
+	  console.log('Initial Position is: lat:' + message.latitude + ' lng:' + message.longitude);
+	  robilPosition = new google.maps.LatLng( message.latitude, message.longitude )
+	  console.log('robilPosition: ', robilPosition.toString());
+	
+	//  tfClient.processFeedback(tf);
+	//  getRobilOrigin(deltaX, deltaY, robilPosition.lat(), robilPosition.lng());
+	  //robil.lat = message.latitude;
+	  //robil.lng = message.longitude;
+	  startMarker.setPosition(robilPosition);
+	  movingMarker.setPosition(robilPosition);
+	  map.panTo(robilPosition);
+	  
+	  var infowindow = new google.maps.InfoWindow({
+	  content: 'Start' + ' lat:' + robilPosition.lat() + ' lng: '+ robilPosition.lng()
+	  });
+	  //marker.addListener('click', function() {//});
+	  infowindow.open(map, startMarker);
+	  init_pos_gps.unsubscribe();
+	});
+
+	var init_rot_ins = new ROSLIB.Topic({
+	  ros: ros,
+	  name: '/LOC_RolPithchYow',
+	  messageType: 'geometry_msgs/Vector3'
+	})
+	
+	init_rot_ins.subscribe(function(message) {
+	  console.log('Initial Rotation is: (roll) x:' + message.x + ' (pitch) y:' + message.y + ' (yaw) z:' + message.z );
+	  start_orientation.roll  = message.x;
+	  start_orientation.pitch = message.y;
+	  start_orientation.yaw   = message.z;
+	  yaw_deg = -convertRadianToDegree(start_orientation.yaw);
+	  console.log('yaw_deg:'+yaw_deg);
+	  symb_rotation = yaw_deg;
+	  bobcatOrientation.rotation = yaw_deg;
+	  movingMarker.setIcon(bobcatOrientation);
+	  
+	  var infowindow = new google.maps.InfoWindow({
+	  content: ' yaw_deg:' + yaw_deg
+	  });
+	  //marker.addListener('click', function() {//});
+	  infowindow.open(map, movingMarker);
+	  init_rot_ins.unsubscribe();
+	});
+//
+	getNextMissionId();
+	//console.log("NextMissionId="+currMissionId);
+        var drawingManager = new google.maps.drawing.DrawingManager({
+          drawingMode: google.maps.drawing.OverlayType.POLYLINE,
+          drawingControl: true,
+          drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_LEFT,
+            drawingModes: ['polyline'] //[google.maps.drawing.OverlayType.POLYLINE]
+	  },
+	  polylineOptions: {
+	    path: robilZero
+	  }
+        });
+        
+        drawingManager.addListener('overlaycomplete', function(event) {
+	  // First, check if there is an existing polyline.
+	  // If there is, get rid of it and remove the markers
+          if (polyline) {
+	      polyline.setMap(null);
+	  }
+          // Switching the drawing mode to the HAND (i.e., no longer drawing).
+          drawingManager.setDrawingMode(null);
+          // Creating a new editable polyline from the overlay.
+          polyline = event.overlay;
+          polyline.setEditable(true);
+          // Searching within the polyline.
+          //displayCoordinates();     
+          //publishCoordinates();
+          //monitorDecisionMakingEvents();
+          executeMission();
+//           var interval=1000;
+//           setTimeout(function() {
+// 	      activateMissionStateService();
+// 	      }, (interval));
+          
+          // Make sure the path is recomputed if the poly is changed.
+          //polyline.getPath().addListener('set_at', displayCoordinates);
+          //polyline.getPath().addListener('insert_at', displayCoordinates);
+          polyline.getPath().addListener('set_at', executeMission);
+          polyline.getPath().addListener('insert_at', executeMission);
+          });
+          
+        drawingManager.setMap(map);
+        monitorPositionAndOrientation();
+   } 
+   
+      function executeMission() {
+	buildAndSendMission();
+	console.log("Build and send mission completed");
+	missionStateRead = true;
+	monitorMissionState(1000);
+      }
+   
+      function buildAndSendMission() {
+	var navTaskTopic = new ROSLIB.Topic({
+	  ros : ros,
+	  name : '/OCU/SMME/NavigationTask',
+	  messageType : 'robil_msgs/AssignNavTask'
+     	});
+	
+	  
+	var navTaskMsg = new ROSLIB.Message({
+	  header: {
+	    seq: 1,
+	    stamp: 	{
+	      secs: 0,
+	      nsecs: 0
+	    },
+	    frame_id: '',
+	  },
+	  task_id: currMissionId.toString(),
+	  task_description: '',
+	  heading_at_last_point: 0.0,
+	  waypoints: []
+	});
+
+	  var missionPlanTopic = new ROSLIB.Topic({
+	    ros : ros,
+	    name : '/OCU/SMME/MissionPlan',
+	    messageType : 'robil_msgs/AssignMission'
+	  });
+	  
+	  var missionMsg = new ROSLIB.Message({
+	     header: {
+	      seq: 1,
+	      stamp: 	{
+		secs: 0,
+		nsecs: 0
+	      },
+	      frame_id: '',
+	     },
+	     mission_id: currMissionId.toString(),
+	     mission_description: '',
+	     tasks:[]
+	  });
+	  var taskId = {task_id: currMissionId.toString()};
+          missionMsg.tasks[0] = {task_id: currMissionId.toString()};
+	var latLngArray = polyline.getPath();
+        var size = latLngArray.length;
+        var coords = latLngArray.getArray();
+        var coord;
+        for (i=0; i<latLngArray.length; i++){ //should be i=0 but the first is the current position
+	  coord = coords[i];
+	  console.log("Lat Lng "+i+ " is:" + coord.toString() + "Array with:"+size+" coords");
+ 
+	  console.log("coord.lat() = " + coord.lat() +" and lng() = " + coord.lng());
+	  //var OrigLatRadians = convertDegreeToRadian(robilZero.lat);
+	  var OrigLatRadians = convertDegreeToRadian(robilZero.lat());
+	  
+	  var tmp_y_km = -earthRadiusInKMs * Math.cos(OrigLatRadians) * (convertDegreeToRadian(coord.lng()) - convertDegreeToRadian(robilZero.lng()));	  
+	  //var tmp_y_km = -earthRadiusInKMs * Math.cos(OrigLatRadians) * (convertDegreeToRadian(coord.lng()) - convertDegreeToRadian(robilZero.lng));
+	  var tmp_x_km =  earthRadiusInKMs * (convertDegreeToRadian(coord.lat()) - OrigLatRadians);
+	  
+	  //Don not invert coordinates
+	  var tmp_x=1000*tmp_x_km;
+	  var tmp_y=1000*tmp_y_km;
+
+	  console.log("Temp Goal is: x:" + tmp_x + 'm y: '+ tmp_y+'m');
+          var step = new Object();
+          createStep(step);
+	  step.pose.pose.position.x = tmp_x;
+	  step.pose.pose.position.y = tmp_y;
+	  
+	  navTaskMsg.waypoints.push(step);
+	  //navTaskMsg.waypoints[i] = step;
+        }
+        navTaskTopic.publish(navTaskMsg);
+        setTimeout(function() {
+	 missionPlanTopic.publish(missionMsg);
+	}, (500));
+        
+   }
+
+      function deleteMission(mid) {
+      	  var decisionMakingTopic = new ROSLIB.Topic({
+	    ros : ros,
+	    name : '/decision_making/events',
+	    messageType : 'std_msgs/String'
+	  });
+	  var DeleteMissionMsg = new ROSLIB.Message({
+	     data: "/mission/"+currMissionId.toString()+"/DeleteMission"
+	  });
+	  decisionMakingTopic.publish(DeleteMissionMsg);    
+      }
+   
+      function activateMissionStateService() {
+    
+	var missionStateService = new ROSLIB.Service({
+	    ros : ros,
+	    name : '/mission_state',
+	    serviceType : 'robil_msgs/MissionState'
+	});
+
+      var request = new ROSLIB.ServiceRequest({
+	  
+      });
+
+      if (missionStateRead == false) {
+	clearInterval(pollMissionState);
+	return;
+      }
+      ourMission = new curMissionState(currMissionId.toString());
+      
+      missionStateService.callService(request, function(result) {
+	  console.log('Result for service call on ' + result.states);
+	  reportMissionState = true;
+	  displayCurrentMissionId();
+	  
+	  parseMissionStateFromString(result.states, ourMission);
+	  displayCurrentMissionState();
+	  console.log("current state "+ourMission.missionState.ms + " missionStateRead="+missionStateRead);
+	  switch (ourMission.missionState.ms){
+	      case "pending":
+	          missionStateRead = true;
+	          missionIsRunning = false;
+		  missionIsFinished = false;
+		  var decisionMakingTopic = new ROSLIB.Topic({
+		    ros : ros,
+		    name : '/decision_making/events',
+		    messageType : 'std_msgs/String'
+		  });
+		  var ActivateMissionMsg = new ROSLIB.Message({
+		    data: "/mission/"+currMissionId.toString()+"/StartMission"
+		  });
+		  decisionMakingTopic.publish(ActivateMissionMsg);
+		  break;
+	      case "loaded": //wait for state to become pending
+		  missionStateRead = true;
+		  missionIsRunning = false;
+		  missionIsFinished = false;
+		  break;
+	      case "spooling":
+		  missionStateRead = true;
+	          missionIsRunning = true;
+	          missionIsFinished = false;
+	          break;
+	      case "finished":
+		  missionStateRead = false;
+	          missionIsRunning = false;
+	          missionIsFinished = true;
+	          currMissionId++;
+	          break;
+	      default: ourMission.missionState.ms = "N/A";
+	      console.log("Interesting state "+ourMission.missionState.ms);
+	  }
+      }, function(error) {
+	console.log("Failed " + error);
+	missionStateRead = true;
+      });
+   }
+   function monitorMissionState(interval){
+    console.log("monitorMissionState called with interval:"+interval);
+    if (missionStateRead == true){      
+       pollMissionState = setInterval(function() {
+	  activateMissionStateService();
+	  }, (interval));
+    } else {
+	clearInterval(pollMissionState);
+    }
+   }
+   function monitorDecisionMakingEvents () {
+    	  var decisionMakingTopic = new ROSLIB.Topic({
+	    ros : ros,
+	    name : '/decision_making/events',
+	    messageType : 'std_msgs/String'
+	  });
+	  var ActivateMissionMsg = new ROSLIB.Message({
+	     data: "/mission/"+currMissionId.toString()+"/StartMission"
+	  });
+	  decisionMakingTopic.subscribe(function(message) {
+	    if (message.data == "/mission/"+currMissionId.toString()+"/MissionPending/MissionPending/0") {
+		//send start mission
+		decisionMakingTopic.publish(ActivateMissionMsg);
+	    }
+	    if (message.data == "/mission/"+currMissionId.toString()+"/TaskActive/TaskActive/TaskSpooling/TaskSpooling/0") {
+		//Everything is OK
+	    }
+	  });
+   }
+
+   function monitorPositionAndOrientation() {
+		var pos_gps = new ROSLIB.Topic({
+	  ros: ros,
+	  name: '/SENSORS/GPS',
+	  messageType: 'sensor_msgs/NavSatFix'
+	})
+	pos_gps.subscribe(function(message) {
+	//console.log('Robil Current Position is: lat:' + message.latitude + ' lng:' + message.longitude);
+	var robilCurPosition = new google.maps.LatLng( message.latitude, message.longitude )
+	 // console.log('robilCurPosition: ', robilCurPosition.toString());
+	  movingMarker.setPosition(robilCurPosition);
+	  map.panTo(robilCurPosition);
+	  
+	});
+
+	var rot_ins = new ROSLIB.Topic({
+	  ros: ros,
+	  name: '/LOC_RolPithchYow',
+	  messageType: 'geometry_msgs/Vector3'
+	})
+	
+	rot_ins.subscribe(function(message) {
+	  //console.log('Rotation is: (roll) x:' + message.x + ' (pitch) y:' + message.y + ' (yaw) z:' + message.z );
+	  start_orientation.roll  = message.x;
+	  start_orientation.pitch = message.y;
+	  start_orientation.yaw   = message.z;
+	  yaw_deg = -convertRadianToDegree(start_orientation.yaw);
+	  //console.log('yaw_deg:'+yaw_deg);
+	  symb_rotation = yaw_deg;
+	  bobcatOrientation.rotation = yaw_deg;
+	  movingMarker.setIcon(bobcatOrientation);
+	  
+	});
+   }
+   
+   function getNextMissionId() {
+      	var missionStateService = new ROSLIB.Service({
+	    ros : ros,
+	    name : '/mission_state',
+	    serviceType : 'robil_msgs/MissionState'
+	});
+
+      var request = new ROSLIB.ServiceRequest({
+	  
+      });
+      
+       missionStateService.callService(request, function(result) {
+	  console.log('Result for service call on ' + result.states);
+	 var pos = result.states.lastIndexOf("{ms=finished");
+	 if (pos==-1){
+	  currMissionId = 111;
+	 }
+	 else {
+	  var res = result.states.slice(0,pos);
+	  var res2 = res.lastIndexOf(" ");
+	  if (res2 == -1){
+	    console.log("Something is wrong in the kingdom of Denmark!");
+	     currMissionId = 111;
+	  }
+	  else {
+	    var numbInString = res.slice(res2-1,pos);
+	    
+	    currMissionId = parseInt(numbInString)+1;
+	    console.log("numbInString:"+numbInString+" currMissionId="+currMissionId);
+	  }
+	 } 
+      }, function(error) {
+	console.log("Failed " + error);
+	currMissionId = 111;
+      });
+   }
+
+   function curMissionState(mid) {
+	  this.ntasks = { id: mid, wp: 0 };
+	  this.mtasks = "";
+	  this.mission = { id: mid, tsk:1};
+	  this.missionState = { id: mid, ms:"N/A", ti:0, ts:"pending"};
+   }
+	  
+   function parseMissionStateFromString(inputStr, curMission) {
+	var pos = inputStr.search(currMissionId.toString()+"{ms=");
+	var sval = inputStr.indexOf(":",pos);
+	var midl = currMissionId.toString().length;
+	var addlength = midl+4;
+	curMission.missionState.ms = inputStr.slice(pos+addlength, sval);
+	if (curMission.missionState.ms == ""){
+	  curMissionState.ms = "N/A";
+	}
+   }
+   
+   function displayCurrentMissionState(){
+      var elem = document.forms["frm1"];  
+      if  (reportMissionState) {
+	  elem.elements[1].value = ourMission.missionState.ms;
+      }
+      else elem.elements[1].value = "N/A";
+   }
+   
+   function displayCurrentMissionId(){
+      var elem = document.forms["frm1"];
+     // var elem = document.getElementById("midname");   
+      if  (reportMissionState) {
+	  elem.elements[0].value = ourMission.missionState.id;
+      }
+      else elem.elements[0].value  = "N/A";      
+   }
+   
+   function getRobilOrigin(deltaX, deltaY, actLat, actLng){
+        var lat0 = actLat - deltaX/(1000*earthRadiusInKMs);
+        var lng0 = (deltaY/(1000*earthRadiusInKMs*Math.cos(convertDegreeToRadian(lat0)))) + actLng;
+        
+        
+        robilZero = new google.maps.LatLng(lat0, lng0);
+        console.log('Robil Origin at:' + robilZero.toString());
+        //robilZero.lat = lat0;
+        //robilZero.lng = lng0;
+        console.log('Robil Origin at: lat:' + lat0 + ' lng:' + lng0);
+
+   }
+   
+   function convertRadianToDegree(rad){
+        var rad_deg = rad*180/Math.PI;
+	if (rad_deg < 0) rad_deg += 360.0;
+	//console.log("yaw_degrees:"+rad_deg);
+	return rad_deg;
+   }
+   function convertDegreeToRadian(deg){
+	var rad = Math.PI*deg/180
+	if (rad < 0) rad +=2*Math.PI;
+	return rad;
+   }
+   function createStep(new_step){
+   
+      new_step.header= {
+	      seq : 0,
+	      stamp : { 
+		secs: 140,
+		nsecs: 342000000
+	      },
+	      frame_id: ''
+	    };
+      new_step.child_frame_id= '';
+      new_step.pose = {
+	      pose : {
+		position : {
+		  x: 0.0,
+		  y: 0.0,
+		  z: 0.0
+		},
+		orientation:{
+		  x: 0.0,
+		  y: 0.0,
+		  z: 0.0,
+		  w: 1.0
+		}
+	      },
+	      covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+	    };
+      new_step.twist={
+	      twist: {
+		linear: {
+		  x: 3.0,
+		  y: 0.0,
+		  z: 0.0
+		},
+		angular: { 
+		  x: 0.0,
+		  y: 0.0,
+		  z: 0.0
+		}
+	      },
+	      covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+	    };
+
+  }
+   
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAofrSgojdpUBPhB8HfT8opr0wqt6SGwrc&v=3&libraries=drawing&callback=initMap"
+         async defer></script>
+  </body>
+</html>
