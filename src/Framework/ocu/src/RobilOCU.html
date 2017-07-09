@@ -33,13 +33,28 @@
   
    <h1 title="Everything we want to know about the current mission"> Info </h1>
    <hr>
-   <p id="currentMissionStatus" title="Current Mission"><b> Current Mission:</b></p>
-    <form id="frm1" action="/action_page.php">
+ <!--  <p id="currentMissionStatus" title="Current Mission"><b> Current Mission:</b></p>-->
+<!--    <form id="frm1" action="/action_page.php">
       Mission ID: <input type="text" name="midname" value="N/A"><br>
       Mission Status: <input type="text" name="msname" value="N/A"><br><br>  
-   </form> 
+   </form> -->
+   <table id="frm1" style="width:30%">
+   <caption><b> Current Mission:</b></caption>
+    <tr>
+    <td>Mission ID: </td>
+    <td><input id="midname" type="text" name="midname" value="N/A"></td> 
+  </tr>
+  <tr>
+    <td>Mission Status: </td>
+    <td><input id="msname" type="text" name="msname" value="N/A"></td>
+  </tr>
+  <tr>
+    <td><b>ROS Bridge:</b></td>
+    <td><input id="statusIndicator" value="closed"></td>
+  </tr>
+</table>
    <hr>
-    <div id="statusIndicator">
+    <div id="statusIndicatorId">
 	<p id="rosBridgeTitle" title="Status of the connection to the server"><b> ROS Bridge:</b></p>
 	<p id="connecting">
 	    Connecting to rosbridge...
@@ -127,6 +142,9 @@
 	  document.getElementById('connected').style.display = 'none';
 	  document.getElementById('closed').style.display = 'none';
 	  document.getElementById('error').style.display = 'inline';
+	  var elem = document.getElementById('statusIndicator');
+	  elem.value = "Error in the backend!";
+	  elem.style = "color:#FF0000; display:inline";
 	  console.log(error);
 	});
 
@@ -137,6 +155,9 @@
 	  document.getElementById('error').style.display = 'none';
 	  document.getElementById('closed').style.display = 'none';
 	  document.getElementById('connected').style.display = 'inline';
+	  var elem = document.getElementById('statusIndicator');
+	  elem.value = "Connected";
+	  elem.style = "color:#00D600; display:inline; background-color:#ffcc66;";
 	});
 
 	ros.on('close', function() {
@@ -144,6 +165,9 @@
 	  document.getElementById('connecting').style.display = 'none';
 	  document.getElementById('connected').style.display = 'none';
 	  document.getElementById('closed').style.display = 'inline';
+	  var elem = document.getElementById('statusIndicator');
+	  elem.value = "Connection closed.";
+	  elem.style = "color:#FF0000;display:inline";
 	});
 
 	// Create a connection to the rosbridge WebSocket server.
@@ -376,17 +400,17 @@
 	    serviceType : 'robil_msgs/MissionState'
 	});
 
-      var request = new ROSLIB.ServiceRequest({
+	var request = new ROSLIB.ServiceRequest({
 	  
-      });
+	});
 
-      if (missionStateRead == false) {
-	clearInterval(pollMissionState);
+	if (missionStateRead == false) {
+	  clearInterval(pollMissionState);
 	return;
-      }
-      ourMission = new curMissionState(currMissionId.toString());
+	}
+	ourMission = new curMissionState(currMissionId.toString());
       
-      missionStateService.callService(request, function(result) {
+	missionStateService.callService(request, function(result) {
 	  console.log('Result for service call on ' + result.states);
 	  reportMissionState = true;
 	  displayCurrentMissionId();
@@ -554,20 +578,30 @@
    }
    
    function displayCurrentMissionState(){
-      var elem = document.forms["frm1"];  
-      if  (reportMissionState) {
-	  elem.elements[1].value = ourMission.missionState.ms;
-      }
-      else elem.elements[1].value = "N/A";
+//       var elem = document.forms["frm1"];  
+//       if  (reportMissionState) {
+// 	  elem.elements[1].value = ourMission.missionState.ms;
+//       }
+//       else elem.elements[1].value = "N/A";
+         var elem=document.getElementById("msname");
+         if (reportMissionState) {
+	  elem.value = ourMission.missionState.ms;
+	 }
+	 else elem.value = "N/A";
    }
    
    function displayCurrentMissionId(){
-      var elem = document.forms["frm1"];
-     // var elem = document.getElementById("midname");   
-      if  (reportMissionState) {
-	  elem.elements[0].value = ourMission.missionState.id;
-      }
-      else elem.elements[0].value  = "N/A";      
+//       var elem = document.forms["frm1"];
+//      // var elem = document.getElementById("midname");   
+//       if  (reportMissionState) {
+// 	  elem.elements[0].value = ourMission.missionState.id;
+//       }
+//       else elem.elements[0].value  = "N/A";   
+         var elem=document.getElementById("midname");
+         if (reportMissionState) {
+	  elem.value = ourMission.missionState.id;
+	 }
+	 else elem.value = "N/A";
    }
    
    function getRobilOrigin(deltaX, deltaY, actLat, actLng){
