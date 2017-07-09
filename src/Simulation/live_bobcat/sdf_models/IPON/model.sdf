@@ -64,7 +64,9 @@
       <start_longitude>34.91200118</start_longitude>
       <frequency>100</frequency>
       <Delay>0.00</Delay>
-      <IP>127.0.0.1</IP>
+      <IP>127.0.0.1</IP> <!-- IP used for pure simulated tests (everything runs on the same comp) -->
+     <!-- <IP>132.4.6.90</IP> --> <!-- real IP used for HIL simulation (real laptops) -->
+  
   <!--
       <noise>
 	<gps>2.5</gps>

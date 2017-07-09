@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<robot name="Sahar">
+    <link name="body">
+    <inertial>
+      <mass value="2000"/>
+      <origin rpy="0 0 0" xyz="-0.79545 0 0.805"/>
+      <inertia ixx="750" ixy="0" ixz="0" iyy="1200" iyz="0" izz="900"/>
+    </inertial>
+    <collision name="body_collision">
+      <origin rpy="0 -0.02 0" xyz="-0.82136 0 0.49482"/>
+      <geometry>
+        <box size="1.704 0.889 0.704"/>
+      </geometry>
+    </collision>
+    <collision name="body_collision_bb">
+      <origin rpy=" 0 0.08047 0" xyz="-2.14939 0 0.81067"/>
+      <geometry>
+        <box size="0.120 0.952 0.900"/>
+      </geometry>
+    </collision>
+    <collision name="body_collision_b">
+      <origin rpy=" 0 0.08047 0" xyz="-1.87754 0 0.796"/>
+      <geometry>
+        <box size="0.4 1.182 1.121"/>
+      </geometry>
+    </collision>
+    <collision name="body_collision_bd">
+      <origin rpy="0 0.1318 0" xyz="-1.81524 0 0.50481"/>
+      <geometry>
+        <box size="0.511 0.889 0.704"/>
+      </geometry>
+    </collision>
+    <collision name="body_collision_cabin">
+      <origin rpy="0 0 0" xyz="-1.0253 0    1.365"/>
+      <geometry>
+        <box size="1.557 0.889 1.152"/>
+      </geometry>
+    </collision>
+    <collision name="body_collision_top_installation_link">
+      <origin rpy="0 0 0" xyz="-0.92913 0 2.165"/>
+      <geometry>
+        <box size="0.663 0.598 0.838"/>
+      </geometry>
+    </collision>
+    <visual name="body_visual">
+      <origin rpy="0 0 0" xyz="0 0 0.125"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked_static_arm/meshes/body.dae" scale="1 1 1"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="cogwheel_left">
+    <inertial>
+      <mass value="1.1"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="0.01" ixy="-0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+    <visual name="cogwheel_left_visual">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked_static_arm/meshes/cogwheel_left.STL" scale="1 1 1"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="cogwheel_right">
+    <inertial>
+      <mass value="1.1"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="0.01" ixy="-0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+    <visual name="cogwheel_right_visual">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file:///home/robil/robil2/src/Simulation/bobcat_model/sdf_models/bobcat_tracked_static_arm/meshes/cogwheel_right.STL" scale="1 1 1"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="cogwheel_left_joint" type="revolute">
+    <parent link="body"/>
+    <child link="cogwheel_left"/>
+    <origin rpy="0 0 0" xyz="-1.35 0.655 0.435"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <joint name="cogwheel_right_joint" type="revolute">
+    <parent link="body"/>
+    <child link="cogwheel_right"/>
+    <origin rpy="0 0 0" xyz="-1.35 -0.655 0.435"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="0" lower="0" upper="0" velocity="0"/>
+  </joint>
+  <!--<link name="back_left_wheel"/>
+  <joint name="back_left_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="back_left_wheel" />
+    <origin xyz="-1.537 0.650 0.100" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+  
+  <link name="back_right_wheel"/>
+  <joint name="back_right_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="back_right_wheel" />
+    <origin xyz="-1.535 -0.650 0.100" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <link name="front_left_wheel"/>
+  <joint name="front_left_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="front_left_wheel" />
+    <origin xyz="-0.053 0.650 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <link name="front_right_wheel"/>
+  <joint name="front_right_wheel_joint" type="continuous">
+    <parent link="body" />
+    <child link="front_right_wheel" />
+    <origin xyz="-0.053 -0.650 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>-->
+ 
+  
+  <!--link name="roller_back_right"/>
+  <joint name="roller_back_right_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_back_right" />
+    <origin xyz="-1.15 -0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
+  <link name="roller_mid_right"/>
+  <joint name="roller_mid_right_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_mid_right" />
+    <origin xyz="-0.81 -0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
+  <link name="roller_front_right"/>
+  <joint name="roller_front_right_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_front_right" />
+    <origin xyz="-0.46 -0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
+  <link name="roller_back_left"/>
+  <joint name="roller_back_left_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_back_left" />
+    <origin xyz="-1.15 0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
+  <link name="roller_mid_left"/>
+  <joint name="roller_mid_left_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_mid_left" />
+    <origin xyz="-0.81 0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint>
+ 
+  <link name="roller_front_left"/>
+  <joint name="roller_front_left_joint" type="continuous">
+    <parent link="body" />
+    <child link="roller_front_left" />
+    <origin xyz="-0.46 0.65 0.1" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+  </joint-->
+ 
+  
+  
+  
+  
+</robot>
+

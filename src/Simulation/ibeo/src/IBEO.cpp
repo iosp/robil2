@@ -12,7 +12,7 @@
 #ifndef USE_GPU
 #define USE_GPU 1
 
-using namespace gazebo;
+//using namespace gazebo;
 using namespace std;
 
 namespace gazebo
@@ -41,9 +41,9 @@ namespace gazebo
 	      	    && (_sdf->HasElement("laser_TF_point_of_origin_X")) && (_sdf->HasElement("laser_TF_point_of_origin_Y")) && (_sdf->HasElement("laser_TF_point_of_origin_Z"))
 	      	    && (_sdf->HasElement("laser_TF_point_of_origin_Rol")) && (_sdf->HasElement("laser_TF_point_of_origin_Pit")) && (_sdf->HasElement("laser_TF_point_of_origin_Yow")) )
 	  		{
-	      	string error = "IBEO Sensor Plugin ERROR - missing input parameters -\n";
-	  		gzthrow(error);
-	          return;
+			  string error = "IBEO Sensor Plugin ERROR - missing input parameters -\n";
+			  gzthrow(error);
+			  return;
 	  		}
 
 	        Delay = 0.02;
@@ -89,7 +89,7 @@ namespace gazebo
 
 	//initSensors
 	void initSensors()
-	  {
+	{
 		  sensors::SensorPtr sensorB1, sensorB2, sensorT1, sensorT2;
 
 		  sensorT1 = sensors::SensorManager::Instance()->GetSensor(_sensor_t1_name);
@@ -98,43 +98,64 @@ namespace gazebo
 		  sensorB2 = sensors::SensorManager::Instance()->GetSensor(_sensor_b2_name);
 
 		  if(!sensorB1 || !sensorB2 || !sensorT1 || !sensorT2)
-      	  {
+		  {
 			string error = "IBEO Sensor Model \"" + _model->GetName() + "\" failed to locate some of his 4 sub-sensors.\n(Do the names in the .sdf match the names in the .cpp?)\n";
 			gzthrow(error);
 			return;
-      	  }
+		  }
+#if GAZEBO_MAJOR_VERSION >= 7
 #ifdef USE_GPU
-          {
-              _sensorB1 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB1);
-              _sensorB2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB2);
-              _sensorT1 = boost::static_pointer_cast<sensors::GpuRaySensor>(sensorT1);
-              _sensorT2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorT2);
-          }
+		{
+		  _sensorB1 = std::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB1);
+		  _sensorB2 = std::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB2);
+		  _sensorT1 = std::static_pointer_cast<sensors::GpuRaySensor>(sensorT1);
+		  _sensorT2 = std::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorT2);
+		}
 #else
-	  {
+		{
+		  _sensorB1 = std::dynamic_pointer_cast<sensors::RaySensor>(sensorB1);
+		  _sensorB2 = std::dynamic_pointer_cast<sensors::RaySensor>(sensorB2);
+		  _sensorT1 = std::static_pointer_cast<sensors::RaySensor>(sensorT1);
+		  _sensorT2 = std::dynamic_pointer_cast<sensors::RaySensor>(sensorT2);
+		}
+#endif
+#else
+#ifdef USE_GPU
+	      {
+		 _sensorB1 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB1);
+		 _sensorB2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorB2);
+		 _sensorT1 = boost::static_pointer_cast<sensors::GpuRaySensor>(sensorT1);
+		 _sensorT2 = boost::dynamic_pointer_cast<sensors::GpuRaySensor>(sensorT2);
+	      }
+#else
+	      {
 		  _sensorB1 = boost::dynamic_pointer_cast<sensors::RaySensor>(sensorB1);
 		  _sensorB2 = boost::dynamic_pointer_cast<sensors::RaySensor>(sensorB2);
 		  _sensorT1 = boost::static_pointer_cast<sensors::RaySensor>(sensorT1);
 		  _sensorT2 = boost::dynamic_pointer_cast<sensors::RaySensor>(sensorT2);
-	  }
+	      }
+#endif
 #endif
 	      if(!_sensorB1 || !_sensorB2 || !_sensorT1 || !_sensorT2)
-    	  {
-			string error = "IBEO Sensor Model \"" + _model->GetName() + "\" found that it's sensors arent of class GpuRaySensor. You must be really messed up\n";
+	      {
+			string error = "IBEO Sensor Model \"" + _model->GetName() + "\" found that those sensors are not of class GpuRaySensor. Strange\n";
 			gzthrow(error);
 			return;
-      	  }
-	  }
+	      }
+	}
 
 	//initSocket
 	void initSocket()
 	{
-      sockfd = socket(AF_INET,SOCK_STREAM | SOCK_NONBLOCK,0);
-
-      if(sockfd<0)
-      {
-    	  ROS_ERROR("IBEO socket not connected");
-      }
+	  
+	  sockfd = socket(AF_INET,SOCK_STREAM | SOCK_NONBLOCK,0);
+	  ROS_INFO("sockfd = %d", sockfd);
+	  if(sockfd<0)
+	  {
+	    // ROS_ERROR("IBEO socket not connected");
+	    gzerr << "Cannot create socket errno=" << errno << "\n";
+	    exit(1);
+	  }
 
 	  memset((char *) & serv_addr, 0,sizeof(serv_addr));
 	  portno= atoi("12002");
@@ -148,45 +169,47 @@ namespace gazebo
 //	  setsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &flag, sizeof(int));
 
 	  if(bind(sockfd,(struct sockaddr*) &serv_addr, sizeof(serv_addr))<0)
-      {
-		ROS_ERROR("IBEO socket bind fail");
-		exit(1);
-      }
-	  //ROS_INFO("sockfd = %d", sockfd);
+	  {
+	    gzerr << "IBEO socket bind fail errno=" << errno << "\n" ;
+	    exit(1);
+	  }
+	  ROS_INFO("sockfd = %d", sockfd);
 	}
 
 	//Load
-	void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
-    {
-	      this->_model = _parent;
-	      rviz_points_index=0;
-		  client_connected=false;
+        void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
+	{
+	  this->_model = _parent;
+	  rviz_points_index=0;
+	  client_connected=false;
 //		  initMsgWasSend=false;
-		  sockfd = -1;
-	      newsockfd = -1;
-		  flag_fillMsg = false;
+	  sockfd = -1;
+	  newsockfd = -1;
+	  flag_fillMsg = false;
 
-	      loadParametersFromSDFFile(_sdf);
+          loadParametersFromSDFFile(_sdf);
 
-	      initSensors();
+          initSensors();
+#if GAZEBO_MAJOR_VERSION >= 7
+          numOfIbeoPoints = _sensorB1->RangeCount()+_sensorB2->RangeCount()+_sensorT1->RangeCount()+_sensorT2->RangeCount();
+#else
+          numOfIbeoPoints = _sensorB1->GetRangeCount()+_sensorB2->GetRangeCount()+_sensorT1->GetRangeCount()+_sensorT2->GetRangeCount();
+#endif
+          this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&IBEO::OnUpdate, this, _1));
+          _marker_pub = _nodeHandle.advertise<visualization_msgs::Marker>(_Robot_Name_Space+"/"+_Sensor_Name+"/markers", 10);
+          
+          initSocket();
 
-	      numOfIbeoPoints = _sensorB1->GetRangeCount()+_sensorB2->GetRangeCount()+_sensorT1->GetRangeCount()+_sensorT2->GetRangeCount();
+	  _tcpSenderThread=boost::thread(&IBEO::sendThreadMethod,this);
+	  _controlThread=boost::thread(&IBEO::controlThread,this);
 
-	      this->_updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&IBEO::OnUpdate, this, _1));
-	      _marker_pub = _nodeHandle.advertise<visualization_msgs::Marker>(_Robot_Name_Space+"/"+_Sensor_Name+"/markers", 10);
+          vecToSend = new (std::vector<std::pair<common::Time, char[10000]> *>);
 
-		  initSocket();
-
-		  _tcpSenderThread=boost::thread(&IBEO::sendThreadMethod,this);
-		  _controlThread=boost::thread(&IBEO::controlThread,this);
-
-	      vecToSend = new (std::vector<std::pair<common::Time, char[10000]> *>);
-
-	      FC_LastTime_Second = 0;
-	      FC_sumOfFrequencyForAverage = 0;
-	      FC_counterOfSecondsForFrequencyAverage = 0;
-	      FC_counterOfMsgInSec = 0;
-    }
+          FC_LastTime_Second = 0;
+          FC_sumOfFrequencyForAverage = 0;
+          FC_counterOfSecondsForFrequencyAverage = 0;
+          FC_counterOfMsgInSec = 0;
+        }
 
 	void controlThread()
 	{
@@ -285,10 +308,10 @@ namespace gazebo
 	}
 
 	//sendThreadMethod
-    void sendThreadMethod()
-    {
-    	while(true)
-    	{
+	void sendThreadMethod()
+	{
+	  while(true)
+	  {
     		if(vecToSend && !vecToSend->empty())
     		{
     	   		vecToSend_mutex.lock();
@@ -358,17 +381,23 @@ namespace gazebo
       	  		}
 				// end frequency checking
     		}
-    	}
-    }
+	  }
+	}
 
-    //getRanges
-    void getRanges(vector<double>& rangesT1, vector<double>& rangesT2, vector<double>& rangesB1, vector<double>& rangesB2)
-    {
-        _sensorB1->GetRanges(rangesB1);
+	//getRanges
+	void getRanges(vector<double>& rangesT1, vector<double>& rangesT2, vector<double>& rangesB1, vector<double>& rangesB2)
+	{
+#if GAZEBO_MAJOR_VERSION >= 7
+        _sensorB1->Ranges(rangesB1);
+        _sensorB2->Ranges(rangesB2);
+        _sensorT1->Ranges(rangesT1);
+        _sensorT2->Ranges(rangesT2);
+#else
+	_sensorB1->GetRanges(rangesB1);
         _sensorB2->GetRanges(rangesB2);
         _sensorT1->GetRanges(rangesT1);
         _sensorT2->GetRanges(rangesT2);
-
+#endif
         float Dm = _distance_min;
         float Dr = _distance_sample_resolution;
 
@@ -380,11 +409,11 @@ namespace gazebo
         	rangesB1[i] = Dm + ((int)((rangesB1[i]-Dm + Dr/2) / Dr)) * Dr;
         for(unsigned int i = 0; i < rangesB2.size(); ++i)
         	rangesB2[i] = Dm + ((int)((rangesB2[i]-Dm + Dr/2) / Dr)) * Dr;
-    }
+	}
 
     //acceptClient
-    bool acceptClient()
-    {
+	bool acceptClient()
+	{
       	  listen(sockfd,5);
       	  clilen = sizeof(sockaddr);
       	  newsockfd=accept(sockfd,(struct sockaddr *)&cli_addr,&clilen);
@@ -404,88 +433,92 @@ namespace gazebo
                   _tcpRestartThread=boost::thread(&IBEO::responseThreadMethhod,this);
       	  }
       	  return true;
-    }
+	}
 
     //fillPoints
-    void fillPoints(int& pointCounter, unsigned char Layer_Echo, double yaw_ang_start, double yaw_ang_increment, vector<double> ranges)
-    {
-        for(int i = 0;i < ranges.size();i++)
-        {
+	void fillPoints(int& pointCounter, unsigned char Layer_Echo, double yaw_ang_start, double yaw_ang_increment, vector<double> ranges)
+	{
+	  for(int i = 0;i < ranges.size();i++)
+	  {
      	   m_ibeoScan.Point[pointCounter].Layer_Echo=		Layer_Echo;
      	   m_ibeoScan.Point[pointCounter].Flags=			66;
      	   m_ibeoScan.Point[pointCounter].HorizontalAngel= (short)( (yaw_ang_start + yaw_ang_increment * i)*(11520/(2*PI)) );
      	   m_ibeoScan.Point[pointCounter].RadialDistance=	(unsigned short)(ranges[ranges.size()-i]*100);
      	   m_ibeoScan.Point[pointCounter].EchoPulseWidth=	120;
      	   pointCounter++;
-        }
-    }
+	  }
+	}
 
     //fillMsg
-    void fillMsg(vector<double> rangesT1, vector<double> rangesT2, vector<double> rangesB1, vector<double> rangesB2)
-    {
-        m_ibeoScan.Header.MagicWord = littleEndianToBig<int>(0xaffec0c2);//0xc2c0feaf;
-        m_ibeoScan.Header.SizePreviousMessage = 0;
-        m_ibeoScan.Header.SizeCurrentMessage=littleEndianToBig<unsigned int>((sizeof(SibeoScanData) + (numOfIbeoPoints*sizeof(IbeoScanPoint))) - sizeof(ibeoScanDataHeader));
+	void fillMsg(vector<double> rangesT1, vector<double> rangesT2, vector<double> rangesB1, vector<double> rangesB2)
+	{
+	  m_ibeoScan.Header.MagicWord = littleEndianToBig<int>(0xaffec0c2);//0xc2c0feaf;
+	  m_ibeoScan.Header.SizePreviousMessage = 0;
+	  m_ibeoScan.Header.SizeCurrentMessage=littleEndianToBig<unsigned int>((sizeof(SibeoScanData) + (numOfIbeoPoints*sizeof(IbeoScanPoint))) - sizeof(ibeoScanDataHeader));
 
-        m_ibeoScan.Header.DeviceID = 0;
-        m_ibeoScan.Header.DataType = littleEndianToBig<unsigned short>(0x2202);
-        m_ibeoScan.Header.time_up = 0;	// NTP64
-        m_ibeoScan.Header.time_down = 0;  // NTP64
-        m_ibeoScan.Header.Reserved=0; //Reserved
+	  m_ibeoScan.Header.DeviceID = 0;
+	  m_ibeoScan.Header.DataType = littleEndianToBig<unsigned short>(0x2202);
+	  m_ibeoScan.Header.time_up = 0;	// NTP64
+	  m_ibeoScan.Header.time_down = 0;  // NTP64
+	  m_ibeoScan.Header.Reserved=0; //Reserved
 
-        m_ibeoScan.Scan.ScanNumber=3;
-        m_ibeoScan.Scan.ScannerStatus=0x20;
-        m_ibeoScan.Scan.SyncPhaseOffset=0;//(1.0/_sensorT1->GetUpdateRate()/700);
+	  m_ibeoScan.Scan.ScanNumber=3;
+	  m_ibeoScan.Scan.ScannerStatus=0x20;
+	  m_ibeoScan.Scan.SyncPhaseOffset=0;//(1.0/_sensorT1->GetUpdateRate()/700);
 
-        m_ibeoScan.Scan.ScanStratTimeDOWN=ros::Time::now().nsec;
-        m_ibeoScan.Scan.ScanStratTimeUP=ros::Time::now().sec;
-        m_ibeoScan.Scan.ScanEndTimeDOWN=ros::Time::now().nsec+1;
-        m_ibeoScan.Scan.ScanEndTimeUP=ros::Time::now().sec;
+	  m_ibeoScan.Scan.ScanStratTimeDOWN=ros::Time::now().nsec;
+	  m_ibeoScan.Scan.ScanStratTimeUP=ros::Time::now().sec;
+	  m_ibeoScan.Scan.ScanEndTimeDOWN=ros::Time::now().nsec+1;
+	  m_ibeoScan.Scan.ScanEndTimeUP=ros::Time::now().sec;
 
-        m_ibeoScan.Scan.AngelsTicks = 11520;//(0.0023);
-        m_ibeoScan.Scan.StartAngel = (short)(std::max(_rows_t_start_ang,_rows_b_start_ang) * (11520 / (2 * PI)));
-        m_ibeoScan.Scan.EndAngel = (short)(std::min(_rows_t_end_ang,_rows_b_end_ang) * (11520 / (2 * PI)));
+	  m_ibeoScan.Scan.AngelsTicks = 11520;//(0.0023);
+	  m_ibeoScan.Scan.StartAngel = (short)(std::max(_rows_t_start_ang,_rows_b_start_ang) * (11520 / (2 * PI)));
+	  m_ibeoScan.Scan.EndAngel = (short)(std::min(_rows_t_end_ang,_rows_b_end_ang) * (11520 / (2 * PI)));
 
-        m_ibeoScan.Scan.ScanPoints = rangesT1.size()+rangesT2.size()+rangesB1.size()+rangesB2.size();
-        m_ibeoScan.Scan.PositionYaw=0; //Reserved
-        m_ibeoScan.Scan.PositionPitch=0; //Reserved
-        m_ibeoScan.Scan.PositionRoll=0; //Reserved
-        m_ibeoScan.Scan.PositionX=0; //Reserved
-        m_ibeoScan.Scan.PositionY=0; //Reserved
-        m_ibeoScan.Scan.Reserved=0; //Reserved
+	  m_ibeoScan.Scan.ScanPoints = rangesT1.size()+rangesT2.size()+rangesB1.size()+rangesB2.size();
+	  m_ibeoScan.Scan.PositionYaw=0; //Reserved
+	  m_ibeoScan.Scan.PositionPitch=0; //Reserved
+	  m_ibeoScan.Scan.PositionRoll=0; //Reserved
+	  m_ibeoScan.Scan.PositionX=0; //Reserved
+	  m_ibeoScan.Scan.PositionY=0; //Reserved
+	  m_ibeoScan.Scan.Reserved=0; //Reserved
 
-		int pointCounter=0;
-        int maxDist=0;
+	  int pointCounter=0;
+	  int maxDist=0;
 
-        fillPoints(pointCounter, 0, _rows_b_start_ang , _rows_yaw_ang_increment, rangesB2);
-        fillPoints(pointCounter, 1, _rows_b_start_ang , _rows_yaw_ang_increment, rangesB1);
-        fillPoints(pointCounter, 2, _rows_t_start_ang , _rows_yaw_ang_increment, rangesT1);
-        fillPoints(pointCounter, 3, _rows_t_start_ang , _rows_yaw_ang_increment, rangesT2);
-    }
+	  fillPoints(pointCounter, 0, _rows_b_start_ang , _rows_yaw_ang_increment, rangesB2);
+	  fillPoints(pointCounter, 1, _rows_b_start_ang , _rows_yaw_ang_increment, rangesB1);
+	  fillPoints(pointCounter, 2, _rows_t_start_ang , _rows_yaw_ang_increment, rangesT1);
+	  fillPoints(pointCounter, 3, _rows_t_start_ang , _rows_yaw_ang_increment, rangesT2);
+	}
 
     //OnUpdate
-    void OnUpdate(const common::UpdateInfo & _info)
-    {
-      sim_Time = _info.simTime;
-      double SensorTimeInterval = (double)((double)1.0/(double)_scanning_frequency );  // = 0.080sec
-      double dt = sim_Time.Double()-LastSensorUpdateTime.Double();
+	void OnUpdate(const common::UpdateInfo & _info)
+	{
+	  sim_Time = _info.simTime;
+	  double SensorTimeInterval = (double)((double)1.0/(double)_scanning_frequency );  // = 0.080sec
+	  double dt = sim_Time.Double()-LastSensorUpdateTime.Double();
 
 
-      double diff_update_time = dt - SensorTimeInterval;
+	  double diff_update_time = dt - SensorTimeInterval;
 
-      if (  diff_update_time >= -0.0001  ) //   using :  " >= 0 " will not work correctly in cases when TimeInterval is a whole number of simulation time steps !!!!!!
-      {
-	      LastSensorUpdateTime = sim_Time;
-    	  flag_fillMsg = true;
-      }
-
-      double diff_update_B1 = _sensorB1->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
-      double diff_update_B2 = _sensorB2->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
-      double diff_update_T1 = _sensorT1->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
-      double diff_update_T2 = _sensorT2->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
-
-
-      if ( (diff_update_B1 >= -0.0001 ) &&
+	  if (  diff_update_time >= -0.0001  ) //   using :  " >= 0 " will not work correctly in cases when TimeInterval is a whole number of simulation time steps !!!!!!
+	  {
+	    LastSensorUpdateTime = sim_Time;
+	    flag_fillMsg = true;
+	  }
+#if GAZEBO_MAJOR_VERSION >= 7
+	  double diff_update_B1 = _sensorB1->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+	  double diff_update_B2 = _sensorB2->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+	  double diff_update_T1 = _sensorT1->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+	  double diff_update_T2 = _sensorT2->LastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+#else
+	  double diff_update_B1 = _sensorB1->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+	  double diff_update_B2 = _sensorB2->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+	  double diff_update_T1 = _sensorT1->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+	  double diff_update_T2 = _sensorT2->GetLastMeasurementTime().Double() - LastSensorUpdateTime.Double();
+#endif
+	  if ( (diff_update_B1 >= -0.0001 ) &&
     	   (diff_update_B2 >= -0.0001 ) &&
 		   (diff_update_T1 >= -0.0001 ) &&
 		   (diff_update_T2 >= -0.0001 ) &&
@@ -493,9 +526,9 @@ namespace gazebo
 		   (std::abs(diff_update_B2 - diff_update_T1) <= 0.0001) &&
 		   (std::abs(diff_update_T1 - diff_update_T2) <= 0.0001) &&
     	   (flag_fillMsg))
-      {
+	  {
 
-    	  flag_fillMsg = false;
+		  flag_fillMsg = false;
 
 		  vector<double> rangesT1, rangesT2, rangesB1, rangesB2;
 		  getRanges(rangesT1, rangesT2, rangesB1, rangesB2);
@@ -509,21 +542,22 @@ namespace gazebo
 		  }
 
 		  memset(&m_ibeoScan,0,sizeof(SibeoScanData));
-	      m_ibeoScan.Point = new IbeoScanPoint[numOfIbeoPoints];
-	      bzero(m_ibeoScan.Point, sizeof(IbeoScanPoint)*numOfIbeoPoints);
+		  m_ibeoScan.Point = new IbeoScanPoint[numOfIbeoPoints];
+		  bzero(m_ibeoScan.Point, sizeof(IbeoScanPoint)*numOfIbeoPoints);
 
 		  fillMsg(rangesT1, rangesT2, rangesB1, rangesB2);
 
 		  std::pair<common::Time, char[10000]> *pairToPush = new (std::pair<common::Time, char[10000]>);
-	      pairToPush->first = sim_Time;
-	      memcpy(pairToPush->second, &m_ibeoScan, sizeof(SibeoScanData));
-	      memcpy(pairToPush->second+sizeof(SibeoScanData)-sizeof(IbeoScanPoint*), m_ibeoScan.Point, sizeof(IbeoScanPoint)*numOfIbeoPoints);
+		  pairToPush->first = sim_Time;
+		  memcpy(pairToPush->second, &m_ibeoScan, sizeof(SibeoScanData));
+		  memcpy(pairToPush->second+sizeof(SibeoScanData)-sizeof(IbeoScanPoint*), m_ibeoScan.Point, sizeof(IbeoScanPoint)*numOfIbeoPoints);
 		  vecToSend_mutex.lock();
-	      vecToSend->insert(vecToSend->end(),pairToPush);
-	      vecToSend_mutex.unlock();
-	      delete m_ibeoScan.Point;
-      }
-    }
+		  vecToSend->insert(vecToSend->end(),pairToPush);
+		  vecToSend_mutex.unlock();
+		  delete m_ibeoScan.Point;
+	  }
+
+	}
     
 
     //littleEndianToBig

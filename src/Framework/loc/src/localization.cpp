@@ -6,6 +6,7 @@ localization::localization(ros::NodeHandle& n)
     /// Setting up publishers ///
     loc_pub = n.advertise<geometry_msgs::PoseWithCovarianceStamped>("/LOC/Pose", 10);
     speed_pub = n.advertise<geometry_msgs::TwistStamped>("/LOC/Velocity", 10);
+    odom_pub = n.advertise<nav_msgs::Odometry>("/LOC/Odom", 10);
     /// Setup variables ///
     speed.header.frame_id = "ODOM";
     pose.header.frame_id = "ODOM";
@@ -94,9 +95,14 @@ void localization::publishersBroadcasters()
      * This function actually publishes the message and
      * creates a tf tranform between WORLD and ODOM
      */
-    /// Publish the data
+    /// Publish the data ///
     speed_pub.publish(speed);
     loc_pub.publish(pose);
+    nav_msgs::Odometry odom_msg;
+    odom_msg.header = pose.header;
+    odom_msg.pose = pose.pose;
+    odom_msg.twist.twist = speed.twist;
+    odom_pub.publish(odom_msg);
     /// make a static broadcaster ///
     static tf::TransformBroadcaster broadcaster;
     ///Setup a transform message out of pose ///

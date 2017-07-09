@@ -10,9 +10,11 @@
   <arg name="physics" default="ode"/>
   <arg name="debug" default="false"/>
   <arg name="robot_models" default="$(find bobcat_model)/sdf_models"/>
+  <arg name="world_models" default="$(find gazebo_objects)/models"/>
 
+  
 <!-- setting gazebo path for platform and sensors models -->
-  <env name="GAZEBO_MODEL_PATH" value="$(arg robot_models)" />
+  <env name="GAZEBO_MODEL_PATH" value="$(arg robot_models):$(arg world_models)" />
 
   <!-- We resume the logic in empty_world.launch -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -26,7 +28,7 @@
   </include>
 
   
-  <include file="$(find bobcat_model)/launch/bobcat_arm_controler.launch" />
+  <include file="$(find bobcat_model)/launch/TF_pub_for_dynamic_arm.launch" />
 
   
 </launch>

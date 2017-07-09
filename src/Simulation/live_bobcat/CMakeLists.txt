@@ -20,6 +20,7 @@ include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE
 add_library(TFpublisher SHARED src/TFpublisher.cpp)
 target_link_libraries(TFpublisher ${GAZEBO_libraries} ${catkin_LIBRARIES})
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 catkin_package(
 #  INCLUDE_DIRS include

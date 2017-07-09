@@ -70,8 +70,11 @@ namespace gazebo
 	gzthrow(error);
 	return;
       }
-      
+#if GAZEBO_MAJOR_VERSION >= 7      
+      _sensor = std::dynamic_pointer_cast<sensors::CameraSensor>(sensor);
+#else
       _sensor = boost::dynamic_pointer_cast<sensors::CameraSensor>(sensor);
+#endif
       
     }
 
@@ -85,9 +88,15 @@ namespace gazebo
     {
       static tf::TransformBroadcaster br; 
       tf::Transform transform; 
+#if GAZEBO_MAJOR_VERSION >= 7
+     ignition::math::Pose3d pose= _sensor->Pose(); 
+      transform.setOrigin(tf::Vector3((pose.Pos()).X(), (pose.Pos()).Y(), (pose.Pos()).Z() ) ); 
+      transform.setRotation( tf::Quaternion((pose.Rot()).X(), (pose.Rot()).Y(), (pose.Rot()).Z(), (pose.Rot()).W() ) ); 
+#else
       math::Pose pose= _sensor->GetPose(); 
       transform.setOrigin( tf::Vector3(pose.pos.x, pose.pos.y, pose.pos.z) ); 
       transform.setRotation( tf::Quaternion(pose.rot.x,pose.rot.y,pose.rot.z,pose.rot.w) ); 
+#endif
       br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "camera_frame")); 
     }
     
