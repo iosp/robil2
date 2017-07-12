@@ -38,8 +38,8 @@
       Mission ID: <input type="text" name="midname" value="N/A"><br>
       Mission Status: <input type="text" name="msname" value="N/A"><br><br>  
    </form> -->
-   <table id="frm1" style="width:30%">
-   <caption><b> Current Mission:</b></caption>
+   <table id="frm1" style="width:20%">
+   <caption style="text-align:left"><b> Current Mission:</b></caption>
     <tr>
     <td>Mission ID: </td>
     <td><input id="midname" type="text" name="midname" value="N/A"></td> 
@@ -49,13 +49,28 @@
     <td><input id="msname" type="text" name="msname" value="N/A"></td>
   </tr>
   <tr>
-    <td><b>ROS Bridge:</b></td>
+    <td>ROS Bridge:</td>
     <td><input id="statusIndicator" value="closed"></td>
+  </tr>
+  <tr>
+    <td>Current coordinates</td>
+    <td><input id="currentCoordId" value="32.01114, 34.912"></td>
+  </tr>
+  <tr>
+    <td>Current orientation</td>
+    <td><input id="currentOrientationId" value="0"></td>
+  </tr>
+  <tr>
+    <td>Robil Origin</td>
+    <td><input id="robilOriginId" value="32.01114, 34.912"></td>
   </tr>
 </table>
    <hr>
+<table id="waypointsTableId" style="width:20%">
+<caption style="text-align:left"><b> WayPoints:</b></caption>
+</table>
     <div id="statusIndicatorId">
-	<p id="rosBridgeTitle" title="Status of the connection to the server"><b> ROS Bridge:</b></p>
+	<!--p id="rosBridgeTitle" title="Status of the connection to the server"><b> ROS Bridge:</b></p -->
 	<p id="connecting">
 	    Connecting to rosbridge...
 	</p>
@@ -95,7 +110,7 @@
       //var myLatLng = robilZero;
       var start_robil = robilZero;
       var deltaX, deltaY;
-      var robilPosition;
+      var robilPosition, tmpPos;
       //Mission global management
       var currMissionId = 111;
       var missionStateRead = false;
@@ -141,7 +156,7 @@
 	  document.getElementById('connecting').style.display = 'none';
 	  document.getElementById('connected').style.display = 'none';
 	  document.getElementById('closed').style.display = 'none';
-	  document.getElementById('error').style.display = 'inline';
+	  document.getElementById('error').style.display = 'none';
 	  var elem = document.getElementById('statusIndicator');
 	  elem.value = "Error in the backend!";
 	  elem.style = "color:#FF0000; display:inline";
@@ -154,7 +169,7 @@
 	  document.getElementById('connecting').style.display = 'none';
 	  document.getElementById('error').style.display = 'none';
 	  document.getElementById('closed').style.display = 'none';
-	  document.getElementById('connected').style.display = 'inline';
+	  document.getElementById('connected').style.display = 'none';
 	  var elem = document.getElementById('statusIndicator');
 	  elem.value = "Connected";
 	  elem.style = "color:#00D600; display:inline; background-color:#ffcc66;";
@@ -164,7 +179,7 @@
 	  console.log('Connection closed.');
 	  document.getElementById('connecting').style.display = 'none';
 	  document.getElementById('connected').style.display = 'none';
-	  document.getElementById('closed').style.display = 'inline';
+	  document.getElementById('closed').style.display = 'none';
 	  var elem = document.getElementById('statusIndicator');
 	  elem.value = "Connection closed.";
 	  elem.style = "color:#FF0000;display:inline";
@@ -173,25 +188,7 @@
 	// Create a connection to the rosbridge WebSocket server.
 	ros.connect('ws://localhost:9090');
 	
-	//get initial position of Robil
-	// TF Client
-	// ---------
-	var tfClient = new ROSLIB.TFClient({
-	  ros : ros,
-	  fixedFrame : 'WORLD',
-	  angularThres : 0.01,
-	  transThres : 0.01
-	});
 
-	// Subscribe to ODOM.
-	tfClient.subscribe('ODOM', function(tf) {	      
-	  console.log(tf);
-	  deltaX = tf.translation.x;
-	  deltaY = tf.translation.y;
-	  tfClient.unsubscribe('ODOM');
-	  getRobilOrigin(deltaX, deltaY, robilPosition.lat(), robilPosition.lng());
-	      
-	});
 	//while (tfOn == false){
 	    //do nothing
 	//}
@@ -202,10 +199,14 @@
 	})
 
 	init_pos_gps.subscribe(function(message) {
-	  console.log('Initial Position is: lat:' + message.latitude + ' lng:' + message.longitude);
+	 // console.log('Initial Position is: lat:' + message.latitude + ' lng:' + message.longitude);
 	  robilPosition = new google.maps.LatLng( message.latitude, message.longitude )
-	  console.log('robilPosition: ', robilPosition.toString());
-	
+	  //publish current position
+	  var elem = document.getElementById('currentCoordId');
+	  elem.value = message.latitude.toFixed(4)+", "+ message.longitude.toFixed(4);
+	  	  
+	 // console.log('robilPosition: ', robilPosition.toString());
+	  
 	//  tfClient.processFeedback(tf);
 	//  getRobilOrigin(deltaX, deltaY, robilPosition.lat(), robilPosition.lng());
 	  //robil.lat = message.latitude;
@@ -229,16 +230,17 @@
 	})
 	
 	init_rot_ins.subscribe(function(message) {
-	  console.log('Initial Rotation is: (roll) x:' + message.x + ' (pitch) y:' + message.y + ' (yaw) z:' + message.z );
+	 // console.log('Initial Rotation is: (roll) x:' + message.x + ' (pitch) y:' + message.y + ' (yaw) z:' + message.z );
 	  start_orientation.roll  = message.x;
 	  start_orientation.pitch = message.y;
 	  start_orientation.yaw   = message.z;
 	  yaw_deg = -convertRadianToDegree(start_orientation.yaw);
-	  console.log('yaw_deg:'+yaw_deg);
+	 // console.log('yaw_deg:'+yaw_deg);
 	  symb_rotation = yaw_deg;
 	  bobcatOrientation.rotation = yaw_deg;
 	  movingMarker.setIcon(bobcatOrientation);
-	  
+	   var elem = document.getElementById('currentOrientationId');
+	  elem.value = yaw_deg;
 	  var infowindow = new google.maps.InfoWindow({
 	  content: ' yaw_deg:' + yaw_deg
 	  });
@@ -247,6 +249,26 @@
 	  init_rot_ins.unsubscribe();
 	});
 //
+	//get initial position of Robil
+	// TF Client
+	// ---------
+	var tfClient = new ROSLIB.TFClient({
+	  ros : ros,
+	  fixedFrame : 'WORLD',
+	  angularThres : 0.01,
+	  transThres : 0.01
+	});
+
+	// Subscribe to ODOM.
+	tfClient.subscribe('ODOM', function(tf) {	      
+	  //console.log(tf);
+	  deltaX = tf.translation.x;
+	  deltaY = tf.translation.y;
+	  tfClient.unsubscribe('ODOM');
+	  getRobilOrigin(deltaX, deltaY, robilPosition.lat(), robilPosition.lng());
+	      
+	});
+	
 	getNextMissionId();
 	//console.log("NextMissionId="+currMissionId);
         var drawingManager = new google.maps.drawing.DrawingManager({
@@ -371,6 +393,13 @@
 	  step.pose.pose.position.y = tmp_y;
 	  
 	  navTaskMsg.waypoints.push(step);
+	  //Add row in html
+	  var table = document.getElementById("waypointsTableId");
+	  var row = table.insertRow(i);
+	  var cell1 = row.insertCell(0);
+	  var cell2 = row.insertCell(1);
+	  cell1.innerHTML = "WayPoint "+i;
+	  cell2.innerHTML = tmp_x.toFixed(2)+", " + tmp_y.toFixed(2);
 	  //navTaskMsg.waypoints[i] = step;
         }
         navTaskTopic.publish(navTaskMsg);
@@ -411,13 +440,13 @@
 	ourMission = new curMissionState(currMissionId.toString());
       
 	missionStateService.callService(request, function(result) {
-	  console.log('Result for service call on ' + result.states);
+	  //console.log('Result for service call on ' + result.states);
 	  reportMissionState = true;
 	  displayCurrentMissionId();
 	  
 	  parseMissionStateFromString(result.states, ourMission);
 	  displayCurrentMissionState();
-	  console.log("current state "+ourMission.missionState.ms + " missionStateRead="+missionStateRead);
+	 // console.log("current state "+ourMission.missionState.ms + " missionStateRead="+missionStateRead);
 	  switch (ourMission.missionState.ms){
 	      case "pending":
 	          missionStateRead = true;
@@ -458,7 +487,7 @@
       });
    }
    function monitorMissionState(interval){
-    console.log("monitorMissionState called with interval:"+interval);
+    //console.log("monitorMissionState called with interval:"+interval);
     if (missionStateRead == true){      
        pollMissionState = setInterval(function() {
 	  activateMissionStateService();
@@ -499,7 +528,9 @@
 	 // console.log('robilCurPosition: ', robilCurPosition.toString());
 	  movingMarker.setPosition(robilCurPosition);
 	  map.panTo(robilCurPosition);
-	  
+	  var elem = document.getElementById('currentCoordId');
+	  elem.value = message.latitude.toFixed(8)+", "+ message.longitude.toFixed(8);
+	tmpPos = robilCurPosition;
 	});
 
 	var rot_ins = new ROSLIB.Topic({
@@ -518,7 +549,26 @@
 	  symb_rotation = yaw_deg;
 	  bobcatOrientation.rotation = yaw_deg;
 	  movingMarker.setIcon(bobcatOrientation);
+	  var elem = document.getElementById('currentOrientationId');
+	  elem.value = yaw_deg;
 	  
+	});
+	
+	var tfClient2 = new ROSLIB.TFClient({
+	  ros : ros,
+	  fixedFrame : 'WORLD',
+	  angularThres : 0.01,
+	  transThres : 0.01
+	});
+
+	// Subscribe to ODOM.
+	tfClient2.subscribe('ODOM', function(tf) {	      
+	 // console.log(tf);
+	  var dX = tf.translation.x;
+	  var dY = tf.translation.y;
+	  //tfClient2.unsubscribe('ODOM');
+	  displayComputedOrigin(dX, dY, tmpPos.lat(), tmpPos.lng());
+	      
 	});
    }
    
@@ -534,7 +584,7 @@
       });
       
        missionStateService.callService(request, function(result) {
-	  console.log('Result for service call on ' + result.states);
+	//  console.log('Result for service call on ' + result.states);
 	 var pos = result.states.lastIndexOf("{ms=finished");
 	 if (pos==-1){
 	  currMissionId = 111;
@@ -550,7 +600,7 @@
 	    var numbInString = res.slice(res2-1,pos);
 	    
 	    currMissionId = parseInt(numbInString)+1;
-	    console.log("numbInString:"+numbInString+" currMissionId="+currMissionId);
+	   // console.log("numbInString:"+numbInString+" currMissionId="+currMissionId);
 	  }
 	 } 
       }, function(error) {
@@ -605,16 +655,54 @@
    }
    
    function getRobilOrigin(deltaX, deltaY, actLat, actLng){
-        var lat0 = actLat - deltaX/(1000*earthRadiusInKMs);
-        var lng0 = (deltaY/(1000*earthRadiusInKMs*Math.cos(convertDegreeToRadian(lat0)))) + actLng;
+   
+   
+        var lat0 = actLat - deltaX/(1000*earthRadiusInKMs)*180/Math.PI;
+        var lng0 = (deltaY/(1000*earthRadiusInKMs*Math.cos(convertDegreeToRadian(lat0))))*180/Math.PI + actLng;
         
         
+        //console.log('Current at: lat:' + actLat + ' lng:' + actLng);
+        //console.log('Robil Origin at: lat:' + lat0 + ' lng:' + lng0);
         robilZero = new google.maps.LatLng(lat0, lng0);
-        console.log('Robil Origin at:' + robilZero.toString());
+        //console.log('Robil Origin at:' + robilZero.toString());
         //robilZero.lat = lat0;
         //robilZero.lng = lng0;
-        console.log('Robil Origin at: lat:' + lat0 + ' lng:' + lng0);
+        //console.log('After Robil Origin at: lat:' + lat0 + ' lng:' + lng0);
+        var elem = document.getElementById('robilOriginId');
+	elem.value = lat0.toFixed(8)+", "+lng0.toFixed(8);
 
+   }
+   
+   function displayComputedOrigin(deltaX, deltaY, actLat, actLng){
+   
+   
+        var lat0 = actLat - deltaX/(1000*earthRadiusInKMs)*180/Math.PI;
+        var lng0 = (deltaY/(1000*earthRadiusInKMs*Math.cos(convertDegreeToRadian(lat0))))*180/Math.PI + actLng;
+        
+       // console.log("dX="+deltaX+", dY="+deltaY+" lat1:" + actLat + " lng1:" + actLng + "    lat0:" + lat0 + "  lng0:" + lng0 );
+        
+        console.log(" deltaX/(1000*earthRadiusInKMs) = " + deltaX/(1000*earthRadiusInKMs));
+        
+        console.log(" actLat - lat0 = " +  (actLat - lat0) );
+         
+         
+        
+       // console.log('Current at: lat:' + actLat + ' lng:' + actLng);
+       //console.log('Robil Origin at: lat:' + lat0 + ' lng:' + lng0);
+        var computedOrigin = new google.maps.LatLng(lat0, lng0);
+	var computedOriginMarker = new google.maps.Marker({
+	  position: computedOrigin,
+	  map: map,
+	  title: 'DD',
+	  label: 'D',
+	  //icon: bobcatOrientation //'Another_Bobcat_tracked_side.png'
+      });  
+	//computedOriginMarker.setPosition(computedOrigin);
+	//  map.panTo(computedOrigin);
+        //console.log('Robil Origin at:' + robilZero.toString());
+        //robilZero.lat = lat0;
+        //robilZero.lng = lng0;
+ 
    }
    
    function convertRadianToDegree(rad){
@@ -623,11 +711,13 @@
 	//console.log("yaw_degrees:"+rad_deg);
 	return rad_deg;
    }
+   
    function convertDegreeToRadian(deg){
 	var rad = Math.PI*deg/180
 	if (rad < 0) rad +=2*Math.PI;
 	return rad;
    }
+   
    function createStep(new_step){
    
       new_step.header= {
