@@ -60,8 +60,8 @@
     <plugin name="IPON" filename="libIPON.so">
       <gps_ant_link_name>IPON::link</gps_ant_link_name>
       <imu_unit_name>imu_component</imu_unit_name>
-      <start_latitude>32.0111448</start_latitude>
-      <start_longitude>34.91200118</start_longitude>
+      <start_latitude>32.0017573</start_latitude>
+      <start_longitude>34.9083871</start_longitude>
       <frequency>100</frequency>
       <Delay>0.00</Delay>
       <IP>127.0.0.1</IP>

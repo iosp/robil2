@@ -316,6 +316,7 @@
    } 
    
       function executeMission() {
+        deleteWayPoints();
 	buildAndSendMission();
 	console.log("Build and send mission completed");
 	missionStateRead = true;
@@ -409,6 +410,15 @@
         
    }
 
+      function deleteWayPoints(){
+	    var table = document.getElementById("waypointsTableId");
+	    var length = document.getElementById("waypointsTableId").rows.length;
+	    var i;
+	    for (i=length-1;i>=0;i--){
+		table.deleteRow(i);
+	    }
+      }
+      
       function deleteMission(mid) {
       	  var decisionMakingTopic = new ROSLIB.Topic({
 	    ros : ros,
@@ -566,8 +576,8 @@
 	 // console.log(tf);
 	  var dX = tf.translation.x;
 	  var dY = tf.translation.y;
-	  //tfClient2.unsubscribe('ODOM');
-	  displayComputedOrigin(dX, dY, tmpPos.lat(), tmpPos.lng());
+	  //if debug remove comment
+	  //displayComputedOrigin(dX, dY, tmpPos.lat(), tmpPos.lng());
 	      
 	});
    }
