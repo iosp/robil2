@@ -67,7 +67,7 @@
 </table>
    <hr>
 <table id="waypointsTableId" style="width:20%">
-<caption style="text-align:left"><b> WayPoints:</b></caption>
+<caption style="text-align:left"><b> WayPoints(x,y):</b></caption>
 </table>
     <div id="statusIndicatorId">
 	<!--p id="rosBridgeTitle" title="Status of the connection to the server"><b> ROS Bridge:</b></p -->
@@ -188,10 +188,6 @@
 	// Create a connection to the rosbridge WebSocket server.
 	ros.connect('ws://localhost:9090');
 	
-
-	//while (tfOn == false){
-	    //do nothing
-	//}
 	var init_pos_gps = new ROSLIB.Topic({
 	  ros: ros,
 	  name: '/SENSORS/GPS',
@@ -294,19 +290,9 @@
           // Creating a new editable polyline from the overlay.
           polyline = event.overlay;
           polyline.setEditable(true);
-          // Searching within the polyline.
-          //displayCoordinates();     
-          //publishCoordinates();
-          //monitorDecisionMakingEvents();
           executeMission();
-//           var interval=1000;
-//           setTimeout(function() {
-// 	      activateMissionStateService();
-// 	      }, (interval));
           
           // Make sure the path is recomputed if the poly is changed.
-          //polyline.getPath().addListener('set_at', displayCoordinates);
-          //polyline.getPath().addListener('insert_at', displayCoordinates);
           polyline.getPath().addListener('set_at', executeMission);
           polyline.getPath().addListener('insert_at', executeMission);
           });
@@ -316,6 +302,11 @@
    } 
    
       function executeMission() {
+        if (isRobilReadyGetMission()==false){
+	    window.alert("Robil is executing a mission. When the displayed <Mission Status> will be <terminated>, then you can give a mission.");
+            return;
+        }
+        
         deleteWayPoints();
 	buildAndSendMission();
 	console.log("Build and send mission completed");
@@ -486,6 +477,7 @@
 		  missionStateRead = false;
 	          missionIsRunning = false;
 	          missionIsFinished = true;
+	          
 	          currMissionId++;
 	          break;
 	      default: ourMission.missionState.ms = "N/A";
@@ -545,7 +537,7 @@
 
 	var rot_ins = new ROSLIB.Topic({
 	  ros: ros,
-	  name: '/LOC_RolPithchYow',
+	  name: '/OCU_LOC_RolPithchYow',
 	  messageType: 'geometry_msgs/Vector3'
 	})
 	
@@ -594,7 +586,7 @@
       });
       
        missionStateService.callService(request, function(result) {
-	//  console.log('Result for service call on ' + result.states);
+	console.log('Result for service call on ' + result.states);
 	 var pos = result.states.lastIndexOf("{ms=finished");
 	 if (pos==-1){
 	  currMissionId = 111;
@@ -638,11 +630,6 @@
    }
    
    function displayCurrentMissionState(){
-//       var elem = document.forms["frm1"];  
-//       if  (reportMissionState) {
-// 	  elem.elements[1].value = ourMission.missionState.ms;
-//       }
-//       else elem.elements[1].value = "N/A";
          var elem=document.getElementById("msname");
          if (reportMissionState) {
 	  elem.value = ourMission.missionState.ms;
@@ -650,13 +637,16 @@
 	 else elem.value = "N/A";
    }
    
+   function isRobilReadyGetMission(){
+   //Should read from ROBIL or use missionStateRead flag 
+         var elem=document.getElementById("msname");
+         if (elem.value == "pending" || elem.value == "spooling" || elem.value == "loaded"){
+	  return false;
+	 }
+	 else return true;
+   }
+   
    function displayCurrentMissionId(){
-//       var elem = document.forms["frm1"];
-//      // var elem = document.getElementById("midname");   
-//       if  (reportMissionState) {
-// 	  elem.elements[0].value = ourMission.missionState.id;
-//       }
-//       else elem.elements[0].value  = "N/A";   
          var elem=document.getElementById("midname");
          if (reportMissionState) {
 	  elem.value = ourMission.missionState.id;
