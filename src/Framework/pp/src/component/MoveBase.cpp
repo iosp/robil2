@@ -769,8 +769,8 @@ MoveBase::MoveBase(ComponentMain* comp)
 	goalPublisher = node.advertise<move_base_msgs::MoveBaseActionGoal>("/move_base/goal", 5, false);
 	originalGoalPublisher = node.advertise<geometry_msgs::PoseStamped>("/move_base/original_goal", 5, false);
 	goalCancelPublisher = node.advertise<actionlib_msgs::GoalID>("/move_base/cancel", 5, false);
-	pathSubscriber = node.subscribe("/move_base/path", 10, &MoveBase::on_nav_path, this);
-	globalCostmapSubscriber = node.subscribe("/move_base/global_costmap", 1, &on_GlobalCostMap);
+	pathSubscriber = node.subscribe("/move_base/NavfnROS/plan", 10, &MoveBase::on_nav_path, this);
+	globalCostmapSubscriber = node.subscribe("/move_base/global_costmap/costmap", 1, &on_GlobalCostMap);
 	speedSubscriber = node.subscribe("/cmd_vel", 1, &on_speed);
 	globalPathPublisher = node.advertise<nav_msgs::Path>("/pp/global_path",1);
 	selectedPathPublisher = node.advertise<nav_msgs::Path>("/pp/selected_path",1);
@@ -985,7 +985,7 @@ SYNCH
 	gotten_path = goal_path;
 	gp_defined=true;
 
-	if(gotten_path.waypoints.poses.size()>1){
+	if(gotten_path.waypoints.poses.size()>=1){
 	    geometry_msgs::Pose last = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-1].pose;
 	    geometry_msgs::Pose llast = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-2].pose;
 	    geometry_msgs::Point p;
@@ -1042,7 +1042,7 @@ SYNCH
 	gotten_nav_path = goal_path;
 	gnp_defined=true;
 
-	if(gotten_nav_path.poses.size()>1){
+	if(gotten_nav_path.poses.size()>=1){
 	    geometry_msgs::Pose last = gotten_nav_path.poses[gotten_nav_path.poses.size()-1].pose;
 	    geometry_msgs::Pose llast = gotten_nav_path.poses[gotten_nav_path.poses.size()-2].pose;
 	    geometry_msgs::Point p;
@@ -1164,8 +1164,75 @@ void MoveBase::on_nav_path(const nav_msgs::Path& nav_path){
 //	return s.str();
 //}
 
+void initGCMap(boost::shared_ptr<goal_calculator::Map>& result_map)
+{
+	global_map_mutex.lock();
+	nav_msgs::OccupancyGrid gmap = global_cost_map;
+	global_map_mutex.unlock();
+
+	goal_calculator::Point_2d origin = goal_calculator::Point_2d(gmap.info.origin.position.x,gmap.info.origin.position.y);
+	tf::Quaternion q;
+	q.setW(gmap.info.origin.orientation.w);
+	q.setX(gmap.info.origin.orientation.x);
+	q.setY(gmap.info.origin.orientation.y);
+	q.setZ(gmap.info.origin.orientation.z);
+	double resolution = gmap.info.resolution, heading = tf::getYaw(q);
+
+	result_map.reset(new goal_calculator::Map(gmap.info.width, gmap.info.height, origin, heading, resolution) );
+	goal_calculator::Map& map = *result_map;
+
+	for(int x = 0; x < map.w; x++)
+	{
+		for(int y = 0; y < map.h; y++)
+		{
+			size_t index = x + (map.w * y);
+			double coor_x = map.offset.x + (x * map.resolution);
+			double coor_y = map.offset.y + (y * map.resolution);
+
+			// any value more than 50 is  for occupied cell
+			if(gmap.data[index] < 50)
+				map.set_free_value(map(coor_x,coor_y));
+			else
+				map.set_occupied_value(map(coor_x,coor_y));
+		}
+	}
+
+	cout << "global costmap inited" << endl;
+}
+
+bool updateGCMap(goal_calculator::Map & map)
+{
+	cout << "on updategcmap" << endl;
+	global_map_mutex.lock();
+	nav_msgs::OccupancyGrid gmap = global_cost_map;
+	global_map_mutex.unlock();
+
+	int rc = memcmp((void*)map.cells.data(), (void*)gmap.data.data(), map.cells.size());
+	if(rc == 0) return false;
+
+	cout << "global costmap changed - updating..." << endl;
+	for(int x = 0; x < map.w; x++)
+	{
+		for(int y = 0; y < map.h; y++)
+		{
+			size_t index = x + (map.w * y);
+			double coor_x = map.offset.x + (x * map.resolution);
+			double coor_y = map.offset.y + (y * map.resolution);
+
+			// any value more than 50 is  for occupied cell
+			if(gmap.data[index] < 50)
+				map.set_free_value(map(coor_x,coor_y));
+			else
+				map.set_occupied_value(map(coor_x,coor_y));
+		}
+	}
+
+	return true;
+}
+
 void MoveBase::calculate_goal()
 {
+	// return;
 	/* Handle log directory for GoalCalculator inputs */
 #define GC_LOG_DIR string("/tmp/gc_logs")
 #define GC_LOG_PREFIX string("gc")
@@ -1173,15 +1240,14 @@ void MoveBase::calculate_goal()
 	static int log_files = 0;
 	if(new_task)
 	{
-		new_task = false;
+		//new_task = false;
 		ros::NodeHandle nh("~");
 		log_files = nh.param<int>("gc_files", 0);
 		string dir_sys = "rm -rf " + GC_LOG_DIR + " || true";
 		system(dir_sys.c_str());
 		system(("mkdir " + GC_LOG_DIR).c_str());
 	}
-
-	//nh.getParam("gc_files", log_files);
+;
 	static int current_log_file = 0;
 	stringstream curr_log_name;
 	if(log_files)
@@ -1225,58 +1291,50 @@ void MoveBase::calculate_goal()
 	}
 
 	/* Create map */
-	global_map_mutex.lock();
-		nav_msgs::OccupancyGrid gmap = global_cost_map;
-	global_map_mutex.unlock();
-	if(gmap.info.width * gmap.info.height == 0)
+	boost::shared_ptr<goal_calculator::Map> gcmap_ptr;
+	initGCMap(gcmap_ptr);
+	goal_calculator::Map& gcmap = *gcmap_ptr;
+
+	if(gcmap.w * gcmap.h == 0)
 	{
 		DBG_WARN("Navigation: Global occupancy cost map is not defined");
 	}
 	else
 	{
-		goal_calculator::Point_2d origin = goal_calculator::Point_2d(gmap.info.origin.position.x,gmap.info.origin.position.y);
-		tf::Quaternion q;
-		q.setW(gmap.info.origin.orientation.w);
-		q.setX(gmap.info.origin.orientation.x);
-		q.setY(gmap.info.origin.orientation.y);
-		q.setZ(gmap.info.origin.orientation.z);
-		double resolution = gmap.info.resolution, heading = tf::getYaw(q);
-		goal_calculator::Map gcmap(gmap.info.width, gmap.info.height, origin, heading, resolution);
-
-		for(int x=0;x<gcmap.w;x++)
+		if(updateGCMap(gcmap))
 		{
-			for(int y=0;y<gcmap.h;y++)
+			if(log_files)
 			{
-				size_t index = x + (gcmap.w * y);
-				double coor_x = origin.x + (x * resolution);
-				double coor_y = origin.y + (y * resolution);
-
-				// any value more than 50 is  for occupied cell
-				if(gmap.data[index] < 50)
-					gcmap.set_free_value(gcmap(coor_x,coor_y));
-				else
-					gcmap.set_occupied_value(gcmap(coor_x,coor_y));
+				ofstream curr_log;
+				curr_log.open(curr_log_name.str().c_str(), ofstream::out);
+				curr_log << ros::Time::now() << endl;
+				curr_log << robot << endl;
+				curr_log << waypoints << endl;
+				for(size_t i = 0; i < gotten_global_path.poses.size(); i++)
+					curr_log << path[i] << endl;
+				curr_log << gcmap.w << " " << gcmap.h << " " << gcmap.offset << " " << gcmap.heading << " " << gcmap.resolution << endl;
+				for(int i = 0; i < gcmap.cells.size(); i++)
+					curr_log << (int)gcmap.cells[i] << endl;
+				curr_log.close();
+				current_log_file++;
 			}
+
+			/* Track times */
+			static ros::Time last_start = ros::Time::now();
+			static ros::Time last_end = ros::TIME_MIN;
+			ros::Time this_start = ros::Time::now();
+			gcmap.select_accessible_points(robot);
+			ros::Time this_end = ros::Time::now();
+			ros::Duration Ta = this_end - this_start;
+			ros::Duration Tb = this_start - last_end;
+			ros::Duration Tc = this_start - last_start;
+			last_start = this_start;
+			last_end = this_end;
+			cout << "Ta = " << Ta.toSec() << endl;
+			cout << "Tb = " << Tb.toSec() << endl;
+			cout << "Tc = " << Tc.toSec() << endl;
 		}
 
-		/* Stream input data to log file */
-		if(log_files)
-		{
-			ofstream curr_log;
-			curr_log.open(curr_log_name.str().c_str(), ofstream::out);
-			curr_log << ros::Time::now() << endl;
-			curr_log << robot << endl;
-			curr_log << waypoints << endl;
-			for(size_t i = 0; i < gotten_global_path.poses.size(); i++)
-				curr_log << path[i] << endl;
-			curr_log << gcmap.w << " " << gcmap.h << " " << origin << " " << heading << " " << resolution << endl;
-			for(int i = 0; i < gcmap.cells.size(); i++)
-				curr_log << (int)gcmap.cells[i] << endl;
-			curr_log.close();
-			current_log_file++;
-		}
-
-		gcmap.select_accessible_points(robot);
 
 		/* Prepare get_goal refs */
 		static goal_calculator::Index wpi = 0;
@@ -1296,7 +1354,7 @@ void MoveBase::calculate_goal()
 		if(wpi != path.size() -1)
 		{
 			goal_calculator::Point_2d diff_vector = path[wpi] - robot;
-			goal_calculator::Point_2d diff_norm = diff_vector.norm() * 1.2;
+			goal_calculator::Point_2d diff_norm = diff_vector.norm() * 1.5;
 			gg_goal += diff_norm;
 			cout << "Goal translated to: " << gg_goal << endl;
 		}

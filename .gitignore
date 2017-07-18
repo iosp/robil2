@@ -28,3 +28,4 @@ CATKIN_IGNORE
 smart_rdk
 driver_common
 
+/.metadata/

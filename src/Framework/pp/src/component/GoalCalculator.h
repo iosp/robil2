@@ -83,6 +83,10 @@ namespace goal_calculator
 			const Point_2d* _prev=  prev>=0?path.data()+prev:0;
 			const Point_2d& _point= point;
 			const Point_2d* _post=  post<(Index)path.size()?path.data()+post:0;
+			bool b1 = is_passed(path, robot, 0    , _point, _post);
+			bool b2 = is_passed(path, robot, _prev, _point, _post);
+			cout << "b1 = " << b1 << ", b2 = " << b2 << endl;
+			return b1 or b2;
 			return
 					is_passed(path, robot, 0    , _point, _post) or
 					is_passed(path, robot, _prev, _point, _post)
