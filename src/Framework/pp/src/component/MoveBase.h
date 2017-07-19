@@ -26,7 +26,7 @@ typedef rosgraph_msgs::Log LogMessage;
 #define DIAGNOSTIC_TOPIC_NAME "/diagnostics"
 #include <diagnostic_msgs/DiagnosticArray.h>
 #include <diagnostic_msgs/DiagnosticStatus.h>
-#include "GC.h"
+#include "GoalCalculator.h"
 
 #include <std_msgs/String.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
@@ -98,8 +98,6 @@ protected:
 
 	boost::recursive_mutex mtx;
 	ComponentMain* comp;
-
-	RobilGC::GoalCalculator goal_calculator;
 
 
 	void on_log_message(const LogMessage::ConstPtr& msg);

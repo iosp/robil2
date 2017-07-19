@@ -1315,8 +1315,6 @@ std::string MoveBase::init_path(std::vector<goal_calculator::Point_2d> & path)
 	selectedPathPublisher.publish(gotten_global_path);
 	publish_global_gotten_path_visualization(gotten_global_path);
 
-	goal_calculator.updatePath(gotten_global_path);
-
 	for(size_t i = 0; i < gotten_global_path.poses.size(); i++)
 	{
 		path.push_back(goal_calculator::Point_2d(gotten_global_path.poses[i].pose.position.x,
