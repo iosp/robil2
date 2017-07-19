@@ -715,8 +715,12 @@ namespace{
 
 
 void on_GlobalCostMap( const nav_msgs::OccupancyGrid::ConstPtr& cost_map){
+	cout << "before global costmap mutex" << endl;
 	boost::mutex::scoped_lock l(global_map_mutex);
 	global_cost_map = *cost_map;
+
+	global_cost_map.data[rand() % 255] = rand() % 255;
+	cout << "GLOBAL MAP CHANGED" << endl;
 	//DBG_INFO("Navigation: Global occupancy cost grid gotten");
 }
 void on_speed(const geometry_msgs::Twist::ConstPtr& msg){
@@ -1197,6 +1201,7 @@ void initGCMap(boost::shared_ptr<goal_calculator::Map>& result_map)
 		}
 	}
 
+
 	cout << "global costmap inited" << endl;
 }
 
@@ -1204,10 +1209,16 @@ bool updateGCMap(goal_calculator::Map & map)
 {
 	cout << "on updategcmap" << endl;
 	global_map_mutex.lock();
+	static nav_msgs::OccupancyGrid lastmap;
 	nav_msgs::OccupancyGrid gmap = global_cost_map;
 	global_map_mutex.unlock();
 
-	int rc = memcmp((void*)map.cells.data(), (void*)gmap.data.data(), map.cells.size());
+	/* Use memcmp to compare old and new maps */
+	int rc;// = memcmp((void*)lastmap.data.data(), (void*)gmap.data.data(), gmap.data.size());
+	if(lastmap.data.size() != gmap.data.size())
+		rc = 1;
+	else rc = memcmp((void*)lastmap.data.data(), (void*)gmap.data.data(), gmap.data.size());
+	lastmap = gmap;
 	if(rc == 0) return false;
 
 	cout << "global costmap changed - updating..." << endl;
@@ -1230,148 +1241,182 @@ bool updateGCMap(goal_calculator::Map & map)
 	return true;
 }
 
-void MoveBase::calculate_goal()
+void call_map_redraw(goal_calculator::Map & map, goal_calculator::Point_2d & robot, bool updated)
 {
-	// return;
-	/* Handle log directory for GoalCalculator inputs */
+	cout << "updated = " << updated << endl;
+	static ros::Time last_start = ros::Time::now();
+	static ros::Time last_end = ros::TIME_MIN;
+
+	/* Track current active times */
+	ros::Time this_start = ros::Time::now();
+	map.redraw_map(updated, robot);
+	ros::Time this_end = ros::Time::now();
+
+	/* Update and show results */
+	ros::Duration Ta = this_end - this_start;
+	ros::Duration Tb = this_start - last_end;
+	ros::Duration Tc = this_end - last_end;
+	last_start = this_start;
+	last_end = this_end;
+	cout << "Ta = " << Ta.toSec() << endl;
+	cout << "Tb = " << Tb.toSec() << endl;
+	cout << "Tc = " << Tc.toSec() + 1e-10 << endl;
+
+	cout << "Rate: " << Ta.toSec() / Tc.toSec() << endl;
+}
+
+int init_log()
+{
 #define GC_LOG_DIR string("/tmp/gc_logs")
 #define GC_LOG_PREFIX string("gc")
+
 	static bool new_task = true;
-	static int log_files = 0;
+	static int log_files = 0, current_log_file = 0;
+
 	if(new_task)
 	{
-		//new_task = false;
+		new_task = false;
+
+		/* Read parameter */
 		ros::NodeHandle nh("~");
 		log_files = nh.param<int>("gc_files", 0);
+
+		/* Create directory */
 		string dir_sys = "rm -rf " + GC_LOG_DIR + " || true";
 		system(dir_sys.c_str());
 		system(("mkdir " + GC_LOG_DIR).c_str());
 	}
-;
-	static int current_log_file = 0;
-	stringstream curr_log_name;
-	if(log_files)
-	{
-		cout << "Current: " << current_log_file % log_files << endl;
-		curr_log_name << GC_LOG_DIR << "/" << GC_LOG_PREFIX << dec << (current_log_file % log_files);
-	}
 
-	f_counter++;
+	if(not log_files)
+		return -1;
 
+	int log_num = current_log_file % log_files;
+	current_log_file++;
+
+	return log_num;
+}
+
+std::string MoveBase::init_path(std::vector<goal_calculator::Point_2d> & path)
+{
 	nav_msgs::Path gotten_global_path;
-	std::string path_id = "";
-	if(gp_defined){
+	std::string path_id = " ";
+	if(gp_defined)
+	{
 		gotten_global_path = gotten_path.waypoints;
 		path_id = gotten_path.id;
-	}else{
-		gotten_global_path = gotten_nav_path;
 	}
+	else
+		gotten_global_path = gotten_nav_path;
 
 	size_t waypoints = gotten_global_path.poses.size();
-
 	gotten_global_path.header.frame_id = "/WORLD";
 	gotten_global_path.header.stamp = ros::Time::now() ;
 	globalPathPublisher.publish(gotten_global_path);
 	selectedPathPublisher.publish(gotten_global_path);
 	publish_global_gotten_path_visualization(gotten_global_path);
 
-	int goal_index;
-	bool is_path_finished = false;
-	geometry_msgs::PoseStamped goal;// = search_next_waypoint(gotten_global_path, get_unvisited_index(path_id), gotten_location, is_path_finished, goal_index);
-	goal_calculator::Point_2d gg_goal;
-	goal_calculator::Point_2d robot(gotten_location.pose.pose.position.x,
-					gotten_location.pose.pose.position.y);
+	goal_calculator.updatePath(gotten_global_path);
 
-
-	std::vector<goal_calculator::Point_2d> path;
 	for(size_t i = 0; i < gotten_global_path.poses.size(); i++)
 	{
 		path.push_back(goal_calculator::Point_2d(gotten_global_path.poses[i].pose.position.x,
 		gotten_global_path.poses[i].pose.position.y));
 	}
 
-	/* Create map */
-	boost::shared_ptr<goal_calculator::Map> gcmap_ptr;
-	initGCMap(gcmap_ptr);
-	goal_calculator::Map& gcmap = *gcmap_ptr;
+	return path_id;
+}
 
+void MoveBase::calculate_goal()
+{
+	/* Handle log directory for GoalCalculator inputs */
+	int current_log_file = init_log();
+	stringstream curr_log_name;
+	if(current_log_file != -1)
+	{
+		cout << "Current: " << current_log_file << endl;
+		curr_log_name << GC_LOG_DIR << "/" << GC_LOG_PREFIX << dec << current_log_file;
+	}
+
+	f_counter++;
+
+	/* Get global path */
+	std::vector<goal_calculator::Point_2d> path;
+	std::string path_id = init_path(path);
+
+	/* Init inputs for GC */
+	int goal_index;
+	bool is_path_finished = false;
+	geometry_msgs::PoseStamped goal;
+	goal_calculator::Point_2d gg_goal;
+	goal_calculator::Point_2d robot(gotten_location.pose.pose.position.x,
+					gotten_location.pose.pose.position.y);
+
+	/* Create map */
+	static boost::shared_ptr<goal_calculator::Map> gcmap_ptr;
+	static bool init = true;
+	if(init)
+		{initGCMap(gcmap_ptr);
+		init = false;
+		}
+	goal_calculator::Map& gcmap = *gcmap_ptr;
 	if(gcmap.w * gcmap.h == 0)
 	{
 		DBG_WARN("Navigation: Global occupancy cost map is not defined");
 	}
 	else
 	{
-		if(updateGCMap(gcmap))
+		call_map_redraw(gcmap, robot, updateGCMap(gcmap));
+		if(current_log_file != -1)
 		{
-			if(log_files)
-			{
-				ofstream curr_log;
-				curr_log.open(curr_log_name.str().c_str(), ofstream::out);
-				curr_log << ros::Time::now() << endl;
-				curr_log << robot << endl;
-				curr_log << waypoints << endl;
-				for(size_t i = 0; i < gotten_global_path.poses.size(); i++)
-					curr_log << path[i] << endl;
-				curr_log << gcmap.w << " " << gcmap.h << " " << gcmap.offset << " " << gcmap.heading << " " << gcmap.resolution << endl;
-				for(int i = 0; i < gcmap.cells.size(); i++)
-					curr_log << (int)gcmap.cells[i] << endl;
-				curr_log.close();
-				current_log_file++;
-			}
-
-			/* Track times */
-			static ros::Time last_start = ros::Time::now();
-			static ros::Time last_end = ros::TIME_MIN;
-			ros::Time this_start = ros::Time::now();
-			gcmap.select_accessible_points(robot);
-			ros::Time this_end = ros::Time::now();
-			ros::Duration Ta = this_end - this_start;
-			ros::Duration Tb = this_start - last_end;
-			ros::Duration Tc = this_start - last_start;
-			last_start = this_start;
-			last_end = this_end;
-			cout << "Ta = " << Ta.toSec() << endl;
-			cout << "Tb = " << Tb.toSec() << endl;
-			cout << "Tc = " << Tc.toSec() << endl;
+			ofstream curr_log;
+			curr_log.open(curr_log_name.str().c_str(), ofstream::out);
+			curr_log << ros::Time::now() << endl;
+			curr_log << robot << endl;
+			curr_log << path.size() << endl;
+			for(size_t i = 0; i < path.size(); i++)
+				curr_log << path[i] << endl;
+			curr_log << gcmap.w << " " << gcmap.h << " " << gcmap.offset << " " << gcmap.heading << " " << gcmap.resolution << endl;
+			for(int i = 0; i < gcmap.cells.size(); i++)
+				curr_log << (int)gcmap.cells[i] << endl;
+			curr_log.close();
+			current_log_file++;
 		}
+	}
 
+	/* Prepare get_goal refs */
+	static goal_calculator::Index wpi = 0;
+	goal_calculator::GoalCalculator gc;
 
-		/* Prepare get_goal refs */
-		static goal_calculator::Index wpi = 0;
-		goal_calculator::GoalCalculator gc;
+	cout << endl;
+	gg_goal = path[wpi];
+	std::cout << "Original start: " << robot << ", goal: " << gg_goal << std::endl;
 
-		cout<<endl;
-		gg_goal = path[wpi];
+	/* Get goal */
+	bool res = gc.get_goal(gcmap, path, robot, gg_goal, wpi);
+	cout << "Goal not translated: " << gg_goal << "   wpi=" << wpi <<endl;
+	//std::cout << "Final start: " << robot << ", goal: " << path[wpi] << std::endl;
 
-		std::cout << "Original start: " << robot << ", goal: " << gg_goal << std::endl;
+	/* Translate waypoints for Navex */
+	if((wpi < path.size() -1) && (std::find(path.begin(), path.end(), gg_goal) != path.end()))
+	{
+		goal_calculator::Point_2d diff_vector = path[wpi] - robot;
+		goal_calculator::Point_2d diff_norm = diff_vector.norm() * 1.5;
+		gg_goal += diff_norm;
+		cout << "Goal translated to: " << gg_goal << endl;
+	}
+	else
+		is_path_finished = true;
 
-		/* Get goal */
-		bool res = gc.get_goal(gcmap, path, robot, gg_goal, wpi);
-		cout << "Goal not translated: " << gg_goal << "   wpi=" << wpi <<endl;
-		//std::cout << "Final start: " << robot << ", goal: " << path[wpi] << std::endl;
+	/* Publish results */
+	goal.pose.position.x = gg_goal.x;
+	goal.pose.position.y = gg_goal.y;
+	goal_index = wpi;
 
-		/* Translate waypoints for Navex */
-		if(wpi != path.size() -1)
-		{
-			goal_calculator::Point_2d diff_vector = path[wpi] - robot;
-			goal_calculator::Point_2d diff_norm = diff_vector.norm() * 1.5;
-			gg_goal += diff_norm;
-			cout << "Goal translated to: " << gg_goal << endl;
-		}
-		else
-			is_path_finished = true;
-
-		/* Publish results */
-		goal.pose.position.x = gg_goal.x;
-		goal.pose.position.y = gg_goal.y;
-		goal_index = wpi;
-
-		if(!res)
-		{
-			is_path_finished = true;
-			ROS_INFO_STREAM("*** RES = FALSE ***" << endl);
-		}
-
+	if(!res)
+	{
+		is_path_finished = true;
+		ROS_INFO_STREAM("*** RES = FALSE ***" << endl);
+	}
 
 /*
 	//DBG_INFO_ONCE("Navigation: calculate next waypoint");
@@ -1383,56 +1428,10 @@ void MoveBase::calculate_goal()
 		stop_navigation(true);
 		return;
 	}
-/*
-	if( gmap.info.width and gmap.info.height ){
-		geometry_msgs::PoseStamped original_goal = goal;
-		geometry_msgs::PoseStamped first_original_goal = goal;
-		static bool prev_send_original(true);
-		bool send_original = false;
-		//DBG_INFO_ONCE("Navigation: check goal on reachability ...");
-		while(
-				not is_path_finished
-				and
-				make_goal_reachable(goal, goal_index, gotten_global_path, gotten_location, gmap, is_path_finished)
-		){
-			send_original = true;
-			//DBG_INFO_ONCE("Navigation: ... original goal("<<original_goal.pose.position.x<<","<<original_goal.pose.position.y<<") is not reachable. it's changed to near one("<<goal.pose.position.x<<","<<goal.pose.position.y<<").");
-			gotten_global_path.poses[goal_index] = goal;
-			selectedPathPublisher.publish(gotten_global_path);
-
-			goal = search_next_waypoint(gotten_global_path, get_unvisited_index(path_id), gotten_location, is_path_finished, goal_index);
-			if(goal.pose.position.x==original_goal.pose.position.x and goal.pose.position.y==original_goal.pose.position.y) break;
-			original_goal = goal;
-		}
-		if(send_original){
-			first_original_goal.header = gotten_global_path.header;
-			originalGoalPublisher.publish(first_original_goal);
-			if(send_original!=prev_send_original){
-				DBG_INFO("Navigation: Goal changed from original "<<str_position(first_original_goal.pose.position,first_original_goal)<<" to reachable "<<str_position(original_goal.pose.position,original_goal));
-			}
-		}else{
-			if(send_original!=prev_send_original){
-				DBG_INFO("Navigation: Original goal " << str_position(original_goal.pose.position,original_goal)<<" is used");
-			}
-		}
-		prev_send_original=send_original;
-		//DBG_INFO("Navigation: ... done");
-	}else{
-		DBG_WARN("Navigation: Global occupancy cost map is not defined");
-	}
-
-
-	if(is_path_finished){
-			DBG_INFO("Navigation: path is finished (after tries to make it reachable). send event and clear current path.");
-			stop_navigation(true);
-			return;
-	}*/
 
 	static boost::posix_time::ptime time_since_path_not_finished_last_time; //hold timestamp for last path that was not finished
-
 	if (is_path_finished)
 	{
-		goal = gotten_global_path.poses.back();
 		//consider duration of "finished" message for path, in order to consider it as truly finished.
 		//if not enough time has passed since considering this path as finished, do nothing.
 		if (boost::get_system_time() - time_since_path_not_finished_last_time >= boost::posix_time::seconds(SECONDS_FOR_FINISHING_AFTER_PATH_FINISHED))
@@ -1449,9 +1448,8 @@ void MoveBase::calculate_goal()
 
 	diagnostic_publish_new_goal(path_id, goal, goal_index, gotten_location);
 	update_unvisited_index(path_id, goal_index);
-	goal.header = gotten_global_path.header;
+	goal.header = gp_defined ? gotten_path.waypoints.header : gotten_nav_path.header;
 	on_goal(goal);
-}
 }
 
 namespace{

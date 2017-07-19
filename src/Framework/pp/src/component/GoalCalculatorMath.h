@@ -210,6 +210,22 @@ namespace goal_calculator
 			return is_accessible_value(cell);
 		}
 
+		void redraw_map(bool updated, const Point_2d & robot)
+		{
+			/* If map is unchanged and the robot is in an accessible cell, no need to remap */
+			//if((not updated) and is_accessible(robot))
+			cout << "[REDRAW]\tUpdated = " << updated << ", robot = " << robot << endl;
+			if(not updated)
+			{
+				cout << "Is accessible: " << is_accessible(robot);
+				if(is_accessible(robot))
+					return;
+			}
+
+			/* Else, redraw the map */
+			select_accessible_points(robot);
+		}
+
 		void select_accessible_points(const Point_2d &point)
 		{
 			Map &map = *this;

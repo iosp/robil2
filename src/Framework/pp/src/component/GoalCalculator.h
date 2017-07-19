@@ -11,9 +11,9 @@
 #include "GoalCalculatorMath.h"
 
 using namespace std;
+
 namespace goal_calculator
 {
-
 	struct Config
 	{
 		double same_point_eps;
