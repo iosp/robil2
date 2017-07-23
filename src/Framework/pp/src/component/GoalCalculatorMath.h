@@ -21,7 +21,7 @@
 
 using namespace std;
 
-namespace goal_calculator
+namespace RobilGC
 {
 
 	inline bool in_range(double a, double mi, double ma)
