@@ -1,0 +1,7 @@
+<launch>
+  <node name="LOC_RolPithchYow_pub" type="pubLOC_RolPitchYow.py" pkg="ocu" args="" output="screen" respawn="true"/>
+
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
+
+  <node name="tf2_web_republisher" type="tf2_web_republisher" pkg="tf2_web_republisher" args="" output="screen" respawn="true"/>
+</launch>
