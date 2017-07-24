@@ -110,7 +110,6 @@ namespace RobilGC
 
 	public:
 		GoalCalculator(int log_files):_wpi(0){_logger.init(log_files);}
-		virtual ~GoalCalculator(){}
 
 		bool updateMap(nav_msgs::OccupancyGrid & new_map, geometry_msgs::PoseWithCovarianceStamped & new_pose);
 		void updatePath(nav_msgs::Path & gotten_path);

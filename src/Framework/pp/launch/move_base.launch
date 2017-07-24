@@ -3,7 +3,7 @@
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
         <!-- <param name="base_global_planner" value="SBPLLatticePlanner" /> -->
  		<!-- Amount of log files to store in /tmp -->
-        <param name="gc_files" value="5"/>
+        <param name="gc_files" type="int" value="5"/>
         <rosparam file="$(find pp)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
         <rosparam file="$(find pp)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
         <rosparam file="$(find pp)/params/local_costmap_params.yaml" command="load" />

@@ -68,13 +68,14 @@ namespace{
 
 		void print(clock_t Ta, clock_t Tb, clock_t Tc)
 		{
-			cout << endl;
+			cout << "\033[1;33m" << endl;
 
-			cout << " ░░░░░░  " << "FTimer for \"" << _func << "\":" << endl;
-			cout << "   ░░    " << "Ta = " << doublize(Ta) << "s, Tc = " << doublize(Tc) << "s"  << endl;
-			cout << "   ░░    " << "Rate = " << doublize(Ta) / doublize(Tc) << "  (Avg. " << _avg_rate << ")" << endl;
+			cout << " ⌛ " << "FTimer for \"" << _func << "\":\033[0;33m" << endl;
+			cout << "   " << "Ta = " << doublize(Ta) << "    Tc = " << doublize(Tc) << "    (Rate = " <<
+					100.0 * doublize(Ta) / doublize(Tc) << "%)" << endl;
+			//cout << "   " << "Rate = " << doublize(Ta) / doublize(Tc) << "  (Avg. " << _avg_rate << ")" << endl;
 
-			cout << endl;
+			cout << "\033[0m" << endl;
 		}
 
 		void update_timer()
@@ -967,7 +968,6 @@ void MoveBase::notify_path_is_finished(bool success)const{
 	else comp->rise_taskAborted();
 }
 
-
 void MoveBase::on_position_update(const geometry_msgs::PoseWithCovarianceStamped& _location){
 SYNCH
 
@@ -1034,8 +1034,19 @@ void MoveBase::extend_path()
 {
 	geometry_msgs::Pose lp;
 	size_t waypoints = gotten_path.waypoints.poses.size();
+
+	/* If path is empty, do nothing */
 	if(waypoints < 1)
 		return;
+
+	/* If path consists of one waypoint,
+	 * extend it by adding another waypoint with orientation of (waypoint - robot_pose)
+	 * and distance of 0.5m from the actual waypoint.
+	 *
+	 * Else (two or more waypoints),
+	 * extend the path by adding a waypoint with orientation of (waypoint N - waypoint N-1)
+	 * and distance of 0.5m from last waypoint.
+	 */
 
 	if(waypoints == 1)
 		lp = gotten_location.pose.pose;
@@ -1087,8 +1098,8 @@ SYNCH
 	gotten_path = goal_path;
 	gp_defined=true;
 
-	if(gotten_path.waypoints.poses.size()>=1){
-		extend_path();
+	extend_path();
+//	if(gotten_path.waypoints.poses.size()>=1){
 //	    geometry_msgs::Pose last = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-1].pose;
 //	    geometry_msgs::Pose llast = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-2].pose;
 //	    geometry_msgs::Point p;
@@ -1107,7 +1118,7 @@ SYNCH
 //		gotten_path.waypoints.poses.push_back( npose );
 //		DBG_INFO("Navigation: path extended by adding additional tail point");
 //	    }
-	}
+//	}
 	BOOST_FOREACH( const geometry_msgs::PoseStamped& p , gotten_path.waypoints.poses )
 	{
 	    DBG_INFO("Navigation: ...... "<<STR(p.pose.position));
@@ -1145,8 +1156,8 @@ SYNCH
 	gotten_nav_path = goal_path;
 	gnp_defined=true;
 
-	if(gotten_nav_path.poses.size()>=1){
-		extend_path();
+	extend_path();
+//	if(gotten_nav_path.poses.size()>=1){
 //	    geometry_msgs::Pose last = gotten_nav_path.poses[gotten_nav_path.poses.size()-1].pose;
 //	    geometry_msgs::Pose llast = gotten_nav_path.poses[gotten_nav_path.poses.size()-2].pose;
 //	    geometry_msgs::Point p;
@@ -1165,7 +1176,7 @@ SYNCH
 //		gotten_nav_path.poses.push_back( npose );
 //		DBG_INFO("Navigation: path extended by adding additional tail point");
 //	    }
-	}
+//	}
 	BOOST_FOREACH( const geometry_msgs::PoseStamped& p , gotten_nav_path.poses )
 	{
 	    DBG_INFO("Navigation: ...... "<<p.pose.position.x<<","<<p.pose.position.y);
@@ -1234,24 +1245,26 @@ void MoveBase::deactivate(bool clear_last_goals){
 }
 
 void path_publishing(ComponentMain* comp, boost::recursive_mutex* mtx, bool* is_canceled, bool* is_path_calculated){
-	double fr = 10; double time =1.0/fr*1000.0;
-	while(not boost::this_thread::interruption_requested() and ros::ok()){
-		boost::posix_time::ptime t = boost::get_system_time();
+	struct Sleeper
+	{
+		ros::Rate& r;
+		Sleeper(ros::Rate& r):r(r){}
+		~Sleeper(){r.sleep();}
+	};
+	ros::Rate r(1);
+	while(not boost::this_thread::interruption_requested() and ros::ok())
+	{
+		Sleeper s(r);
+		robil_msgs::Path lpath;
+		lpath.is_heading_defined=false;
+		lpath.is_ip_defined=false;
 		{
-			static FTimer timer("path_publishing", 10);
-			timer.start();
 			boost::recursive_mutex::scoped_lock locker(*mtx);
 			if(*is_canceled or not *is_path_calculated) continue;
 
-			robil_msgs::Path lpath;
-			lpath.is_heading_defined=false;
-			lpath.is_ip_defined=false;
 			lpath.waypoints = curr_nav_path;
-
-			comp->publishLocalPath(lpath);
-			timer.stop();
 		}
-		boost::this_thread::sleep(t+boost::posix_time::millisec(time));
+		comp->publishLocalPath(lpath);
 	}
 }
 
@@ -1303,6 +1316,8 @@ void MoveBase::calculate_goal()
 	geometry_msgs::PoseStamped goal;
 
 	static ros::NodeHandle nh("~");
+//	static int log_files = 0;
+//	nh.getParam("gc_files", log_files);
 	static int log_files = nh.param<int>("gc_files", 0);
 
 	if(not goal_calculator)
@@ -1315,13 +1330,8 @@ void MoveBase::calculate_goal()
 	global_map_mutex.lock();
 	nav_msgs::OccupancyGrid map = global_cost_map;
 	global_map_mutex.unlock();
-	{
-		static FTimer timer("select_accessible_points", 1000);
-		timer.start();
-		if(not goal_calculator->updateMap(map, gotten_location))
-			DBG_WARN("Navigation: Global occupancy cost map is not defined");
-		timer.stop();
-	}
+	if(not goal_calculator->updateMap(map, gotten_location))
+		DBG_WARN("Navigation: Global occupancy cost map is not defined");
 
 	/* Get goal */
 	bool gc_res = goal_calculator->get_goal(goal, goal_index);
@@ -1470,6 +1480,7 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 
 void MoveBase::on_map(const nav_msgs::OccupancyGrid& nav_map){
 SYNCH
+
 	nav_msgs::OccupancyGrid map = nav_map;
 	mapPublisher.publish(map);
 }
@@ -1548,7 +1559,6 @@ SYNCH
 	mapPublisher.publish(map);
 
 #endif
-
 }
 
 

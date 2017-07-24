@@ -386,19 +386,17 @@ namespace RobilGC
 			if(std::find(_path.begin(), _path.end(), _goal) != _path.end())
 			{
 				Point_2d diff_vector = _path[_wpi] - _world._robot;
-				Point_2d diff_norm = diff_vector.norm() * 1.25;
+				Point_2d diff_norm = diff_vector.norm() * 1.4;
 				_goal += diff_norm;
 				cout << "Goal translated to: " << _goal << endl;
 			}
 
 			goal.pose.position.x = _goal.x;
 			goal.pose.position.y = _goal.y;
-			cout << endl;
 			return true;
 		}
 
-		goal.pose.position.x = _goal.x;
-		goal.pose.position.y = _goal.y;
+		cout << "End of path!" << endl;
 		return false;
 	}
 }
