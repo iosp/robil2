@@ -29,7 +29,8 @@ def command_callback(msg):
                                   "world_gazebo")
 	
 	else:
-		print 'Sahar::body dosn\'t exist in the Gazebo'
+		print 'Sahar::body doesn\'t exist in the Gazebo'
+		exit
 
 
 

@@ -22,5 +22,6 @@
     <arg name="headless" value="$(arg headless)"/>
     <arg name="world_name" value="$(find bobcat_model)/worlds/bobcat_tracked_static_worlds/bobcat_tracked_static_arm_Robil_TestingGrounds.world"/>
   </include>
-  
+      <include file="$(find bobcat_model)/launch/TF_pub_for_static_arm_tracked.launch" />
+
 </launch>

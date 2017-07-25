@@ -41,8 +41,8 @@ ComponentMain::ComponentMain(int argc,char** argv)
 : _inited(init(argc, argv))
 {
     _should_pub = true;
-_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Pose", 10, &ComponentMain::handleLocation,this));
-_sub_SensorINS=ros::Subscriber(_nh.subscribe("/SENSORS/INS", 10, &ComponentMain::handleSensorINS,this));
+_sub_Location=ros::Subscriber(_nh.subscribe("/LOC/Odom", 10, &ComponentMain::handleLocation,this));
+//_sub_SensorINS=ros::Subscriber(_nh.subscribe("/SENSORS/INS", 10, &ComponentMain::handleSensorINS,this));
 //_sub_SensorCamL=ros::Subscriber(_nh.subscribe("/SENSORS/CAM/L", 10, &ComponentMain::handleSensorCamL,this));
 //_sub_SensorCamR=ros::Subscriber(_nh.subscribe("/SENSORS/CAM/R", 10, &ComponentMain::handleSensorCamR,this));
 //_sub_SensorSICK1=ros::Subscriber(_nh.subscribe("/SENSORS/SICK/1", 10, &ComponentMain::handleSensorSICK1,this));
@@ -71,8 +71,23 @@ bool ComponentMain::init(int argc,char** argv){
 	return true;
 }
 
-void ComponentMain::handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg)
+void ComponentMain::handleLocation(const nav_msgs::Odometry& msg)
 {
+    double pitch = msg.twist.twist.linear.x * msg.twist.twist.linear.x +
+                   msg.twist.twist.linear.y * msg.twist.twist.linear.y +
+                   msg.twist.twist.linear.z * msg.twist.twist.linear.z - 9.81 * 9.81;
+
+    if (sqrt(pitch) / 10.0 > _dyn_conf.acc_filter || abs(msg.twist.twist.angular.z) > _dyn_conf.yaw_dot_filter)
+    {
+        _should_pub = false;
+        _should_pub_timeout.stamp = ros::Time::now();
+    }
+    else
+    {
+        if (!_should_pub)
+            if (ros::Time::now().toSec() - _should_pub_timeout.stamp.toSec() > _dyn_conf.acc_filter_timeout)
+                _should_pub = true;
+    }
   Mapper::handleLocation(msg);
 }
 
@@ -158,7 +173,7 @@ void ComponentMain::handleSensorIBEO(const robil_msgs::MultiLaserScan& msgIBEO)
     ros::param::param("/LOC/Ready",check,0);
     if(!check) return;
     if (_should_pub)
-        Mapper::handleIBEO(msgIBEO, this->_pub_PC_world, this->_pub_PC);
+        Mapper::handleIBEO(msgIBEO, this->_pub_PC_world, this->_pub_PC, listener);
 }
 
 
@@ -298,6 +313,7 @@ void ComponentMain::configCallback(per::configConfig &config, uint32_t level)
         ros::param::set("/PER/DEBUG",true);
     else
         ros::param::set("/PER/DEBUG", false);
+    ros::param::set("/PER/RATE", config.map_pub_rate);
     Mapper::setVisualize((unsigned char)flags);
 }
 void ComponentMain::heartbeat(){

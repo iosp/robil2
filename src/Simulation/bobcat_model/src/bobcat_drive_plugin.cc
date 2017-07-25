@@ -69,7 +69,7 @@ class bobtankDrivePlugin : public ModelPlugin
     }
 
 
-    void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
+    void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) // we are not using the pointer to the sdf file so its commanted as an option
     {
         std::cout << "MY_GAZEBO_VER = [" << GAZEBO_MAJOR_VERSION << "]" << std::endl;
 
@@ -107,7 +107,17 @@ class bobtankDrivePlugin : public ModelPlugin
         array_initilization(Linear_command_delay_array, COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE, Linear_command_delay_index ,Linear_delay_mutex);
         array_initilization(Angular_command_delay_array, COMMAND_DELAY_AND_FILTER_ARREY_MAX_SIZE, Angular_command_delay_index, Angular_delay_mutex);
 
-        sqc.Init("127.0.0.1", 4660, 5355);
+	IP = "127.0.0.1";
+	if (_sdf->HasElement("IP"))
+ 	  _sdf->GetElement("IP")->GetValue()->Get<std::string>(IP);
+	UDPLP = 4660;
+	if (_sdf->HasElement("PortUDPLP"))
+ 	    	  _sdf->GetElement("PortUDPLP")->GetValue()->Get(UDPLP);
+	UDPRP = 5355;
+	if (_sdf->HasElement("PortUDPRP"))
+ 	    	  _sdf->GetElement("PortUDPRP")->GetValue()->Get(UDPRP);
+
+        sqc.Init(IP, UDPLP, UDPRP);
     }
 
     void calibration_data_setup()
@@ -365,6 +375,10 @@ double Angular_vel_values_array[] = {  1.00,    0.40,     0.17,   0.03, 	0.00,  
     InterpMultilinear<2, double> *Angular_vel_interp;
 
     simQinetiqClient sqc;
+
+    std::string IP;
+    int UDPLP;
+    int UDPRP;
 };
 
 // Tell Gazebo about this plugin, so that Gazebo can call Load on this plugin.

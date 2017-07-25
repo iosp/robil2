@@ -2,6 +2,7 @@
 <!-- -*- mode: XML -*- -->
 <sdf version='1.4'>
   <model name='Sahar'>
+
     <link name='body'>
       <pose>0 0 0.125 0 0 0</pose>
       <gravity>1</gravity>
@@ -11,7 +12,7 @@
       </velocity_decay>
       <self_collide>1</self_collide>
       <inertial>
-        <pose>-0.795445 -0.0 0.68 0 -0 0</pose>
+        <pose>-0.79545 -0.0 0.68 0 -0 0</pose>
         <mass>2646.54</mass>
         <inertia>
           <ixx>818.884</ixx>
@@ -22,8 +23,8 @@
           <izz>1018.05</izz>
         </inertia>
       </inertial>
-      
-            <collision name='body_collision'>
+     
+      <collision name='body_collision'>
         <pose>-0.82136 0 0.36982 0 -0.02 0</pose>
         <geometry>
           <box>
@@ -89,8 +90,8 @@
           </box>
         </geometry>
       </collision>
-    </link>
     
+    </link>
     
    <!--COGWHEELS-->
     <link name='cogwheel_left'>
@@ -140,7 +141,6 @@
       </axis>
       <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
-    <!--<joint name="gear_left" type="gearbox"><parent>back_left_wheel</parent><child>cogwheel_left</child><gearbox_ratio>-1</gearbox_ratio><gearbox_reference_body>body</gearbox_reference_body><axis><xyz>0.000000 1.000000 0.000000</xyz></axis><axis2><xyz>0.000000 1.000000 0.000000</xyz></axis2></joint>-->
 
     <link name='cogwheel_right'>
       <pose>-1.35 -0.655 0.435 0 0 0</pose>
@@ -189,7 +189,6 @@
       </axis>
       <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
-
 
 
     <!--WHEELS-->
@@ -300,7 +299,6 @@
       </axis>
       <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
-    <!--<joint name="gear_right" type="gearbox"><parent>back_right_wheel</parent><child>cogwheel_right</child><gearbox_ratio>-1</gearbox_ratio><gearbox_reference_body>body</gearbox_reference_body><axis><xyz>0.000000 1.000000 0.000000</xyz></axis><axis2><xyz>0.000000 1.000000 0.000000</xyz></axis2></joint>-->
 
     <link name='front_left_wheel'>
     <self_collide>0</self_collide>
@@ -409,7 +407,6 @@
       </axis>
       <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
-
 
     <link name='roller_back_right'>
     <self_collide>0</self_collide>
@@ -735,8 +732,12 @@
       <physics><ode><cfm>0.0000658</cfm><erp>0.01315</erp></ode></physics>
     </joint>
 
-
-    <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so"/>
+    <plugin name="bobcat_tracked_drive_control" filename="libbobcat_tracked_drive_plugin.so">
+      <IP>127.0.0.1</IP>
+      <PortUDPLP>4660</PortUDPLP>
+      <PortUDPRP>5355</PortUDPRP>
+    </plugin>
+   
     <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
       <robotNamespace>/Sahar</robotNamespace>
       <jointName>cogwheel_right_joint, cogwheel_left_joint</jointName>
@@ -745,11 +746,10 @@
     </plugin>
     
     
-    
 <!-- IPON Sensor--> <!---->
     <include>
       <uri>model://IPON</uri>   
-      <pose>-0.790 -0.155 2.000 0.000 0.000 0.000</pose>  <!-- position of the GPS antena , orintation of the INS sensor-->
+      <pose>-0.790 -0.155 2.000 0.000 0.000 0.000</pose>  
       <name>IPON</name>
     </include>
     <joint name='ipon_joint' type='revolute'>
@@ -768,10 +768,10 @@
     </joint>    
        
 
-     IBEO Sensor    
+<!-- IBEO Sensor--> <!---->
     <include>
       <uri>model://IBEO</uri>
-      <pose>-0.400 0.020 2.000 0.000 0.215 0.149</pose>
+      <pose>-0.400 0.020 2.013 0.000 0.215 0.149</pose>
       <name>IBEO</name>
     </include>
     <joint name='ibeo_joint' type='revolute'>
@@ -786,9 +786,8 @@
         <dynamics/>
       </axis>
     </joint>
--->
-    
-     CAM Sensors  
+ 
+<!-- CAM Sensors --> <!--
     <include>
       <uri>model://FLEA3_L</uri>
       <pose>-0.3 0.25 2.02 0 0 0</pose>
@@ -899,6 +898,6 @@
         <dynamics/>
       </axis>
     </joint>
-
+      -->
   </model>
 </sdf>

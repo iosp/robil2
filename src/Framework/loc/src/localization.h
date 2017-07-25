@@ -9,6 +9,7 @@
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <iostream>
 #include <geometry_msgs/TwistStamped.h>
+#include <nav_msgs/Odometry.h>
 
 #include "component/gps_calculator.h"
 #include <dynamic_reconfigure/server.h>
@@ -75,7 +76,7 @@ private:
     geometry_msgs::PoseWithCovarianceStamped pose;
     sensor_msgs::NavSatFix initialGPS;
     loc::configConfig dyn_conf;
-//    ros::Publisher odom_pub;
+    ros::Publisher odom_pub;
 };
 
 #endif // LOCALIZATION_H

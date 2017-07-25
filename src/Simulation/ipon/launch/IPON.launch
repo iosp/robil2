@@ -1,13 +1,13 @@
-<?xml version="1.0" ?>
+<!-- -*- mode: XML -*- -->
 <launch>
 
 <!-- setting gazebo path for scenario platform and sensors models -->
-  <env name="GAZEBO_MODEL_PATH" value="$(find IPON)/models"/>
+  <env name="GAZEBO_MODEL_PATH" value="$(find ipon)/models"/>
 
 
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find IPON)/worlds/IPON.world"/>
+    <arg name="world_name" value="$(find ipon)/worlds/IPON.world"/>
     <!-- more default parameters can be changed here -->
   </include>
 </launch>

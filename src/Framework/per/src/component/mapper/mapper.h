@@ -10,6 +10,7 @@
 #include "../ComponentMain.h"
 #include "per/configConfig.h"
 #include <tf/transform_listener.h>
+#include <nav_msgs/Odometry.h>
 #define VISUALIZE_NONE		0
 #define VISUALIZE_MAP		1
 #define VISUALIZE_MINIMAP 	2
@@ -54,13 +55,13 @@ class Mapper
     
     static void VisualizeLoop();
     
-    static void handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pcpubworld, ros::Publisher pcpub);
+    static void handleIBEO(const robil_msgs::MultiLaserScan& msg, ros::Publisher pcpubworld, ros::Publisher pcpub,tf::TransformListener& listener);
      
     static void handleSickL(const sensor_msgs::LaserScan& msg);
     
     static void handleSickR(const sensor_msgs::LaserScan& msg);
     
-    static void handleLocation(const geometry_msgs::PoseWithCovarianceStamped& msg);
+    static void handleLocation(const nav_msgs::Odometry& msg);
     
     static void handleCamR(const sensor_msgs::Image& msg);
     

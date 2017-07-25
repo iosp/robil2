@@ -76,14 +76,22 @@ void GazeboChainPlugin::Load( physics::ModelPtr _parent, sdf::ElementPtr _sdf )
   this->world_ = _parent->GetWorld();
   this->model_ = _parent;
   this->world_->EnablePhysicsEngine(true);
-
+#if GAZEBO_MAJOR_VERSION >= 7
+  this->link1 = this->model_->GetLink(_sdf->GetElement("link1")->GetName());
+  this->link2 = this->model_->GetLink(_sdf->GetElement("link2")->GetName());
+#else
   this->link1 = this->model_->GetLink(_sdf->GetElement("link1")->GetValueString());
   this->link2 = this->model_->GetLink(_sdf->GetElement("link2")->GetValueString());
+#endif
 
   // options are prismatic/screw/revolute/revolute2/ball/universal
   this->fixed_joint =this->world_->GetPhysicsEngine()->CreateJoint(std::string("revolute2"),this->model_);
   this->fixed_joint->SetAxis(0,math::Vector3(0,0,1));
+#if GAZEBO_MAJOR_VERSION >= 7
+  this->fixed_joint->SetName(_sdf->GetElement("joint")->GetName());
+#else
   this->fixed_joint->SetName(_sdf->GetElement("joint")->GetValueString());
+#endif
   this->fixed_joint->Attach(link1,link2);
   this->fixed_joint->Load(link1, link2, math::Pose(math::Vector3(0,0,0), math::Quaternion()));
 
