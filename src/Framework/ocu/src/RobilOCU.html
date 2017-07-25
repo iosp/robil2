@@ -186,8 +186,8 @@
 	});
 
 	// Create a connection to the rosbridge WebSocket server.
+	//lavi ros.connect('ws://172.23.40.39:9090');
 	ros.connect('ws://localhost:9090');
-	
 	var init_pos_gps = new ROSLIB.Topic({
 	  ros: ros,
 	  name: '/SENSORS/GPS',

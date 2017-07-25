@@ -30,7 +30,7 @@
 	
 	
 	<!-- == OPERATOR CONTROL UNIT == -->
-	<node name="ocu_node" type="ocu_node" pkg="ocu" output="screen"/>
+	<!--node name="ocu_node" type="ocu_node" pkg="ocu" output="screen"/ -->
 	
 	
 	

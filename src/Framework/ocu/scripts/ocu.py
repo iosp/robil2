@@ -285,6 +285,7 @@ class GuiHandler(object):
                 missionMsg=messageFromYAML(msg_class,yamlfile)
                 msg=std_msgs.msg.String()
                 msg.data="/mission/"+missionMsg.mission_id+"/"+name+"Mission"
+		print msg.data
                 self.decision_making_publisher.publish(msg)
                 self.writeToLog(name+" sent")
             if not len(listTarget.curselection()):
