@@ -186,8 +186,8 @@
 	});
 
 	// Create a connection to the rosbridge WebSocket server.
+	//lavi ros.connect('ws://172.23.40.39:9090');
 	ros.connect('ws://localhost:9090');
-	
 	var init_pos_gps = new ROSLIB.Topic({
 	  ros: ros,
 	  name: '/SENSORS/GPS',
@@ -230,6 +230,8 @@
 	  start_orientation.roll  = message.x;
 	  start_orientation.pitch = message.y;
 	  start_orientation.yaw   = message.z;
+	  //google symbol asks for an angle clockwise from the north
+	  // therefore the - before the yaw.The yaw is counter clockwise
 	  yaw_deg = -convertRadianToDegree(start_orientation.yaw);
 	 // console.log('yaw_deg:'+yaw_deg);
 	  symb_rotation = yaw_deg;
@@ -546,6 +548,8 @@
 	  start_orientation.roll  = message.x;
 	  start_orientation.pitch = message.y;
 	  start_orientation.yaw   = message.z;
+	  //google symbol asks for an angle clockwise from the north
+	  // therefore the - before the yaw.The yaw is counter clockwise
 	  yaw_deg = -convertRadianToDegree(start_orientation.yaw);
 	  //console.log('yaw_deg:'+yaw_deg);
 	  symb_rotation = yaw_deg;
