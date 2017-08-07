@@ -9,6 +9,8 @@
 
 using namespace std;
 
+bool FStreamer::active = true;
+
 namespace RobilGC
 {
 	Config config;
@@ -232,10 +234,22 @@ namespace RobilGC
 		return false;
 	}
 
+	/*
+	 * Test definition of "is passed":
+	 * Given the robot location, a point P is passed if the robot lies within P's bounding circle.
+	 * Created to fix issues with paths of unordered waypoints.
+	 */
+	bool is_passed(const Point_2d & point, const Point_2d & robot)
+	{
+		// Radius of bounding circle
+		static const double R = 2.0;
+
+		return (robot - point).len() < R;
+	}
+
 	bool get_goal(INPUT    const Map &map, const Path &path, const Point_2d &robot,
 				  OUTPUT Point_2d &goal, Index &waypoint)
 	{
-
 		//THE PATH IS EMPTY
 		if(path.empty()) return false;
 
@@ -248,8 +262,17 @@ namespace RobilGC
 
 		//THE PATH HAS MORE THEN ONE POINT
 
-		//SEARCH NEAREST POINT OF THE PATH TO THE ROBOT
-		Index nearest_point = search_nearest(path, robot);
+//		SEARCH NEAREST POINT OF THE PATH TO THE ROBOT
+//		Index nearest_point = search_nearest(path, robot);
+		/* @assaf:
+		 * This causes back-and-forth navigation if waypoints are not in order!
+		 * That's why I take the maximum between the nearest index and the next waypoint in path.
+		 */
+		Index closest_point = search_nearest(path, robot);
+		if(closest_point > waypoint)
+			F_WARN("get_goal") << "Skipping waypoint #" << (waypoint + 1)
+			<< " since there's a closer waypoint ahead." << endl;
+		Index nearest_point = max(waypoint, closest_point);
 
 		//IF THE NEAREST POINT IS THE LAST POINT, THEN SEARCH FREE POINT NEAR IT.
 		if(is_last_point(path, nearest_point)) {
@@ -258,19 +281,19 @@ namespace RobilGC
 		}
 
 		//IF THE NEAREST POINT IS NOT A LAST POINT
-
 		//SEARCH FREE POINT FROM THE NEAREST TO THE PATH END
-		//IF THE PATH IS BLOCKED UP TO THE END, SEARCH A NEAREST FREE POINT NEAR THE LAST POINT OF THE PATH
 		Point_2d free_of_nearest_point;
 		bool found = search_accessible_point(map, path, nearest_point, path.size(), free_of_nearest_point,
 											 waypoint);
+
+		//IF THE PATH IS BLOCKED UP TO THE END, SEARCH A NEAREST FREE POINT NEAR THE LAST POINT OF THE PATH
 		if(not found) {
 			waypoint = path.size() - 1;
 			return search_accessible_point(map, path[waypoint], goal);
 		}
 
 		//IF SOME FREE POINT IS FOUND
-		//cout << "Found free point @ " << goal << " (WPI = " << waypoint << ")" << endl;
+//		F_DEBUG("get_goal") << "Found free point @ " << free_of_nearest_point << endl;
 		assert(not is_last_point(path, waypoint));
 		assert(nearest_point <= waypoint);
 
@@ -279,7 +302,9 @@ namespace RobilGC
 		Index post_point = waypoint + 1;
 
 		// IF THE FREE POINT IS PASSED, THEN GET NEXT WAYPOINT
-		if(is_passed(path, robot, prev_point, free_of_nearest_point, post_point)) {
+//		if(is_passed(path, robot, prev_point, free_of_nearest_point, post_point)) {
+		if(is_passed(free_of_nearest_point, robot))
+		{
 			//cout << "Free point is passed!" << endl;
 			Index next_waypoint = waypoint + 1;
 
@@ -291,6 +316,7 @@ namespace RobilGC
 
 			//IF THE NEXT WAYPOINT IS NOT THE LAST POINT OF THE PATH, SEARCH FREE POINT TO BE A GOAL, FROM IT TO THE END OF THE PATH
 			bool found = search_accessible_point(map, path, next_waypoint, path.size(), goal, waypoint);
+//			F_DEBUG("get_goal") << "Free point is passed, assigning new goal @ " << goal << "  (Index = " << waypoint << ")" << endl;
 			//cout << "Assigning new goal: " << goal << "(WPI = " << waypoint << ")" << endl;
 
 			//IF NEAREST ON PATH IS NOT FOUND, SEARCH A GENERAL NEAREST POINT
@@ -303,6 +329,22 @@ namespace RobilGC
 
 		goal = free_of_nearest_point;
 		return true;
+	}
+
+	bool translate_goal(const Path & path, Point_2d & goal, const Index wpi, const Point_2d & robot)
+	{
+		static const double TRANSLATION_FACTOR = 1.4;
+
+		/* If goal is an original waypoint, translate it */
+		if(std::find(path.begin(), path.end(), goal) != path.end())
+		{
+			Point_2d diff_vector = path[wpi] - robot;
+			Point_2d diff_norm = diff_vector.norm() * TRANSLATION_FACTOR;
+			goal += diff_norm;
+			return true;
+		}
+
+		return false;
 	}
 
 	//=========================== INTERACTION WITH MOVEBASE ====================================
@@ -357,46 +399,62 @@ namespace RobilGC
 	void GoalCalculator::updatePath(nav_msgs::Path & gotten_path)
 	{
 		size_t path_size = gotten_path.poses.size();
-		if((path_size != _world._path.poses.size()) or memcmp((void*)gotten_path.poses.data(), (void*)_world._path.poses.data(), path_size))
-		{
-			_path.clear();
-			for(size_t i = 0; i < gotten_path.poses.size(); i++)
-			{
-				_path.push_back(Point_2d(gotten_path.poses[i].pose.position.x,
-						gotten_path.poses[i].pose.position.y));
+		bool path_changed = false;
 
+		if(path_size < _path.size())
+			_path.clear();
+
+		for(size_t i = 0; i < path_size; i++)
+		{
+			Point_2d p = Point_2d(gotten_path.poses[i].pose.position.x, gotten_path.poses[i].pose.position.y);
+			if(i >= _path.size())
+			{
+				path_changed = true;
+				_path.push_back(p);
 			}
+			else if(p != _path[i])
+			{
+				path_changed = true;
+				_path[i] = p;
+			}
+		}
+
+		if(path_changed)
+		{
+			F_WARN("GoalCalculator::updatePath") << "Path is changed!" << endl;
+			F_WARN("GoalCalculator::updatePath") << "New path contains " << path_size << " waypoint(s)." << endl;
+			_wpi = 0;
 		}
 	}
 
-	bool GoalCalculator::get_goal(geometry_msgs::PoseStamped & goal, Index & wpi)
+	bool GoalCalculator::get(OUTPUT geometry_msgs::PoseStamped & goal, Index & wpi)
 	{
 		Map& map = *_cell_map;
 
-		cout << "Original start: " << _world._robot << ", goal: " << _path[_wpi] << endl;
+//		cout << "Original start: " << _world._robot << ", goal: " << _path[_wpi] << endl;
 		Point_2d _goal = _path[_wpi];
-
+		Index last_wp = _wpi;
 		bool res = RobilGC::get_goal(map, _path, _world._robot, _goal, _wpi);
+		if(_wpi > last_wp)
+			F_DEBUG("GoalCalculator::get") << "Moving on to waypoint #" << (_wpi + 1) << " which is located @ " << _path[_wpi] << endl;
 		wpi = _wpi;
-		cout << "Goal not translated: " << _goal << "   wpi=" << _wpi <<endl;
 
-		/* Translate waypoints for Navex */
-		if(_wpi < _path.size() -1)
+		/* If goal is the last waypoint, send end signal */
+		if(_wpi >= _path.size() - 1)
 		{
-			if(std::find(_path.begin(), _path.end(), _goal) != _path.end())
-			{
-				Point_2d diff_vector = _path[_wpi] - _world._robot;
-				Point_2d diff_norm = diff_vector.norm() * 1.4;
-				_goal += diff_norm;
-				cout << "Goal translated to: " << _goal << endl;
-			}
-
-			goal.pose.position.x = _goal.x;
-			goal.pose.position.y = _goal.y;
-			return true;
+			F_INFO("GoalCalculator::get") << "End of path!" << endl;
+			return false;
 		}
 
-		cout << "End of path!" << endl;
-		return false;
+		/* Else, perform translation if needed */
+//		cout << "Goal: " << _goal << "    [Index = " << wpi << "]";
+		if(translate_goal(_path, _goal, _wpi, _world._robot))
+			;//cout << "    --->    Translated to " << _goal << endl;
+
+		/* Apply changes to original goal */
+		goal.pose.position.x = _goal.x;
+		goal.pose.position.y = _goal.y;
+
+		return true;
 	}
 }

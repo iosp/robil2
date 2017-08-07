@@ -794,6 +794,32 @@ void on_speed(const geometry_msgs::Twist::ConstPtr& msg){
 	if(not moving){
 		//DBG_INFO( "Navigation: ROBOTE IS STOPPED" );
 	}
+
+	struct SurrealSpeed
+	{
+		double	_x, _z;
+		double	_eps;
+		SurrealSpeed(double x, double z, double eps = 0.01):_x(x),_z(z),_eps(eps){}
+		operator bool() const
+		{
+			if(_x != 0 && fabs(_x) < _eps)
+				return true;
+
+			if(_z != 0 && fabs(_z) < _eps)
+				return true;
+
+			return false;
+		}
+		string str() const
+		{
+			stringstream ss;
+			ss << "X_linear = " << _x << ", Z_angular = " << _z;
+			return ss.str();
+		}
+	};
+
+	SurrealSpeed s(msg->linear.x, msg->angular.z);
+	if(s) F_ERROR("PP - on_speed") << "Surrealistic speed alert: " << s.str() << endl;
 }
 
 /**
@@ -1311,7 +1337,7 @@ std::string MoveBase::init_path()
 void MoveBase::calculate_goal()
 {
 	f_counter++;
-	int goal_index;
+	int goal_index = 0;
 	bool is_path_finished = false;
 	geometry_msgs::PoseStamped goal;
 
@@ -1334,7 +1360,7 @@ void MoveBase::calculate_goal()
 		DBG_WARN("Navigation: Global occupancy cost map is not defined");
 
 	/* Get goal */
-	bool gc_res = goal_calculator->get_goal(goal, goal_index);
+	bool gc_res = goal_calculator->get(goal, goal_index);
 
 	if(!gc_res)
 		is_path_finished = true;
@@ -1342,6 +1368,7 @@ void MoveBase::calculate_goal()
 	if (is_path_finished)
 	{
 		delete goal_calculator;
+		goal_calculator = 0;
 		DBG_INFO("Navigation: path is finished. send event and clear current path.");
 		stop_navigation(true);
 		return;

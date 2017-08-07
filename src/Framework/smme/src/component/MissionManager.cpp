@@ -112,6 +112,7 @@ SYNCHRONIZED
 
 void MissionManager::start_mission(const MissionID& mid) {
 SYNCHRONIZED
+	ROS_INFO_STREAM("in start_mission with mid = " << mid << " ");
 	if (contains(missions_states, mid)) {
 		stop_task(mid);
 		missions_states.at(mid).tidx = 0;

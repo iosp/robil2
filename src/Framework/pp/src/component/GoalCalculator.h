@@ -22,6 +22,49 @@
 
 using namespace std;
 
+#define F_ERROR(f) FStreamer(f, sERROR)
+#define F_WARN(f) FStreamer(f, sWARN)
+#define F_INFO(f) FStreamer(f, sINFO)
+#define F_DEBUG(f) FStreamer(f,sDEBUG)
+
+enum Severity {sDEBUG, sINFO, sWARN, sERROR};
+class FStreamer : public ostream
+{
+	static bool	active;
+	string		_name;
+	ostream *	_out;
+
+	void prefix(Severity s) const
+	{
+		static const string BOLD = "\033[1;";
+		static const string LIGHT = "\033[0;";
+		string color;
+
+		switch(s)
+		{
+		case sDEBUG:
+			color = "32m";
+			break;
+		case sINFO:
+			color = "36m";
+			break;
+		case sWARN:
+			color = "33m";
+			break;
+		case sERROR:
+			color = "31m";
+		}
+
+		if(active)
+			*_out << BOLD << color << "[ " << _name << " ]" << LIGHT << color << "\t";
+	}
+
+public:
+	FStreamer(const string & name, Severity s, ostream * out = &cout):_name(name),_out(out){if(active) prefix(s);}
+	~FStreamer(){*_out << "\033[0m";}
+	template <class T> ostream& operator<<(const T & t){return active ? (*_out << t) : *_out;}
+};
+
 namespace RobilGC
 {
 	typedef vector<Point_2d> Path;
@@ -91,13 +134,14 @@ namespace RobilGC
 	bool get_goal(INPUT    const Map &map, const Path &path, const Point_2d &robot,
 					  OUTPUT Point_2d &goal, Index &waypoint);
 
+	bool translate_goal(const Path & path, Point_2d & goal, const Index wpi, const Point_2d & robot);
+
 	class GoalCalculator
 	{
 		struct WorldContext
 		{
 			nav_msgs::OccupancyGrid	_map;
 			Point_2d				_robot;
-			nav_msgs::Path			_path;
 		};
 
 		WorldContext			_world;
@@ -114,7 +158,7 @@ namespace RobilGC
 		bool updateMap(nav_msgs::OccupancyGrid & new_map, geometry_msgs::PoseWithCovarianceStamped & new_pose);
 		void updatePath(nav_msgs::Path & gotten_path);
 
-		bool get_goal(geometry_msgs::PoseStamped & goal, Index & wpi);
+		bool get(OUTPUT geometry_msgs::PoseStamped & goal, Index & wpi);
 	};
 }
 
