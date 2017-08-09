@@ -128,7 +128,7 @@ void MissionManager::stop_mission(const MissionID& mid) {
 SYNCHRONIZED
 	if (!contains(missions_states, mid))
 		throw MissionIDFault();
-
+	ROS_INFO_STREAM("Deleting mid = " << mid);
 	stop_task(mid);
 	missions_states.erase(mid);
 }

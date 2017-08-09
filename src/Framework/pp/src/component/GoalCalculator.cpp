@@ -344,6 +344,7 @@ namespace RobilGC
 			return true;
 		}
 
+		// TODO Once IBEO topic is solved, check if translation is needed for obstacle cases as well.
 		return false;
 	}
 
@@ -443,6 +444,7 @@ namespace RobilGC
 		if(_wpi >= _path.size() - 1)
 		{
 			F_INFO("GoalCalculator::get") << "End of path!" << endl;
+			_wpi = 0;
 			return false;
 		}
 

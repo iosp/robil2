@@ -881,6 +881,10 @@ MoveBase::MoveBase(ComponentMain* comp)
 
 	sub_log = node.subscribe("/rosout", 10, &MoveBase::on_log_message, this);
 
+	// GOAL CALCULATOR
+	ros::NodeHandle nh("~");
+	goal_calculator = new RobilGC::GoalCalculator(nh.param<int>("gc_files", 0));
+
 //	//FOR TEST
 	sub_location = node.subscribe("/test/location", 10, &MoveBase::on_sub_loc, this);
 	sub_location_cov = node.subscribe("/test/location_cov", 10, &MoveBase::on_sub_loc_cov, this);
@@ -982,7 +986,7 @@ void MoveBase::on_sub_commands(const std_msgs::String::ConstPtr& msg){
 //=======================================
 
 MoveBase::~MoveBase() {
-
+	delete goal_calculator;
 }
 
 bool MoveBase::all_data_defined()const{
@@ -1341,14 +1345,6 @@ void MoveBase::calculate_goal()
 	bool is_path_finished = false;
 	geometry_msgs::PoseStamped goal;
 
-	static ros::NodeHandle nh("~");
-//	static int log_files = 0;
-//	nh.getParam("gc_files", log_files);
-	static int log_files = nh.param<int>("gc_files", 0);
-
-	if(not goal_calculator)
-		goal_calculator = new RobilGC::GoalCalculator(log_files);
-
 	/* Obtain global path */
 	string path_id = init_path();
 
@@ -1367,8 +1363,6 @@ void MoveBase::calculate_goal()
 
 	if (is_path_finished)
 	{
-		delete goal_calculator;
-		goal_calculator = 0;
 		DBG_INFO("Navigation: path is finished. send event and clear current path.");
 		stop_navigation(true);
 		return;
