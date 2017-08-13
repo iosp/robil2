@@ -1108,7 +1108,7 @@ SYNCH
 	robil_msgs::Path goal_path = input_goal_path;
 
 	DBG_INFO("Navigation: Global path gotten. Number of way points is "<<goal_path.waypoints.poses.size()<<" ");
-
+	F_ERROR("MoveBase::on_path") << "Path gotten." << endl;
 	if(goal_path.waypoints.poses.size()==0) return;
 
 	robil_msgs::Path goal_path_tmp = goal_path;
