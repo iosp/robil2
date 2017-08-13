@@ -25,3 +25,9 @@ core
 *.cbp
 *.autosave
 CATKIN_IGNORE
+smart_rdk
+driver_common
+Goal Calculator/*
+scripts/*
+logs/*
+/.metadata/

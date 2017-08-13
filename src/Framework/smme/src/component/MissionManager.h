@@ -12,6 +12,7 @@
 #include <deque>
 #include <vector>
 #include <sstream>
+#include <iostream>
 
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>

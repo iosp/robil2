@@ -170,14 +170,17 @@ TaskResult state_MissionUnloaded(string id, const CallContext& context, EventQue
 TaskResult state_MissionPending(string id, const CallContext& context, EventQueue& events){
 	PARAMS
 	MissionManager::MissionID cmid = MM->get_current_mission().mid;
+	ROS_INFO_STREAM("state_MissionPending:  " << "Calling change_mission with mid = " << mid << endl);
 	MM->change_mission(mid);
 	MM->mission_state("pending");
+	ROS_INFO_STREAM("state_MissionPending:  " << "Calling change_mission with cmid = " << cmid << endl);
 	MM->change_mission(cmid);
 	return TaskResult::SUCCESS();
 }
 
 TaskResult state_MissionSpooling(string id, const CallContext& context, EventQueue& events){
 	PARAMS
+	ROS_INFO_STREAM("state_MissionSpooling: " << "Calling change_mission with mid = " << mid << endl);
 	MM->change_mission(mid);
 	MM->mission_state("spooling");
 	while(events.isTerminated()==false and ros::ok()){
