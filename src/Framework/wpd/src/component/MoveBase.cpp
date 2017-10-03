@@ -116,7 +116,7 @@ void MoveBase::on_speed(const geometry_msgs::Twist& msg){
 	
 	double angle_scale=5.0;
 	ros::param::param("/wpd/angle_scale",angle_scale,5.0);
-	tw.twist.angular.z*=angle_scale;
+	// tw.twist.angular.z*=angle_scale;
 	
 	double lin_scale=1.0;
 	ros::param::param("/wpd/lin_scale",lin_scale,1.0);

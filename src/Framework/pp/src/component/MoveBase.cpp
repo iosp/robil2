@@ -28,7 +28,7 @@ long f_counter=0;
 
 #define TH_NEARBY 2.5 //m
 //define duration of "finished" message for path, in order to consider it as truly finished.
-#define SECONDS_FOR_FINISHING_AFTER_PATH_FINISHED 60
+#define SECONDS_FOR_FINISHING_AFTER_PATH_FINISHED 5//60
 
 #include <opencv2/opencv.hpp>
 
@@ -37,6 +37,7 @@ long f_counter=0;
 #define REMOVE_Z(vA) vA.setZ(0)
 
 #include <fstream>
+#include <time.h>
 ofstream dbg_cout("/tmp/pp_log");
 
 #define DBG_INFO_ONCE( X ) ROS_INFO_STREAM_ONCE(X); dbg_cout <<"[I] "<< X << std::endl;
@@ -47,6 +48,73 @@ ofstream dbg_cout("/tmp/pp_log");
 
 
 namespace{
+
+	//=========================== DEBUG FREQUENCY TIMER ====================================
+	class FTimer
+	{
+		clock_t		_this_start;
+		clock_t		_this_end;
+		clock_t		_prev_start;
+		clock_t		_prev_end;
+		string		_func;
+		double		_avg_rate;
+		bool		_active;
+		int			_freq;
+
+		static double doublize(clock_t clock)
+		{
+			return ((double)clock) / CLOCKS_PER_SEC;
+		}
+
+		void print(clock_t Ta, clock_t Tb, clock_t Tc)
+		{
+			cout << "\033[1;33m" << endl;
+
+			cout << " ⌛ " << "FTimer for \"" << _func << "\":\033[0;33m" << endl;
+			cout << "   " << "Ta = " << doublize(Ta) << "    Tc = " << doublize(Tc) << "    (Rate = " <<
+					100.0 * doublize(Ta) / doublize(Tc) << "%)" << endl;
+			//cout << "   " << "Rate = " << doublize(Ta) / doublize(Tc) << "  (Avg. " << _avg_rate << ")" << endl;
+
+			cout << "\033[0m" << endl;
+		}
+
+		void update_timer()
+		{
+			clock_t Ta = _this_end - _this_start;
+			clock_t Tb = _this_start - _prev_end;
+			clock_t Tc = _this_end - _prev_end;
+
+			static int n = 1;
+			double xn1 = (doublize(Ta) / doublize(Tc)) - _avg_rate;
+
+			if(_active)
+			{
+				n++;
+				_avg_rate += (xn1 / n);
+				if(n % _freq == 0)
+					print(Ta, Tb, Tc);
+			}
+
+			_prev_start = _this_start;
+			_prev_end = _this_end;
+			if(not _active)
+				_active = true;
+		}
+
+	public:
+		FTimer(const string & funcId, int frequency = 1):_func(funcId),_active(false),_avg_rate(0.0), _freq(frequency){}
+
+		void start()
+		{
+			_this_start = clock();
+		}
+
+		void stop()
+		{
+			_this_end = clock();
+			update_timer();
+		}
+	};
 
 	long goal_counter =0;
 
@@ -717,13 +785,41 @@ namespace{
 void on_GlobalCostMap( const nav_msgs::OccupancyGrid::ConstPtr& cost_map){
 	boost::mutex::scoped_lock l(global_map_mutex);
 	global_cost_map = *cost_map;
-	//DBG_INFO("Navigation: Global occupancy cost grid gotten");
+
+	global_cost_map.data[rand() % 255] = rand() % 255;
+	DBG_INFO("Navigation: Global occupancy cost grid gotten");
 }
 void on_speed(const geometry_msgs::Twist::ConstPtr& msg){
 	bool moving = msg->linear.x + msg->linear.y + msg->angular.z;
 	if(not moving){
 		//DBG_INFO( "Navigation: ROBOTE IS STOPPED" );
 	}
+
+	struct SurrealSpeed
+	{
+		double	_x, _z;
+		double	_eps;
+		SurrealSpeed(double x, double z, double eps = 0.01):_x(x),_z(z),_eps(eps){}
+		operator bool() const
+		{
+			if(_x != 0 && fabs(_x) < _eps)
+				return true;
+
+			if(_z != 0 && fabs(_z) < _eps)
+				return true;
+
+			return false;
+		}
+		string str() const
+		{
+			stringstream ss;
+			ss << "X_linear = " << _x << ", Z_angular = " << _z;
+			return ss.str();
+		}
+	};
+
+	SurrealSpeed s(msg->linear.x, msg->angular.z);
+	if(s) F_ERROR("PP - on_speed") << "Surrealistic speed alert: " << s.str() << endl;
 }
 
 /**
@@ -761,16 +857,26 @@ void showMoveBaseInstallationInstructions() {
 
 
 MoveBase::MoveBase(ComponentMain* comp)
-	:is_active(true), gp_defined(false),gnp_defined(false), gl_defined(false), comp(comp), is_canceled(true), is_path_calculated(false)
-	//, last_move_base_vel_ok(false), last_real_vel_ok(false), pub_frequancy(30), resend_thread(0)
+	:is_active(true),
+	 gp_defined(false),
+	 gnp_defined(false),
+	 gl_defined(false),
+	 comp(comp),
+	 is_canceled(true),
+	 is_path_calculated(false),
+	 goal_calculator(0)
+	 //pub_frequancy(30),
+	 //last_move_base_vel_ok(false),
+	 //last_real_vel_ok(false)
+	 //resend_thread(0)
 {
 	ros::NodeHandle node;
 
 	goalPublisher = node.advertise<move_base_msgs::MoveBaseActionGoal>("/move_base/goal", 5, false);
 	originalGoalPublisher = node.advertise<geometry_msgs::PoseStamped>("/move_base/original_goal", 5, false);
 	goalCancelPublisher = node.advertise<actionlib_msgs::GoalID>("/move_base/cancel", 5, false);
-	pathSubscriber = node.subscribe("/move_base/path", 10, &MoveBase::on_nav_path, this);
-	globalCostmapSubscriber = node.subscribe("/move_base/global_costmap", 1, &on_GlobalCostMap);
+	pathSubscriber = node.subscribe("/move_base/NavfnROS/plan", 10, &MoveBase::on_nav_path, this);
+	globalCostmapSubscriber = node.subscribe("costmap", 1, &on_GlobalCostMap);
 	speedSubscriber = node.subscribe("/cmd_vel", 1, &on_speed);
 	globalPathPublisher = node.advertise<nav_msgs::Path>("/pp/global_path",1);
 	selectedPathPublisher = node.advertise<nav_msgs::Path>("/pp/selected_path",1);
@@ -785,12 +891,23 @@ MoveBase::MoveBase(ComponentMain* comp)
 
 	sub_log = node.subscribe("/rosout", 10, &MoveBase::on_log_message, this);
 
+	// GOAL CALCULATOR
+	ros::NodeHandle nh("~");
+	//nh.setParam("gc_files",10);
+	int gc_files=0;
+	nh.getParam("gc_files", gc_files);
+	double occupied_level=50;
+	nh.getParam("occupied_level", occupied_level);
+	
+	goal_calculator = new RobilGC::GoalCalculator(gc_files, occupied_level);
+
 //	//FOR TEST
 	sub_location = node.subscribe("/test/location", 10, &MoveBase::on_sub_loc, this);
 	sub_location_cov = node.subscribe("/test/location_cov", 10, &MoveBase::on_sub_loc_cov, this);
 	sub_map = node.subscribe("/test/map", 10, &MoveBase::on_sub_map, this);
 	sub_path = node.subscribe("/test/path", 10, &MoveBase::on_sub_path, this);
 	sub_commands = node.subscribe("/test/command", 10, &MoveBase::on_sub_commands, this);
+
 }
 
 void MoveBase::on_move_base_status(const actionlib_msgs::GoalStatusArray::ConstPtr& msg){
@@ -885,7 +1002,7 @@ void MoveBase::on_sub_commands(const std_msgs::String::ConstPtr& msg){
 //=======================================
 
 MoveBase::~MoveBase() {
-
+	delete goal_calculator;
 }
 
 bool MoveBase::all_data_defined()const{
@@ -897,9 +1014,9 @@ void MoveBase::notify_path_is_finished(bool success)const{
 	else comp->rise_taskAborted();
 }
 
-
 void MoveBase::on_position_update(const geometry_msgs::PoseWithCovarianceStamped& _location){
 SYNCH
+
 	int failts_counter=0;
 	geometry_msgs::PoseWithCovarianceStamped location = _location;
 
@@ -959,13 +1076,55 @@ int byte_compare(const T& a, const T& b)
 	return memcmp( &a, &b, sizeof(b));
 }
 
+void MoveBase::extend_path()
+{
+	geometry_msgs::Pose lp;
+	size_t waypoints = gotten_path.waypoints.poses.size();
+
+	/* If path is empty, do nothing */
+	if(waypoints < 1)
+		return;
+
+	/* If path consists of one waypoint,
+	 * extend it by adding another waypoint with orientation of (waypoint - robot_pose)
+	 * and distance of 0.5m from the actual waypoint.
+	 *
+	 * Else (two or more waypoints),
+	 * extend the path by adding a waypoint with orientation of (waypoint N - waypoint N-1)
+	 * and distance of 0.5m from last waypoint.
+	 */
+
+	if(waypoints == 1)
+		lp = gotten_location.pose.pose;
+	else
+		lp = gotten_path.waypoints.poses[waypoints - 2].pose;
+
+	geometry_msgs::Pose last = gotten_path.waypoints.poses[waypoints - 1].pose;
+
+    geometry_msgs::Point p;
+    p.x = last.position.x-lp.position.x;
+    p.y = last.position.y-lp.position.y;
+    double len = hypot(p.x,p.y);
+    if(len>0.001){
+	p.x /= len;
+	p.y /= len;
+	p.x *= 0.5;
+	p.y *= 0.5;
+	p.x += last.position.x;
+	p.y += last.position.y;
+	geometry_msgs::PoseStamped npose = gotten_path.waypoints.poses[waypoints-1];
+	npose.pose.position = p;
+	gotten_path.waypoints.poses.push_back( npose );
+	DBG_INFO("Navigation: path extended by adding additional tail point")
+    }
+}
+
 void MoveBase::on_path(const robil_msgs::Path& input_goal_path){
 SYNCH
-
 	robil_msgs::Path goal_path = input_goal_path;
 
 	DBG_INFO("Navigation: Global path gotten. Number of way points is "<<goal_path.waypoints.poses.size()<<" ");
-
+	F_ERROR("MoveBase::on_path") << "Path gotten." << endl;
 	if(goal_path.waypoints.poses.size()==0) return;
 
 	robil_msgs::Path goal_path_tmp = goal_path;
@@ -985,26 +1144,27 @@ SYNCH
 	gotten_path = goal_path;
 	gp_defined=true;
 
-	if(gotten_path.waypoints.poses.size()>1){
-	    geometry_msgs::Pose last = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-1].pose;
-	    geometry_msgs::Pose llast = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-2].pose;
-	    geometry_msgs::Point p;
-	    p.x = last.position.x-llast.position.x;
-	    p.y = last.position.y-llast.position.y;
-	    double len = hypot(p.x,p.y);
-	    if(len>0.001){
-		p.x /= len;
-		p.y /= len;
-		p.x *= 0.5;
-		p.y *= 0.5;
-		p.x += last.position.x;
-		p.y += last.position.y;
-		geometry_msgs::PoseStamped npose = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-1];
-		npose.pose.position = p;
-		gotten_path.waypoints.poses.push_back( npose );
-		DBG_INFO("Navigation: path extended by adding additional tail point");
-	    }
-	}
+	extend_path();
+//	if(gotten_path.waypoints.poses.size()>=1){
+//	    geometry_msgs::Pose last = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-1].pose;
+//	    geometry_msgs::Pose llast = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-2].pose;
+//	    geometry_msgs::Point p;
+//	    p.x = last.position.x-llast.position.x;
+//	    p.y = last.position.y-llast.position.y;
+//	    double len = hypot(p.x,p.y);
+//	    if(len>0.001){
+//		p.x /= len;
+//		p.y /= len;
+//		p.x *= 0.5;
+//		p.y *= 0.5;
+//		p.x += last.position.x;
+//		p.y += last.position.y;
+//		geometry_msgs::PoseStamped npose = gotten_path.waypoints.poses[gotten_path.waypoints.poses.size()-1];
+//		npose.pose.position = p;
+//		gotten_path.waypoints.poses.push_back( npose );
+//		DBG_INFO("Navigation: path extended by adding additional tail point");
+//	    }
+//	}
 	BOOST_FOREACH( const geometry_msgs::PoseStamped& p , gotten_path.waypoints.poses )
 	{
 	    DBG_INFO("Navigation: ...... "<<STR(p.pose.position));
@@ -1042,26 +1202,27 @@ SYNCH
 	gotten_nav_path = goal_path;
 	gnp_defined=true;
 
-	if(gotten_nav_path.poses.size()>1){
-	    geometry_msgs::Pose last = gotten_nav_path.poses[gotten_nav_path.poses.size()-1].pose;
-	    geometry_msgs::Pose llast = gotten_nav_path.poses[gotten_nav_path.poses.size()-2].pose;
-	    geometry_msgs::Point p;
-	    p.x = last.position.x-llast.position.x;
-	    p.y = last.position.y-llast.position.y;
-	    double len = hypot(p.x,p.y);
-	    if(len>0.001){
-		p.x /= len;
-		p.y /= len;
-		p.x *= 0.5;
-		p.y *= 0.5;
-		p.x += last.position.x;
-		p.y += last.position.y;
-		geometry_msgs::PoseStamped npose = gotten_nav_path.poses[gotten_nav_path.poses.size()-1];
-		npose.pose.position = p;
-		gotten_nav_path.poses.push_back( npose );
-		DBG_INFO("Navigation: path extended by adding additional tail point");
-	    }
-	}
+	extend_path();
+//	if(gotten_nav_path.poses.size()>=1){
+//	    geometry_msgs::Pose last = gotten_nav_path.poses[gotten_nav_path.poses.size()-1].pose;
+//	    geometry_msgs::Pose llast = gotten_nav_path.poses[gotten_nav_path.poses.size()-2].pose;
+//	    geometry_msgs::Point p;
+//	    p.x = last.position.x-llast.position.x;
+//	    p.y = last.position.y-llast.position.y;
+//	    double len = hypot(p.x,p.y);
+//	    if(len>0.001){
+//		p.x /= len;
+//		p.y /= len;
+//		p.x *= 0.5;
+//		p.y *= 0.5;
+//		p.x += last.position.x;
+//		p.y += last.position.y;
+//		geometry_msgs::PoseStamped npose = gotten_nav_path.poses[gotten_nav_path.poses.size()-1];
+//		npose.pose.position = p;
+//		gotten_nav_path.poses.push_back( npose );
+//		DBG_INFO("Navigation: path extended by adding additional tail point");
+//	    }
+//	}
 	BOOST_FOREACH( const geometry_msgs::PoseStamped& p , gotten_nav_path.poses )
 	{
 	    DBG_INFO("Navigation: ...... "<<p.pose.position.x<<","<<p.pose.position.y);
@@ -1130,21 +1291,26 @@ void MoveBase::deactivate(bool clear_last_goals){
 }
 
 void path_publishing(ComponentMain* comp, boost::recursive_mutex* mtx, bool* is_canceled, bool* is_path_calculated){
-	double fr = 10; double time =1.0/fr*1000.0;
-	while(not boost::this_thread::interruption_requested() and ros::ok()){
-		boost::posix_time::ptime t = boost::get_system_time();
+	struct Sleeper
+	{
+		ros::Rate& r;
+		Sleeper(ros::Rate& r):r(r){}
+		~Sleeper(){r.sleep();}
+	};
+	ros::Rate r(1);
+	while(not boost::this_thread::interruption_requested() and ros::ok())
+	{
+		Sleeper s(r);
+		robil_msgs::Path lpath;
+		lpath.is_heading_defined=false;
+		lpath.is_ip_defined=false;
 		{
 			boost::recursive_mutex::scoped_lock locker(*mtx);
 			if(*is_canceled or not *is_path_calculated) continue;
 
-			robil_msgs::Path lpath;
-			lpath.is_heading_defined=false;
-			lpath.is_ip_defined=false;
 			lpath.waypoints = curr_nav_path;
-
-			comp->publishLocalPath(lpath);
 		}
-		boost::this_thread::sleep(t+boost::posix_time::millisec(time));
+		comp->publishLocalPath(lpath);
 	}
 }
 
@@ -1164,236 +1330,93 @@ void MoveBase::on_nav_path(const nav_msgs::Path& nav_path){
 //	return s.str();
 //}
 
-void MoveBase::calculate_goal()
+std::string MoveBase::init_path()
 {
-	/* Handle log directory for GoalCalculator inputs */
-#define GC_LOG_DIR string("/tmp/gc_logs")
-#define GC_LOG_PREFIX string("gc")
-	static bool new_task = true;
-	static int log_files = 0;
-	if(new_task)
-	{
-		new_task = false;
-		ros::NodeHandle nh("~");
-		log_files = nh.param<int>("gc_files", 0);
-		string dir_sys = "rm -rf " + GC_LOG_DIR + " || true";
-		system(dir_sys.c_str());
-		system(("mkdir " + GC_LOG_DIR).c_str());
-	}
-
-	//nh.getParam("gc_files", log_files);
-	static int current_log_file = 0;
-	stringstream curr_log_name;
-	if(log_files)
-	{
-		cout << "Current: " << current_log_file % log_files << endl;
-		curr_log_name << GC_LOG_DIR << "/" << GC_LOG_PREFIX << dec << (current_log_file % log_files);
-	}
-
-	f_counter++;
-
 	nav_msgs::Path gotten_global_path;
-	std::string path_id = "";
-	if(gp_defined){
+	std::string path_id = " ";
+	if(gp_defined)
+	{
 		gotten_global_path = gotten_path.waypoints;
 		path_id = gotten_path.id;
-	}else{
-		gotten_global_path = gotten_nav_path;
 	}
+	else
+		gotten_global_path = gotten_nav_path;
 
 	size_t waypoints = gotten_global_path.poses.size();
-
 	gotten_global_path.header.frame_id = "/WORLD";
 	gotten_global_path.header.stamp = ros::Time::now() ;
 	globalPathPublisher.publish(gotten_global_path);
 	selectedPathPublisher.publish(gotten_global_path);
 	publish_global_gotten_path_visualization(gotten_global_path);
 
-	int goal_index;
+	goal_calculator->updatePath(gotten_global_path);
+
+	return path_id;
+}
+
+void MoveBase::calculate_goal()
+{
+	f_counter++;
+	int goal_index = 0;
 	bool is_path_finished = false;
-	geometry_msgs::PoseStamped goal;// = search_next_waypoint(gotten_global_path, get_unvisited_index(path_id), gotten_location, is_path_finished, goal_index);
-	goal_calculator::Point_2d gg_goal;
-	goal_calculator::Point_2d robot(gotten_location.pose.pose.position.x,
-					gotten_location.pose.pose.position.y);
+	geometry_msgs::PoseStamped goal;
 
+	/* Obtain global path */
+	string path_id = init_path();
 
-	std::vector<goal_calculator::Point_2d> path;
-	for(size_t i = 0; i < gotten_global_path.poses.size(); i++)
-	{
-		path.push_back(goal_calculator::Point_2d(gotten_global_path.poses[i].pose.position.x,
-		gotten_global_path.poses[i].pose.position.y));
-	}
-
-	/* Create map */
+	/* Obtain global costmap */
 	global_map_mutex.lock();
-		nav_msgs::OccupancyGrid gmap = global_cost_map;
+	nav_msgs::OccupancyGrid map = global_cost_map;
 	global_map_mutex.unlock();
-	if(gmap.info.width * gmap.info.height == 0)
-	{
+	if(not goal_calculator->updateMap(map, gotten_location))
 		DBG_WARN("Navigation: Global occupancy cost map is not defined");
-	}
-	else
-	{
-		goal_calculator::Point_2d origin = goal_calculator::Point_2d(gmap.info.origin.position.x,gmap.info.origin.position.y);
-		tf::Quaternion q;
-		q.setW(gmap.info.origin.orientation.w);
-		q.setX(gmap.info.origin.orientation.x);
-		q.setY(gmap.info.origin.orientation.y);
-		q.setZ(gmap.info.origin.orientation.z);
-		double resolution = gmap.info.resolution, heading = tf::getYaw(q);
-		goal_calculator::Map gcmap(gmap.info.width, gmap.info.height, origin, heading, resolution);
 
-		for(int x=0;x<gcmap.w;x++)
-		{
-			for(int y=0;y<gcmap.h;y++)
-			{
-				size_t index = x + (gcmap.w * y);
-				double coor_x = origin.x + (x * resolution);
-				double coor_y = origin.y + (y * resolution);
+	/* Get goal */
+	bool gc_res = goal_calculator->get(goal, goal_index);
 
-				// any value more than 50 is  for occupied cell
-				if(gmap.data[index] < 50)
-					gcmap.set_free_value(gcmap(coor_x,coor_y));
-				else
-					gcmap.set_occupied_value(gcmap(coor_x,coor_y));
-			}
-		}
-
-		/* Stream input data to log file */
-		if(log_files)
-		{
-			ofstream curr_log;
-			curr_log.open(curr_log_name.str().c_str(), ofstream::out);
-			curr_log << ros::Time::now() << endl;
-			curr_log << robot << endl;
-			curr_log << waypoints << endl;
-			for(size_t i = 0; i < gotten_global_path.poses.size(); i++)
-				curr_log << path[i] << endl;
-			curr_log << gcmap.w << " " << gcmap.h << " " << origin << " " << heading << " " << resolution << endl;
-			for(int i = 0; i < gcmap.cells.size(); i++)
-				curr_log << (int)gcmap.cells[i] << endl;
-			curr_log.close();
-			current_log_file++;
-		}
-
-		gcmap.select_accessible_points(robot);
-
-		/* Prepare get_goal refs */
-		static goal_calculator::Index wpi = 0;
-		goal_calculator::GoalCalculator gc;
-
-		cout<<endl;
-		gg_goal = path[wpi];
-
-		std::cout << "Original start: " << robot << ", goal: " << gg_goal << std::endl;
-
-		/* Get goal */
-		bool res = gc.get_goal(gcmap, path, robot, gg_goal, wpi);
-		cout << "Goal not translated: " << gg_goal << "   wpi=" << wpi <<endl;
-		//std::cout << "Final start: " << robot << ", goal: " << path[wpi] << std::endl;
-
-		/* Translate waypoints for Navex */
-		if(wpi != path.size() -1)
-		{
-			goal_calculator::Point_2d diff_vector = path[wpi] - robot;
-			goal_calculator::Point_2d diff_norm = diff_vector.norm() * 1.2;
-			gg_goal += diff_norm;
-			cout << "Goal translated to: " << gg_goal << endl;
-		}
-		else
-			is_path_finished = true;
-
-		/* Publish results */
-		goal.pose.position.x = gg_goal.x;
-		goal.pose.position.y = gg_goal.y;
-		goal_index = wpi;
-
-		if(!res)
-		{
-			is_path_finished = true;
-			ROS_INFO_STREAM("*** RES = FALSE ***" << endl);
-		}
-
-
-/*
-	//DBG_INFO_ONCE("Navigation: calculate next waypoint");
-*/
+	is_path_finished = !gc_res;
 
 	if (is_path_finished)
 	{
-		DBG_INFO("Navigation: path is finished. send event and clear current path.");
-		stop_navigation(true);
-		return;
+		
+		//DBG_INFO("Navigation: path is finished. send event and clear current path.");
+		//stop_navigation(true);
+		//return;
 	}
-/*
-	if( gmap.info.width and gmap.info.height ){
-		geometry_msgs::PoseStamped original_goal = goal;
-		geometry_msgs::PoseStamped first_original_goal = goal;
-		static bool prev_send_original(true);
-		bool send_original = false;
-		//DBG_INFO_ONCE("Navigation: check goal on reachability ...");
-		while(
-				not is_path_finished
-				and
-				make_goal_reachable(goal, goal_index, gotten_global_path, gotten_location, gmap, is_path_finished)
-		){
-			send_original = true;
-			//DBG_INFO_ONCE("Navigation: ... original goal("<<original_goal.pose.position.x<<","<<original_goal.pose.position.y<<") is not reachable. it's changed to near one("<<goal.pose.position.x<<","<<goal.pose.position.y<<").");
-			gotten_global_path.poses[goal_index] = goal;
-			selectedPathPublisher.publish(gotten_global_path);
-
-			goal = search_next_waypoint(gotten_global_path, get_unvisited_index(path_id), gotten_location, is_path_finished, goal_index);
-			if(goal.pose.position.x==original_goal.pose.position.x and goal.pose.position.y==original_goal.pose.position.y) break;
-			original_goal = goal;
-		}
-		if(send_original){
-			first_original_goal.header = gotten_global_path.header;
-			originalGoalPublisher.publish(first_original_goal);
-			if(send_original!=prev_send_original){
-				DBG_INFO("Navigation: Goal changed from original "<<str_position(first_original_goal.pose.position,first_original_goal)<<" to reachable "<<str_position(original_goal.pose.position,original_goal));
-			}
-		}else{
-			if(send_original!=prev_send_original){
-				DBG_INFO("Navigation: Original goal " << str_position(original_goal.pose.position,original_goal)<<" is used");
-			}
-		}
-		prev_send_original=send_original;
-		//DBG_INFO("Navigation: ... done");
-	}else{
-		DBG_WARN("Navigation: Global occupancy cost map is not defined");
-	}
-
-
-	if(is_path_finished){
-			DBG_INFO("Navigation: path is finished (after tries to make it reachable). send event and clear current path.");
-			stop_navigation(true);
-			return;
-	}*/
 
 	static boost::posix_time::ptime time_since_path_not_finished_last_time; //hold timestamp for last path that was not finished
-
 	if (is_path_finished)
 	{
-		goal = gotten_global_path.poses.back();
+
+		//DBG_INFO("Navigation: path is finished. send event and clear current path.");
+		//stop_navigation(true);
+		//return;
+
 		//consider duration of "finished" message for path, in order to consider it as truly finished.
 		//if not enough time has passed since considering this path as finished, do nothing.
-		if (boost::get_system_time() - time_since_path_not_finished_last_time >= boost::posix_time::seconds(SECONDS_FOR_FINISHING_AFTER_PATH_FINISHED))
+		boost::posix_time::time_duration timeout = boost::posix_time::seconds(SECONDS_FOR_FINISHING_AFTER_PATH_FINISHED);
+		boost::posix_time::time_duration since_path_not_finished = boost::get_system_time() - time_since_path_not_finished_last_time;
+		if (since_path_not_finished >= timeout)
 		{
 			DBG_INFO("Navigation: path is finished (after tries to make it reachable). send event and clear current path.");
 			stop_navigation(true);
 			return;
 		}
+        else
+        {
+            DBG_INFO("Navigation: path is finished. but try waiting for a while.("<<(timeout.total_seconds() - since_path_not_finished.total_seconds())<<")");
+        }
 	}
 	else
 	{
 		time_since_path_not_finished_last_time = boost::get_system_time();
+
+		diagnostic_publish_new_goal(path_id, goal, goal_index, gotten_location);
+		update_unvisited_index(path_id, goal_index);
+		goal.header = gp_defined ? gotten_path.waypoints.header : gotten_nav_path.header;
+		on_goal(goal);
 	}
 
-	diagnostic_publish_new_goal(path_id, goal, goal_index, gotten_location);
-	update_unvisited_index(path_id, goal_index);
-	goal.header = gotten_global_path.header;
-	on_goal(goal);
-}
 }
 
 namespace{
@@ -1416,6 +1439,9 @@ namespace{
 
 }
 void MoveBase::diagnostic_publish_new_goal(const string& path_id, const geometry_msgs::PoseStamped& goal, size_t goal_index, const geometry_msgs::PoseWithCovarianceStamped& gotten_location){
+
+	double distance_to_goal = hypot( goal.pose.position.x - gotten_location.pose.pose.position.x,  goal.pose.position.y - gotten_location.pose.pose.position.y );
+
 	using namespace diagnostic_msgs;
 	DiagnosticArray array;
 	DiagnosticStatus status;
@@ -1428,12 +1454,27 @@ void MoveBase::diagnostic_publish_new_goal(const string& path_id, const geometry
 	status.values.push_back(diag_value("goal",goal));
 	status.values.push_back(diag_value("index",goal_index));
 	status.values.push_back(diag_value("pose",gotten_location));
+	status.values.push_back(diag_value("distance_to_goal",distance_to_goal));
 	array.status.push_back(status);
 	array.header.stamp = ros::Time::now();
 	if(last_diagnostic_message_id!=status.message){
 		diagnosticPublisher.publish(array);
 		last_diagnostic_message_id = status.message;
 	}
+
+	static ros::NodeHandle node("~");
+	node.setParam("diagnostic/message", sid.str());
+#	define SET_PARAM(TITLE, NAME) {stringstream b, n; b<<NAME; n<<"diagnostic/"<<TITLE; node.setParam(n.str(), b.str());}
+
+	SET_PARAM("task_id",path_id)
+	SET_PARAM("goal",goal)
+	SET_PARAM("index",goal_index)
+	SET_PARAM("pose",gotten_location)
+	SET_PARAM("distance_to_goal",distance_to_goal)
+
+#	undef SET_PARAM
+
+
 }
 
 void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
@@ -1506,6 +1547,7 @@ void MoveBase::on_goal(const geometry_msgs::PoseStamped& robil_goal){
 
 void MoveBase::on_map(const nav_msgs::OccupancyGrid& nav_map){
 SYNCH
+
 	nav_msgs::OccupancyGrid map = nav_map;
 	mapPublisher.publish(map);
 }
@@ -1584,7 +1626,6 @@ SYNCH
 	mapPublisher.publish(map);
 
 #endif
-
 }
 
 

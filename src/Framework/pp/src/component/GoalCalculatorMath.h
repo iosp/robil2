@@ -21,7 +21,7 @@
 
 using namespace std;
 
-namespace goal_calculator
+namespace RobilGC
 {
 
 	inline bool in_range(double a, double mi, double ma)
@@ -99,15 +99,56 @@ namespace goal_calculator
 
 	typedef int Index;
 
+	class Pose_2d
+	{
+	public:
+		Point_2d location;
+		double heading;
+		double resolution;
+		Pose_2d()
+		:
+			heading(0),
+			resolution(1.0)
+		{}
+		Pose_2d(Point_2d loc, double head=0, double res=1.0)
+		:
+			location(loc),
+			heading(head),
+			resolution(res)
+		{
+
+		}
+
+		Point_2d transform( const Point_2d& c ) const
+		{
+			Point_2d w = c * resolution;
+			w.rotate(heading);
+			w += location;
+			return w;
+		}
+
+		Point_2d inverse_transform( const Point_2d& w ) const
+		{
+			Point_2d c = w - location;
+			c.rotate(-heading);
+			c /= resolution;
+			return c;
+		}
+
+	};
+
 	class Map
 	{
 	public:
 		typedef unsigned char cell_t;
 		vector<cell_t> cells;
 		size_t w, h;
-		Point_2d offset;
-		double heading;
-		double resolution;
+		//Point_2d offset;
+		//double heading;
+
+		Pose_2d origin;
+
+		Pose_2d world_pose;
 
 		static bool is_free_value(cell_t c)
 		{ return c & 0x01; }
@@ -125,23 +166,19 @@ namespace goal_calculator
 		static void set_inaccessible_value(cell_t &c)
 		{ c = (c & 0x0f) | 0x00; }
 
-		Map(size_t w, size_t h, Point_2d offset, double heading, double resolution)
-				:cells(w * h, 0), w(w), h(h), offset(offset), heading(heading), resolution(resolution)
+		Map(size_t w, size_t h, Point_2d offset, double heading, double resolution, Point_2d world_location, double world_heading)
+				:cells(w * h, 0), w(w), h(h), origin(offset, heading, resolution), world_pose(world_location, world_heading)
 		{}
 
 		Point_2d to_cell_coordinates(const Point_2d &world) const
 		{
-			Point_2d c = world - offset;
-			c.rotate(-heading);
-			c /= resolution;
-			return c;
+			Point_2d cell = origin.inverse_transform( world_pose.inverse_transform( world ) );
+			return cell;
 		}
 
-		Point_2d to_world_coordinates(const Point_2d &c) const
+		Point_2d to_world_coordinates(const Point_2d &cell) const
 		{
-			Point_2d world = c * resolution;
-			world.rotate(heading);
-			world += offset;
+			Point_2d world = world_pose.transform( origin.transform( cell ) );
 			return world;
 		}
 
@@ -184,13 +221,13 @@ namespace goal_calculator
 		cell_t &operator()(double x, double y)
 		{ return (*this)(Point_2d(x, y)); }
 		const cell_t &operator()(const Point_2d &p) const
-		{
+;/*		{
 			Point_2d c = to_cell_coordinates(p);
 			//std::cout<<"[is_Accesible]            cell index = "<< c << " : "<< (index(c.x, c.y)) << " cells.size() = "<<cells.size() <<endl;
 			assert(in_range_cell(c));
 			return cells[index(c.x, c.y)];
 		}
-
+*/
 		cell_t &operator()(const Point_2d &p)
 		{
 			Point_2d c = to_cell_coordinates(p);
@@ -199,7 +236,7 @@ namespace goal_calculator
 		}
 
 		bool is_accessible(const Point_2d &world_point) const
-		{
+;/*		{
 			//cout << "[is_Accesible] start    point=" << world_point<<endl;
 			if(not in_range(world_point)) {
 				//cout << "[is_Accesible]            point not in range ==> accessible" <<endl;
@@ -208,6 +245,22 @@ namespace goal_calculator
 			cell_t cell = (*this)(world_point);
 			//cout <<std::hex<< "[is_Accesible]            cell = " << (int)cell <<std::dec<<endl;
 			return is_accessible_value(cell);
+		}
+*/
+		void redraw_map(bool updated, const Point_2d & robot)
+		{
+			/* If map is unchanged and the robot is in an accessible cell, no need to remap */
+			//if((not updated) and is_accessible(robot))
+			cout << "[REDRAW]\tUpdated = " << updated << ", robot = " << robot << endl;
+			if(not updated)
+			{
+				cout << "Is accessible: " << is_accessible(robot);
+				if(is_accessible(robot))
+					return;
+			}
+
+			/* Else, redraw the map */
+			select_accessible_points(robot);
 		}
 
 		void select_accessible_points(const Point_2d &point)

@@ -33,6 +33,7 @@ add_library(pp_compMain
   src/component/ComponentMain.cpp
   src/component/ComponentStates.cpp
   src/component/MoveBase.cpp
+  src/component/GoalCalculator.cpp
 )
 add_executable(pp_node src/main.cpp)
 #target_link_libraries(pp_rosComm ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
