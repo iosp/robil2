@@ -26,7 +26,7 @@ typedef rosgraph_msgs::Log LogMessage;
 #define DIAGNOSTIC_TOPIC_NAME "/diagnostics"
 #include <diagnostic_msgs/DiagnosticArray.h>
 #include <diagnostic_msgs/DiagnosticStatus.h>
-
+#include "GoalCalculator.h"
 
 #include <std_msgs/String.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
@@ -99,6 +99,8 @@ protected:
 	boost::recursive_mutex mtx;
 	ComponentMain* comp;
 
+	RobilGC::GoalCalculator * goal_calculator;
+
 
 	void on_log_message(const LogMessage::ConstPtr& msg);
 	void on_log_message(int type, string message);
@@ -116,6 +118,9 @@ protected:
 	void diagnostic_publish_new_goal(const string& path_id, const geometry_msgs::PoseStamped& goal, size_t goal_index, const geometry_msgs::PoseWithCovarianceStamped& gotten_location);
 
 	void publish_global_gotten_path_visualization(nav_msgs::Path global_gotten_path);
+
+	std::string init_path();
+	void extend_path();
 
 //FOR TEST ONLY
 public:
