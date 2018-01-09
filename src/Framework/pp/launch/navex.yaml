@@ -1,0 +1,45 @@
+"params_version"            : 1.2
+"dampening": 
+    "alpha"                 :  0.75
+    "smooth_resolution"     :  0.5
+"local_costmap": 
+    "frame_id"              :  "ROBOT_CENTER"
+    "robot_radius"          :  1.0
+    "inflation_radius"      :  2.5
+    "width"                 :  50.0
+    "height"                :  50.0
+    "resolution"            :  0.5
+    "update_rate"           :  20.0
+    "data": 
+        "data_frame_id"     :  "WORLD"
+        "decay_time"        :  0.0
+"global_costmap": 
+    "frame_id"              :  "ROBOT_CENTER"
+    "robot_radius"          :  1
+    "inflation_radius"      :  2.5
+    "width"                 :  100.0
+    "height"                :  100.0
+    "resolution"            :  0.5
+    "update_rate"           :  20.0
+    "data": 
+        "data_frame_id"     :  "WORLD"
+        "decay_time"        :  0.0
+"navigation": 
+    "global_frame_id"       :  "WORLD"
+    "scale_angular"         :  1.0
+    "scale_linear"          :  1.0
+    "goal_tolerance"        :  2.0 
+"local_planner": 
+    "local_goal_distance"   :  3.0
+    "max_speed"             :  1.0
+    "min_speed"             : -0.4 
+    "speed_step"            :  0.25 
+    "min_angular_speed"     : -0.8
+    "max_angular_speed"     :  0.8
+    "angular_speed_step"    :  0.025
+    "inplace_angular_speed" :  0.8
+    "simulation_time"       :  5.0
+    "granularity"           :  0.5
+    "trajectory_score_color":  true
+"goal_matcher": 
+    "last_point"            :  true
