@@ -1,0 +1,25 @@
+
+	~`~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Title ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~
+
+	
+	1. Find a 3d model online (recommended site - http://3dwarehouse.sketchup.com)
+	2. Open the 3d model in SketchUp using "Import" option (if the model is .skp using Open File option is faster)
+	3. Scale the model to your likness , delete unneccesry faces and vertexes , fix origin and so on.
+	4. Export the file as COLLADA format using : "Export -> 3D model -> COLLADA(.dae) "
+	5. Copy the files to the ubuntu machine (check if there are texture files from the export and not just .dae file)
+	6. go to folder ~/username/srvss_ws/src/SRVSS/world_components
+	7. copy an existing model folder , i.e. barrel1 , and change its name to the new model name
+	8. open the new model folder
+	9. modify model.sdf and model.config to match the new model files (remove the word barrel1 from then and insert the model name you decided)
+	10. copy the files we got from the Exportation to model folder (the folder that inside our new model folder and name model , i.e. barrel2/model were barrel2 is our new model)
+	11. open MeshLab
+	12. load in MeshLab our new model using "import meshes" option
+	13. rescale the model from meter to inches (note MeshLab only uses meter therefore we always need to rescale)
+	14. rescale using : "Filters -> Normals, Curvatures , Oriantation -> Transformation : Scale"
+	15. rescale change ONLY X axis by "0.0254" (meter to inch) and press "Apply" , make sure "Uniform Scaling" box is checked
+	16. save our scaled model as .obj file using : "Export Meshes As -> .Obj"
+	17. run in new terminal the command : "rosrun SRVSS SRVSS_EnvSetup" (this command will update .gazebo folder)
+	18. update Resorces files and SFDP files to be able to use our new model.
+	19. That ALL :)
+	20. if the origin or scale of the model is too big or not fixed to origin go back to step 3.  , make sure the model isnt to complicated and gazebo loads it fast
+	

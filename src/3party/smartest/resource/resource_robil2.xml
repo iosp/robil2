@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<robot_PyInterface name="PyInterface_robil2"/>
+
+<robot_components_models name="Sahar" dirPath="/home/robil/robil2/src/Simulation/live_bobcat/sdf_models">
+
+	<platform name="bobcat"/>
+	<sensor name="IPON"/>
+	<sensor name="IBEO"/>
+	<sensor name="FLEA3"/>
+	<sensor name="FLEA3_L"/>
+	<sensor name="FLEA3_R"/>
+
+</robot_components_models>
+
+
+
+<world_components_models dirPath="/home/robil/robil2/src/3party/smartest/world_components_models">
+
+	<terrain id="0">srvss_terrain0</terrain>
+	<terrain id="1">srvss_terrain1</terrain>
+	<terrain id="2">srvss_terrain2</terrain>
+	<terrain id="3">shetah_nisuy</terrain>
+	<terrain id="4">terrainWithRoad</terrain>
+	<terrain id="5">terrain100x100</terrain>
+	<terrain id="6">terrain_50mX50m:25mmX25mm</terrain>
+	<terrain id="7">nisuy100x100x2</terrain>
+	<terrain id="8">nisuy100x100x3</terrain>
+	<terrain id="9">nisuy100x100x5</terrain>
+
+	<object id="1">barrel1</object>
+	<object id="2">rock1</object>
+	<object id="3">tree1</object>
+	<object id="4">cube1</object>
+	<object id="5">bush</object>
+	<object id="6">tree2</object>
+	<object id="7">tree3</object>
+	<object id="8">tree4</object>
+	<object id="9">barrier1</object>
+	<object id="10">d9</object>
+	<object id="11">hammer</object>
+	<object id="12">sayeret_egoz_soldier</object>
+
+</world_components_models>

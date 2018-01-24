@@ -1,0 +1,34 @@
+<!-- -*- mode: XML -*- -->
+<launch>
+
+	<arg name="scen" default="scenario_1"/> 
+	<arg name="st" default="0"/>
+	<arg name="dt" default="900"/>
+	<arg name="r" default="1"/>
+	
+	
+	<arg name="scenarios_folder_url" value="$(find smartest)/work_space/$(arg scen)"/>
+	<arg name="world_models_folder_url" value="$(find smartest)/world_components_models"/>
+	<arg name="world_name" value="$(arg scenarios_folder_url)/scenarioEnv.world"/>
+	<arg name="pause" value="-u"/>
+	<arg name="play_record" value="-p"/>
+	<arg name="ros_record_path" value="$(arg scenarios_folder_url)/scen_rec.bag"/>
+
+<!-- setting gazebo path for scenario platform and sensors models -->
+	<env name="GAZEBO_MODEL_PATH" value="$(arg world_models_folder_url):$(arg scenarios_folder_url)/scenarioSystemModels"/>
+
+<!-- start gazebo server-->
+	<!--<param name="robot_description" command="cat $(find bobcat)/urdf/BOBCAT_sdf_model.URDF" /> -->
+	<node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen" args="$(arg pause) $(arg world_name)" />
+	
+<!-- start gazebo client -->
+	<node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
+
+<!-- play RosBag recording  -start $(arg st) -delay $(arg dt)  -->
+	<node name="ros_scen_replay" pkg="rosbag" type="play"  output="screen" args="--start $(arg st) --duration $(arg dt) --pause --loop --rate $(arg r) --clock $(arg ros_record_path) "/>
+	<!-- node name="ros_scen_replay" pkg="rosbag" type="play"  output="screen" args="-*-pause -*-loop -*-rate 1 -*-clock $(arg ros_record_path) "/-->
+
+<!-- run translater for gazebo LinkStates -->
+	<node name="rosbag_to_gazebo_translater" pkg="smartest" type="ReplayPlayer" />
+
+</launch>

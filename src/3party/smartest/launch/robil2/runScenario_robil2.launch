@@ -1,0 +1,60 @@
+<!-- -*- mode: XML -*- -->
+<launch>    
+
+	<arg name="scen" default="scenario_1"/> 
+
+	<arg name="scenarios_folder_url" value="$(find smartest)/work_space/$(arg scen)"/>
+	<arg name="world_models_folder_url" value="$(find smartest)/world_components_models"/>
+	<arg name="world_name" value="$(arg scenarios_folder_url)/scenarioEnv.world"/>
+	<arg name="pause" value="-u"/>
+	<arg name="record" value="-r"/>
+	<arg name="record_file_path" value="-O $(arg scenarios_folder_url)/scen_rec.bag"/>
+        <arg name="SFV_file_url" value="$(arg scenarios_folder_url)/scen.SFV"/>
+
+<!-- setting gazebo path for scenario platform and sensors models -->
+	<env name="GAZEBO_MODEL_PATH" value="$(arg world_models_folder_url):$(arg scenarios_folder_url)/scenarioSystemModels"/>
+
+<!-- synchronizing ros to gazebo -->
+	<param name="/use_sim_time" value="true" />
+
+<!-- start gazebo server-->
+	<node name="gazebo" pkg="gazebo_ros" type="gzserver" respawn="false" output="screen" args="$(arg world_name) "/>
+	
+
+<!-- start gazebo client -->
+	<node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" />
+
+<!-- Robil2 framework -->
+        <node pkg="smartest" type="timed_roslaunch.sh" name="timed_roslaunch" args="5 robil2conf frameworkInit.launch" output="screen"/>
+<!--	<include file="$(find robil2conf)/frameworkInit.launch" /> -->
+
+<!-- Mission -->
+	<node name="mission_bag_player" pkg="rosbag" type="play" args="-d 60 $(arg scenarios_folder_url)/scenarioMission.bag" output="screen" />
+
+
+<!-- grader -->
+        <include file="$(find bobcat_model)/launch/TF_pub_for_dynamic_arm.launch" />
+
+	<node pkg="smartest" type="grader_node" name="grader_node" output="screen" args="$(arg scenarios_folder_url) $(arg SFV_file_url)" />
+
+
+<!-- PLP Monitoring - data gathering 
+       <node pkg="plp_waypoint" type="PlpWaypointRosHarness.py" name="plp_waypoint" output="screen" args="-monitor -capture $(arg scenarios_folder_url)/capture.txt" />
+-->
+
+
+<!-- start RosBag recording -->
+	<node name="rosbag_recorder" pkg="rosbag" type="record" args=" --all $(arg record_file_path) --exclude /SENSORS/CAM/(.*)|/Sahar/(.*)|/SENSORS/IBEO/(.*)|/Sahar/(.*)|/PER/Map|/WSM/(.*)|/flea3/(.*)|/right_sick/(.*)|/left_sick/(.*)|/gazebo/model_states|/clock" />
+
+	
+<!-- start RViZ  -->
+	<node name="robil2rviz" type="robil2rviz" pkg="robil2rviz" output="screen"/>	
+	
+	
+	
+</launch>
+
+
+
+
+

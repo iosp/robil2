@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <model name="terrain">
+        <static>true</static>
+        <link name="terrain1">
+            <pose>0 0 0 0 0 0</pose>
+            <collision name="terrain1_collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain100x100/meshes/terrain1.dae</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="terrain1_visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://terrain100x100/meshes/terrain1.dae</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <script>
+                        <uri>model://terrain100x100/materials/scripts</uri>
+                        <uri>model://terrain100x100/materials/textures</uri>
+                        <name>terrain/terrain1</name>
+                    </script>
+                </material>
+            </visual>
+        </link>
+    </model>
+</sdf>

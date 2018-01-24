@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="barrel3_105">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <mesh>
+             <uri>model://barrel3_105/models/barrel105.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="visual">
+         <geometry>
+          <mesh>
+						<uri>model://barrel3_105/models/barrel105.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>
