@@ -11,7 +11,7 @@ To compile the package:
  -compile
  
 To run the pkg, first you need to specify the Robil2 and SmARTest models paths 
-by editing the files in the resources directory: `src/smartest/resource`
+by editing the files in the resources directory: `smartest/resource`
 you should only update the "<robot_components_models>" and "<world_components_models>" tags
 
 
