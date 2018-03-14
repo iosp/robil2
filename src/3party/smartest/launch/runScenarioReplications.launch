@@ -1,0 +1,17 @@
+<!-- -*- mode: XML -*- -->
+<launch>    
+
+     <arg name="SampNum" default="2"/>
+     
+     <arg name="sfv_root_url" value="$(find smartest)/work_space/root.SFV"/>  
+     <arg name="WS_folder_url" value="$(find smartest)/work_space"/>
+
+
+<!-- setting PYTHON PATH variable to load Python Interfaces scripts -->
+     <env name="PYTHONPATH" value="$(env PYTHONPATH):$(find smartest)/scripts"/>
+
+     <node pkg="smartest" type="MainTest" name="test_node" args="$(arg sfv_root_url) $(arg WS_folder_url) $(arg SampNum)" output="screen" />
+
+
+	       
+</launch>

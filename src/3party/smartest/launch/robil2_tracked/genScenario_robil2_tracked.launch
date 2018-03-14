@@ -1,0 +1,15 @@
+<!-- -*- mode: XML -*- -->
+<launch>    
+
+
+     <arg name="scen" default="scenario_1"/> 
+    
+     <arg name="SFDP_file_url" value="$(find smartest)/SFDP/robil2_tracked.SFDP"/>
+     <arg name="resource_file_url" value="$(find smartest)/resource/resource_robil2_tracked.xml"/>
+     <arg name="scenarios_folder_url" value="$(find smartest)/work_space/$(arg scen)"/>
+     <arg name="SFV_file_url" value="$(arg scenarios_folder_url)/scen.SFV"/>
+
+     <node pkg="smartest" type="mainGen" name="SRVSS_genSFV" args="-genSFV $(arg SFDP_file_url) $(arg scenarios_folder_url) $(arg resource_file_url)" output="screen" />     
+     <node pkg="smartest" type="mainGen" name="SRVSS_genSCEN" args="-genSCEN $(arg SFV_file_url) $(arg scenarios_folder_url)" output="screen" />
+
+</launch>

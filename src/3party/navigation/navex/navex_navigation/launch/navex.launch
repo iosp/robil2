@@ -3,7 +3,9 @@
 		<remap from="/navex_navigation/goal" to="/move_base/goal"/>
 		<remap from="/navex_navigation/simple_goal" to="/move_base/simple/goal"/>
 		<remap from="/navex_navigation/cancel" to="/move_base/cancel"/>
-		<remap from="cmd_vel" to="/cmd_vel_orig" />
+		
+		<!-- <remap from="cmd_vel" to="/cmd_vel_navex" /> -->
+		
 		<remap from="/scan" to="/map_cloud"/>
 		<remap from="/navigation_state" to="/move_base/navigation_state"/>
 		<remap from="/path" to="/move_base/path"/>
@@ -54,8 +56,8 @@
 		<param name="local_planner/min_speed" value="-0.4"/>
 		<param name="local_planner/speed_step" value="0.25"/>
 
-		<param name="local_planner/min_angular_speed" value="-0.5"/>
-		<param name="local_planner/max_angular_speed" value="0.5"/>
+		<param name="local_planner/min_angular_speed" value="-0.3"/>
+		<param name="local_planner/max_angular_speed" value="0.3"/>
 		<param name="local_planner/angular_speed_step" value="0.025" />
 
 		<param name="local_planner/inplace_angular_speed" value="0.7"/>
@@ -64,6 +66,17 @@
 		<param name="local_planner/granularity" value="0.1"/>
 		<param name="local_planner/trajectory_score_color" value="true"/>
 
-		<param name="goal_matcher/last_point" value="true" />
+		<param name="goal_matcher/last_point" value="true" /> 
+		
+		
+		<param name="local_planner/fazzy_safe" 			value="2.0"/>
+		<param name="local_planner/fazzy_recovery" 		value="8.0"/>
+		<param name="local_planner/fazzy_fast" 			value="0.5"/>
+		<param name="local_planner/fazzy_goal_oriented" value="0.5"/>
+		<param name="local_planner/fazzy_straight" 		value="0.5"/>
+		<param name="local_planner/fazzy_stable" 		value="0.125"/>
+		<param name="local_planner/fazzy_forward" 		value="1.0"/>
+		
+		
 	</node>
 </launch>

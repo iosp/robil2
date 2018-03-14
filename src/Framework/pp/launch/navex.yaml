@@ -1,11 +1,11 @@
 "params_version"            : 1.2
 "dampening": 
-    "alpha"                 :  0.95
+    "alpha"                 :  0.75
     "smooth_resolution"     :  0.5
 "local_costmap": 
     "frame_id"              :  "ROBOT_CENTER"
-    "robot_radius"          :  3.0
-    "inflation_radius"      :  5.0
+    "robot_radius"          :  1.0
+    "inflation_radius"      :  2.5
     "width"                 :  50.0
     "height"                :  50.0
     "resolution"            :  0.5
@@ -15,8 +15,8 @@
         "decay_time"        :  0.0
 "global_costmap": 
     "frame_id"              :  "ROBOT_CENTER"
-    "robot_radius"          :  4
-    "inflation_radius"      :  3.0
+    "robot_radius"          :  1
+    "inflation_radius"      :  2.5
     "width"                 :  100.0
     "height"                :  100.0
     "resolution"            :  0.5

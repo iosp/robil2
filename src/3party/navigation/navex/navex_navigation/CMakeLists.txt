@@ -1,57 +1,72 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
-PROJECT(navex_navigation)
+cmake_minimum_required(VERSION 2.8.3)
+project(navex_navigation)
 
-FIND_PACKAGE(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  tf
+  navex
+  dynamic_reconfigure
+  move_base_msgs
+  pcl_ros
+)
 
-CATKIN_PACKAGE()
+find_package(OpenCV REQUIRED COMPONENTS
+  imgproc
+  highgui
+)
 
-# Get OS
-EXECUTE_PROCESS(COMMAND lsb_release -sc COMMAND tr -d '\n' OUTPUT_VARIABLE OS)
+generate_dynamic_reconfigure_options(
+  cfg/NavigationParameters.cfg
+  cfg/NavexLocalPlanner.cfg
+  cfg/GoalTrajectoryMatcher.cfg
+)
 
-# Get Ubuntu Version
-EXECUTE_PROCESS(COMMAND lsb_release -sr COMMAND tr -d '\n' OUTPUT_VARIABLE VER)
 
-# Get Arch (64 / 32 bit)
-EXECUTE_PROCESS(COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCH)
 
-# Get ROS Distro Version
-SET(ROS_DISTRO $ENV{ROS_DISTRO})
+catkin_package()
 
-SET(ARCH_FOLDER NO_ARCH)
+###########
+## Build ##
+###########
 
-IF(${OS} STREQUAL "trusty" )
-  IF(${VER} STREQUAL "14.04")
-    IF(${ARCH} STREQUAL "x86_64")
-      IF(${ROS_DISTRO} STREQUAL "indigo")
-        SET(ARCH_FOLDER "trusty_amd64_indigo")
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  include
+) 
 
-      ELSEIF(${ROS_DISTRO} STREQUAL "jade")
-        	SET(ARCH_FOLDER "trusty_amd64_jade")
-      ENDIF()
-    ENDIF()
-  ENDIF()
+add_executable(navex_navigation_node 
+  src/navex_navigation_node.cpp
+  src/NavexNavigation.cpp
+  src/NavexLocalPlanner.cpp
+  src/NavexGlobalPlanner.cpp
+  src/NavexPathFinder.cpp
+  src/MoveBackwardRecovery.cpp
+  src/NavigateBackwardRecovery.cpp
+  src/LocalGoalFinder.cpp
+  src/FuzzyTrajectoryMatcher.cpp
+  src/FuzzyLocalPlanner.cpp
+  src/FuzzyGlobalPlanner.cpp
+  
+  src/path_manager/PathManager.cpp
+  
+  src/path_damping/PathPlanAlphaBetaFilter.cpp
+  src/path_damping/PathDamping.cpp
+)
 
-ELSEIF(${OS} STREQUAL "xenial")
-  IF(${VER} STREQUAL "16.04")
-    IF(${ARCH} STREQUAL "x86_64")
-        IF(${ROS_DISTRO} STREQUAL "kinetic")
-          SET(ARCH_FOLDER "xenial_amd64_kinetic")
-        ENDIF()
-    ENDIF()
-  ENDIF()
-ENDIF()
+add_dependencies(navex_navigation_node ${PROJECT_NAME}_gencfg)
 
-IF(${ARCH_FOLDER} STREQUAL NO_ARCH)
-  MESSAGE(FATAL_ERROR "No Navex for this architecture. - ${OS}_${VER}_${ARCH}_${ROS_DISTRO}")
-ENDIF()
+target_link_libraries(navex_navigation_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
-FILE(COPY arch/${ARCH_FOLDER}/bin/navex_navigation_node
-     DESTINATION ${CATKIN_DEVEL_PREFIX}/lib/navex_navigation
-     FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+#############
+## Install ##
+#############
 
-INSTALL(FILES arch/${ARCH_FOLDER}/bin/navex_navigation_node
-        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(TARGETS navex_navigation_node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
-INSTALL(DIRECTORY launch
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+INSTALL(DIRECTORY
+	launch
+	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)

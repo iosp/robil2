@@ -1,0 +1,23 @@
+<!-- -*- mode: XML -*- -->
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="d9">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <mesh>
+             <uri>model://d9/models/d9_collision.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="visual">
+         <geometry>
+          <mesh>
+		<uri>model://d9/models/d9_visual.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

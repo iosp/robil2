@@ -1,3 +1,9 @@
+#smartest
+See relevant README
+ -install ros-jade-fcl in addition to everything that was installed for Robil2.
+#navex
+ -install ros-jade-ackerman-msgs
+
 # robil2
 This repository contains the code of robil2.
 The site of the project is www.robil.org

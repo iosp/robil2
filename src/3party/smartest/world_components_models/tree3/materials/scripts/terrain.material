@@ -1,0 +1,18 @@
+material tree/tree3
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture texture0.jpg
+				filtering anistropic
+				max_anisotropy 16
+				scale 1 1
+			}
+		}
+	}
+}
+

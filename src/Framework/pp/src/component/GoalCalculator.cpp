@@ -350,15 +350,16 @@ namespace RobilGC
 		 * This causes back-and-forth navigation if waypoints are not in order!
 		 * That's why I take the maximum between the nearest index and the next waypoint in path.
 		 */
-		Index closest_point = search_nearest(path, robot);
-        LCD("search_nearest(path,robot="<<robot<<") -> closest_point = "<<closest_point)
-		if(closest_point > waypoint)
-        {
-			F_WARN("get_goal") << "Skipping waypoint #" << (waypoint + 1)
-			<< " since there's a closer waypoint ahead." << endl;
-        }
-		Index nearest_point = max(waypoint, closest_point);
-        LCD("max(waypoint="<<waypoint<<", closest_point="<<closest_point<<") -> nearest_point="<<nearest_point)
+		// Index closest_point = search_nearest(path, robot);
+        // LCD("search_nearest(path,robot="<<robot<<") -> closest_point = "<<closest_point)
+		// if(closest_point > waypoint)
+        // {
+		// 	F_WARN("get_goal") << "Skipping waypoint #" << (waypoint + 1)
+		// 	<< " since there's a closer waypoint ahead." << endl;
+        // }
+		// Index nearest_point = max(waypoint, closest_point);
+		Index nearest_point = waypoint;
+        // LCD("max(waypoint="<<waypoint<<", closest_point="<<closest_point<<") -> nearest_point="<<nearest_point)
 
 		//IF THE NEAREST POINT IS THE LAST POINT, THEN SEARCH FREE POINT NEAR IT.
 		if(is_last_point(path, nearest_point)) 
@@ -423,8 +424,8 @@ namespace RobilGC
         
         LCD("check if is_passed(path, robot="<<robot<<", prev_point="<<prev_point<<", free_of_nearest_point="<<free_of_nearest_point<<", post_point="<<post_point<<")")
         
-		if(is_passed(path, robot, prev_point, free_of_nearest_point, post_point)) 
-//		if(is_passed(free_of_nearest_point, robot))
+		// if(is_passed(path, robot, prev_point, free_of_nearest_point, post_point)) 
+		if(is_passed(free_of_nearest_point, robot))
 		{
             LCD("   is_passed")
             
