@@ -30,7 +30,6 @@ struct Log{
 };
 inline void endl(){}
 
-#define cout Log()
 
 #define DMDEBUG(...) //__VA_ARGS__
 #define DIGNOR

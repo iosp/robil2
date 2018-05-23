@@ -4,7 +4,7 @@ project(loc)
 find_package(catkin REQUIRED COMPONENTS
  roscpp rospy robil2conf cv_bridge dynamic_reconfigure
 )
-find_package(OpenCV 2)
+find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 
 generate_dynamic_reconfigure_options(

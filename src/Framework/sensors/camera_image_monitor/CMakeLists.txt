@@ -4,7 +4,7 @@ project(camera_image_monitor)
 find_package(catkin REQUIRED COMPONENTS
  roscpp rospy robil2conf cv_bridge
 )
-find_package(OpenCV 2)
+find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
 	CATKIN_DEPENDS robil2conf

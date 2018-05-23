@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   rosbag
   robil_msgs 
   gazebo_msgs
-  fcl 
+  # fcl 
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread filesystem)
@@ -36,7 +36,7 @@ catkin_package(
 )
 
                                                                                                                                                  
-include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${PYTHON_INCLUDE_DIR} /usr/include/sdformat-4.3/sdf )
+include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${PYTHON_INCLUDE_DIR} /usr/include/sdformat-4.3/sdf /opt/ros/kinetic/include/opencv-3.3.1-dev )
 
 
 
@@ -275,11 +275,11 @@ target_link_libraries(ReplayPlayer ${catkin_LIBRARIES}
 ###############
 #### grader ###
 ###############
-add_executable(grader_node src/Grader/grader_node.cpp)
-target_link_libraries(grader_node ${catkin_LIBRARIES}
-SFV
-ResourceHandler
-/usr/lib/x86_64-linux-gnu/libsdformat.so #${SDF_LIBRARIES}
-)
+# add_executable(grader_node src/Grader/grader_node.cpp)
+# target_link_libraries(grader_node ${catkin_LIBRARIES}
+# SFV
+# ResourceHandler
+# /usr/lib/x86_64-linux-gnu/libsdformat.so #${SDF_LIBRARIES}
+# )
 
 
