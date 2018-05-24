@@ -11,7 +11,7 @@ message_generation
 image_transport
 dynamic_reconfigure
 )
-find_package(OpenCV 2)
+find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(gazebo REQUIRED)
 

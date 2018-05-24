@@ -7,7 +7,7 @@
 
 #ifndef TERRAINANALYZER_H_
 #define TERRAINANALYZER_H_
-#include <opencv2/core/core.hpp>
+#include <opencv2/core.hpp>
 
 class TerrainAnalyzer {
 	float m_length;

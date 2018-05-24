@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
 )
-find_package(OpenCV 2)
+find_package(OpenCV REQUIRED)
 
 catkin_package(
 	CATKIN_DEPENDS

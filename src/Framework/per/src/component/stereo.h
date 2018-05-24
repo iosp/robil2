@@ -35,7 +35,7 @@ Mat getDisparity(Mat left_image, Mat right_image)
     //system("pause");
     //cvSaveImage("disp.ppm", &cv_image_depth_aux);
     //system("pause");
-    Mat img(cv_image_depth_aux, true);
+    Mat img = cvarrToMat(cv_image_depth_aux, true);
     Mat new_img;
     new_img = img;
     
