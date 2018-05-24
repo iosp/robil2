@@ -64,5 +64,5 @@
 	<node name="llc_node" type="llc_node" pkg="llc" output="screen" respawn="true"/>
 
 
-      <include file="$(find ocu)/launch/ocuServer.launch" />
+      <!-- include file="$(find ocu)/launch/ocuServer.launch" / -->
 </launch>
