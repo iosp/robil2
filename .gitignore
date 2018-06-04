@@ -25,3 +25,6 @@ core
 *.cbp
 *.autosave
 CATKIN_IGNORE
+.vscode
+.catkin_tools
+*.orig

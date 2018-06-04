@@ -55,7 +55,7 @@ void GazeboPlatformGenerator::generatePlatform(SFV * sfv ,std::string filename, 
 	sdf::addURIPath("model://", scenario_models_folder_url );
 	sdf::readFile(nominal_platform_model_url,sdfptr);
 
-	sdf::ElementPtr modelPtr=sdfptr->root->GetElement("model");
+	sdf::ElementPtr modelPtr=sdfptr->Root()->GetElement("model");
 	sdf::ElementPtr link;
 
 
@@ -75,8 +75,14 @@ void GazeboPlatformGenerator::generatePlatform(SFV * sfv ,std::string filename, 
 			sdf::ElementPtr inertiazz=inertia->GetElement("izz");
 			sdf::ElementPtr pose=link->GetElement("pose");
 
-			sdf::Pose new_pose;
+			ignition::math::Pose3d new_pose;
 			pose->GetValue()->Get(new_pose);
+			//new_pose.Pos().X() += mass_link_it->get_LocationDeviationX()->get_RolledValue();
+			new_pose.Pos().X(new_pose.Pos().X()+mass_link_it->get_LocationDeviationX()->get_RolledValue());
+			new_pose.Pos().Y(new_pose.Pos().Y()+mass_link_it->get_LocationDeviationY()->get_RolledValue());
+			new_pose.Pos().Z(new_pose.Pos().Z()+mass_link_it->get_LocationDeviationZ()->get_RolledValue());
+
+#ifdef OLD_VERSION
 			new_pose.pos.x += mass_link_it->get_LocationDeviationX()->get_RolledValue();
 			new_pose.pos.y += mass_link_it->get_LocationDeviationY()->get_RolledValue();
 			new_pose.pos.z += mass_link_it->get_LocationDeviationZ()->get_RolledValue();
@@ -85,6 +91,12 @@ void GazeboPlatformGenerator::generatePlatform(SFV * sfv ,std::string filename, 
 			quad.y += mass_link_it->get_LocationDeviationPitch()->get_RolledValue();
 			quad.z += mass_link_it->get_LocationDeviationYaw()->get_RolledValue();
 			new_pose.rot.SetFromEuler(quad);
+#endif
+			ignition::math::Vector3d quat = new_pose.Rot().Euler();
+			quat.X(quat.X()+mass_link_it->get_LocationDeviationRoll()->get_RolledValue());
+			quat.Y(quat.Y()+mass_link_it->get_LocationDeviationPitch()->get_RolledValue());
+			quat.Z(quat.Z()+mass_link_it->get_LocationDeviationYaw()->get_RolledValue());
+
 			pose->Set(new_pose);
 
 
@@ -142,8 +154,14 @@ void GazeboPlatformGenerator::generatePlatform(SFV * sfv ,std::string filename, 
 		{
 			sdf::ElementPtr pose=link->GetElement("pose");
 
-			sdf::Pose new_pose;
+			//Deprecated sdf::Pose new_pose;
+			ignition::math::Pose3d new_pose;
 			pose->GetValue()->Get(new_pose);
+			new_pose.Pos().X(new_pose.Pos().X() + sensor_link_it->get_LocationDeviationX()->get_RolledValue() );
+			new_pose.Pos().Y(new_pose.Pos().Y() + sensor_link_it->get_LocationDeviationY()->get_RolledValue() );
+			new_pose.Pos().Z(new_pose.Pos().Z() + sensor_link_it->get_LocationDeviationZ()->get_RolledValue() );
+
+#ifdef OLD_VERSION
 			new_pose.pos.x += sensor_link_it->get_LocationDeviationX()->get_RolledValue();
 			new_pose.pos.y += sensor_link_it->get_LocationDeviationY()->get_RolledValue();
 			new_pose.pos.z += sensor_link_it->get_LocationDeviationZ()->get_RolledValue();
@@ -153,6 +171,11 @@ void GazeboPlatformGenerator::generatePlatform(SFV * sfv ,std::string filename, 
 			quad.y += sensor_link_it->get_LocationDeviationPitch()->get_RolledValue();
 			quad.z += sensor_link_it->get_LocationDeviationYaw()->get_RolledValue();
 			new_pose.rot.SetFromEuler(quad);
+#endif
+            ignition::math::Vector3d quad = new_pose.Rot().Euler();
+			quad.X(quad.X() + sensor_link_it->get_LocationDeviationRoll()->get_RolledValue());
+			quad.Y(quad.Y() + sensor_link_it->get_LocationDeviationPitch()->get_RolledValue());
+			quad.Z(quad.Z() + sensor_link_it->get_LocationDeviationYaw()->get_RolledValue());
 
 			pose->GetValue()->Set(new_pose);
 		}
