@@ -4,15 +4,15 @@
 2. Install Flexible Collision Library from source: https://github.com/flexible-collision-library/fcl
 3. Anyway, grader of smartest doesn't work yet
 4. For OCU: 
-     Install: sudo apt-get install ros-kinetic-rosbridge-server
-     Install: sudo apt-get install ros-kinetic-tf2-web-republisher
-     Roslibjs: located in ~/robil2/src/3party 
-     For more details: http://www.robil.org/trac_robil/wiki/RobilOCU
+     * Install: sudo apt-get install ros-kinetic-rosbridge-server\\
+     * Install: sudo apt-get install ros-kinetic-tf2-web-republisher
+     * Roslibjs: located in ~/robil2/src/3party 
+     * For more details: http://www.robil.org/trac_robil/wiki/RobilOCU
      
-#smartest
+# smartest
 See relevant README
  -install ros-jade-fcl in addition to everything that was installed for Robil2.
-#navex
+# navex
  -install ros-jade-ackerman-msgs
 
 # robil2
