@@ -6,6 +6,8 @@
 #include <vector>
 #include <ros/console.h>
 
+#include <sdf/sdf.hh>
+
 #include "ros/ros.h"
 #include "std_msgs/Float32MultiArray.h"
 #include "std_msgs/Bool.h"
@@ -495,7 +497,7 @@ void load_robot_models()
 	sdf::SDFPtr sdfPtr(new sdf::SDF());
 	init(sdfPtr);
 	sdf::readFile(robot_model_url,sdfPtr);
-	sdf::ElementPtr sdfModelPtr=sdfPtr->root->GetElement("model");
+	sdf::ElementPtr sdfModelPtr=sdfPtr->Root()->GetElement("model");
 	sdf::ElementPtr sdfUriPtr ;
 	   for (sdf::ElementPtr sdfLinkPtr=sdfModelPtr->GetElement("link"); sdfLinkPtr ; sdfLinkPtr=sdfLinkPtr->GetNextElement("link"))
 	   {
