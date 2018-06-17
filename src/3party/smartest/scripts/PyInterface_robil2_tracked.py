@@ -16,7 +16,7 @@ import rospkg
 roslib.load_manifest("rosparam")
 import rosparam
 
-from controller_manager_msgs.srv import *
+#kinetic from controller_manager_msgs.srv import *
 
 class ScenarioLauncher:
 
