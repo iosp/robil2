@@ -555,7 +555,7 @@ int main(int argc, char **argv)
 		}
 */
 
-   ros::init(argc, argv, "greader_node");
+   ros::init(argc, argv, "grader_node");
 
    std::string SFV_ws_folder = argv[1];       // "/home/userws3/dany_ws/src/Simulation/srvss/src/SRVSS/scenarios/scenario_1";
    std::string SFV_file_url = argv[2];        // "/home/userws3/dany_ws/src/Simulation/srvss/src/SRVSS/scenarios/scenario_1/test.SFV";

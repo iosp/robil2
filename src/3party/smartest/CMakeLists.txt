@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(smartest)
 
-SET(CMAKE_CXX_FLAGS "-std=c++0x")
+SET(CMAKE_CXX_FLAGS "-g -std=c++0x")
 
 find_package(catkin REQUIRED COMPONENTS
   cmake_modules
@@ -283,7 +283,10 @@ target_link_libraries(grader_node ${catkin_LIBRARIES}
 SFV
 ResourceHandler
 /usr/lib/x86_64-linux-gnu/libsdformat.so 
-/usr/lib/libfcl.so
+/usr/lib/x86_64-linux-gnu/libfcl.so
+#/opt/ros/kinetic/lib/libfcl.so.0.6
+#/usr/share/doc/libfcl0-dbg
+#/usr/lib/libfcl.so
 #${SDF_LIBRARIES}
 )
 

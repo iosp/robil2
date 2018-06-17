@@ -1,8 +1,8 @@
 
 # Toward moving to kinetic - branch toKinetic
 1. Perception crashes
-2. Install Flexible Collision Library from source: https://github.com/flexible-collision-library/fcl
-3. Anyway, grader of smartest doesn't work yet
+2. NO ==>Install Flexible Collision Library from source: https://github.com/flexible-collision-library/fcl
+3. Install version 0.5 of FCL (with synaptic)
 4. For OCU: 
      * Install: sudo apt-get install ros-kinetic-rosbridge-server\\
      * Install: sudo apt-get install ros-kinetic-tf2-web-republisher
