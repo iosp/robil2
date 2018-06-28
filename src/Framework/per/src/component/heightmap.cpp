@@ -2,6 +2,7 @@
 #include "rdbg.h"
 #include <cstdio>
 #include <ros/ros.h>
+#include <ros/package.h>
 
 
 using namespace cv;
@@ -17,8 +18,10 @@ HeightMap::HeightMap(int width, int height, per::configConfig *p=NULL)
     _height = height;
     _min = -3;
     _max = 3;
-    _compass = imread("compass.png");
-    _arrow = imread("arrow.png");
+    std::string path = ros::package::getPath("per");
+    path += "/img/";
+    _compass = imread(path+"compass.png");
+    _arrow = imread(path+"arrow.png");
     _refPoint = Vec2D(0,0);
 }
 

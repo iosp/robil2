@@ -170,7 +170,8 @@ public:
       Mat arrow;
       cv::Point2f pt(_arrow.rows/2, _arrow.cols/2);
       cv::Mat r = cv::getRotationMatrix2D(pt, 90+rotation, 1.0);
-      cv::warpAffine(_arrow, arrow, r, cv::Size(_arrow.rows, _arrow.rows));
+      
+      cv::warpAffine(_arrow, arrow, r, cv::Size(_arrow.rows, _arrow.cols));
       px *= 5;
       py *= 5; //transformation to 20x20cm cell coords
       px -= _refPoint.x;
