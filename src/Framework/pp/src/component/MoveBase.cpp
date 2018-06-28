@@ -1389,7 +1389,7 @@ void MoveBase::calculate_goal()
 	{
 
 		//DBG_INFO("Navigation: path is finished. send event and clear current path.");
-		//stop_navigation(true);
+		stop_navigation(true);
 		//return;
 
 		//consider duration of "finished" message for path, in order to consider it as truly finished.
