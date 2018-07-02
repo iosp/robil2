@@ -28,3 +28,6 @@ CATKIN_IGNORE
 .vscode
 .catkin_tools
 *.orig
+**/.metadata/*
+3party/smartest/work_space/*
+

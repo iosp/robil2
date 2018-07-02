@@ -3,6 +3,8 @@ project(smartest)
 
 SET(CMAKE_CXX_FLAGS "-g -std=c++0x")
 
+if(("$ENV{ROS_DISTRO}" STREQUAL "kinetic") OR ("$ENV{ROS_DISTRO}" STRGREATER "kinetic"))
+#if("$ENV{ROS_DISTRO}" STREQUAL "kinetic")
 find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   roscpp
@@ -13,6 +15,18 @@ find_package(catkin REQUIRED COMPONENTS
   gazebo_msgs
   fcl_catkin 
 )
+else()
+find_package(catkin REQUIRED COMPONENTS
+  cmake_modules
+  roscpp
+  rospy
+  std_msgs
+  rosbag
+  robil_msgs 
+  gazebo_msgs
+  fcl_catkin 
+)
+endif()
 
 find_package(Boost REQUIRED COMPONENTS system thread filesystem)
 
@@ -37,9 +51,13 @@ catkin_package(
       robil_msgs 
 )
 
-                                                                                                                                                 
+if(("$ENV{ROS_DISTRO}" STREQUAL "kinetic") OR ("$ENV{ROS_DISTRO}" STRGREATER "kinetic"))                                                                                                                                                 
 include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${PYTHON_INCLUDE_DIR} 
 /usr/include/sdformat-5.3/sdf /usr/include/eigen3 /opt/ros/kinetic/include/opencv-3.3.1-dev)
+else()
+include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${PYTHON_INCLUDE_DIR} 
+/usr/include/sdformat-4.3/sdf )
+endif()
 
 
 
@@ -273,11 +291,10 @@ add_executable(ReplayPlayer src/ReplayPlayer/ReplayPlayer.cpp)
 target_link_libraries(ReplayPlayer ${catkin_LIBRARIES}
 )
 
-
-#Grader doesn't compile because of FCL undocumented migration
 ###############
 #### grader ###
 ###############
+if(("$ENV{ROS_DISTRO}" STREQUAL "kinetic") OR ("$ENV{ROS_DISTRO}" STRGREATER "kinetic"))
 add_executable(grader_node src/Grader/grader_node.cpp)
 target_link_libraries(grader_node ${catkin_LIBRARIES}
 SFV
@@ -289,5 +306,13 @@ ResourceHandler
 #/usr/lib/libfcl.so
 #${SDF_LIBRARIES}
 )
+else()
+add_executable(grader_node src/Grader/grader_node.cpp)
+target_link_libraries(grader_node ${catkin_LIBRARIES}
+SFV
+ResourceHandler
+#${SDF_LIBRARIES}
+)
+endif()
 
 
