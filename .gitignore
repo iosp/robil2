@@ -29,5 +29,4 @@ CATKIN_IGNORE
 .catkin_tools
 *.orig
 **/.metadata/*
-3party/smartest/work_space/*
-
+**/work_space/*

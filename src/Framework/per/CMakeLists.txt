@@ -26,7 +26,12 @@ message_generation
 image_transport
 dynamic_reconfigure
 )
+if(("$ENV{ROS_DISTRO}" STREQUAL "kinetic") OR ("$ENV{ROS_DISTRO}" STRGREATER "kinetic"))
 find_package(OpenCV 3)
+else()
+find_package(OpenCV 2)
+endif()
+
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(gazebo REQUIRED)
 

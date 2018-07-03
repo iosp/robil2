@@ -12,7 +12,11 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
 )
+if(("$ENV{ROS_DISTRO}" STREQUAL "kinetic") OR ("$ENV{ROS_DISTRO}" STRGREATER "kinetic"))
 find_package(OpenCV REQUIRED)
+else()
+find_package(OpenCV 2)
+endif()
 
 catkin_package(
 	CATKIN_DEPENDS

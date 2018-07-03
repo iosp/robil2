@@ -4,7 +4,12 @@ project(loc)
 find_package(catkin REQUIRED COMPONENTS
  roscpp rospy robil2conf cv_bridge dynamic_reconfigure
 )
+if(("$ENV{ROS_DISTRO}" STREQUAL "kinetic") OR ("$ENV{ROS_DISTRO}" STRGREATER "kinetic"))
 find_package(OpenCV REQUIRED)
+else()
+find_package(OpenCV 2)
+endif()
+
 find_package(Boost REQUIRED COMPONENTS system)
 
 generate_dynamic_reconfigure_options(
