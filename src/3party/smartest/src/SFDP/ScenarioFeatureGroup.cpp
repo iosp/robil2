@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <tinyxml.h>
 
+#include <ros/common.h>
+
 
 ScenarioFeatureGroup::ScenarioFeatureGroup() :
 m_featureGroupType(ScenarioFeatureGroupType::unknown_feature_group)
@@ -115,13 +117,14 @@ int ScenarioFeatureGroup::parseScenarioFeatureGroupFromXML(TiXmlNode* xmlFeature
 			GroupName = pAttrib->ValueStr();
 			}
 		}
+#if ROS_VERSION_MINOR == 11
 	// COMMITED BY COGNITEAM
-	// if ( (GroupType=="" ) || (GroupName=="") ||  (ScenarioFeatureGroupType::get_by_name(GroupType.c_str())==0) )
-	// {
-	// 	std::cout <<  "\033[1;31m could not parse scenario_feature_group = " << GroupType.c_str() << " its type, or name are not valid \033[0m" << std::endl;
-	// 	return 0;
-	// }
-
+	if ( (GroupType=="" ) || (GroupName=="") ||  (ScenarioFeatureGroupType::get_by_name(GroupType.c_str())==0) )
+	{
+	 	std::cout <<  "\033[1;31m could not parse scenario_feature_group = " << GroupType.c_str() << " its type, or name are not valid \033[0m" << std::endl;
+	 	return 0;
+	}
+#endif
 	m_name = GroupName;
 	m_featureGroupType = ScenarioFeatureGroupType::parseString(GroupType.c_str());
 

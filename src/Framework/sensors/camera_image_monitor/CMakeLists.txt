@@ -4,7 +4,13 @@ project(camera_image_monitor)
 find_package(catkin REQUIRED COMPONENTS
  roscpp rospy robil2conf cv_bridge
 )
+if(("$ENV{ROS_DISTRO}" STREQUAL "kinetic") OR ("$ENV{ROS_DISTRO}" STRGREATER "kinetic"))
 find_package(OpenCV REQUIRED)
+else()
+find_package(OpenCV 2)
+endif()
+
+
 find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
 	CATKIN_DEPENDS robil2conf

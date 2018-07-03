@@ -7,7 +7,11 @@
 
 #ifndef TERRAINANALYZER_H_
 #define TERRAINANALYZER_H_
+#if ROS_VERSION_MINOR == 11 //Jade  
+#include <opencv2/core/core.hpp>
+#else
 #include <opencv2/core.hpp>
+#endif
 
 class TerrainAnalyzer {
 	float m_length;

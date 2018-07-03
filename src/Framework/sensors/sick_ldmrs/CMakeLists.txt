@@ -12,6 +12,9 @@ find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
   # deprecated driver_base 
 )
+if("$ENV{ROS_DISTRO}" STREQUAL "jade") 
+find_package(catkin REQUIRED COMPONENTS driver_base)
+endif()
 
 catkin_python_setup()
 
@@ -19,7 +22,9 @@ catkin_add_nosetests(test/test_xport.py)
 
 add_rostest(test/ldmrs.test)
 
-#generate_dynamic_reconfigure_options(cfg/ldmrs.cfg)
+if("$ENV{ROS_DISTRO}" STREQUAL "jade") 
+generate_dynamic_reconfigure_options(cfg/ldmrs.cfg)
+endif()
 
 # make sure configure headers are built before any node using them
 # add_dependencies(example_node ${${PROJECT_NAME}_EXPORTED_TARGETS})

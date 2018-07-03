@@ -46,13 +46,16 @@ from rospy.numpy_msg import numpy_msg # for numpy arrays in the messages
 from sensor_msgs.msg import PointCloud2, LaserScan
 from robil_msgs.msg import MultiLaserScan
 
-#kinetic from dynamic_reconfigure import server
-
+#if ROS_MINOR_VERSION == 11
+#from dynamic_reconfigure import server
+#endif
 from sick_ldmrs.xport import *
 from sick_ldmrs.ldmrsmsgs import *
 from sick_ldmrs.dataproc import *
 from sick_ldmrs.utils import *
+#if ROS_MINOR_VERSION == 11
 #kinetic from sick_ldmrs.cfg import ldmrsConfig
+#endif
 
 
 topics = {}.fromkeys(( 'cloud',  'scan0',  'scan1',  'scan2',  'scan3', 'robil'))
@@ -323,8 +326,9 @@ def ros_main():
 
     # dynamic_reconfigure server
     # Invokes callback on init and initializes param_handler.
-    # kinetic conf_server = server.Server(ldmrsConfig, _update_config_callback)
-
+#if ROS_MINOR_VERSION == 11
+# kinetic conf_server = server.Server(ldmrsConfig, _update_config_callback)
+#endif
     # these have static state and dont have to be reconfigured on restart
     error_handler = ErrorWarningMsgHandler()
     cmd_handler  = CommandHandler(param_handler.ldmrs_params)

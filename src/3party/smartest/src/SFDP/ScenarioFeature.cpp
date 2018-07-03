@@ -144,13 +144,14 @@ void ScenarioFeature::set_distributionType(ScenarioFeatureDistributionType type)
 int ScenarioFeature::parseScenarioFeatureFromXML(TiXmlNode* xmlFeature)
 {
 	std::string FeatureType = xmlFeature->ToElement()->FirstAttribute()->ValueStr();
+#if ROS_VERSION_MINOR == 11
 	// COMMITED BY COGNITEAM
-	// if ((xmlFeature->ValueStr().compare("scenario_feature")!=0) || (ScenarioFeatureType::get_by_name(FeatureType.c_str())==0))
-	// {
-	// 	std::cout << "\033[1;31m could not parse scenario_feature = " << FeatureType.c_str() << " because it is not a a valid Scenario Feature \033[0m" << std::endl;
-	// 	return 0;
-	// }
-
+	if ((xmlFeature->ValueStr().compare("scenario_feature")!=0) || (ScenarioFeatureType::get_by_name(FeatureType.c_str())==0))
+	{
+	    std::cout << "\033[1;31m could not parse scenario_feature = " << FeatureType.c_str() << " because it is not a a valid Scenario Feature \033[0m" << std::endl;
+	 	return 0;
+	}
+#endif
 	std::string distribution = "";
 	std::string dist_param_1 = "";
 	std::string dist_param_2 = "";
@@ -168,13 +169,15 @@ int ScenarioFeature::parseScenarioFeatureFromXML(TiXmlNode* xmlFeature)
 			dist_param_2=pChild->FirstChild()->ToText()->ValueStr();
 		}
 	}
-	// COMMITED BY COGNITEAM
-	// if ( (distribution=="") || (dist_param_1=="") || (dist_param_2=="") || (ScenarioFeatureDistributionType::get_by_name(distribution.c_str())==0) )
-	// {
-	// 	std::cout << "\033[1;31m could not parse scenario_feature = " << FeatureType.c_str() << " its distribution, or distribution parameters are not valid " << std::endl;
-	// 	return 0;
-	// }
+#if ROS_VERSION_MINOR == 11
 
+	// COMMITED BY COGNITEAM
+	if ( (distribution=="") || (dist_param_1=="") || (dist_param_2=="") || (ScenarioFeatureDistributionType::get_by_name(distribution.c_str())==0) )
+	{
+	 	std::cout << "\033[1;31m could not parse scenario_feature = " << FeatureType.c_str() << " its distribution, or distribution parameters are not valid " << std::endl;
+	 	return 0;
+	}
+#endif
 		m_featureType = ScenarioFeatureType::parseString(FeatureType.c_str());
 		m_distType = ScenarioFeatureDistributionType::parseString(distribution.c_str());
 		m_dist_param_1 = atof(dist_param_1.c_str());

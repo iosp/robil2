@@ -18,10 +18,15 @@ HeightMap::HeightMap(int width, int height, per::configConfig *p=NULL)
     _height = height;
     _min = -3;
     _max = 3;
+#if ROS_VERSION_MINOR == 11 //Jade
+    _compass = imread("compass.png");
+    _arrow = imread("arrow.png");
+#else //Kinetic or more
     std::string path = ros::package::getPath("per");
     path += "/img/";
     _compass = imread(path+"compass.png");
     _arrow = imread(path+"arrow.png");
+#endif
     _refPoint = Vec2D(0,0);
 }
 
