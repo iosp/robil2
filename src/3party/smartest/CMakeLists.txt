@@ -24,7 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
   rosbag
   robil_msgs 
   gazebo_msgs
-  fcl_catkin 
+  fcl
 )
 endif()
 

@@ -7,6 +7,8 @@
 
 #ifndef TERRAINANALYZER_H_
 #define TERRAINANALYZER_H_
+
+#include <ros/common.h>
 #if ROS_VERSION_MINOR == 11 //Jade  
 #include <opencv2/core/core.hpp>
 #else
