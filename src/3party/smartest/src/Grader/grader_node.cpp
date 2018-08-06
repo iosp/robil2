@@ -34,6 +34,28 @@
 
 #include "gazebo/gazebo_config.h"
 
+/*** / according http://gazebosim.org/tutorials?tut=install_dependencies_from_source
+#if GAZEBO_MAJOR_VERSION == 2
+#include <sdformat-1.4/sdf/sdf.hh>  //worked with ros Gazebo2
+
+#elif GAZEBO_MAJOR_VERSION == 5
+#include <sdformat-2.3/sdf/sdf.hh> //working with ros Gazebo5
+
+#elif GAZEBO_MAJOR_VERSION == 7 && GAZEBO_MINOR_VERSION == 0 //working with ros Gazebo7.0.0
+#include <sdformat-4.0/sdf/sdf.hh>
+
+#elif GAZEBO_MAJOR_VERSION == 7 && GAZEBO_MINOR_VERSION >0 && GAZEBO_MINOR_VERSION < 9 //working with ros Gazebo7
+#include <sdformat-4.3/sdf/sdf.hh>
+
+#elif GAZEBO_MAJOR_VERSION == 7 && GAZEBO_MINOR_VERSION >= 9  //working with ros Gazebo7.9
+#include <sdformat-4.4/sdf/sdf.hh>
+
+#elif GAZEBO_MAJOR_VERSION == 8 //working with ros Gazebo8
+#include <sdformat-5.3/sdf/sdf.hh>
+
+#endif
+****/
+
 
 #if GAZEBO_MAJOR_VERSION == 2  
 #include <sdformat-1.4/sdf/sdf.hh>  //worked with ros Gazebo2
