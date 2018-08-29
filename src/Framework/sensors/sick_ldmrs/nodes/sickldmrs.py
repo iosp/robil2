@@ -57,11 +57,12 @@ from sick_ldmrs.utils import *
 #if ROS_MINOR_VERSION == 11
 #kinetic from sick_ldmrs.cfg import ldmrsConfig
 #endif
-
+from dynamic_reconfigure import server
+from sick_ldmrs.cfg import ldmrsConfig
 rosdistro = os.getenv('ROS_DISTRO')
-if rosdistro == "jade":
+''' if rosdistro == "kinetic":
 	from dynamic_reconfigure import server
-	from sick_ldmrs.cfg import ldmrsConfig
+	from sick_ldmrs.cfg import ldmrsConfig '''
 	#print("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJAAAAAAAAAAAAAAAAAAAAAAAAADDDDDDDDDDDDDDDEEEEEEEEEEEE")
 
 topics = {}.fromkeys(( 'cloud',  'scan0',  'scan1',  'scan2',  'scan3', 'robil'))
@@ -333,8 +334,8 @@ def ros_main():
     # dynamic_reconfigure server
     # Invokes callback on init and initializes param_handler.
 
-    if rosdistro == "jade":
-	conf_server = server.Server(ldmrsConfig, _update_config_callback)
+    #if rosdistro == "kinetic":
+    conf_server = server.Server(ldmrsConfig, _update_config_callback)
 
     # these have static state and dont have to be reconfigured on restart
     error_handler = ErrorWarningMsgHandler()
