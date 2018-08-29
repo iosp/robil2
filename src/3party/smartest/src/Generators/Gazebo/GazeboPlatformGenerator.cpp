@@ -19,6 +19,8 @@
 #include "SFV/sfvSubGroup.h"
 
 #include <stdlib.h>
+//#include <ros/common.h>
+#include <gazebo/gazebo_config.h>
 
 GazeboPlatformGenerator::GazeboPlatformGenerator() {
 	// TODO Auto-generated constructor stub
@@ -54,10 +56,14 @@ void GazeboPlatformGenerator::generatePlatform(SFV * sfv ,std::string filename, 
 	init(sdfptr);
 	sdf::addURIPath("model://", scenario_models_folder_url );
 	sdf::readFile(nominal_platform_model_url,sdfptr);
+#if GAZEBO_MAJOR_VERSION == 5
+	sdf::ElementPtr modelPtr=sdfptr->root->GetElement("model");
+#else
 #if ROS_VERSION_MINOR == 11
 	sdf::ElementPtr modelPtr=sdfptr->root->GetElement("model");
 #else
 	sdf::ElementPtr modelPtr=sdfptr->Root()->GetElement("model");
+#endif
 #endif
 	sdf::ElementPtr link;
 
@@ -77,7 +83,7 @@ void GazeboPlatformGenerator::generatePlatform(SFV * sfv ,std::string filename, 
 			sdf::ElementPtr inertiayy=inertia->GetElement("iyy");
 			sdf::ElementPtr inertiazz=inertia->GetElement("izz");
 			sdf::ElementPtr pose=link->GetElement("pose");
-#if ROS_VERSION_MINOR == 11
+#if GAZEBO_MAJOR_VERSION == 5 || ROS_VERSION_MINOR == 11
 			sdf::Pose new_pose;
 			pose->GetValue()->Get(new_pose);
 			new_pose.pos.x += mass_link_it->get_LocationDeviationX()->get_RolledValue();
@@ -159,7 +165,7 @@ void GazeboPlatformGenerator::generatePlatform(SFV * sfv ,std::string filename, 
 		{
 			sdf::ElementPtr pose=link->GetElement("pose");
 
-#if ROS_VERSION_MINOR == 11
+#if GAZEBO_MAJOR_VERSION == 5 || ROS_VERSION_MINOR == 11
 			sdf::Pose new_pose;
 			new_pose.pos.x += sensor_link_it->get_LocationDeviationX()->get_RolledValue();
 			new_pose.pos.y += sensor_link_it->get_LocationDeviationY()->get_RolledValue();

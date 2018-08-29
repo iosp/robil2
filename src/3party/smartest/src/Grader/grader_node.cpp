@@ -504,7 +504,11 @@ void load_robot_models()
 	sdf::SDFPtr sdfPtr(new sdf::SDF());
 	init(sdfPtr);
 	sdf::readFile(robot_model_url,sdfPtr);
+#if GAZEBO_MAJOR_VERSION == 5 || ROS_VERSION_MINOR == 11
+	sdf::ElementPtr sdfModelPtr=sdfPtr->root->GetElement("model");
+#else
 	sdf::ElementPtr sdfModelPtr=sdfPtr->Root()->GetElement("model");
+#endif
 	sdf::ElementPtr sdfUriPtr ;
 	   for (sdf::ElementPtr sdfLinkPtr=sdfModelPtr->GetElement("link"); sdfLinkPtr ; sdfLinkPtr=sdfLinkPtr->GetNextElement("link"))
 	   {
