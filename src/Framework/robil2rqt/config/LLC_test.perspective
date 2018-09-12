@@ -139,7 +139,7 @@
                 }, 
                 "topics": {
                   "type": "repr", 
-                  "repr": "[u'/cmd_vel/angular/z', u'/RQT_paltform_velocity_monitor/angular/data', u'/RQT_WPD_command/angular/data']"
+                  "repr": "[u'/cmd_vel/angular/z', u'/RQT_platform_velocity_monitor/angular/data', u'/RQT_WPD_command/angular/data']"
                 }, 
                 "y_limits": {
                   "type": "repr", 
@@ -280,7 +280,7 @@
                 }, 
                 "topics": {
                   "type": "repr", 
-                  "repr": "[u'/RQT_paltform_velocity_monitor/linear/data', u'/RQT_WPD_command/linear/data']"
+                  "repr": "[u'/RQT_platform_velocity_monitor/linear/data', u'/RQT_WPD_command/linear/data']"
                 }, 
                 "y_limits": {
                   "type": "repr", 

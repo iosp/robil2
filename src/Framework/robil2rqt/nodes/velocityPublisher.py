@@ -7,8 +7,8 @@ from gazebo_msgs.msg import ModelStates
 from std_msgs.msg import Float32
 from geometry_msgs.msg import PoseWithCovarianceStamped
 
-velocity_linear_command_pub = rospy.Publisher('/RQT_paltform_velocity_monitor/linear', Float32 , queue_size=5)
-velocity_angular_command_pub = rospy.Publisher('/RQT_paltform_velocity_monitor/angular', Float32 , queue_size=5)
+velocity_linear_command_pub = rospy.Publisher('/RQT_platform_velocity_monitor/linear', Float32 , queue_size=5)
+velocity_angular_command_pub = rospy.Publisher('/RQT_platform_velocity_monitor/angular', Float32 , queue_size=5)
 
 def command_calback(msg):
 	names = msg.name
