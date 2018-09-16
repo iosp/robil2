@@ -53,7 +53,7 @@ catkin_package(
 
 if(("$ENV{ROS_DISTRO}" STREQUAL "kinetic") OR ("$ENV{ROS_DISTRO}" STRGREATER "kinetic"))                                                                                                                                                 
 include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${PYTHON_INCLUDE_DIR} 
-/usr/include/sdformat-5.3/sdf /usr/include/eigen3 /opt/ros/kinetic/include/opencv-3.3.1-dev)
+/usr/include/sdformat-5.3/sdf /usr/include/eigen3 /opt/ros/kinetic/include/opencv-3.3.1 /opt/ros/kinetic/include/opencv-3.3.1-dev)
 else()
 include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${PYTHON_INCLUDE_DIR} 
 /usr/include/sdformat-4.3/sdf )
