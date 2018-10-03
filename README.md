@@ -1,5 +1,31 @@
+# Install:
+Branch **master**: 
+1. Runs on Ubuntu 16.04 with ROS Kinetic
+2. Runs also on Ubuntu 14.04 eith ROS Jade
+3. Checked on Ubuntu 16.04 according https://github.com/iosp/robil2/wiki/Acceptance-Tests
+4. There are some issues with fcl (kinetic) and therefore, the following should be done:
+       * install ros-kinetic-fcl-catkin
+       * install with synaptic version fcl 0.5 and version fcl dev 0.5
+5. See below Toward moving to kinetic - branch toKinetic section 5 for OCU
 
-# Toward moving to kinetic - branch toKinetic
+# Run simulation
+roslaunch live_bobcat bobcat_tracked_empty_world.launch 
+or 
+bobcat_tracked_Robil_Testing_grounds.launch
+bobcat_tracked_stair_world.launch
+bobcat_tracked_TestWorld4.launch
+bobcat_tracked_TestWorld.launch
+
+# Run robot
+roslaunch robil2conf frameworkInit.launch
+
+# Run OCU
+Open the file: $ROBIL2/src/Framework/ocu/src/RobilOCU.html on a browser.
+Note You have to refresh the OCU each time the robot reboots.
+
+
+************************************************************************************************
+# OBSOLETE - Toward moving to kinetic - branch toKinetic - 
 1. Perception crashes
 2. NO ==>Install Flexible Collision Library from source: https://github.com/flexible-collision-library/fcl
 3. Install version 0.5 + dev of FCL (with synaptic)
