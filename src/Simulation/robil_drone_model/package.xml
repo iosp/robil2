@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<package>
+  <name>robil_drone_model</name>
+  <version>1.0.0</version>
+  <description>Robil's drone model and launch files</description>
+  <maintainer email="igor@cogniteam.com">Igor Makhtes</maintainer>
+  <license>Proprietary</license>
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

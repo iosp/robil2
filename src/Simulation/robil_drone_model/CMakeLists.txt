@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.8.3)
+project(robil_drone_model)
+find_package(catkin REQUIRED)
+catkin_package()
+catkin_add_env_hooks(10.px4-env SHELLS bash DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
