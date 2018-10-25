@@ -3,6 +3,7 @@
 ### Dependencies
 ```
 sudo apt-get install ros-$ROS_DISTRO-mavros protobuf-compiler
+sudo pip install numpy toml
 ```
 
 ### Prepare source code
@@ -22,6 +23,7 @@ catkin_make
 cd [PATH_TO_ROBIL_WS]/src/Firmware
 make posix_sitl_default gazebo
 ```
+This last command compiles and run gazebo including a drone.
 
 ## QGroundControl
 
@@ -37,6 +39,16 @@ chmod +x ./QGroundControl.AppImage
 ```
 
 QGroundControl will automatically connect to drone.
+
+Note: 
+You have to be super user in order to run this application:
+```
+sudo usermod -a -G dialout robil
+```
+You have also to remove the modemmanager since it interferes:
+```
+sudo apt-get remove modemmanager
+```
 
 ### Takeoff
 To perform a take off, first arm the vehicle by clicking 
