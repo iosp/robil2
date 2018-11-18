@@ -312,7 +312,13 @@ namespace gazebo
 	{
 	  while(true)
 	  {
-    		if(vecToSend && !vecToSend->empty())
+    		bool vecValid = false;
+
+			vecToSend_mutex.lock();
+			vecValid = vecToSend && !vecToSend->empty();
+			vecToSend_mutex.unlock();
+
+			if(vecValid)
     		{
     	   		vecToSend_mutex.lock();
     	   		std::pair<common::Time, char[10000]>* front = (vecToSend->front());
