@@ -3,6 +3,7 @@
 ### Dependencies
 ```
 sudo apt-get install ros-$ROS_DISTRO-mavros protobuf-compiler
+(install pip: $ sudo apt-get install python-pip python-dev build-essential )
 sudo pip install numpy toml
 ```
 
