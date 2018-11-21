@@ -25,6 +25,8 @@ short GetShort (unsigned char * a_pcBuff, bool LitleEndian)
 	   l_Short <<= 8;
 	   l_Short += *a_pcBuff;
   }
+
+  return l_Short;
 }
 
 
@@ -45,6 +47,8 @@ short GetShort (unsigned char * a_pcBuff, short * a_pOffset, bool LitleEndian)
 	   l_Short += a_pcBuff[*a_pOffset] <<= 8;
 	   a_pOffset++;
    }
+
+   return l_Short;
 }
 
 // TBD
