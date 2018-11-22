@@ -22,6 +22,7 @@ catkin_make
 ```
 cd [PATH_TO_ROBIL_WS]/src/Firmware
 make posix_sitl_default gazebo
+wget -O - https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh | sudo bash
 ```
 This last command compiles and run gazebo including a drone.
 
