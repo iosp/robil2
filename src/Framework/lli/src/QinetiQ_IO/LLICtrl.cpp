@@ -1151,6 +1151,7 @@ unsigned short CLLI_Ctrl::ParseData() {
 
 		default:
 			// Unknown message
+			cerr << "Unknown package code = " << codeTmp << endl;
 			break;
 		} // switch
 

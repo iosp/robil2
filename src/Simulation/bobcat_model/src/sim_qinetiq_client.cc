@@ -198,6 +198,8 @@ public:
              l_Short <<= 8;
              l_Short += *a_pcBuff;
     }
+
+    return l_Short;
   }
 
   void HeartBeatFunc()
@@ -340,7 +342,7 @@ void limitToAbsOne(float& temp)
 //                  printf("(reqJoints_Val[1] = %u\n", temp);
                   break;
                 default:
-                  printf("default :-(\n");
+                  printf("Unknown package code = %i\n", (int)codeTmp);
                   break;
               }
             }
