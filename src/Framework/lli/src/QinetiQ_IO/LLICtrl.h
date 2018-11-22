@@ -214,7 +214,7 @@ private:
 };
 
 
-#pragma pack ()
+// #pragma pack ()
 
 
 #endif
