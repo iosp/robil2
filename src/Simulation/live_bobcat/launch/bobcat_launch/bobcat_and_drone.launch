@@ -1,0 +1,13 @@
+<launch>
+
+    <include file="$(find live_bobcat)/launch/bobcat_tracked_launch/bobcat_tracked_TestWorld4.launch" />
+
+    <node pkg="smartest" type="timed_roslaunch.sh" name="timed_roslaunch" args="15 robil_drone_model spawn_robil_drone.launch x:=2.0 y:=2.0 z:=3.0" output="screen"/>
+
+    <!--include file="$(find robil_drone_model)/launch/spawn_robil_drone.launch">
+        <arg name="x" value="2.0" />
+        <arg name="y" value="2.0" />
+        <arg name="z" value="1.3" />
+    </include> -->
+
+</launch>
