@@ -3,6 +3,7 @@
 ### Dependencies
 ```
 sudo apt-get install ros-$ROS_DISTRO-mavros protobuf-compiler
+(install pip: $ sudo apt-get install python-pip python-dev build-essential )
 sudo pip install numpy toml
 ```
 
@@ -14,6 +15,9 @@ git clone https://github.com/PX4/Firmware.git -b v1.7.3
 
 ### Compile catkin workspace
 ```
+sudo apt install ros-kinetic-diagnostic-aggregator 
+sudo apt install ros-kinetic-pcl-ros
+sudo apt-get install python-jinja2 
 cd [PATH_TO_ROBIL_WS]
 catkin_make
 ```
