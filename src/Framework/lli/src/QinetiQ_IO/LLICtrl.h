@@ -40,7 +40,7 @@ const short			TX_SPOOLER_SIZE = 5;
 const short			TX_MSGID_MAX = 7;
 
 typedef enum { lli_State_Off = 0, lli_State_Init, lli_State_Standby, lli_State_Wait_Responce, lli_State_Ready } LLI_STATE;
-typedef enum { lli_RR__None = 0, lli_RR_Confirm, lli_RR_Reject } LLI_COTROL_SWITCH;
+typedef enum { lli_RR__None = 0, lli_RR_Confirm, lli_RR_Reject } LLI_CONTROL_SWITCH;
 typedef enum { lli_Ctrl_Drive = 0, lli_Ctrl_Manip } LLI_CONTROL_DEVICE;
 
 enum { lli_TransmitResponceHeartBit_Msg, lli_TransmitWrenchEffort_Msg, lli_TransmitJoinEffort_Msg, lli_TransmitDriveCtrl_Msg,
@@ -54,8 +54,8 @@ struct LLI_SM {
 	LLI_STATE 				reqState;
 	//unsigned short      	respRequest;	// responce request
 //	unsigned short      	devResponce;	// responce request
-	LLI_COTROL_SWITCH    	respRequest;
-	LLI_COTROL_SWITCH       devResponce;
+	LLI_CONTROL_SWITCH    	respRequest;
+	LLI_CONTROL_SWITCH       devResponce;
 	double					timeTag;
 	double					effortTT;
 	double					lastCmdTT;
@@ -186,8 +186,8 @@ private:
     void        TransmitResponceHeartBit ();
     void        TransmitWrenchEffortMsg ();
     void        TransmitJoinEffortMsg ();
-    void        TransmitDriveCtrlMsg (unsigned short val);
-    void        TransmitManipulatorCtrlMsg (unsigned short val);
+    void        TransmitDriveCtrlMsg (BYTE val);
+    void        TransmitManipulatorCtrlMsg (BYTE val);
     void        TransmitReleaseDriveCtrlMsg ();
     void        TransmitReleaseManipulatorCtrlMsg ();
 
@@ -214,7 +214,7 @@ private:
 };
 
 
-// #pragma pack ()
+#pragma pack ()
 
 
 #endif

@@ -633,7 +633,7 @@ unsigned short CLLI_Ctrl::RequestComponentControl (LLI_CONTROL_DEVICE dev2Ctrl)
 {
 	unsigned short retVal = 0;
 
-	unsigned short L_AutorityCode[2] = { 0x38, 0x38 };
+	BYTE L_AutorityCode[2] = { 0x38, 0x38 };
 
 	if (dev2Ctrl == lli_Ctrl_Drive) {
 		TransmitDriveCtrlMsg (L_AutorityCode[lli_Ctrl_Drive]);
@@ -974,9 +974,11 @@ void CLLI_Ctrl::TransmitJoinEffortMsg()
 
 }
 
-void CLLI_Ctrl::TransmitDriveCtrlMsg(unsigned short val) {
+void CLLI_Ctrl::TransmitDriveCtrlMsg(BYTE val) {
 
-	memcpy(&(LLI_DriveControlMsg[16]), &val, sizeof(unsigned short));
+	memcpy(&(LLI_DriveControlMsg[16]), &val, 1);
+//	memcpy(&(LLI_DriveControlMsg[16]), &val, sizeof(unsigned short));
+
 	txCount++;
 	txSeqNumber++;
 	memcpy(&LLI_DriveControlMsg[14], &txSeqNumber, sizeof(short));
@@ -989,9 +991,10 @@ void CLLI_Ctrl::TransmitDriveCtrlMsg(unsigned short val) {
 }
 
 
-void CLLI_Ctrl::TransmitManipulatorCtrlMsg(unsigned short val) {
+void CLLI_Ctrl::TransmitManipulatorCtrlMsg(BYTE val) {
 
-	memcpy(&(LLI_ManipulatorControlMsg[16]), &val, sizeof(unsigned short));
+	memcpy(&(LLI_ManipulatorControlMsg[16]), &val, 1);
+//	memcpy(&(LLI_ManipulatorControlMsg[16]), &val, sizeof(unsigned short));
 
 	txCount++;
 	txSeqNumber++;
