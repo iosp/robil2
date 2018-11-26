@@ -319,7 +319,7 @@
               "keys": {
                 "publishers": {
                   "type": "repr", 
-                  "repr": "u\"[{'type_name': 'geometry_msgs/TwistStamped', 'topic_name': '/WPD/Speed', 'enabled': False, 'rate': 100.0, 'expressions': {u'/WPD/Speed/twist/linear/z': '0', u'/WPD/Speed/twist/linear/x': '0', u'/WPD/Speed/twist/linear/y': '0', u'/WPD/Speed/twist/angular/z': '0', u'/WPD/Speed/twist/angular/x': '0', u'/WPD/Speed/twist/angular/y': '0'}, 'publisher_id': 0, 'counter': 0}, {'topic_name': '/LLC/EFFORTS/Throttle', 'type_name': 'std_msgs/Float64', 'enabled': False, 'rate': 100.0, 'expressions': {u'/LLC/EFFORTS/Throttle/data': '5'}, 'publisher_id': 1, 'counter': 0}, {'topic_name': '/LLC/EFFORTS/Steering', 'type_name': 'std_msgs/Float64', 'enabled': False, 'rate': 100.0, 'expressions': {u'/LLC/EFFORTS/Steering/data': '0'}, 'publisher_id': 2, 'counter': 0}]\""
+                  "repr": "u\"[{'type_name': 'geometry_msgs/TwistStamped', 'topic_name': '/WPD/Speed', 'enabled': False, 'rate': 100.0, 'expressions': {u'/WPD/Speed/twist/linear/z': '0', u'/WPD/Speed/twist/linear/x': '0', u'/WPD/Speed/twist/linear/y': '0', u'/WPD/Speed/twist/angular/z': '0', u'/WPD/Speed/twist/angular/x': '0', u'/WPD/Speed/twist/angular/y': '0'}, 'publisher_id': 0, 'counter': 0}, {'topic_name': '/LLC/EFFORTS/Throttle', 'type_name': 'std_msgs/Float64', 'enabled': False, 'rate': 100.0, 'expressions': {u'/LLC/EFFORTS/Throttle/data': '0.5'}, 'publisher_id': 1, 'counter': 0}, {'topic_name': '/LLC/EFFORTS/Steering', 'type_name': 'std_msgs/Float64', 'enabled': False, 'rate': 100.0, 'expressions': {u'/LLC/EFFORTS/Steering/data': '0.3'}, 'publisher_id': 2, 'counter': 0}]\""
                 }
               }, 
               "groups": {}
