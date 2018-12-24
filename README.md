@@ -8,6 +8,9 @@ Branch **master**:
        * install with synaptic version fcl 0.5 and version fcl dev 0.5
 5. See below Toward moving to kinetic - branch toKinetic section 5 for OCU
 
+Branch **drone**:
+1. See https://github.com/iosp/robil2/blob/drone/src/Simulation/robil_drone_model/README.md
+
 # Run simulation
 roslaunch live_bobcat bobcat_tracked_empty_world.launch 
 or 
