@@ -41,7 +41,7 @@ class bobcatArmPlugin : public ModelPlugin
   public:
     void Load(physics::ModelPtr _model, sdf::ElementPtr /*_sdf*/) // we are not using the pointer to the sdf file so its commanted as an option
     {
-        std::cout << "MY_GAZEBO_VER = [" << GAZEBO_MAJOR_VERSION << "]" << std::endl;
+        std::cout << "arm_plugin: MY_GAZEBO_VER = [" << GAZEBO_MAJOR_VERSION << "]" << std::endl;
             Hydraulics_command_timer.Start();
     Loader_command_timer.Start();
     Brackets_command_timer.Start();

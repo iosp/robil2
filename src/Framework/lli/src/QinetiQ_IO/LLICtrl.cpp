@@ -501,7 +501,7 @@ void CLLI_Ctrl::SetJointRequest (short reqVal1, short reqVal2)
 	ResetLocalTimeTag (m_ManipulatorCurrentState.effortTT);
 	m_ManipulatorCurrentState.lastCmdTT = m_ManipulatorCurrentState.effortTT;
 
-	//printf ("SetJointRequest: Scaling: %d --> %d       %d --> %d\n", reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
+	printf ("SetJointRequest: Scaling: %d --> %d       %d --> %d\n", reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
 }
 
 
