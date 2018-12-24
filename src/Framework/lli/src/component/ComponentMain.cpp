@@ -193,19 +193,26 @@ void ComponentMain::handleEffortsSt(const std_msgs::Float64& msg)
 
 void ComponentMain::handleEffortsJn(const sensor_msgs::JointState& msg)
 {
-//	std::cout<< "LLI say:" << msg << std::endl;
+	std::cout<< "LLI say:" << msg << std::endl;
 
 	if (!is_ready){
 		//Ignore Topic
 		return;
 	}
-	short data1, data2;
+	float data1, data2;
+	short sdata1, sdata2;
 
 
 		//= msg.position[i];
 			data1 = msg.effort[1];
 			data2 = msg.effort[2];
-			_clli->SetJointRequest(data1, data2);
+			sdata1 = (short)data1; 
+			sdata2 = (short)data2;
+
+			std::cout<< "LLI say float:data1 and data2:" << data1 << " and " << data2 << std::endl;
+			std::cout<< "LLI say short:sdata1 and sdata2:" << sdata1 << " and " << sdata2 << std::endl;
+
+			_clli->SetJointRequest(sdata1, sdata2);
 
 }
 

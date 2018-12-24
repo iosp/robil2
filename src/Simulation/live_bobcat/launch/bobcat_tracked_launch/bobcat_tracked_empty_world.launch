@@ -23,6 +23,7 @@
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
+    <!-- world includes sdf model of bobcat -->
     <arg name="world_name" value="$(find live_bobcat)/worlds/bobcat_tracked_worlds/bobcat_tracked_empty.world"/>
   </include>
 
