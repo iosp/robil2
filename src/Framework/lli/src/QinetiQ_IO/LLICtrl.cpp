@@ -498,10 +498,14 @@ void CLLI_Ctrl::SetJointRequest (short reqVal1, short reqVal2)
 
 	reqJoints_Val[1] = JausRealToShort (valScaledTmp, -100, 100);
 
-	ResetLocalTimeTag (m_ManipulatorCurrentState.effortTT);
-	m_ManipulatorCurrentState.lastCmdTT = m_ManipulatorCurrentState.effortTT;
+	printf ("Before SetJointRequest: Scaling: %d --> %d       %d --> %d\n", reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
 
-	printf ("SetJointRequest: Scaling: %d --> %d       %d --> %d\n", reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
+	ResetLocalTimeTag (m_ManipulatorCurrentState.effortTT);
+	mutex_time.lock();
+	m_ManipulatorCurrentState.lastCmdTT = m_ManipulatorCurrentState.effortTT;
+	mutex_time.unlock();
+
+	printf ("After SetJointRequest: Scaling: %d --> %d       %d --> %d\n", reqVal1, reqJoints_Val[0], reqVal2, reqJoints_Val[1]);
 }
 
 
@@ -730,7 +734,7 @@ bool CLLI_Ctrl::PeriodicActivity() {
 	static short jointsValTest[2] = {0};
 	static short jointId = 0;
 	static short steeringValTest = 0;
-	static short throttelValTest = 0;
+	static short throttleValTest = 0;
 
 	m_txDone = false;
 	SetCurrentTimeTag ();
@@ -775,25 +779,25 @@ bool CLLI_Ctrl::PeriodicActivity() {
 
 			   break;
 
-           // Throttel control
+           // Throttle control
 		   case 'a':
-			   throttelValTest  -= 10;
-			   printf ("Throttel preparation: %d\n", throttelValTest);
+			   throttleValTest  -= 10;
+			   printf ("Throttle preparation: %d\n", throttleValTest);
 		       break;
 
 		   case 's':
-			   throttelValTest  = 0;
-			   SetThrottelRequest (throttelValTest);
-			   printf ("Throttel preparation: %d\n", throttelValTest);
+			   throttleValTest  = 0;
+			   SetThrottelRequest (throttleValTest);
+			   printf ("Throttle preparation: %d\n", throttleValTest);
 		       break;
 
 		   case 'd':
-			   throttelValTest  += 10;
-			   printf ("Throttel preparation: %d\n", throttelValTest);
+			   throttleValTest  += 10;
+			   printf ("Throttle preparation: %d\n", throttleValTest);
          		       break;
 
 		   case 'w':
-			   SetThrottelRequest (throttelValTest);
+			   SetThrottelRequest (throttleValTest);
     		           break;
 
 
@@ -819,6 +823,7 @@ bool CLLI_Ctrl::PeriodicActivity() {
 		       SetSteeringRequest (steeringValTest);
 		       break;
 
+			// joint control
 		   case 'z':
 			   jointsValTest[jointId] += 10;
 			   printf ("Joint #%d preparation: %d\n", jointId, jointsValTest[jointId]);
@@ -843,7 +848,7 @@ bool CLLI_Ctrl::PeriodicActivity() {
 			   jointsValTest[jointId] = 0;
 			   SetJointRequest (jointsValTest[0], jointsValTest[1]);
 			   jointId =  1 - jointId;
-			   printf ("Joint ID switch to $d: %d\n", jointId, steeringValTest);
+			   printf ("Joint ID switch to %d: %d\n", jointId, steeringValTest);
 			   break;
 
 		   case '8':				// Drive Control Release Request
@@ -1255,7 +1260,7 @@ void CLLI_Ctrl::ThreadFunc() {
 					(struct sockaddr *) &si_Remote, &slen);
 
 		} catch (exception& err) {
-			printf("receive error #%d\n", err.what());
+			printf("receive error #%s\n", err.what());
 		}
 
 
@@ -1316,7 +1321,7 @@ unsigned short CLLI_Ctrl::JausRealToUShort (short realVal, short lowerLimit, sho
    usVal = (unsigned short)((realVal - lowerLimit) * ((double)(TWO_EXP_16 - 1) / (upperLimit - lowerLimit)));
 //   usVal = (realVal - lowerLimit) * ((2E16 - 1) / (upperLimit - lowerLimit));
 
-   printf ("JausRealToUShort: %d --> %d\n", realVal, usVal);
+   printf ("JausRealToUShort: %d --> %ld\n", realVal, usVal);
 
    return (unsigned short) usVal;
 

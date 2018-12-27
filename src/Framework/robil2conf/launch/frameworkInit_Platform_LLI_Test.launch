@@ -1,7 +1,13 @@
 <launch>
 		       
         <!-- == PLATFORM INTERFACE == -->  
-        <node name="ros2qinetiq" type="lli_node" pkg="lli" args="127.0.0.1" output="screen" respawn="true"/>   
+        <arg name="plat" default="0"/>
         
-
+  	<node name="ros2qinetiq" type="lli_node" pkg="lli" args="127.0.0.1" output="screen" respawn="true" unless="$(eval arg('plat'))"/>    
+  	
+	<group if="$(eval arg('plat'))">
+ 		 <!-- stuff that will only be evaluated if foo is true -->
+ 		 <node name="ros2qinetiq" type="lli_node" pkg="lli" args="192.168.101.3" output="screen" respawn="true"/>   
+	</group>
+	
 </launch>
