@@ -186,7 +186,7 @@ namespace gazebo
 	  sockfd = -1;
 	  newsockfd = -1;
 	  flag_fillMsg = false;
-
+          gzmsg << "Gazebo major version= " <<GAZEBO_MAJOR_VERSION<<"\n";
           loadParametersFromSDFFile(_sdf);
 
           initSensors();
