@@ -1,0 +1,56 @@
+<launch>
+
+    <arg name="agent_num" default="1" />
+    <arg name="agent_name" default="agent$(arg agent_num)" />
+
+    <arg name="mavros" default="true" />
+
+    <arg name="fcu_ip" default="127.0.0.1" />
+    <arg name="gcs_ip" default="127.0.0.1" />
+
+    <!--  
+        Spawn location in gazebo simulator
+    -->
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0.3"/>
+    <arg name="R" default="0"/>
+    <arg name="P" default="0"/>
+    <arg name="Y" default="0"/>
+
+
+    <!-- 
+        Px4 firmware config generation for all simulated drones 
+    -->
+    <arg name="config_template_path" value="$(find robil_drone_model)/models/robil_drone/config/robil_drone.template" />
+    <arg name="config_path" value="$(find robil_drone_model)/models/robil_drone/config/robil_drone$(arg agent_num)" />
+
+    <param name="read_config_command" command="$(find robil_drone_model)/tools/replace.py $(arg config_template_path) $(arg config_path) $UDP_PORT_PREFIX $(arg agent_num)" />
+    
+    <param name="robot_description_$(arg agent_name)" command="$(find xacro)/xacro.py $(find robil_drone_model)/models/robil_drone/robil_drone.sdf.xacro udp_port:=$(arg agent_num)560 agent_name:=$(arg agent_name)" />
+
+    <group ns="$(arg agent_name)">
+
+        <!-- 
+            PixHawk flight controller simulation
+              note: used only when spawning a drone in gazebo simulator
+        -->
+        <node name="sitl" pkg="px4" type="px4" args="$(find px4) $(arg config_path)" output="screen">
+        </node>
+
+        <!-- 
+            MavLink ROS wrapper
+        -->
+        <include if="$(arg mavros)" file="$(find robil_drone_model)/launch/mavros.launch">
+            <arg name="fcu_url" value="udp://:$(arg agent_num)540@$(arg fcu_ip):$(arg agent_num)557" />
+            <arg name="gcs_url" value="udp://:$(arg agent_num)940@$(arg gcs_ip):$(arg agent_num)900" />
+            <arg name="log_output" value="log" />
+            <arg name="tf_prefix" value="$(arg agent_name)" />
+        </include>
+
+    </group>
+
+    <node name="$(anon vehicle_spawn)" pkg="gazebo_ros" type="spawn_model"
+        args="-sdf -param robot_description_$(arg agent_name) -model $(arg agent_name) -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg R) -P $(arg P) -Y $(arg Y)"/>
+
+</launch>

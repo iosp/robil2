@@ -1,0 +1,30 @@
+<launch>
+    
+    <arg name="pluginlists_yaml" default="$(find robil_drone_model)/config/px4_pluginlists.yaml" />
+    <arg name="config_yaml" default="$(find robil_drone_model)/config/px4_config.yaml" />
+
+    <arg name="fcu_url" default="/dev/ttyACM0:57600" />
+    <arg name="gcs_url" default="" />
+    <arg name="tgt_system" default="1" />
+    <arg name="tgt_component" default="1" />
+    <arg name="log_output" default="screen" />
+
+    <arg name="tf_prefix" default="" />
+
+    <node pkg="mavros" type="mavros_node" name="mavros" respawn="false" clear_params="true">
+        <param name="fcu_url" value="$(arg fcu_url)" />
+        <param name="gcs_url" value="$(arg gcs_url)" />
+        <param name="target_system_id" value="$(arg tgt_system)" />
+        <param name="target_component_id" value="$(arg tgt_component)" />
+
+        <!-- load blacklist, config -->
+        <rosparam command="load" file="$(arg pluginlists_yaml)" />
+        <rosparam command="load" file="$(arg config_yaml)" />
+
+        <param name="local_position/tf/child_frame_id" value="$(arg tf_prefix)/base_link" />
+        <param name="global_position/tf/child_frame_id" value="$(arg tf_prefix)/utm" />
+        <param name="setpoint_position/tf/child_frame_id" value="$(arg tf_prefix)/base_link" />
+
+    </node>
+
+</launch>
