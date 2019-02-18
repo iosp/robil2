@@ -1,6 +1,6 @@
 <launch>
  <node name="RQT_platform_velocity_monitor" type="velocityPublisher.py" pkg="robil2rqt" args="" output="screen" respawn="true"/>
  <node name="RQT_wpd_command_monitor" type="pubWPDCommand.py" pkg="robil2rqt" args="" output="screen" respawn="true"/>
- <node name="RQT_loc_orintation_monitor" type="bupLOC_RolPitchYow.py" pkg="robil2rqt" args="" output="screen" respawn="true"/>
+ <node name="RQT_loc_orientation_monitor" type="bupLOC_RolPitchYow.py" pkg="robil2rqt" args="" output="screen" respawn="true"/>
 
 </launch>

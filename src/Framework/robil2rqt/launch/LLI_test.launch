@@ -1,0 +1,6 @@
+<launch>
+ <include file="$(find robil2rqt)/launch/pubTopics_rqt.launch" />
+ 
+ <node name="rqt" type="rqt_gui" pkg="rqt_gui" args="--perspective-file $(find robil2rqt)/config/LLI.perspective" output="screen" respawn="true"/>
+ 
+</launch>
