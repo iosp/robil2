@@ -74,3 +74,10 @@ First start gazebo simulation, then you can spawn a drone:
 ```
 roslaunch robil_drone_model spawn_robil_drone.launch
 ```
+
+### Spawn bobcat and drone
+
+```
+roslaunch live_bobcat bobcat_and_drone.launch
+```
+
