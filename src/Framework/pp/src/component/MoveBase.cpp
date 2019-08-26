@@ -787,7 +787,7 @@ void on_GlobalCostMap( const nav_msgs::OccupancyGrid::ConstPtr& cost_map){
 	global_cost_map = *cost_map;
 
 	global_cost_map.data[rand() % 255] = rand() % 255;
-	DBG_INFO("Navigation: Global occupancy cost grid gotten");
+	//DBG_INFO("Navigation: Global occupancy cost grid gotten");
 }
 void on_speed(const geometry_msgs::Twist::ConstPtr& msg){
 	bool moving = msg->linear.x + msg->linear.y + msg->angular.z;
